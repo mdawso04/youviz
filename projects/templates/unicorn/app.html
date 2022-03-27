@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% load static %}
+{% load unicorn %} 
+{% block page_content %}
+<body>
+    <!-- UNICORN START -->
+    <div class="container-fluid p-0" id="appTop" unicorn:view>
+        <!-- APP REFRESH FUNCTION ARRAY -->
+        
+        
+        <script type="application/javascript">
+            //const array_of_functions = {};
+            //const call_functions = function () {
+                //for (let i = 0; i < array_of_functions.length; i++) {
+                //    array_of_functions[i]();
+                //    console.log(array_of_functions[i]);
+                //}
+                //console.log("Preparing to call functions: " + Object.keys(array_of_functions).length);
+                //for (f in array_of_functions) {
+                //    array_of_functions[f]();
+                //    console.log("Calling: " + f);
+                //}
+            //};
+        </script>
+        
+        <!-- NAVBAR START -->
+        <nav class="navbar navbar-dark bg-dark sticky-top">
+          <div class="container-fluid d-flex">
+                <a class="navbar-brand me-auto" href="/projects/app">YouViz</a>
+                {% unicorn 'login' %}
+                <button id="off-canvas-button" class="navbar-toggler d-block" type="button" data-bs-toggle="offcanvas" 
+                        data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+          </div>
+        </nav>
+        <!--NAVBAR END -->
+        
+        <!-- MAIN CONTAINER -->
+        <div class="container py-3">
+            <!-- OFFCANVAS START --> 
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="OFFCANVAS" aria-labelledby="offcanvasExampleLabel">
+                <!-- HEADER -->
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasExampleLabel">File Select & Upload</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <!-- BODY -->
+                <div class="offcanvas-body">
+                    <!--ACCORDIAN START -->
+                    <div class="accordion accordion-flush" id="accordionExample">
+                        
+                        <!-- ACCORDIAN ITEM 2 -->
+                        <div class="accordion-item">
+                            <!-- ACCORDIAN HEADER -->
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                                Select File
+                                </button>
+                            </h2>
+                            <!-- ACCORDIAN BODY -->
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                <div class="accordion-body px-0">
+                                    <!-- FILE LIST -->
+                                    <div class="list-group list-group-flush">
+                                        {% for f in files %}
+                                        <a href="#" unicorn:click="setFile({{f.pk}})" 
+                                           class="list-group-item list-group-item-action{% if f.document == file.document %} active{% endif %}" aria-current="true">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">{{f.document}}</h6>
+                                                <small>3 days ago</small>
+                                            </div>
+                                            <small>CSV file</small>
+                                        </a>
+                                        {% empty %}
+                                        No files
+                                        {% endfor %}
+                                    </div>
+                                    <!-- END FILE LIST -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END ACCORDIAN ITEM 2-->
+                        
+                          
+                        
+                       <!-- ACCORDIAN ITEM 3 -->
+                        <div class="accordion-item">
+                            <!-- ACCORDIAN HEADER -->
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                                Upload Remote File
+                                </button>
+                            </h2>
+                            <!-- ACCORDIAN BODY -->
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                                <div class="accordion-body px-0">
+                                    <!-- FILE LIST -->
+                                    <div class="list-group list-group-flush">
+                                        {% for d in remote_data %}
+                                        <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">{{d.name}}</h6>
+                                                <small>3 days ago</small>
+                                            </div>
+                                            <small>Remote CSV file</small>
+                                        </a>
+                                        {% empty %}
+                                        No remote data
+                                        {% endfor %}
+                                    </div>
+                                    <!-- END FILE LIST -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END ACCORDIAN ITEM 3-->
+                        
+                       <!-- ACCORDIAN ITEM 1 -->
+                        <div class="accordion-item">
+                            <!-- ACCORDIAN HEADER -->
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Upload Local File
+                                </button>
+                            </h2>
+                            <!-- ACCORDIAN BODY -->
+                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <!-- DROPZONE WIDGET -->
+                                    <div class="container mt-3">
+                                        <form action="/projects/upload/" method="POST" enctype="multipart/form-data" class="dropzone" id="drop">
+                                            {% csrf_token %}
+                                            <div class="fallback">
+                                                <input name="document" type="file" multiple />
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <script>
+                                        Dropzone.options.drop = { // camelized version of the `id`
+                                            paramName: "document", // The name that will be used to transfer the file
+                                            maxFilesize: 2, // MB
+                                        };
+                                    </script>
+                                    <!-- END DROPZONE -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END ACCORDIAN ITEM 1 -->
+                        
+                        
+                        
+                    </div>
+                    <!-- END ACCORDIAN -->
+                       
+                </div>
+            </div>
+            <!-- OFFCANVAS END-->
+            
+            <!-- TABS START -->
+            <!-- TAB BUTTONS -->
+            <ul class="nav nav-pills" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-bold" id="dataframe-tab" data-bs-toggle="pill" 
+                            data-bs-target="#dataframe" role="tab" aria-controls="dataframe" aria-selected="true">
+                        Data: {{file.document}}
+                    </button>
+                </li>
+                
+                {% for v in vizs %}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold" id="viz-{{v.pk}}-tab" data-bs-toggle="pill" 
+                            data-bs-target="#viz-{{v.pk}}" role="tab" aria-controls="viz-{{v.pk}}" aria-selected="false">{{v.title}}</button>
+                </li>    
+                {% endfor %}
+                
+                <li class="nav-item dropdown fw-bold">
+                    <a class="nav-link dropdown-toggle" id="tab-dropdown" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">New</a>
+                    <ul class="dropdown-menu">
+                        {% for viz in viz_types %}
+                            <li><a class="dropdown-item" unicorn:click="addViz('{{viz}}')" href="#">{{viz}}</a></li>
+                        {% endfor %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Copy viz 1</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- TAB CONTENT -->
+            <div class="tab-content" id="myTabContent">
+                <!-- TAB DF CONTENT -->
+                <div class="tab-pane fade show active" id="dataframe" role="tabpanel" aria-labelledby="dataframe-tab">{% unicorn 'dataframe' datatable=data %}</div>
+                {% for v in vizs %}
+                <!-- TAB {{ forloop.counter }} CONTENT -->
+                <div class="tab-pane fade" id="viz-{{v.pk}}" role="tabpanel" aria-labelledby="viz-{{v.pk}}-tab">
+                    {% unicorn 'viz' viz=v datatable=data key=v.pk %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- CONTAINER END -->
+
+        <script type="application/javascript">
+            window.addEventListener("DOMContentLoaded", (event) => {
+            // only on page load
+            //alert('DOM content loaded');
+            //console.log('DOM content loaded');
+            //var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+            //var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+            //  return new bootstrap.Dropdown(dropdownToggleEl);
+            //});
+            //call_functions();
+            //var arr = document.getElementsByClassName("youVizOnLoad");
+            //for (var n = 0; n < arr.length; n++) {
+            //    eval(arr[n].innerHTML);
+            //}
+            });
+        window.addEventListener("DOMContentLoaded", (event) => {
+            Unicorn.addEventListener("updated", (component) =>{
+                //alert('unicorn update');
+                //console.log('unicorn updated');
+                //var offcanvasElementList = [].slice.call(document.querySelectorAll('.offcanvas'));
+                //var offcanvasList = offcanvasElementList.map(function (offcanvasEl) {
+                //  return new bootstrap.Offcanvas(offcanvasEl);
+                //});
+                //console.log(component.name); // Testing to see if it works
+                //Object.keys(bsdd).forEach((prop)=> console.log(prop));
+                //console.log(bsdd);
+                
+                // START KEEP
+                
+                // load vizs
+                var arr = document.getElementsByClassName("youVizOnUpdate"); // only refreshed viz/s
+                for (var n = 0; n < arr.length; n++) {
+                    eval(arr[n].innerHTML); // run script
+                    //arr[n].classList.remove("youVizOnUpdate");// remove 'toBeUpdated' class 
+                }
+                
+                var testOffCanvas = document.getElementById("OFFCANVAS");
+                var bsoc = bootstrap.Offcanvas.getOrCreateInstance(testOffCanvas);
+                bsoc.hide();
+                
+                var testDropdown = document.getElementById("tab-dropdown");
+                var bsdd = bootstrap.Dropdown.getOrCreateInstance(testDropdown);
+                bsdd.dispose();
+                var bsdd = bootstrap.Dropdown.getOrCreateInstance(testDropdown);
+                
+                var myDropzone = Dropzone.forElement("#drop");
+                myDropzone.destroy();
+                var myDropzone = new Dropzone("#drop");
+                
+                //END KEEP
+                
+                //console.log(bsoc);
+                //var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+                //var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+                //  return new bootstrap.Dropdown(dropdownToggleEl);
+                //});
+                //alert('unicorn updated');
+                //var plotBox = document.getElementById("plotBox-50");
+                //var plotScript = plotBox.children[0].children[3];
+                //plotBox.children[0].removeChild(plotScript);
+                //alert('removed script from 50');
+                //plotBox.children[0].appendChild(plotScript);
+                //alert('appended script to 50');
+                //call_functions(); 
+            });
+        });
+        </script>
+    </div>
+    <!-- UNICORN END -->
+</body>
+{% endblock %}

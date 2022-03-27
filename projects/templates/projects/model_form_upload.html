@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+<body>
+      
+<div class="container mt-3">
+    <h1>Upload file</h1>
+    <form action="/projects/upload/" method="POST" enctype="multipart/form-data" class="dropzone" id="drop">
+    {% csrf_token %}
+    <div class="fallback">
+      <input name="document" type="file" multiple />
+    </div>
+    </form>
+</div>
+
+      <script>
+      Dropzone.options.drop = { // camelized version of the `id`
+        paramName: "document", // The name that will be used to transfer the file
+        maxFilesize: 2, // MB
+      };
+    </script>
+      
+</body>
+{% endblock %}

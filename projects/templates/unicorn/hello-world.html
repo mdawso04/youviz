@@ -1,0 +1,19 @@
+<div>
+    <!-- put component code here -->
+    <!--<input unicorn:model="name" type="file" class="btn btn-primary" id="text" unicorn:key="someFancyKey"/><br /> -->
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Upload</span>
+        </div>
+        <div class="custom-file">
+            <input unicorn:model="name" unicorn:key="someFancyKey" type="file" class="custom-file-input" id="inputGroupFile01">
+            <label class="custom-file-label" for="inputGroupFile01">{{ name|title }}</label>
+        </div>
+    </div>
+    <div>
+        {{test}}
+    </div>
+    <div>
+        {{file_data}}
+    </div>
+</div>
