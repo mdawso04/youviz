@@ -23,7 +23,6 @@ urlpatterns = [
     #path('accounts/', include('django.contrib.auth.urls')), # new
     #path('accounts/login/', views.login, name='login')
     path("projects/", include("projects.urls")),
-    path("blog/", include("blog.urls")),
     path("unicorn/", include("django_unicorn.urls")),
 ] 
 

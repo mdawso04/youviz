@@ -10,6 +10,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.io as pio
 import os
+import pp
 
 from django.shortcuts import render,redirect
 from django.urls import reverse
@@ -24,6 +25,7 @@ class AppView(UnicornView):
     files = File.objects.none()
     file: File = None
     vizs = Viz.objects.none()
+    viz_edit: dict = {}
     data: dict = {}
     viz_types = [
         'Histogram',
@@ -60,6 +62,8 @@ class AppView(UnicornView):
                 filepath= os.path.join(str(settings.MEDIA_ROOT), str(self.file.document))
                 self.data = pd.read_csv(filepath).iloc[0:15, 0:15].to_dict(orient='tight')
                 self.vizs = Viz.objects.filter(file=self.file).all().order_by('-id')
+                for v in self.vizs:
+                    self.viz_edit[str(v.pk)] = False
             else:
                 self.files = File.objects.none()
                 self.file = None
@@ -82,10 +86,10 @@ class AppView(UnicornView):
                 child.resetBT()
         print("setfile")
         '''
-        
     def addViz(self, viz_type):
         print("addViz")
-        df = self.df()
+        #df = self.df()
+        '''
         json = dict(
             viz_type=viz_type, 
             viz_params=dict(),
@@ -93,6 +97,12 @@ class AppView(UnicornView):
             y=None,
             color=None
         )
+        '''
+        filepath= os.path.join(str(settings.MEDIA_ROOT), str(self.file.document))
+        a = pp.App()
+        a.add('READ_CSV', {'src': filepath})
+        a.add('VIZ_HIST', {'x': 'Age'})
+        json = a.todos
         v = Viz(file=self.file, title=viz_type, json=json)
         v.save()
         self.load_table()
@@ -127,6 +137,10 @@ class AppView(UnicornView):
     
     def updated(self, name, value):
         print('app updated ' + name)
+        
+        if name.startswith('vizs'):
+            for k in viz_edit.keys():
+                viz_edit[k] = False
     
     def calling(self, name, args):
         print('app calling ' + name)

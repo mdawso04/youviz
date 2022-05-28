@@ -39,7 +39,7 @@
         <!-- MAIN CONTAINER -->
         <div class="container py-3">
             <!-- OFFCANVAS START --> 
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="OFFCANVAS" aria-labelledby="offcanvasExampleLabel">
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="OFFCANVAS" aria-labelledby="offcanvasExampleLabel">
                 <!-- HEADER -->
                 <div class="offcanvas-header">
                     <h5 class="offcanvas-title" id="offcanvasExampleLabel">File Select & Upload</h5>
@@ -162,20 +162,21 @@
             <!-- TABS START -->
             <!-- TAB BUTTONS -->
             <ul class="nav nav-pills" id="myTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active fw-bold" id="dataframe-tab" data-bs-toggle="pill" 
-                            data-bs-target="#dataframe" role="tab" aria-controls="dataframe" aria-selected="true">
-                        Data: {{file.document}}
-                    </button>
-                </li>
-                
                 {% for v in vizs %}
+                {% with vpk=v.pk %}
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-bold" id="viz-{{v.pk}}-tab" data-bs-toggle="pill" 
-                            data-bs-target="#viz-{{v.pk}}" role="tab" aria-controls="viz-{{v.pk}}" aria-selected="false">{{v.title}}</button>
-                </li>    
+                    {% if viz_edit.vpk %}
+                    <input type="text" unicorn:model.lazy="v.title" />
+                    {% else %}
+                    <button class="nav-link active fw-bold" id="viz-{{vpk}}-tab" 
+                            unicorn:dblclick="$toggle('viz_edit.{{vpk}}')"
+                            data-bs-toggle="pill" 
+                            data-bs-target="#viz-{{vpk}}" role="tab" aria-controls="viz-{{vpk}}" 
+                            aria-selected="true">{{v.title}}</button>
+                    {% endif %}
+                </li> 
+                {% endwith %}
                 {% endfor %}
-                
                 <li class="nav-item dropdown fw-bold">
                     <a class="nav-link dropdown-toggle" id="tab-dropdown" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">New</a>
                     <ul class="dropdown-menu">
@@ -186,17 +187,25 @@
                             <li><a class="dropdown-item" href="#">Copy viz 1</a></li>
                     </ul>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold" id="dataframe-tab" data-bs-toggle="pill" 
+                            data-bs-target="#dataframe" role="tab" aria-controls="dataframe" aria-selected="false">
+                        Data
+                    </button>
+                </li>
             </ul>
             <!-- TAB CONTENT -->
             <div class="tab-content" id="myTabContent">
-                <!-- TAB DF CONTENT -->
-                <div class="tab-pane fade show active" id="dataframe" role="tabpanel" aria-labelledby="dataframe-tab">{% unicorn 'dataframe' datatable=data %}</div>
                 {% for v in vizs %}
                 <!-- TAB {{ forloop.counter }} CONTENT -->
-                <div class="tab-pane fade" id="viz-{{v.pk}}" role="tabpanel" aria-labelledby="viz-{{v.pk}}-tab">
+                <div class="tab-pane fade show active" id="viz-{{v.pk}}" role="tabpanel" aria-labelledby="viz-{{v.pk}}-tab">
                     {% unicorn 'viz' viz=v datatable=data key=v.pk %}
                 </div>
                 {% endfor %}
+                <!-- TAB DF CONTENT -->
+                <div class="tab-pane fade" id="dataframe" role="tabpanel" aria-labelledby="dataframe-tab">
+                    {% unicorn 'dataframe' datatable=data %}
+                </div>
             </div>
         </div>
         <!-- CONTAINER END -->

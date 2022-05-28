@@ -1,6 +1,6 @@
 <div>
     <!-- PLOT -->
-    <div id="outerOuterPlotBox-{{viz.pk}}" class="sticky-top" style="z-index: 1005">
+    <div id="outerOuterPlotBox-{{viz.pk}}" class="sticky-top" style="z-index: 995">
         <div id="outerPlotBox-{{viz.pk}}">
             <div id="plotBox-{{viz.pk}}">
             </div>
@@ -64,24 +64,24 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link active fw-bold" id="comment-tab-{{viz.pk}}" data-bs-toggle="pill" 
                     data-bs-target="#comment-pane-{{viz.pk}}" role="tab" aria-controls="comment-pane" aria-selected="true">
-                Comments
+                Memo
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link fw-bold" id="viz-settings-tab-{{viz.pk}}" data-bs-toggle="pill" 
                     data-bs-target="#viz-settings-pane-{{viz.pk}}" role="tab" aria-controls="viz-settings-pane" aria-selected="false">
-                Viz settings
+                Settings
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link fw-bold" id="advanced-settings-tab-{{viz.pk}}" data-bs-toggle="pill" 
                     data-bs-target="#advanced-settings-pane-{{viz.pk}}" role="tab" aria-controls="advanced-settings-pane" aria-selected="false">
-                Advanced
+                More
             </button>
         </li>  
     </ul>
     <!-- TAB CONTENT -->
-    <div class="tab-content mt-2" id="myTabContent-{{viz.pk}}">
+    <div class="tab-content mt-2" id="myTabContent-{{viz.pk}}" unicorn:key="myTabContent-{{viz.pk}}">
         <!-- TAB COMMENT CONTENT -->
         <div class="tab-pane fade show active" id="comment-pane-{{viz.pk}}" role="tabpanel" aria-labelledby="comment-tab-{{viz.pk}}">
             
@@ -94,33 +94,55 @@
             
         </div>
         <!-- TAB VIZ SETTINGS CONTENT -->
-        <div class="tab-pane fade" id="viz-settings-pane-{{viz.pk}}" role="tabpanel" aria-labelledby="viz-settings-tab-{{viz.pk}}">
-            
+        <div class="tab-pane fade" id="viz-settings-pane-{{viz.pk}}" unicorn:key=viz-settings-pane-{{viz.pk}} 
+             role="tabpanel" aria-labelledby="viz-settings-tab-{{viz.pk}}">
+                    
             <!-- SETTINGS -->
-            <div class="row g-2" unicorn:key="setting-row-{{viz.pk}}">
-                {% for key, value in viz.json.items %}
-                <div class="col-md">
+            <div class="row g-2" unicorn:key="setting-row-01-{{viz.pk}}">
+                <div class="col-md-2">
                     <!-- SELECT {{forloop.counter}} -->
                     <div class="form-floating">
-                        <select class="form-select" unicorn:model="viz.json.{{key}}" unicorn:partial.id="outerPlotBox-{{viz.pk}}"
-                                unicorn:partial.key="data{{key|title}}Select{{viz.pk}}" unicorn:key="data{{key|title}}Select{{viz.pk}}" 
-                                id="data{{key|title}}Select{{viz.pk}}" aria-label="{{key|title}} Select">
-                            <option {% if value is None %}selected {% endif %}>Select field</option>
-                            {% if key == 'viz_type' %}
-                                {% for t in viz_types %}
-                                <option {% if value == t %}selected {% endif %}value="{{t}}">{{t}}</option>
-                                {% endfor %}
-                            {% else %}
-                                {% for c in columns %}
-                                <option {% if value == c %}selected {% endif %}value="{{c}}">{{c}}</option>
-                                {% endfor %}
-                            {% endif %}
+                        <input type="text" class="form-control" unicorn:model.lazy="viz_settings.name" 
+                               id="vizNameText{{viz.pk}}" unicorn:key="vizNameText{{viz.pk}}"
+                               unicorn:partial.id="vizNameText{{viz.pk}}" unicorn:partial.key="vizNameText{{viz.pk}}"
+                               aria-label="Viz Name">
+                        <label for="vizNameText{{viz.pk}}">Viz Name</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <!-- SELECT {{forloop.counter}} -->
+                    <div class="form-floating">
+                        <select class="form-select" unicorn:model="viz_settings.service.saved" 
+                                id="vizServiceSelect{{viz.pk}}" unicorn:key="vizServiceSelect{{viz.pk}}" 
+                                unicorn:partial.id="outerPlotBox-{{viz.pk}}" unicorn:partial.key="setting-row-01-{{viz.pk}}"
+                                aria-label="Viz Service Select">
+                            <option value="None" {% if viz_settings.service.saved == 'None' %} selected{% endif %}>Select viz</option>
+                            {% for v in viz_settings.service.available.viz %}
+                                <option {% if v == viz_settings.service.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="vizServiceSelect{{viz.pk}}">Viz Type</label>
+                    </div>
+                </div>  
+             
+                {% for key, value in viz_settings.options.items %}
+                <div class="col-md-2">
+                    <!-- SELECT {{forloop.counter}} -->
+                    <div class="form-floating">
+                        <select class="form-select" unicorn:model="viz_settings.options.{{key}}.saved" 
+                                id="data{{key|title}}Select{{viz.pk}}" unicorn:key="data{{key|title}}Select{{viz.pk}}" 
+                                unicorn:partial.id="outerPlotBox-{{viz.pk}}" unicorn:partial.key="data{{key|title}}Select{{viz.pk}}"
+                                aria-label="{{key|title}} Select">
+                            <option value="None" {% if value.saved == 'None' %} selected{% endif %}>Select field</option>
+                            {% for v in value.available %}
+                                <option {% if v == value.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
+                            {% endfor %}
                         </select>
                         <label for="data{{key|title}}Select{{viz.pk}}">{{key|title}} Field</label>
                     </div>
                 </div>
                 {% endfor %}
-                <div class="col-md">
+                <div class="col-md-4">
                     <!-- SWITCH 1 -->
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault{{viz.pk}}">

@@ -34,9 +34,9 @@ class DataframeView(UnicornView):
         return self.datatable['data'] if self.datatable else None
     
     def setData(self, data):
-        print('df setData')
+        #print('df setData')
         self.datatable = data
-        print(self.datatable)
+        #print(self.datatable)
     
     '''
     def data(self):
@@ -44,34 +44,43 @@ class DataframeView(UnicornView):
         return self.datatable
     '''
     def mount(self):
-        print('df mount')
+        pass
+        #print('df mount')
         #self.call('testFunction', 'dataframe mount')
     
     def hydrate(self):
-        print('df hydrate')
+        pass
+        #print('df hydrate')
         #self.call('testFunction', 'dataframe hydrate')
     
     def updating(self, name, value):
-        print('df updating ' + name)
+        pass
+        #print('df updating ' + name)
     
     def updated(self, name, value):
-        print('df updated ' + name)
+        pass
+        #print('df updated ' + name)
     
     def calling(self, name, args):
-        print('df calling ' + name)
+        pass
+        #print('df calling ' + name)
     
     def called(self, name, args):
-        print('df called ' + name)
+        pass
+        #print('df called ' + name)
     
     def complete(self):
-        print('df complete')
+        pass
+        #print('df complete')
         #self.call('btr')
 
     def rendered(self, html):
+        pass
         #self.call('btr')
-        print('df rendered')
-        print(self.datatable)
+        #print('df rendered')
+        #print(self.datatable)
    
     def parent_rendered(self, html):
-        print('df parent_rendered')
+        pass
+        #print('df parent_rendered')
         #self.call('testFunction', 'dataframe parent_rendered') 
