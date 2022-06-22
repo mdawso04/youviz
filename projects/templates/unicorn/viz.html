@@ -1,8 +1,10 @@
 <div>
     <!-- PLOT -->
-    <div id="outerOuterPlotBox-{{viz.pk}}" class="sticky-top" style="z-index: 995">
-        <div id="outerPlotBox-{{viz.pk}}">
-            <div id="plotBox-{{viz.pk}}">
+    {% with vids=viz.pk|stringformat:"s" %}
+    {% with vid='viz-'|add:vids %}
+    <div id="outerOuterPlotBox-{{vid}}" class="sticky-top" style="z-index: 995">
+        <div id="outerPlotBox-{{vid}}">
+            <div id="plotBox-{{vid}}">
             </div>
             <script src="https://cdn.plot.ly/plotly-2.8.3.min.js"></script>
             <script class="youVizOnLoad youVizOnUpdate" type="application/javascript">
@@ -10,39 +12,39 @@
                  var data = JSON.parse('{{plot_data|safe}}');
                  var layout = JSON.parse('{{plot_layout|safe}}');
                  //var config = {responsive: true};
-                 Plotly.react("plotBox-{{viz.pk}}", data, layout);
+                 Plotly.react("plotBox-{{vid}}", data, layout);
 
                  /*
-                 resizeTarget = document.getElementById("plotBox-{{viz.pk}}");
+                 resizeTarget = document.getElementById("plotBox-{{vid}}");
                  var update = {
                     width: resizeTarget.clientWidth,
                     height: resizeTarget.clientHeight
                  };
                  alert(update.width);
-                 Plotly.relayout("plotBox-{{viz.pk}}", update);
+                 Plotly.relayout("plotBox-{{vid}}", update);
                  */
                  window.addEventListener("resize", (event) => {
-                     resizeTarget = document.getElementById("plotBox-{{viz.pk}}");
+                     resizeTarget = document.getElementById("plotBox-{{vid}}");
                      if (window.getComputedStyle(resizeTarget).display !== "none") {
                          var update = {
                             width: resizeTarget.clientWidth,
                             height: resizeTarget.clientHeight
                          };
-                         Plotly.relayout("plotBox-{{viz.pk}}", update);
+                         Plotly.relayout("plotBox-{{vid}}", update);
                      }
                  });
-                 var tabEl = document.querySelector('button[id="viz-{{viz.pk}}-tab"]')
+                 var tabEl = document.querySelector('button[id="{{vid}}-tab"]')
                  console.log("query selector: " + tabEl.id);
                  tabEl.addEventListener('shown.bs.tab', function (event) {
                      console.log("shown event: "+ event.target.id);
-                     if (event.target.id === "viz-{{viz.pk}}-tab") { // newly activated tab
+                     if (event.target.id === "{{vid}}-tab") { // newly activated tab
                          //event.relatedTarget // previous active tab
-                         resizeTarget = document.getElementById("plotBox-{{viz.pk}}");
+                         resizeTarget = document.getElementById("plotBox-{{vid}}");
                          var update = {
                             width: resizeTarget.clientWidth,
                             height: resizeTarget.clientHeight
                          };
-                         Plotly.relayout("plotBox-{{viz.pk}}", update);
+                         Plotly.relayout("plotBox-{{vid}}", update);
                          console.log("shown event: "+event.target.id);
                      }
                  })
@@ -60,98 +62,100 @@
     
     <!-- TABS START -->
     <!-- TAB BUTTONS -->
-    <ul class="nav nav-pills" id="myTab-{{viz.pk}}" role="tablist">
+    <ul class="nav nav-pills" id="myTab-{{vid}}" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active fw-bold" id="comment-tab-{{viz.pk}}" data-bs-toggle="pill" 
-                    data-bs-target="#comment-pane-{{viz.pk}}" role="tab" aria-controls="comment-pane" aria-selected="true">
+            <button class="nav-link active fw-bold" id="comment-tab-{{vid}}" data-bs-toggle="pill" 
+                    data-bs-target="#comment-pane-{{vid}}" role="tab" aria-controls="comment-pane" aria-selected="true">
                 Memo
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link fw-bold" id="viz-settings-tab-{{viz.pk}}" data-bs-toggle="pill" 
-                    data-bs-target="#viz-settings-pane-{{viz.pk}}" role="tab" aria-controls="viz-settings-pane" aria-selected="false">
+            <button class="nav-link fw-bold" id="viz-settings-tab-{{vid}}" data-bs-toggle="pill" 
+                    data-bs-target="#viz-settings-pane-{{vid}}" role="tab" aria-controls="viz-settings-pane" aria-selected="false">
                 Settings
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link fw-bold" id="advanced-settings-tab-{{viz.pk}}" data-bs-toggle="pill" 
-                    data-bs-target="#advanced-settings-pane-{{viz.pk}}" role="tab" aria-controls="advanced-settings-pane" aria-selected="false">
+            <button class="nav-link fw-bold" id="advanced-settings-tab-{{vid}}" data-bs-toggle="pill" 
+                    data-bs-target="#advanced-settings-pane-{{vid}}" role="tab" aria-controls="advanced-settings-pane" aria-selected="false">
                 More
             </button>
         </li>  
     </ul>
     <!-- TAB CONTENT -->
-    <div class="tab-content mt-2" id="myTabContent-{{viz.pk}}" unicorn:key="myTabContent-{{viz.pk}}">
+    <div class="tab-content mt-2" id="myTabContent-{{vid}}" unicorn:key="myTabContent-{{vid}}">
         <!-- TAB COMMENT CONTENT -->
-        <div class="tab-pane fade show active" id="comment-pane-{{viz.pk}}" role="tabpanel" aria-labelledby="comment-tab-{{viz.pk}}">
+        <div class="tab-pane fade show active" id="comment-pane-{{vid}}" role="tabpanel" aria-labelledby="comment-tab-{{vid}}">
             
             <!-- MEMO FORM -->
             <div class="form-floating">
-                <textarea unicorn:model.lazy="viz.comment" unicorn:partial="floatingTextarea2{{viz.pk}}" id="floatingTextarea2{{viz.pk}}" 
-                          class="form-control" placeholder="Leave a comment here" style="height: 100px"></textarea>
-                <label for="floatingTextarea2{{viz.pk}}">Comments</label>
+                <textarea unicorn:model.lazy="viz.comment" unicorn:partial="floatingTextarea2{{vid}}" id="floatingTextarea2{{vid}}" 
+                          class="form-control" placeholder="Leave a memo here" style="height: 100px"></textarea>
+                <label for="floatingTextarea2{{vid}}">Memo</label>
             </div>
             
         </div>
         <!-- TAB VIZ SETTINGS CONTENT -->
-        <div class="tab-pane fade" id="viz-settings-pane-{{viz.pk}}" unicorn:key=viz-settings-pane-{{viz.pk}} 
-             role="tabpanel" aria-labelledby="viz-settings-tab-{{viz.pk}}">
-                    
+        <div class="tab-pane fade" id="viz-settings-pane-{{vid}}" unicorn:key=viz-settings-pane-{{vid}} 
+             role="tabpanel" aria-labelledby="viz-settings-tab-{{vid}}">
             <!-- SETTINGS -->
-            <div class="row g-2" unicorn:key="setting-row-01-{{viz.pk}}">
-                <div class="col-md-2">
+            <div class="row g-2" unicorn:key="setting-row-01-{{vid}}">
+                <div class="col-lg-2">
                     <!-- SELECT {{forloop.counter}} -->
                     <div class="form-floating">
-                        <input type="text" class="form-control" unicorn:model.lazy="viz_settings.name" 
-                               id="vizNameText{{viz.pk}}" unicorn:key="vizNameText{{viz.pk}}"
-                               unicorn:partial.id="vizNameText{{viz.pk}}" unicorn:partial.key="vizNameText{{viz.pk}}"
+                        <input type="text" class="form-control" 
+                               unicorn:model.lazy="viz.title"
+                               id="vizNameText{{vid}}" unicorn:key="vizNameText{{vid}}"
+                               {% comment %} unicorn:partial.id="{{vid}}-tab" 
+                               unicorn:partial.key="vizNameText{{vid}}" {% endcomment %} 
+                               {% comment %} unicorn:blur="caller('tabUpdate', $event.target.value.trim())" {% endcomment %} 
                                aria-label="Viz Name">
-                        <label for="vizNameText{{viz.pk}}">Viz Name</label>
+                        <label for="vizNameText{{vid}}">Viz Name</label>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-lg-2">
                     <!-- SELECT {{forloop.counter}} -->
                     <div class="form-floating">
                         <select class="form-select" unicorn:model="viz_settings.service.saved" 
-                                id="vizServiceSelect{{viz.pk}}" unicorn:key="vizServiceSelect{{viz.pk}}" 
-                                unicorn:partial.id="outerPlotBox-{{viz.pk}}" unicorn:partial.key="setting-row-01-{{viz.pk}}"
+                                id="vizServiceSelect{{vid}}" unicorn:key="vizServiceSelect{{vid}}" 
+                                unicorn:partial.id="outerPlotBox-{{vid}}" unicorn:partial.key="setting-row-01-{{vid}}"
                                 aria-label="Viz Service Select">
                             <option value="None" {% if viz_settings.service.saved == 'None' %} selected{% endif %}>Select viz</option>
                             {% for v in viz_settings.service.available.viz %}
                                 <option {% if v == viz_settings.service.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
                             {% endfor %}
                         </select>
-                        <label for="vizServiceSelect{{viz.pk}}">Viz Type</label>
+                        <label for="vizServiceSelect{{vid}}">Viz Type</label>
                     </div>
                 </div>  
              
                 {% for key, value in viz_settings.options.items %}
-                <div class="col-md-2">
+                <div class="col-lg-2">
                     <!-- SELECT {{forloop.counter}} -->
                     <div class="form-floating">
                         <select class="form-select" unicorn:model="viz_settings.options.{{key}}.saved" 
-                                id="data{{key|title}}Select{{viz.pk}}" unicorn:key="data{{key|title}}Select{{viz.pk}}" 
-                                unicorn:partial.id="outerPlotBox-{{viz.pk}}" unicorn:partial.key="data{{key|title}}Select{{viz.pk}}"
+                                id="data{{key|title}}Select{{vid}}" unicorn:key="data{{key|title}}Select{{vid}}" 
+                                unicorn:partial.id="outerPlotBox-{{vid}}" unicorn:partial.key="data{{key|title}}Select{{vid}}"
                                 aria-label="{{key|title}} Select">
                             <option value="None" {% if value.saved == 'None' %} selected{% endif %}>Select field</option>
                             {% for v in value.available %}
                                 <option {% if v == value.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
                             {% endfor %}
                         </select>
-                        <label for="data{{key|title}}Select{{viz.pk}}">{{key|title}} Field</label>
+                        <label for="data{{key|title}}Select{{vid}}">{{key|title}} Field</label>
                     </div>
                 </div>
                 {% endfor %}
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <!-- SWITCH 1 -->
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault{{viz.pk}}">
-                        <label class="form-check-label" for="flexSwitchCheckDefault{{viz.pk}}">Exclude missing data</label>
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault{{vid}}">
+                        <label class="form-check-label" for="flexSwitchCheckDefault{{vid}}">Exclude missing data</label>
                     </div>
                     <!-- SWITCH 2 -->
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked{{viz.pk}}" checked>
-                        <label class="form-check-label" for="flexSwitchCheckChecked{{viz.pk}}">Show legend</label>
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked{{vid}}" checked>
+                        <label class="form-check-label" for="flexSwitchCheckChecked{{vid}}">Show legend</label>
                     </div>
                 </div>
             </div>
@@ -162,15 +166,26 @@
         </div>
         
         <!-- TAB ADVANCED SETTINGS CONTENT -->
-        <div class="tab-pane fade" id="advanced-settings-pane-{{viz.pk}}" role="tabpanel" aria-labelledby="advanced-settings-tab-{{viz.pk}}">
-            Nothing yet
+        <div class="tab-pane fade" id="advanced-settings-pane-{{vid}}" role="tabpanel" aria-labelledby="advanced-settings-tab-{{vid}}">
+            
+            <div class="row g-2" unicorn:key="more-row-01-{{vid}}">
+                <div class="col-lg-2">
+                    <!-- SELECT {{forloop.counter}} -->
+                    <button type="button" class="btn btn-danger btn-sm"
+                        id="vizDeleteButton{{vid}}" unicorn:key="vizDeleteButton{{vid}}"
+                        {% comment %} unicorn:partial.id="{{vid}}-tab" unicorn:partial.key="vizNameText{{vid}}" {% endcomment %}
+                        unicorn:click="delete()"
+                        aria-label="Viz Name">
+                            Delete viz
+                    </button>
+                    </div>
+                </div>
+            </div>
+            
         </div>
         
     </div>
     
-    
-    
-    
-    
-    
+    {% endwith %}
+    {% endwith %}
 </div>

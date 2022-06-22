@@ -1,14 +1,14 @@
+# django/unicorn/project
 from django_unicorn.components import UnicornView
 from django import forms
-
-#from django.conf import settings
-
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-
 from django.shortcuts import render,redirect
 from django.urls import reverse
 
+# pp
+import pp
+from pp.log import logger
 
 class LoginView(UnicornView):
     #form_class = HelloWorldForm
@@ -25,52 +25,69 @@ class LoginView(UnicornView):
     
     
     def login(self):
-        print('login login')
+        #logger.debug('LoginView > login start')
         user = authenticate(username=self.username,password=self.password)
         if user:
             if user.is_active:
                 login(self.request, user)
+                logger.debug('LoginView > login end')
                 return redirect('app')
         else:
             messages.error(self.request,'username or password not correct')
             
     def logout(self):
-        print('login logout')
+        #logger.debug('LoginView > logout start')
         if self.request:
             logout(self.request)
+            logger.debug('LoginView > logout end')
             return redirect('app')
         
     def cancel(self):
         pass
     
     def mount(self):
-        print('login mount')
+        pass
+        #logger.debug('LoginView > mount start')
+        #logger.debug('LoginView > mount end')
         #self.call('testFunction', 'dataframe mount')
     
     def hydrate(self):
-        print('login hydrate')
+        pass
+        #logger.debug('LoginView > hydrate start')
+        #logger.debug('LoginView > hydrate end')
         #self.call('testFunction', 'dataframe hydrate')
     
     def updating(self, name, value):
-        print('login updating ' + name)
-    
+        pass
+        #logger.debug('LoginView > updating start')
+        #logger.debug('LoginView > updating end')
+        
     def updated(self, name, value):
-        print('login updated ' + name)
-    
+        pass
+        #logger.debug('LoginView > updated start')
+        #logger.debug('LoginView > updated end')
+        
     def calling(self, name, args):
-        print('login calling ' + name)
-    
+        pass
+        #logger.debug('LoginView > calling start')
+        #logger.debug('LoginView > calling end')
+        
     def called(self, name, args):
-        print('login called ' + name)
-    
+        pass
+        #logger.debug('LoginView > called start')
+        #logger.debug('LoginView > called end')
+        
     def complete(self):
-        print('login complete')
+        #logger.debug('LoginView > complete start')
+        logger.debug('LoginView > complete end')
         #self.call('btr')
 
     def rendered(self, html):
         #self.call('btr')
-        print('login rendered')
-   
+        #logger.debug('LoginView > rendered start')
+        logger.debug('LoginView > rendered end')
+        
     def parent_rendered(self, html):
-        print('login parent_rendered')
+        #logger.debug('LoginView > parent_rendered start')
+        logger.debug('LoginView > parent_rendered end')
         #self.call('testFunction', 'dataframe parent_rendered') 

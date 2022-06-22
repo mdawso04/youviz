@@ -1,10 +1,6 @@
-{% extends "base.html" %}
-{% load static %}
 {% load unicorn %} 
-{% block page_content %}
-<body>
-    <!-- UNICORN START -->
-    <div class="container-fluid p-0" id="appTop" unicorn:view>
+<!-- UNICORN START -->
+    <div class="container-fluid p-0" id="appTop">
         <!-- APP REFRESH FUNCTION ARRAY -->
         
         
@@ -27,7 +23,7 @@
         <nav class="navbar navbar-dark bg-dark sticky-top">
           <div class="container-fluid d-flex">
                 <a class="navbar-brand me-auto" href="/projects/app">YouViz</a>
-                {% unicorn 'login' %}
+                {% unicorn 'login' parent=view %}
                 <button id="off-canvas-button" class="navbar-toggler d-block" type="button" data-bs-toggle="offcanvas" 
                         data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
                     <span class="navbar-toggler-icon"></span>
@@ -42,7 +38,7 @@
             <div class="offcanvas offcanvas-end" tabindex="-1" id="OFFCANVAS" aria-labelledby="offcanvasExampleLabel">
                 <!-- HEADER -->
                 <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasExampleLabel">File Select & Upload</h5>
+                    <h5 class="offcanvas-title" id="offcanvasExampleLabel">Viz Data</h5>
                     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <!-- BODY -->
@@ -56,7 +52,7 @@
                             <h2 class="accordion-header" id="headingTwo">
                                 <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" 
                                         data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                                Select File
+                                Select
                                 </button>
                             </h2>
                             <!-- ACCORDIAN BODY -->
@@ -91,7 +87,7 @@
                             <h2 class="accordion-header" id="headingThree">
                                 <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" 
                                         data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
-                                Upload Remote File
+                                Get Remote
                                 </button>
                             </h2>
                             <!-- ACCORDIAN BODY -->
@@ -123,7 +119,7 @@
                             <h2 class="accordion-header" id="headingOne">
                                 <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" 
                                         data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                Upload Local File
+                                Upload Local
                                 </button>
                             </h2>
                             <!-- ACCORDIAN BODY -->
@@ -163,55 +159,73 @@
             <!-- TAB BUTTONS -->
             <ul class="nav nav-pills" id="myTab" role="tablist">
                 {% for v in vizs %}
-                {% with vpk=v.pk %}
+                {% with vids=v.pk|stringformat:"s" %}
+                {% with vid="viz-"|add:vids %}
                 <li class="nav-item" role="presentation">
-                    {% if viz_edit.vpk %}
-                    <input type="text" unicorn:model.lazy="v.title" />
-                    {% else %}
-                    <button class="nav-link active fw-bold" id="viz-{{vpk}}-tab" 
-                            unicorn:dblclick="$toggle('viz_edit.{{vpk}}')"
+                    <button class="nav-link {% if forloop.first %}active {% endif %}fw-bold" id="{{vid}}-tab" 
+                            {% comment %}unicorn:click="activeTab='{{vids}}'"{% endcomment %}
                             data-bs-toggle="pill" 
-                            data-bs-target="#viz-{{vpk}}" role="tab" aria-controls="viz-{{vpk}}" 
+                            data-bs-target="#{{vid}}" role="tab" aria-controls="{{vid}}" 
                             aria-selected="true">{{v.title}}</button>
-                    {% endif %}
                 </li> 
+                {% endwith %}
                 {% endwith %}
                 {% endfor %}
                 <li class="nav-item dropdown fw-bold">
-                    <a class="nav-link dropdown-toggle" id="tab-dropdown" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">New</a>
+                    <a class="nav-link dropdown-toggle" id="tab-add-dropdown" data-bs-toggle="dropdown" href="#" 
+                       role="button" aria-expanded="false">New</a>
                     <ul class="dropdown-menu">
-                        {% for viz in viz_types %}
-                            <li><a class="dropdown-item" unicorn:click="addViz('{{viz}}')" href="#">{{viz}}</a></li>
-                        {% endfor %}
+                        <li><a class="dropdown-item" unicorn:click="addViz()" href="#">Add</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Copy viz 1</a></li>
+                        {% for viz in vizs %}
+                            <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" href="#">Copy {{viz.title}}</a></li>
+                        {% endfor %}
                     </ul>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-bold" id="dataframe-tab" data-bs-toggle="pill" 
-                            data-bs-target="#dataframe" role="tab" aria-controls="dataframe" aria-selected="false">
+                    <button class="nav-link fw-bold" id="dataframe-tab" 
+                            {% comment %}unicorn:click="activeTab='dataframe'"{% endcomment %}
+                            {% comment %}data-bs-toggle="pill" data-bs-target="#dataframe"{% endcomment %}
+                            data-bs-toggle="modal" data-bs-target="#modalTable"
+                            role="tab" aria-controls="modaltable" aria-selected="false">
                         Data
                     </button>
                 </li>
+                
             </ul>
             <!-- TAB CONTENT -->
             <div class="tab-content" id="myTabContent">
                 {% for v in vizs %}
+                {% with vids=v.pk|stringformat:"s" %}
+                {% with vid="viz-"|add:vids %}
                 <!-- TAB {{ forloop.counter }} CONTENT -->
-                <div class="tab-pane fade show active" id="viz-{{v.pk}}" role="tabpanel" aria-labelledby="viz-{{v.pk}}-tab">
-                    {% unicorn 'viz' viz=v datatable=data key=v.pk %}
+                <div class="tab-pane fade show {% if forloop.first %}active{% endif %}" id="{{vid}}" role="tabpanel" aria-labelledby="{{vid}}-tab">
+                    {% unicorn 'viz' parent=view viz=v id=vid %}
+                {% endwith %}
+                {% endwith %}
                 </div>
                 {% endfor %}
                 <!-- TAB DF CONTENT -->
+                {% comment %}
                 <div class="tab-pane fade" id="dataframe" role="tabpanel" aria-labelledby="dataframe-tab">
-                    {% unicorn 'dataframe' datatable=data %}
+                    {% unicorn 'dataframe' parent=view file=file %}
                 </div>
+                {% endcomment %}
+                {% unicorn 'dataframe' parent=view file=file %}
             </div>
         </div>
         <!-- CONTAINER END -->
 
+        <script>
+            function elementUpdate(u) {
+                //var element = document.getElementById("viz-121-tab");
+                var element = document.getElementById(u[0]);
+                element.innerHTML = u[1]; 
+                alert(u);
+            }
+        </script>
         <script type="application/javascript">
-            window.addEventListener("DOMContentLoaded", (event) => {
+            //window.addEventListener("DOMContentLoaded", (event) => {
             // only on page load
             //alert('DOM content loaded');
             //console.log('DOM content loaded');
@@ -224,7 +238,15 @@
             //for (var n = 0; n < arr.length; n++) {
             //    eval(arr[n].innerHTML);
             //}
-            });
+            //});
+        
+        // run on page load
+        var loginModal = document.getElementById("staticBackdrop");
+        var datatableModal = document.getElementById("modalTable");
+        var body = document.getElementById("body");
+        body.appendChild(loginModal) 
+        body.appendChild(datatableModal) 
+            
         window.addEventListener("DOMContentLoaded", (event) => {
             Unicorn.addEventListener("updated", (component) =>{
                 //alert('unicorn update');
@@ -259,6 +281,12 @@
                 myDropzone.destroy();
                 var myDropzone = new Dropzone("#drop");
                 
+                var loginModal = document.getElementById("staticBackdrop");
+                var datatableModal = document.getElementById("modalTable");
+                var body = document.getElementById("body");
+                body.appendChild(loginModal) 
+                body.appendChild(datatableModal) 
+                
                 //END KEEP
                 
                 //console.log(bsoc);
@@ -278,6 +306,4 @@
         });
         </script>
     </div>
-    <!-- UNICORN END -->
-</body>
-{% endblock %}
+<!-- UNICORN END -->

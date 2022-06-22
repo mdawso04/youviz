@@ -1,262 +1,184 @@
+# django/unicorn/project
 from django_unicorn.components import UnicornView
+from django.utils.functional import cached_property
 from django import forms
-import pp
-
 from projects.models import Viz
+from projects.components.app import AppView
 
-#from django.conf import settings
+# pp
+import pp
+from pp.log import logger
 
+#python standard libraries
+import os
+import pprint
+
+#non-standard libraries
 import pandas as pd
 import plotly.express as px
 import plotly.io as pio
-import os
-
-TYPES = []
-TYPE_HISTOGRAM = 'histogram'
-TYPE_SCATTER = 'scatter'
-TYPES.extend([
-    TYPE_HISTOGRAM,
-    TYPE_SCATTER,
-])
-
-PARAMS_HISTOGRAM = {
-    'x': None,
-    'color':None,  
-}
-
-PARAMS_SCATTER = {
-    'x': None,
-    'Y': None,
-    'color':None,  
-}
-
-PARAMS = {
-    TYPE_HISTOGRAM: PARAMS_HISTOGRAM,
-    TYPE_SCATTER: PARAMS_SCATTER
-}
 
 class VizView(UnicornView):
-    #form_class = HelloWorldForm
-    #model = xxx
-    
-    #parent = None
-    #vizid = None
-    datatable: dict = {}
     viz: Viz = None
     viz_settings: dict = {}
-    '''
-    viz_types = [
-        'Histogram',
-        'Scatter',
-        'Line',
-        'Tree',
-        'Hist list'
-    ]
     
-    viz_params = {
-        'Histogram': {
-            'x': None,
-            'color':None,  
-        },
-        'Scatter': {
-            'x': None,
-            'y': None,
-            'color': None,
-            'size': None,
-        },
-    }
-    '''
+#LOAD/UPDATE START
+
     def mount(self):
-        #print('app mount')
+        #logger.debug('VizView > mount start')
         self.load_viz()
-        #self.call('testAppFunction', 'app mount')
+        #logger.debug('VizView > mount end')
     
     def load_viz(self):
-        print('viz load viz')
+        #logger.debug('VizView > load_viz start')
         a = pp.App(self.viz.json)
         self.viz_settings = a.data()
         for v in self.viz_settings['options'].values():
             if v['saved'] is None:
                 v['saved'] = 'None'
-    
-    def df(self):
-        return pd.DataFrame.from_dict(self.datatable, orient='tight') if self.datatable else None
-    
-    def toData(self, df):
-        self.datatable = df.to_dict(orient='tight')
+        #logger.debug('VizView > load_viz end')
         
-    def sort(self, col):
-        #self.df.sort_values(by=['col_1'])
-        #print(col)
-        #print(type(self.data))
-        df = self.df().sort_values(by=[col])
-        self.toData(df)
-    
-    def columns(self):
-        return self.datatable['columns'] if self.datatable else None
-    
-    def records(self):
-        return self.datatable['data'] if self.datatable else None 
-    
-    '''
-    def optionx(self):
-        #print('XXXXXXXXXXXX')
-        a = pp.App(self.viz.json)
-        todo = a.todos[-1]
-        service = todo['settings']['service']
-        return a.options(service)
-    
-    def cur_selection(self):
-        #a = pp.App(self.viz.json)
-        #todo = a.todos[-1]
-        #return todo['settings']['options']
-        return self.viz.json[-1]['settings']['options']
-    
-    def update_selection(self, k, v):
-        a = pp.App(self.viz.json)
-        todo = a.todos[-1]
-        todo['settings']['options'][k] = v
-        self.viz.json = a.todos
-        self.viz.save()
-    '''
-    def plot(self):
-        print('viz plot')
-        #print(self.json)
-        #df = self.df()
-        #if df is not None: 
-        #    fig = px.histogram(self.df(), x='Attrition', color='Department')
-        #    return pio.to_html(fig=fig, full_html=False, include_plotlyjs='cdn', include_mathjax=False)
-        #else:
-        #    return None
-        #print(self.viz.json)
-        '''
-        x = self.viz.json['x'] if self.viz.json['x'] else self.columns()[0]
-        y = self.viz.json['y'] if self.viz.json['y'] else self.columns()[0]
-        color = self.viz.json['color'] if self.viz.json['color'] else self.columns()[0]
-        
-        if self.viz.json['viz_type'] == 'Histogram':
-            #fig = px.histogram(self.df(), x=x, color=color)
-            fig = pp.VIZ_HIST(self.df(), x=x, color=color)
-            fig.update_layout(width=None, height=None,autosize=True, margin={'l': 0})
-        elif self.viz.json['viz_type'] == 'Scatter':
-            #fig = px.scatter(self.df(), x=x, y=y, color=color)
-            fig = pp.VIZ_SCATTER(self.df(), x=x, color=color)
-            fig.update_layout(width=None, height=None,autosize=True, margin={'l': 0})
-        else:
-            return 'Sorry, this is a ' + self.viz.json['viz_type']
-        print('viz plot end')
-        #print(fig)
-        #return pio.to_html(fig=fig, full_html=False, include_plotlyjs='cdn', include_mathjax=False)
-        
-        #fig = pio.from_json(self.viz.json)
-        #print('\n\n' +self.viz.json)
-        #return pio.to_html(fig=fig, full_html=False, include_plotlyjs='cdn', include_mathjax=False)
-        '''
-        a = pp.App(self.viz.json)
-        #todo = a.todos[-1]
-        print('***********')
-        fig = a.call(return_df=False)[0]
-        fig.update_layout(width=None, height=None,autosize=True, margin={'l': 0})
-        return pio.to_json(fig=fig, engine='json')
-    
-    def plot_data(self):
-        import json
-        p = self.plot()
-        #print('plot data')
-        #print(p)
-        try:
-            y = json.loads(p)
-        except:
-            print('JSON LOADS ERROR')
-            return None
-        else:
-            return json.dumps(y['data'])
-    
-    def plot_layout(self):
-        import json
-        p = self.plot()
-        try:
-            y = json.loads(p)
-        except:
-            print('JSON LOADS ERROR')
-            return None
-        else:
-            return json.dumps(y['layout'])
-    
-    # LIFECYCLE 
     def hydrate(self):
         pass
-        #print('viz hydrate')
+        #logger.debug('VizView > hydrate start')
         #self.call('testAppFunction', 'app hydrate')
+        #logger.debug('VizView > hydrate end')
         
     def updating(self, name, value):
         pass
-        #print('viz updating ' + name)
-    
+        
     def updated(self, name, value):
-        print('****viz updated****' + name)
+        #logger.debug('VizView > updated start')
         
         a = pp.App(self.viz.json)
         todo = a.todos[-1]
         if name == 'viz_settings.name':
-                todo['name'] = value
+            todo['name'] = value
+            self.viz.json = a.todos
+            self.viz.save()
+        elif name == 'viz.title':
+            #logger.debug('VizView > viz.title updated ("{}") start'.format(value))
+            todo['name'] = value
+            self.viz.json = a.todos
+            self.viz.save()
+            
+            id = 'viz-' + str(self.viz.pk) + '-tab'
+            self.call("elementUpdate", [id, value])
+            
+            #self.parent.load_table()
+            #if self.parent.switch:
+            #    self.parent.switch = False
+            #else:
+            #    self.parent.switch = True
+            #self.parent.vizs.all()
+            #logger.debug('VizView > viz.title updated end')
+            
         elif name == 'viz_settings.service.saved':
-                todo['service'] = value
-                # filter out unusable params
-                new_service_params = list(a.options(value, df=pd.DataFrame()).keys())
-                todo['options'] = {k: v for k, v in todo['options'].items() if k in new_service_params}
-                print('XXXXXX')
-                print(todo['options'])
-                self.load_viz()
+            todo['service'] = value
+            # filter out unusable params
+            new_service_params = list(a.options(value, df=pd.DataFrame()).keys())
+            todo['options'] = {k: v for k, v in todo['options'].items() if k in new_service_params}
+            self.load_viz()
+            self.viz.json = a.todos
+            self.viz.save()
         elif name.startswith('viz_settings.options'):
             if value == 'None':
                 value = None
             todo['options'][name.split('.')[2]] = value
             #new_service_params = list(a.options(todo['service']).keys())
             #todo['options'] = {k: v['saved'] for k, v in self.viz_settings['options'].items() if k in new_service_params}
-        self.viz.json = a.todos
-        self.viz.save()
-    
+            self.viz.json = a.todos
+            self.viz.save()
+        #logger.debug('VizView > updated end')
+
+#LOAD/UPDATE END    
+#ACTIONS START
+
     def calling(self, name, args):
         pass
-        #print('viz calling ' + name)
+        #logger.debug('VizView > calling start')
+        #logger.debug('VizView > calling end')
+        
+    def caller(self, fun, params):
+        self.call(fun, params)
+        
+    def delete(self):
+        try:
+            self.viz.delete()
+            self.parent.load_table()
+        except:
+            pass
     
     def called(self, name, args):
         pass
-        #print('viz called ' + name)
+        #logger.debug('VizView > called start')
+        #logger.debug('VizView > called end')
     
+#ACTIONS END
+
     def complete(self):
+        #pass
+        #logger.debug('VizView > complete start')
+        #logger.debug('VizView.parent = {}'.format(self.parent))
+        logger.debug('VizView > complete end')
+
+#RENDER START
+
+    def test_test(self):
+        #logger.debug('VizView test_test start')
+        #logger.debug(self.parent)
+        #logger.debug('VizView test_test end')
         pass
-        #print('viz complete')
-        #self.call('testAppFunction', 'app complete')
+        #return self.parent.test_test()
     
+    def plot(self):
+        #logger.debug('VizView > plot start')
+        a = pp.App(self.viz.json)
+        #todo = a.todos[-1]
+        fig = a.call(return_df=False)[0]
+        fig.update_layout(width=None, height=None,autosize=True, margin={'l': 0})
+        #logger.debug('VizView > plot end')
+        return pio.to_json(fig=fig, engine='json')
+    
+    def plot_data(self):
+        #logger.debug('VizView > plot_data start')
+        import json
+        p = self.plot()
+        try:
+            y = json.loads(p)
+        except:
+            print('JSON LOADS ERROR')
+            #logger.debug('VizView > plot_data end')
+            return None
+        else:
+            #logger.debug('VizView > plot_data end')
+            return json.dumps(y['data'])
+    
+    def plot_layout(self):
+        #logger.debug('VizView > plot_layout start')
+        import json
+        p = self.plot()
+        try:
+            y = json.loads(p)
+            #logger.debug('VizView > plot_layout end')
+        except:
+            print('JSON LOADS ERROR')
+            #logger.debug('VizView > plot_layout end')
+            return None
+        else:
+            return json.dumps(y['layout'])
+
     def rendered(self, html):
-        pass
-        #print('viz rendered')
-        #self.children = list(set(self.children))
-        #print('app rendered')
-        #print('app self.data:')
-        #print(self.data)
-        '''
-        print('viz self')
-        print(self)
-        print('viz children:')
-        print(self.children)
-        '''
-        '''
-        for child in self.children:
-            if hasattr(child, "datatable"):
-                print('child.datatable:')
-                print(child.datatable)
-        '''
-        #self.call('dropdownReload')
+        #pass
+        #logger.debug('VizView > rendered start')
+        #logger.debug(pprint.pformat(vars(self._json_tag)))
+        #logger.debug(pprint.pformat(vars(self)))
+        #logger.debug('VizView _json_tag {}'.format(hasattr(self, '_json_tag')))
+        logger.debug('VizView > rendered end')
     
     def parent_rendered(self, html):
         pass
-        #print('viz rendered')
-        #self.call('testAppFunction', 'app parent_rendered')    
-    
-    
-    
-    
-    
+        #logger.debug('VizView > parent_rendered start')
+        #logger.debug('VizView > parent_rendered end')
+
+#RENDER END    

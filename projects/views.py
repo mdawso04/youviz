@@ -28,6 +28,10 @@ def project_detail(request, pk):
     }
     return render(request, 'projects/project_detail.html', context)
 
+def app_top(request):
+    return render(request, 'projects/app_top.html')
+
+
 def model_form_upload(request):
     if request.method == 'POST':
         form = FileForm(request.POST, request.FILES)
