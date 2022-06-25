@@ -1,4 +1,6 @@
 {% load unicorn %} 
+{% load humanize %}
+
 <!-- UNICORN START -->
     <div class="container-fluid p-0" id="appTop">
         <!-- APP REFRESH FUNCTION ARRAY -->
@@ -60,17 +62,28 @@
                                 <div class="accordion-body px-0">
                                     <!-- FILE LIST -->
                                     <div class="list-group list-group-flush">
-                                        {% for f in files %}
-                                        <a href="#" unicorn:click="setFile({{f.pk}})" 
-                                           class="list-group-item list-group-item-action{% if f.document == file.document %} active{% endif %}" aria-current="true">
+                                        {% if file %}
+                                        <div class="list-group-item list-group-item-action active" aria-current="true">
                                             <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">{{f.document}}</h6>
-                                                <small>3 days ago</small>
+                                                <h6 class="mb-1">{{file.description}}</h6>
+                                                <small>{{file.uploaded_at|naturaltime|capfirst}}</small>
                                             </div>
-                                            <small>CSV file</small>
-                                        </a>
-                                        {% empty %}
-                                        No files
+                                            <small>Selected</small>
+                                        </div>
+                                        {% else %}
+                                        No data files
+                                        {% endif %}
+                                        {% for f in files %}
+                                            {% if f.pk != file.pk %}
+                                                <a href="#" unicorn:click="setFile({{f.pk}})" 
+                                                   class="list-group-item list-group-item-action" aria-current="true">
+                                                    <div class="d-flex w-100 justify-content-between">
+                                                        <h6 class="mb-1">{{f.description}}</h6>
+                                                        <small>{{f.uploaded_at|naturaltime|capfirst}}</small>
+                                                    </div>
+                                                    <small>Ready</small>
+                                                </a>
+                                            {% endif %}
                                         {% endfor %}
                                     </div>
                                     <!-- END FILE LIST -->
@@ -96,12 +109,12 @@
                                     <!-- FILE LIST -->
                                     <div class="list-group list-group-flush">
                                         {% for d in remote_data %}
-                                        <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+                                        <a href="#" unicorn:click="getRemoteData('{{d}}')" 
+                                           class="list-group-item list-group-item-action" aria-current="true">
                                             <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">{{d.name}}</h6>
-                                                <small>3 days ago</small>
+                                                <h6 class="mb-1">{{d}}</h6>
                                             </div>
-                                            <small>Remote CSV file</small>
+                                            <small>Copy this publicly available data to your account</small>
                                         </a>
                                         {% empty %}
                                         No remote data
@@ -176,7 +189,9 @@
                        role="button" aria-expanded="false">New</a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" unicorn:click="addViz()" href="#">Add</a></li>
+                        {% if vizs %}
                             <li><hr class="dropdown-divider"></li>
+                        {% endif %}
                         {% for viz in vizs %}
                             <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" href="#">Copy {{viz.title}}</a></li>
                         {% endfor %}
@@ -268,24 +283,29 @@
                     //arr[n].classList.remove("youVizOnUpdate");// remove 'toBeUpdated' class 
                 }
                 
+                //var bsTable = document.getElementById("table");
+                $('#tableId').bootstrapTable(); // init via javascript
+                
+                var loginModal = document.getElementById("staticBackdrop");
+                var datatableModal = document.getElementById("modalTable");
+                var body = document.getElementById("body");
+                body.appendChild(loginModal); 
+                body.appendChild(datatableModal); 
+                
                 var testOffCanvas = document.getElementById("OFFCANVAS");
                 var bsoc = bootstrap.Offcanvas.getOrCreateInstance(testOffCanvas);
                 bsoc.hide();
                 
-                var testDropdown = document.getElementById("tab-dropdown");
-                var bsdd = bootstrap.Dropdown.getOrCreateInstance(testDropdown);
-                bsdd.dispose();
-                var bsdd = bootstrap.Dropdown.getOrCreateInstance(testDropdown);
+                //var testDropdown = document.getElementById("tab-dropdown");
+                //var bsdd = bootstrap.Dropdown.getOrCreateInstance(testDropdown);
+                //bsdd.dispose();
+                //var bsdd = bootstrap.Dropdown.getOrCreateInstance(testDropdown);
                 
                 var myDropzone = Dropzone.forElement("#drop");
                 myDropzone.destroy();
                 var myDropzone = new Dropzone("#drop");
                 
-                var loginModal = document.getElementById("staticBackdrop");
-                var datatableModal = document.getElementById("modalTable");
-                var body = document.getElementById("body");
-                body.appendChild(loginModal) 
-                body.appendChild(datatableModal) 
+                
                 
                 //END KEEP
                 

@@ -1,4 +1,6 @@
 # django/unicorn/project
+from django.core.files.base import ContentFile
+
 from django_unicorn.components import QuerySetType, UnicornView
 from django import forms
 from django.shortcuts import render,redirect
@@ -6,7 +8,7 @@ from django.urls import reverse
 #from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 #from django.conf import settings
-from projects.models import Project, File, Viz
+from projects.models import File, Viz
 from projects.forms import FileForm
 from project import settings
 
@@ -25,14 +27,7 @@ import plotly.io as pio
 class AppView(UnicornView):
     files = File.objects.none()
     file: File = None
-    #vizs: QuerySetType[Viz] = None
     vizs = Viz.objects.none()
-    #activeTab = None
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(**kwargs)  # calling super is required
-        logger.debug(f'AppView init')
-        
     
 #LOAD/UPDATE START
     
@@ -47,18 +42,14 @@ class AppView(UnicornView):
             if self.request.user.is_authenticated:
                 #logger.debug('AppView > load_table (user authenticated) start')
                 self.files = File.objects.filter(user=self.request.user).all().order_by('-id')
-                self.file = self.files.first()
-                filepath= os.path.join(str(settings.MEDIA_ROOT), str(self.file.document))
-                #self.data = pd.read_csv(filepath).iloc[0:15, 0:15].to_dict(orient='tight')
+                if not self.file:
+                    self.file = self.files.last()
                 self.vizs = Viz.objects.filter(file=self.file).all().order_by('-id')
-                #self.activeTab = str(self.vizs[0].pk)
-                #logger.debug('vizs: {}'.format(self.vizs))
                 #logger.debug('AppView > load_table (user authenticated) end')
             else:
                 #logger.debug('AppView > load_table (user not authenticated) start')
                 self.files = File.objects.none()
                 self.file = None
-                #self.data = None
                 self.vizs = Viz.objects.none()
                 #logger.debug('AppView > load_table (user not authenticated) end')
     
@@ -108,14 +99,31 @@ class AppView(UnicornView):
         v.save()
         self.load_table()
         
-    def uploadRemoteFile(self, f):
+    def getRemoteData(self, service):
         #logger.debug('AppView > addRemoteFile start')
         #get data, make dataframe, check
-        df = pd.DataFrame.from_csv('https://github.com/IBM/employee-attrition-aif360/blob/master/data/emp_attrition.csv')
-        #form = FileForm(request.POST, request.FILES)
-        #form = FileForm(initial={'description': 'xxxx', 'file': xxxx})
-        if form.is_valid():
-            form.save()
+        
+        
+        a = pp.App()
+        a.add(service)
+        df = a.call()
+        
+        content = df.to_csv(index=False)
+        temp_file = ContentFile(content.encode('utf-8'))
+        f = File(description=f'{service}.csv', user=self.request.user)
+        f.document.save(f'{service}.csv', temp_file)
+        f.save()
+        
+        self.file = f
+        self.addViz()
+        
+        #File.objects.create(description=f'{service}.csv',
+        #                    document=temp_file,
+        #                    user=self.request.user)
+        #f.save()
+        #f.save(f'{service}.csv', temp_file)
+        
+        self.load_table()
         #logger.debug('AppView > addRemoteFile end')
         
     def called(self, name, args):
@@ -154,6 +162,12 @@ class AppView(UnicornView):
     def toData(self, df):
         self.data = df.to_dict(orient='tight')
     '''    
+    def remote_data(self):
+        #logger.debug('AppView > addViz start')
+        s = pp.App().services()['read']
+        return [i for i in s if i.startswith('READ_DATA')]
+        #logger.debug('AppView > addViz end')
+    
     def rendered(self, html):
         #pass
         #logger.debug('AppView > rendered start')
