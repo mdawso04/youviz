@@ -1,4 +1,13 @@
 <div>
+    <!-- SPINNER START -->
+    <div unicorn:loading class="overlay">
+        <div class="d-flex justify-content-center">  
+            <div class="spinner-grow text-danger" role="status" style="width: 3rem; height: 3rem; z-index: 20;">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+    <!-- SPINNER END -->
     <!-- PLOT -->
     {% with vids=viz.pk|stringformat:"s" %}
     {% with vid='viz-'|add:vids %}
@@ -34,9 +43,9 @@
                      }
                  });
                  var tabEl = document.querySelector('button[id="{{vid}}-tab"]')
-                 console.log("query selector: " + tabEl.id);
+                 //console.log("query selector: " + tabEl.id);
                  tabEl.addEventListener('shown.bs.tab', function (event) {
-                     console.log("shown event: "+ event.target.id);
+                     //console.log("shown event: "+ event.target.id);
                      if (event.target.id === "{{vid}}-tab") { // newly activated tab
                          //event.relatedTarget // previous active tab
                          resizeTarget = document.getElementById("plotBox-{{vid}}");
@@ -45,7 +54,7 @@
                             height: resizeTarget.clientHeight
                          };
                          Plotly.relayout("plotBox-{{vid}}", update);
-                         console.log("shown event: "+event.target.id);
+                         //console.log("shown event: "+event.target.id);
                      }
                  })
                  {% endif %}
@@ -106,9 +115,8 @@
                         <input type="text" class="form-control" 
                                unicorn:model.lazy="viz.title"
                                id="vizNameText{{vid}}" unicorn:key="vizNameText{{vid}}"
-                               {% comment %} unicorn:partial.id="{{vid}}-tab" 
-                               unicorn:partial.key="vizNameText{{vid}}" {% endcomment %} 
-                               {% comment %} unicorn:blur="caller('tabUpdate', $event.target.value.trim())" {% endcomment %} 
+                               {% comment %} unicorn:partial.id="{{vid}}-tab" {% endcomment %} 
+                               unicorn:partial.key="vizNameText{{vid}}"
                                aria-label="Viz Name">
                         <label for="vizNameText{{vid}}">Viz Name</label>
                     </div>
@@ -175,6 +183,7 @@
                         id="vizDeleteButton{{vid}}" unicorn:key="vizDeleteButton{{vid}}"
                         {% comment %} unicorn:partial.id="{{vid}}-tab" unicorn:partial.key="vizNameText{{vid}}" {% endcomment %}
                         unicorn:click="delete()"
+                        {% comment %} onclick="Unicorn.call('app', 'deleteViz', {{viz.pk}});"  {% endcomment %}
                         aria-label="Viz Name">
                             Delete viz
                     </button>

@@ -4,6 +4,7 @@ from django.utils.functional import cached_property
 from django import forms
 from projects.models import Viz
 from projects.components.app import AppView
+from django.shortcuts import render,redirect
 
 # pp
 import pp
@@ -103,11 +104,9 @@ class VizView(UnicornView):
         self.call(fun, params)
         
     def delete(self):
-        try:
-            self.viz.delete()
-            self.parent.load_table()
-        except:
-            pass
+        self.parent.deleteViz(self.viz.pk)
+        return redirect('/projects/app')
+        #pass
     
     def called(self, name, args):
         pass

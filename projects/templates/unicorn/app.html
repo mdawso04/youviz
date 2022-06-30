@@ -1,329 +1,220 @@
 {% load unicorn %} 
 {% load humanize %}
 
-<!-- UNICORN START -->
-    <div class="container-fluid p-0" id="appTop">
-        <!-- APP REFRESH FUNCTION ARRAY -->
-        
-        
-        <script type="application/javascript">
-            //const array_of_functions = {};
-            //const call_functions = function () {
-                //for (let i = 0; i < array_of_functions.length; i++) {
-                //    array_of_functions[i]();
-                //    console.log(array_of_functions[i]);
-                //}
-                //console.log("Preparing to call functions: " + Object.keys(array_of_functions).length);
-                //for (f in array_of_functions) {
-                //    array_of_functions[f]();
-                //    console.log("Calling: " + f);
-                //}
-            //};
-        </script>
-        
-        <!-- NAVBAR START -->
-        <nav class="navbar navbar-dark bg-dark sticky-top">
-          <div class="container-fluid d-flex">
-                <a class="navbar-brand me-auto" href="/projects/app">YouViz</a>
-                {% unicorn 'login' parent=view %}
-                <button id="off-canvas-button" class="navbar-toggler d-block" type="button" data-bs-toggle="offcanvas" 
-                        data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-          </div>
-        </nav>
-        <!--NAVBAR END -->
-        
-        <!-- MAIN CONTAINER -->
-        <div class="container py-3">
-            <!-- OFFCANVAS START --> 
-            <div class="offcanvas offcanvas-end" tabindex="-1" id="OFFCANVAS" aria-labelledby="offcanvasExampleLabel">
-                <!-- HEADER -->
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasExampleLabel">Viz Data</h5>
-                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <!-- BODY -->
-                <div class="offcanvas-body">
-                    <!--ACCORDIAN START -->
-                    <div class="accordion accordion-flush" id="accordionExample">
-                        
-                        <!-- ACCORDIAN ITEM 2 -->
-                        <div class="accordion-item">
-                            <!-- ACCORDIAN HEADER -->
-                            <h2 class="accordion-header" id="headingTwo">
-                                <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" 
-                                        data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                                Select
-                                </button>
-                            </h2>
-                            <!-- ACCORDIAN BODY -->
-                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                                <div class="accordion-body px-0">
-                                    <!-- FILE LIST -->
-                                    <div class="list-group list-group-flush">
-                                        {% if file %}
-                                        <div class="list-group-item list-group-item-action active" aria-current="true">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">{{file.description}}</h6>
-                                                <small>{{file.uploaded_at|naturaltime|capfirst}}</small>
-                                            </div>
-                                            <small>Selected</small>
-                                        </div>
-                                        {% else %}
-                                        No data files
-                                        {% endif %}
-                                        {% for f in files %}
-                                            {% if f.pk != file.pk %}
-                                                <a href="#" unicorn:click="setFile({{f.pk}})" 
-                                                   class="list-group-item list-group-item-action" aria-current="true">
-                                                    <div class="d-flex w-100 justify-content-between">
-                                                        <h6 class="mb-1">{{f.description}}</h6>
-                                                        <small>{{f.uploaded_at|naturaltime|capfirst}}</small>
-                                                    </div>
-                                                    <small>Ready</small>
-                                                </a>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                    <!-- END FILE LIST -->
-                                </div>
-                            </div>
-                        </div>
-                        <!-- END ACCORDIAN ITEM 2-->
-                        
-                          
-                        
-                       <!-- ACCORDIAN ITEM 3 -->
-                        <div class="accordion-item">
-                            <!-- ACCORDIAN HEADER -->
-                            <h2 class="accordion-header" id="headingThree">
-                                <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" 
-                                        data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
-                                Get Remote
-                                </button>
-                            </h2>
-                            <!-- ACCORDIAN BODY -->
-                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-                                <div class="accordion-body px-0">
-                                    <!-- FILE LIST -->
-                                    <div class="list-group list-group-flush">
-                                        {% for d in remote_data %}
-                                        <a href="#" unicorn:click="getRemoteData('{{d}}')" 
-                                           class="list-group-item list-group-item-action" aria-current="true">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">{{d}}</h6>
-                                            </div>
-                                            <small>Copy this publicly available data to your account</small>
-                                        </a>
-                                        {% empty %}
-                                        No remote data
-                                        {% endfor %}
-                                    </div>
-                                    <!-- END FILE LIST -->
-                                </div>
-                            </div>
-                        </div>
-                        <!-- END ACCORDIAN ITEM 3-->
-                        
-                       <!-- ACCORDIAN ITEM 1 -->
-                        <div class="accordion-item">
-                            <!-- ACCORDIAN HEADER -->
-                            <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" 
-                                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                Upload Local
-                                </button>
-                            </h2>
-                            <!-- ACCORDIAN BODY -->
-                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">
-                                    <!-- DROPZONE WIDGET -->
-                                    <div class="container mt-3">
-                                        <form action="/projects/upload/" method="POST" enctype="multipart/form-data" class="dropzone" id="drop">
-                                            {% csrf_token %}
-                                            <div class="fallback">
-                                                <input name="document" type="file" multiple />
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <script>
-                                        Dropzone.options.drop = { // camelized version of the `id`
-                                            paramName: "document", // The name that will be used to transfer the file
-                                            maxFilesize: 2, // MB
-                                        };
-                                    </script>
-                                    <!-- END DROPZONE -->
-                                </div>
-                            </div>
-                        </div>
-                        <!-- END ACCORDIAN ITEM 1 -->
-                        
-                        
-                        
-                    </div>
-                    <!-- END ACCORDIAN -->
-                       
-                </div>
-            </div>
-            <!-- OFFCANVAS END-->
-            
-            <!-- TABS START -->
-            <!-- TAB BUTTONS -->
-            <ul class="nav nav-pills" id="myTab" role="tablist">
-                {% for v in vizs %}
-                {% with vids=v.pk|stringformat:"s" %}
-                {% with vid="viz-"|add:vids %}
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link {% if forloop.first %}active {% endif %}fw-bold" id="{{vid}}-tab" 
-                            {% comment %}unicorn:click="activeTab='{{vids}}'"{% endcomment %}
-                            data-bs-toggle="pill" 
-                            data-bs-target="#{{vid}}" role="tab" aria-controls="{{vid}}" 
-                            aria-selected="true">{{v.title}}</button>
-                </li> 
-                {% endwith %}
-                {% endwith %}
-                {% endfor %}
-                <li class="nav-item dropdown fw-bold">
-                    <a class="nav-link dropdown-toggle" id="tab-add-dropdown" data-bs-toggle="dropdown" href="#" 
-                       role="button" aria-expanded="false">New</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" unicorn:click="addViz()" href="#">Add</a></li>
-                        {% if vizs %}
-                            <li><hr class="dropdown-divider"></li>
-                        {% endif %}
-                        {% for viz in vizs %}
-                            <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" href="#">Copy {{viz.title}}</a></li>
-                        {% endfor %}
-                    </ul>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-bold" id="dataframe-tab" 
-                            {% comment %}unicorn:click="activeTab='dataframe'"{% endcomment %}
-                            {% comment %}data-bs-toggle="pill" data-bs-target="#dataframe"{% endcomment %}
-                            data-bs-toggle="modal" data-bs-target="#modalTable"
-                            role="tab" aria-controls="modaltable" aria-selected="false">
-                        Data
-                    </button>
-                </li>
-                
-            </ul>
-            <!-- TAB CONTENT -->
-            <div class="tab-content" id="myTabContent">
-                {% for v in vizs %}
-                {% with vids=v.pk|stringformat:"s" %}
-                {% with vid="viz-"|add:vids %}
-                <!-- TAB {{ forloop.counter }} CONTENT -->
-                <div class="tab-pane fade show {% if forloop.first %}active{% endif %}" id="{{vid}}" role="tabpanel" aria-labelledby="{{vid}}-tab">
-                    {% unicorn 'viz' parent=view viz=v id=vid %}
-                {% endwith %}
-                {% endwith %}
-                </div>
-                {% endfor %}
-                <!-- TAB DF CONTENT -->
-                {% comment %}
-                <div class="tab-pane fade" id="dataframe" role="tabpanel" aria-labelledby="dataframe-tab">
-                    {% unicorn 'dataframe' parent=view file=file %}
-                </div>
-                {% endcomment %}
-                {% unicorn 'dataframe' parent=view file=file %}
+<!-- APP START -->
+<div class="container-fluid p-0" id="appTop">
+    <!-- SPINNER START -->
+    <div unicorn:loading class="overlay">
+        <div class="d-flex justify-content-center">  
+            <div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem; z-index: 20;">
+                <span class="sr-only">Loading...</span>
             </div>
         </div>
-        <!-- CONTAINER END -->
-
-        <script>
-            function elementUpdate(u) {
-                //var element = document.getElementById("viz-121-tab");
-                var element = document.getElementById(u[0]);
-                element.innerHTML = u[1]; 
-                alert(u);
-            }
-        </script>
-        <script type="application/javascript">
-            //window.addEventListener("DOMContentLoaded", (event) => {
-            // only on page load
-            //alert('DOM content loaded');
-            //console.log('DOM content loaded');
-            //var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
-            //var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
-            //  return new bootstrap.Dropdown(dropdownToggleEl);
-            //});
-            //call_functions();
-            //var arr = document.getElementsByClassName("youVizOnLoad");
-            //for (var n = 0; n < arr.length; n++) {
-            //    eval(arr[n].innerHTML);
-            //}
-            //});
-        
-        // run on page load
-        var loginModal = document.getElementById("staticBackdrop");
-        var datatableModal = document.getElementById("modalTable");
-        var body = document.getElementById("body");
-        body.appendChild(loginModal) 
-        body.appendChild(datatableModal) 
-            
-        window.addEventListener("DOMContentLoaded", (event) => {
-            Unicorn.addEventListener("updated", (component) =>{
-                //alert('unicorn update');
-                //console.log('unicorn updated');
-                //var offcanvasElementList = [].slice.call(document.querySelectorAll('.offcanvas'));
-                //var offcanvasList = offcanvasElementList.map(function (offcanvasEl) {
-                //  return new bootstrap.Offcanvas(offcanvasEl);
-                //});
-                //console.log(component.name); // Testing to see if it works
-                //Object.keys(bsdd).forEach((prop)=> console.log(prop));
-                //console.log(bsdd);
-                
-                // START KEEP
-                
-                // load vizs
-                var arr = document.getElementsByClassName("youVizOnUpdate"); // only refreshed viz/s
-                for (var n = 0; n < arr.length; n++) {
-                    eval(arr[n].innerHTML); // run script
-                    //arr[n].classList.remove("youVizOnUpdate");// remove 'toBeUpdated' class 
-                }
-                
-                //var bsTable = document.getElementById("table");
-                $('#tableId').bootstrapTable(); // init via javascript
-                
-                var loginModal = document.getElementById("staticBackdrop");
-                var datatableModal = document.getElementById("modalTable");
-                var body = document.getElementById("body");
-                body.appendChild(loginModal); 
-                body.appendChild(datatableModal); 
-                
-                var testOffCanvas = document.getElementById("OFFCANVAS");
-                var bsoc = bootstrap.Offcanvas.getOrCreateInstance(testOffCanvas);
-                bsoc.hide();
-                
-                //var testDropdown = document.getElementById("tab-dropdown");
-                //var bsdd = bootstrap.Dropdown.getOrCreateInstance(testDropdown);
-                //bsdd.dispose();
-                //var bsdd = bootstrap.Dropdown.getOrCreateInstance(testDropdown);
-                
-                var myDropzone = Dropzone.forElement("#drop");
-                myDropzone.destroy();
-                var myDropzone = new Dropzone("#drop");
-                
-                
-                
-                //END KEEP
-                
-                //console.log(bsoc);
-                //var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
-                //var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
-                //  return new bootstrap.Dropdown(dropdownToggleEl);
-                //});
-                //alert('unicorn updated');
-                //var plotBox = document.getElementById("plotBox-50");
-                //var plotScript = plotBox.children[0].children[3];
-                //plotBox.children[0].removeChild(plotScript);
-                //alert('removed script from 50');
-                //plotBox.children[0].appendChild(plotScript);
-                //alert('appended script to 50');
-                //call_functions(); 
-            });
-        });
-        </script>
     </div>
-<!-- UNICORN END -->
+    <!-- SPINNER END -->
+    <!-- NAVBAR START -->
+    <nav class="navbar navbar-dark bg-dark sticky-top">
+      <div class="container-fluid d-flex">
+            <a class="navbar-brand me-auto" href="/projects/app">YouViz</a>
+            {% unicorn 'login' parent=view %}
+            <button id="off-canvas-button" class="navbar-toggler d-block" type="button" data-bs-toggle="offcanvas" 
+                    data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+      </div>
+    </nav>
+    <!--NAVBAR END -->
+    <!-- MAIN CONTAINER -->
+    <div class="container py-3">
+        <!-- OFFCANVAS START --> 
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="OFFCANVAS" aria-labelledby="offcanvasExampleLabel">
+            <!-- HEADER -->
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasExampleLabel">Viz Data</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <!-- BODY -->
+            <div class="offcanvas-body">
+                <!--ACCORDIAN START -->
+                <div class="accordion accordion-flush" id="accordionExample">
+
+                    <!-- ACCORDIAN ITEM 1 -->
+                    <div class="accordion-item">
+                        <!-- ACCORDIAN 1 HEADER -->
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                            Select
+                            </button>
+                        </h2>
+                        <!-- ACCORDIAN 1 BODY -->
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                            <div class="accordion-body px-0">
+                                <!-- FILE LIST -->
+                                <div class="list-group list-group-flush">
+                                    {% if file %}
+                                    <div class="list-group-item list-group-item-action active" aria-current="true">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{file.description}}</h6>
+                                            <small>{{file.uploaded_at|naturaltime|capfirst}}</small>
+                                        </div>
+                                        <small>Selected</small>
+                                    </div>
+                                    {% else %}
+                                    No data files
+                                    {% endif %}
+                                    {% for f in files %}
+                                        {% if f.pk != file.pk %}
+                                            <a href="#" 
+                                               unicorn:click="setFile({{f.pk}})"
+                                               onclick="bootstrap.Offcanvas.getInstance('#OFFCANVAS').hide();"
+                                               class="list-group-item list-group-item-action" aria-current="true">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1">{{f.description}}</h6>
+                                                    <small>{{f.uploaded_at|naturaltime|capfirst}}</small>
+                                                </div>
+                                                <small>Ready</small>
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <!-- END FILE LIST -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END ACCORDIAN ITEM 1-->
+                   <!-- ACCORDIAN ITEM 2 -->
+                    <div class="accordion-item">
+                        <!-- ACCORDIAN 2 HEADER -->
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                            Get Remote
+                            </button>
+                        </h2>
+                        <!-- ACCORDIAN 2 BODY -->
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                            <div class="accordion-body px-0">
+                                <!-- FILE LIST -->
+                                <div class="list-group list-group-flush">
+                                    {% for d in remote_data %}
+                                    <a href="#" unicorn:click="getRemoteData('{{d}}')" 
+                                       onclick="bootstrap.Offcanvas.getInstance('#OFFCANVAS').hide();"
+                                       class="list-group-item list-group-item-action" aria-current="true">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{d}}</h6>
+                                        </div>
+                                        <small>Copy this publicly available data to your account</small>
+                                    </a>
+                                    {% empty %}
+                                    No remote data
+                                    {% endfor %}
+                                </div>
+                                <!-- END FILE LIST -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END ACCORDIAN ITEM 2-->
+
+                   <!-- ACCORDIAN ITEM 3 -->
+                    <div class="accordion-item">
+                        <!-- ACCORDIAN 3 HEADER -->
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Upload Local
+                            </button>
+                        </h2>
+                        <!-- ACCORDIAN 3 BODY -->
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <!-- DROPZONE WIDGET -->
+                                <div class="container mt-3">
+                                    <form action="/projects/upload/" method="POST" enctype="multipart/form-data" class="dropzone" id="drop">
+                                        {% csrf_token %}
+                                        <div class="fallback">
+                                            <input name="document" type="file" multiple />
+                                        </div>
+                                    </form>
+                                </div>
+                                <script>
+                                    Dropzone.options.drop = { // camelized version of the `id`
+                                        paramName: "document", // The name that will be used to transfer the file
+                                        maxFilesize: 2, // MB
+                                    };
+                                </script>
+                                <!-- END DROPZONE -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END ACCORDIAN ITEM 3 -->
+                </div>
+                <!-- END ACCORDIAN -->
+            </div>
+        </div>
+        <!-- OFFCANVAS END-->
+
+        <!-- TABS START -->
+        <!-- TAB BUTTONS -->
+        <ul class="nav nav-pills" id="myTab" role="tablist">
+            {% for v in vizs %}
+            {% with vids=v.pk|stringformat:"s" %}
+            {% with vid="viz-"|add:vids %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if forloop.first %}active {% endif %}fw-bold" id="{{vid}}-tab" 
+                        {% comment %}unicorn:click="activeTab='{{vids}}'"{% endcomment %}
+                        data-bs-toggle="pill" 
+                        data-bs-target="#{{vid}}" role="tab" aria-controls="{{vid}}" 
+                        aria-selected="true">{{v.title}}</button>
+            </li> 
+            {% endwith %}
+            {% endwith %}
+            {% endfor %}
+            <li class="nav-item dropdown fw-bold">
+                <a class="nav-link dropdown-toggle" id="tab-add-dropdown" data-bs-toggle="dropdown" href="#" 
+                   role="button" aria-expanded="false">New</a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" unicorn:click="addViz()" href="#">Add</a></li>
+                    {% if vizs %}
+                        <li><hr class="dropdown-divider"></li>
+                    {% endif %}
+                    {% for viz in vizs %}
+                        <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" href="#">Copy {{viz.title}}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold" id="dataframe-tab" 
+                        {% comment %}unicorn:click="activeTab='dataframe'"{% endcomment %}
+                        {% comment %}data-bs-toggle="pill" data-bs-target="#dataframe"{% endcomment %}
+                        data-bs-toggle="modal" data-bs-target="#modalTable"
+                        role="tab" aria-controls="modaltable" aria-selected="false">
+                    Data
+                </button>
+            </li>
+
+        </ul>
+        <!-- TAB CONTENT -->
+        <div class="tab-content" id="myTabContent">
+            {% for v in vizs %}
+            {% with vids=v.pk|stringformat:"s" %}
+            {% with vid="viz-"|add:vids %}
+            <!-- TAB {{ forloop.counter }} CONTENT -->
+            <div class="tab-pane fade show {% if forloop.first %}active{% endif %}" id="{{vid}}" role="tabpanel" aria-labelledby="{{vid}}-tab">
+                {% unicorn 'viz' parent=view viz=v id=vid %}
+            {% endwith %}
+            {% endwith %}
+            </div>
+            {% endfor %}
+            <!-- TAB DF CONTENT -->
+            {% comment %}
+            <div class="tab-pane fade" id="dataframe" role="tabpanel" aria-labelledby="dataframe-tab">
+                {% unicorn 'dataframe' parent=view file=file %}
+            </div>
+            {% endcomment %}
+            {% unicorn 'dataframe' parent=view file=file %}
+        </div>
+    </div>
+    <!-- MAIN CONTAINER END -->
+</div>
+<!-- APP END -->
