@@ -43,8 +43,10 @@ class DataframeView(UnicornView):
         #logger.debug('DataframeView > updating end')
     
     def updated(self, name, value):
-        pass
         #logger.debug('DataframeView > updated start')
+        
+        if name == 'file.description':
+            self.file.save()
         #logger.debug('DataframeView > updated end')
     
 #LOAD/UPDATE END    

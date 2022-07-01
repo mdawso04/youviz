@@ -31,16 +31,16 @@ class LoginView(UnicornView):
             if user.is_active:
                 login(self.request, user)
                 logger.debug('LoginView > login end')
-                return redirect('app')
+                return redirect('/projects/app')
         else:
             messages.error(self.request,'username or password not correct')
             
     def logout(self):
-        #logger.debug('LoginView > logout start')
+        logger.debug('LoginView > logout start')
         if self.request:
             logout(self.request)
             logger.debug('LoginView > logout end')
-            return redirect('app')
+            return redirect('/projects/app')
         
     def cancel(self):
         pass

@@ -7,7 +7,10 @@ from project import settings
 import os
 
 def app_top(request):
-    return render(request, 'projects/app_top.html')
+    if request.user.is_authenticated:
+        return render(request, 'projects/app_top.html')
+    else:
+        return render(request, 'projects/login.html')
 
 def model_form_upload(request):
     if request.method == 'POST':

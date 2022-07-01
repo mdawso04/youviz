@@ -25,7 +25,10 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" id="modalLogoutButton" unicorn:click="logout" class="btn btn-primary">OK</button>
+                            <button type="button" id="modalLogoutButton" 
+                                    onclick="Unicorn.call('login', 'logout');"
+                                    {% comment %} unicorn:click="logout" {% endcomment %}
+                                    class="btn btn-primary">OK</button>
                         </div>
                     {% else %}
                         <div class="modal-header">
