@@ -102,6 +102,15 @@ class AppView(UnicornView):
         
         return redirect('/projects/app')
         
+    def deleteFile(self, pk):
+        #Viz.objects.filter(pk=pk).delete()
+        f = File.objects.get(pk=pk)
+        f.document.delete(False)
+        f.delete()
+        self.load_table()
+        
+        #return redirect('/projects/app')
+        
     def addViz(self, viz_type='NewViz'):
         #logger.debug('AppView > addViz start')
         #df = self.df()

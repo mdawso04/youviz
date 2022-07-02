@@ -34,10 +34,29 @@
                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <!-- BODY -->
-            <div class="offcanvas-body">
+            <div class="offcanvas-body">  
+                {% if file %}
+                <div class="card" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-center" 
+                                 style="height: 100%;"><i class="bi bi-filetype-csv align-self-center" style="font-size: 4rem;"></i></div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">{{file.description}}</h5>
+                                <p class="card-text">Memo added by user</p>
+                                <p class="card-text"><small class="text-muted">Uploaded {{file.uploaded_at|naturaltime|capfirst}}</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% else %}
+                No data files
+                {% endif %}
                 <!--ACCORDIAN START -->
                 <div class="accordion accordion-flush" id="accordionExample">
-
                     <!-- ACCORDIAN ITEM 1 -->
                     <div class="accordion-item">
                         <!-- ACCORDIAN 1 HEADER -->
@@ -52,17 +71,6 @@
                             <div class="accordion-body px-0">
                                 <!-- FILE LIST -->
                                 <div class="list-group list-group-flush">
-                                    {% if file %}
-                                    <div class="list-group-item list-group-item-action active" aria-current="true">
-                                        <div class="d-flex w-100 justify-content-between">
-                                            <h6 class="mb-1">{{file.description}}</h6>
-                                            {% comment %}<small>{{file.uploaded_at|naturaltime|capfirst}}</small>{% endcomment %}
-                                        </div>
-                                        <small>{{file.uploaded_at|naturaltime|capfirst}}</small>
-                                    </div>
-                                    {% else %}
-                                    No data files
-                                    {% endif %}
                                     {% for f in files %}
                                         {% if f.pk != file.pk %}
                                             <a href="#" 
@@ -71,9 +79,9 @@
                                                class="list-group-item list-group-item-action" aria-current="true">
                                                 <div class="d-flex w-100 justify-content-between">
                                                     <h6 class="mb-1">{{f.description}}</h6>
-                                                    {% comment %}<small>{{file.uploaded_at|naturaltime|capfirst}}</small>{% endcomment %}
+                                                    {% comment %}<small>{{f.uploaded_at|naturaltime|capfirst}}</small>{% endcomment %}
                                                 </div>
-                                                <small>{{file.uploaded_at|naturaltime|capfirst}}</small>
+                                                <small>{{f.uploaded_at|naturaltime|capfirst}}</small>
                                             </a>
                                         {% endif %}
                                     {% endfor %}
@@ -189,7 +197,11 @@
                         {% comment %}data-bs-toggle="pill" data-bs-target="#dataframe"{% endcomment %}
                         data-bs-toggle="modal" data-bs-target="#modalTable"
                         role="tab" aria-controls="modaltable" aria-selected="false">
-                    Data
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
+  <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
+</svg>
+                Data
                 </button>
             </li>
 

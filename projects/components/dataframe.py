@@ -50,12 +50,18 @@ class DataframeView(UnicornView):
         #logger.debug('DataframeView > updated end')
     
 #LOAD/UPDATE END    
+
 #ACTIONS START
 
     def calling(self, name, args):
         pass
         #logger.debug('DataframeView > calling start')
         #logger.debug('DataframeView > calling end')
+    
+    def delete(self):
+        self.parent.deleteFile(self.file.pk)
+        return redirect('/projects/app')
+        #pass
     
     def called(self, name, args):
         pass
@@ -69,20 +75,6 @@ class DataframeView(UnicornView):
         logger.debug('DataframeView > complete end')
 
 #RENDER START
-    '''
-    def df(self):
-        filepath= os.path.join(str(settings.MEDIA_ROOT), str(self.file.document))
-        a = pp.App()
-        a.add('READ_CSV', {'src': filepath})
-        df = a.call(return_df=True)
-        return df
-        #return pd.DataFrame.from_dict(self.datatable, orient='tight') if self.datatable else None
-    
-    
-    def toData(self, df):
-        self.datatable = df.to_dict(orient='tight')
-    '''
-    
     def columns(self):
         return self.datatable['columns'] if self.datatable else None
     
@@ -98,15 +90,3 @@ class DataframeView(UnicornView):
         logger.debug('DataframeView > parent_rendered end')
         
 #RENDER END
-
-'''    
-#STATE
-    
-    def setData(self, data):
-        self.datatable = data
-    
-    #UNICORN ACTIONS
-    
-    def sort(self, col):
-        self.toData(df)
-'''
