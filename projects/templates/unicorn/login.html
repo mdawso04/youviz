@@ -1,11 +1,22 @@
 <div>
+    <!-- SPINNER START -->
+    <div unicorn:loading class="overlay" id="login-spinner" hidden>
+        <div class="d-flex justify-content-center">  
+            <div class="spinner-grow text-danger" role="status" style="width: 3rem; height: 3rem; z-index: 20;">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+    <!-- SPINNER END -->
+    
+    
 <div>
     {% if request.user.is_authenticated %}
         <span class="navbar-brand mb-0">Hey {{ request.user.username }}!</span>
-        <button type="button" class="btn btn-info me-2" id="logoutButton" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Logout</button>
+        <button type="button" class="btn btn-primary me-2" id="logoutButton" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Logout</button>
     {% else %}
         <span class="navbar-brand mb-0">Welcome guest!</span>
-        <button type="button" class="btn btn-info me-2" id="loginButton" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Login</button>
+        <button type="button" class="btn btn-primary me-2" id="loginButton" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Login</button>
     {% endif %}
 </div>
 
@@ -26,7 +37,9 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" data-bs-dismiss="modal">Cancel</button>
                             <button type="button" id="modalLogoutButton" 
-                                    onclick="Unicorn.call('login', 'logout');"
+                                    onclick="bootstrap.Modal.getInstance('#staticBackdrop').hide(); 
+                                             document.getElementById('login-spinner').hidden = false;
+                                             Unicorn.call('login', 'logout');"
                                     {% comment %} unicorn:click="logout" {% endcomment %}
                                     class="btn btn-primary">OK</button>
                         </div>
