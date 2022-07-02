@@ -10,7 +10,7 @@ def app_top(request):
     if request.user.is_authenticated:
         return render(request, 'projects/app_top.html')
     else:
-        return render(request, 'projects/login.html')
+        return render(request, 'projects/new_login.html')
 
 def model_form_upload(request):
     if request.method == 'POST':

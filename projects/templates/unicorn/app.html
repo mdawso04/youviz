@@ -16,7 +16,7 @@
     <nav class="navbar navbar-dark bg-dark sticky-top">
       <div class="container-fluid d-flex">
             <a class="navbar-brand me-auto" href="/projects/app">YouViz</a>
-            {% unicorn 'login' parent=view %}
+            {% unicorn 'login' parent=view id='login' %}
             <button id="off-canvas-button" class="navbar-toggler d-block" type="button" data-bs-toggle="offcanvas" 
                     data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
                 <span class="navbar-toggler-icon"></span>
@@ -56,9 +56,9 @@
                                     <div class="list-group-item list-group-item-action active" aria-current="true">
                                         <div class="d-flex w-100 justify-content-between">
                                             <h6 class="mb-1">{{file.description}}</h6>
-                                            <small>{{file.uploaded_at|naturaltime|capfirst}}</small>
+                                            {% comment %}<small>{{file.uploaded_at|naturaltime|capfirst}}</small>{% endcomment %}
                                         </div>
-                                        <small>Selected</small>
+                                        <small>{{file.uploaded_at|naturaltime|capfirst}}</small>
                                     </div>
                                     {% else %}
                                     No data files
@@ -71,9 +71,9 @@
                                                class="list-group-item list-group-item-action" aria-current="true">
                                                 <div class="d-flex w-100 justify-content-between">
                                                     <h6 class="mb-1">{{f.description}}</h6>
-                                                    <small>{{f.uploaded_at|naturaltime|capfirst}}</small>
+                                                    {% comment %}<small>{{file.uploaded_at|naturaltime|capfirst}}</small>{% endcomment %}
                                                 </div>
-                                                <small>Ready</small>
+                                                <small>{{file.uploaded_at|naturaltime|capfirst}}</small>
                                             </a>
                                         {% endif %}
                                     {% endfor %}
@@ -207,12 +207,7 @@
             </div>
             {% endfor %}
             <!-- TAB DF CONTENT -->
-            {% comment %}
-            <div class="tab-pane fade" id="dataframe" role="tabpanel" aria-labelledby="dataframe-tab">
-                {% unicorn 'dataframe' parent=view file=file %}
-            </div>
-            {% endcomment %}
-            {% unicorn 'dataframe' parent=view file=file %}
+            {% unicorn 'dataframe' parent=view file=file id='dataframe' %}
         </div>
     </div>
     <!-- MAIN CONTAINER END -->
