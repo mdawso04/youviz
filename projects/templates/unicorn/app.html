@@ -51,7 +51,6 @@
                         </div>
                     </div>
                 </div>
-                
                 {% else %}
                 No data files
                 {% endif %}
@@ -61,8 +60,10 @@
                     <div class="accordion-item">
                         <!-- ACCORDIAN 1 HEADER -->
                         <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" 
-                                    data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                            <button class="accordion-button fw-bold collapsed {% if files|length == 1 %}text-black-50{% endif %}" 
+                                    type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"
+                                    {% if files|length == 1 %} disabled{% endif %}>
                             Select
                             </button>
                         </h2>
@@ -84,6 +85,8 @@
                                                 <small>{{f.uploaded_at|naturaltime|capfirst}}</small>
                                             </a>
                                         {% endif %}
+                                    {% empty %}
+                                    No other data files
                                     {% endfor %}
                                 </div>
                                 <!-- END FILE LIST -->

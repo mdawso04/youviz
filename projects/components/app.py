@@ -104,9 +104,22 @@ class AppView(UnicornView):
         
     def deleteFile(self, pk):
         #Viz.objects.filter(pk=pk).delete()
-        f = File.objects.get(pk=pk)
-        f.document.delete(False)
-        f.delete()
+        #f = File.objects.get(pk=pk)
+        #f.document.delete(False)
+        #f.delete()
+        self.file.document.delete()
+        self.file.delete()
+        
+        self.files = File.objects.none()
+        self.file = None
+        self.vizs = Viz.objects.none()
+        #Viz.objects.filter(file=self.file).all().delete()
+        
+        '''
+        for child in self.children:
+            if hasattr(child, "is_editing"):
+                child.is_editing = False
+        '''
         self.load_table()
         
         #return redirect('/projects/app')

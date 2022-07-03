@@ -3,6 +3,7 @@ from django_unicorn.components import UnicornView
 from django import forms
 from projects.models import File
 from project import settings
+from django.shortcuts import render,redirect
 
 # pp
 import pp
@@ -24,12 +25,13 @@ class DataframeView(UnicornView):
     
     def mount(self):
         #logger.debug('DataframeView > mount start')
-        filepath= os.path.join(str(settings.MEDIA_ROOT), str(self.file.document))
-        a = pp.App()
-        a.add('READ_CSV', {'src': filepath})
-        df = a.call(return_df=True)
-        df = df[:200]
-        self.datatable = df.to_dict(orient='tight')
+        if self.file:
+            filepath= os.path.join(str(settings.MEDIA_ROOT), str(self.file.document))
+            a = pp.App()
+            a.add('READ_CSV', {'src': filepath})
+            df = a.call(return_df=True)
+            df = df[:200]
+            self.datatable = df.to_dict(orient='tight')
         #logger.debug('DataframeView > mount end')
     
     def hydrate(self):
