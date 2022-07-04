@@ -1,4 +1,7 @@
+<!-- TODO: DATAFRAME SPINNER -->
+
 <div id="modalTable" class="modal fade" tabindex="-1" role="dialog">
+<!-- DATAFRAME START -->
     <div class="modal-dialog modal-xl modal-fullscreen-xl-down" role="document">
         <div class="modal-content">
             <div class="modal-header border-0">
@@ -43,6 +46,7 @@
             <div class="tab-content" id="dataframeTabContent">
                 <div class="tab-pane fade show active" id="dataframeTabContentData" role="tabpanel" aria-labelledby="dataframe-data-tab">
                     <div>
+                        <!-- TABLE -->
                         <table id="table"
                             data-toggle="table"
                             data-search="true"
@@ -72,20 +76,18 @@
                     <!-- MEMO FORM -->
                     <div class="form-floating pt-2">
                         <textarea 
-                                  {% comment %} unicorn:model.lazy="viz.comment" unicorn:partial="floatingTextarea2{{vid}}" {% endcomment %}
-                                  id="dataframeMemo" 
-                                  class="form-control" placeholder="Leave a memo here" style="height: 100px"></textarea>
+                            {% comment %} unicorn:model.lazy="viz.comment" unicorn:partial="floatingTextarea2{{vid}}" {% endcomment %}
+                            id="dataframeMemo" 
+                            class="form-control" placeholder="Leave a memo here" style="height: 100px"></textarea>
                         <label for="dataframeMemo">Memo</label>
                     </div>
-                    
                 </div>
-                <!-- TAB MEMO CONTENT -->
+                <!-- STATS TAB CONTENT -->
                 <div class="tab-pane fade" id="dataframeTabContentStats" role="tabpanel" aria-labelledby="dataframe-stats-tab">
                     Stats
                 </div>
-                <!-- TAB SETTINGS CONTENT -->
+                <!-- SETTINGS TAB CONTENT -->
                 <div class="tab-pane fade" id="dataframeTabContentSettings" role="tabpanel" aria-labelledby="dataframe-settings-tab">
-                
                     <div class="row g-2" unicorn:key="dataframe-settings-row-01">
                         <div class="col-lg-4">
                             <div class="form-floating">
@@ -99,9 +101,8 @@
                             </div>
                         </div>
                     </div>
-                    
                 </div>
-                <!-- TAB MORE CONTENT -->
+                <!-- MORE TAB CONTENT -->
                 <div class="tab-pane fade" id="dataframeTabContentMore" role="tabpanel" aria-labelledby="dataframe-more-tab">
                      <div class="row g-2" unicorn:key="dataframe-more-row-01">
                         <div class="col-lg-2">
@@ -114,7 +115,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- TAB MEMO CONTENT -->
+                <!-- SHARE TAB CONTENT -->
                 <div class="tab-pane fade" id="dataframeTabContentShare" role="tabpanel" aria-labelledby="dataframe-share-tab">
                     <div class="row g-2" unicorn:key="share-row-01-dataframe">
                         <div class="col-lg-2">
@@ -132,7 +133,6 @@
                         </div>
                     </div>
                 </div>
-                
             </div>
             <!-- TAB CONTENT END-->
         </div>

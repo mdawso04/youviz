@@ -1,9 +1,8 @@
 {% load unicorn %} 
 {% load humanize %}
-
 <!-- APP START -->
 <div class="container-fluid p-0" id="appTop">
-    <!-- SPINNER START -->
+    <!-- APP SPINNER START -->
     <div unicorn:loading class="overlay">
         <div class="d-flex justify-content-center">  
             <div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem; z-index: 20;">
@@ -12,16 +11,17 @@
         </div>
     </div>
     <!-- SPINNER END -->
+    <!-- APP START -->
     <!-- NAVBAR START -->
     <nav class="navbar navbar-dark bg-dark sticky-top">
-      <div class="container-fluid d-flex">
+        <div class="container-fluid d-flex">
             <a class="navbar-brand me-auto" href="/projects/app">YouViz</a>
             {% unicorn 'login' parent=view id='login' %}
             <button id="off-canvas-button" class="navbar-toggler d-block" type="button" data-bs-toggle="offcanvas" 
                     data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
                 <span class="navbar-toggler-icon"></span>
             </button>
-      </div>
+        </div>
     </nav>
     <!--NAVBAR END -->
     <!-- MAIN CONTAINER -->
@@ -164,7 +164,6 @@
             </div>
         </div>
         <!-- OFFCANVAS END-->
-
         <!-- TABS START -->
         <!-- TAB BUTTONS -->
         <ul class="nav nav-pills" id="myTab" role="tablist">
@@ -200,14 +199,9 @@
                         {% comment %}data-bs-toggle="pill" data-bs-target="#dataframe"{% endcomment %}
                         data-bs-toggle="modal" data-bs-target="#modalTable"
                         role="tab" aria-controls="modaltable" aria-selected="false">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
-  <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
-  <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
-</svg>
-                Data
+                    <i class="bi bi-box-arrow-up-right" style="font-size: 1.2rem;"></i> Data
                 </button>
             </li>
-
         </ul>
         <!-- TAB CONTENT -->
         <div class="tab-content" id="myTabContent">
@@ -226,5 +220,5 @@
         </div>
     </div>
     <!-- MAIN CONTAINER END -->
-</div>
 <!-- APP END -->
+</div>

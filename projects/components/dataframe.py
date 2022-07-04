@@ -1,9 +1,8 @@
 # django/unicorn/project
 from django_unicorn.components import UnicornView
-from django import forms
 from projects.models import File
 from project import settings
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 
 # pp
 import pp
@@ -14,14 +13,12 @@ import os
 
 #non-standard libraries
 import pandas as pd
-import plotly.express as px
-import plotly.io as pio
 
 class DataframeView(UnicornView):
     file: File = None
     datatable: dict = {}
     
-#LOAD/UPDATE START
+#LOAD/UPDATE
     
     def mount(self):
         #logger.debug('DataframeView > mount start')
@@ -35,48 +32,42 @@ class DataframeView(UnicornView):
         #logger.debug('DataframeView > mount end')
     
     def hydrate(self):
-        pass
         #logger.debug('DataframeView > hydrate start')
+        pass
         #logger.debug('DataframeView > hydrate end')
     
     def updating(self, name, value):
-        pass
         #logger.debug('DataframeView > updating start')
+        pass
         #logger.debug('DataframeView > updating end')
     
     def updated(self, name, value):
         #logger.debug('DataframeView > updated start')
-        
         if name == 'file.description':
             self.file.save()
         #logger.debug('DataframeView > updated end')
     
-#LOAD/UPDATE END    
-
-#ACTIONS START
+#ACTIONS
 
     def calling(self, name, args):
-        pass
         #logger.debug('DataframeView > calling start')
+        pass
         #logger.debug('DataframeView > calling end')
     
     def delete(self):
         self.parent.deleteFile(self.file.pk)
         return redirect('/projects/app')
-        #pass
-    
+        
     def called(self, name, args):
-        pass
         #logger.debug('DataframeView > called start')
+        pass
         #logger.debug('DataframeView > called end')
     
-#ACTIONS END
-
     def complete(self):
         #logger.debug('DataframeView > complete start')
         logger.debug('DataframeView > complete end')
 
-#RENDER START
+#RENDER
     def columns(self):
         return self.datatable['columns'] if self.datatable else None
     
@@ -90,5 +81,3 @@ class DataframeView(UnicornView):
     def parent_rendered(self, html):
         #logger.debug('DataframeView > parent_rendered start')
         logger.debug('DataframeView > parent_rendered end')
-        
-#RENDER END

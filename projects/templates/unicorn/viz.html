@@ -1,5 +1,5 @@
 <div>
-    <!-- SPINNER START -->
+    <!-- VIZ SPINNER START -->
     <div unicorn:loading class="overlay">
         <div class="d-flex justify-content-center">  
             <div class="spinner-grow text-danger" role="status" style="width: 3rem; height: 3rem; z-index: 20;">
@@ -63,12 +63,6 @@
     </div>
     <!-- END PLOT -->
     
-    
-    
-    
-    
-    
-    
     <!-- TABS START -->
     <!-- TAB BUTTONS -->
     <ul class="nav nav-pills" id="myTab-{{vid}}" role="tablist">
@@ -99,18 +93,16 @@
     </ul>
     <!-- TAB CONTENT -->
     <div class="tab-content mt-2" id="myTabContent-{{vid}}" unicorn:key="myTabContent-{{vid}}">
-        <!-- TAB COMMENT CONTENT -->
-        <div class="tab-pane fade show active" id="comment-pane-{{vid}}" role="tabpanel" aria-labelledby="comment-tab-{{vid}}">
-            
+        <!-- MEMO TAB -->
+        <div class="tab-pane fade show active" id="comment-pane-{{vid}}" role="tabpanel" aria-labelledby="comment-tab-{{vid}}">        
             <!-- MEMO FORM -->
             <div class="form-floating">
                 <textarea unicorn:model.lazy="viz.comment" unicorn:partial="floatingTextarea2{{vid}}" id="floatingTextarea2{{vid}}" 
                           class="form-control" placeholder="Leave a memo here" style="height: 100px"></textarea>
                 <label for="floatingTextarea2{{vid}}">Memo</label>
             </div>
-            
         </div>
-        <!-- TAB VIZ SETTINGS CONTENT -->
+        <!-- SETTINGS TAB -->
         <div class="tab-pane fade" id="viz-settings-pane-{{vid}}" unicorn:key=viz-settings-pane-{{vid}} 
              role="tabpanel" aria-labelledby="viz-settings-tab-{{vid}}">
             <!-- SETTINGS -->
@@ -142,7 +134,6 @@
                         <label for="vizServiceSelect{{vid}}">Viz Type</label>
                     </div>
                 </div>  
-             
                 {% for key, value in viz_settings.options.items %}
                 <div class="col-lg-2">
                     <!-- SELECT {{forloop.counter}} -->
@@ -161,15 +152,9 @@
                 </div>
                 {% endfor %}
             </div>
-            <!-- END SETTINGS -->
-
-            
-            
         </div>
-        
-        <!-- TAB MORE SETTINGS CONTENT -->
+        <!-- MORE TAB -->
         <div class="tab-pane fade" id="advanced-settings-pane-{{vid}}" role="tabpanel" aria-labelledby="advanced-settings-tab-{{vid}}">
-            
             <div class="row g-2" unicorn:key="more-row-01-{{vid}}">
                 <div class="col-lg-4">
                     <!-- SWITCH 1 -->
@@ -183,7 +168,6 @@
                         <label class="form-check-label" for="flexSwitchCheckChecked{{vid}}">Show legend</label>
                     </div>
                 </div>
-                
                 <div class="col-lg-2">
                     <!-- SELECT {{forloop.counter}} -->
                     <button type="button" class="btn btn-danger"
@@ -197,12 +181,10 @@
                 </div>
             </div>
         </div>
-        
-        <!-- TAB SHARE CONTENT -->
+        <!-- SHARE TAB -->
         <div class="tab-pane fade" id="share-tab-pane-{{vid}}" role="tabpanel" aria-labelledby="share-tab-{{vid}}">
              <div class="row g-2" unicorn:key="share-row-01-{{vid}}">
-                <div class="col-lg-2">
-                    
+                <div class="col-lg-2">      
                     <div id="viz-qrcode-{{vid}}"></div>
                     <script type="text/javascript">
                         var qrcode = new QRCode(document.getElementById("viz-qrcode-{{vid}}"), {
@@ -217,9 +199,7 @@
                 </div>
             </div>
         </div>
-            
     </div>
-    
     {% endwith %}
     {% endwith %}
 </div>
