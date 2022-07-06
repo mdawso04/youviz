@@ -2,7 +2,7 @@
 from django_unicorn.components import UnicornView
 from projects.models import Viz
 from django.shortcuts import render,redirect
-#from django.utils.functional import cached_property
+from django.utils.functional import cached_property
 
 # pp
 import pp
@@ -20,6 +20,10 @@ import plotly.io as pio
 class VizView(UnicornView):
     viz: Viz = None
     viz_settings: dict = {}
+    plot: str = None
+    
+    class Meta:
+        exclude = ('plot', )   
     
 #LOAD/UPDATE
 
@@ -35,6 +39,14 @@ class VizView(UnicornView):
         for v in self.viz_settings['options'].values():
             if v['saved'] is None:
                 v['saved'] = 'None'
+        
+        #a = pp.App(self.viz.json)
+        #todo = a.todos[-1]
+        fig = a.call(return_df=False)[0]
+        fig.update_layout(width=None, height=None,autosize=True, margin={'l': 0})
+        #logger.debug('VizView > plot end')
+        self.plot = pio.to_json(fig=fig, engine='json')
+
         #logger.debug('VizView > load_viz end')
         
     def hydrate(self):
@@ -75,6 +87,7 @@ class VizView(UnicornView):
             todo['options'][name.split('.')[2]] = value
             self.viz.json = a.todos
             self.viz.save()
+        self.load_viz()
         #logger.debug('VizView > updated end')
 
 #ACTIONS
@@ -104,21 +117,26 @@ class VizView(UnicornView):
 
 #RENDER
 
+
+    '''
     def plot(self):
         #logger.debug('VizView > plot start')
+        pass
+        
         a = pp.App(self.viz.json)
         #todo = a.todos[-1]
         fig = a.call(return_df=False)[0]
         fig.update_layout(width=None, height=None,autosize=True, margin={'l': 0})
         #logger.debug('VizView > plot end')
         return pio.to_json(fig=fig, engine='json')
+        '''
     
     def plot_data(self):
         #logger.debug('VizView > plot_data start')
         import json
-        p = self.plot()
+        #p = self.plot()
         try:
-            y = json.loads(p)
+            y = json.loads(self.plot)
         except:
             print('JSON LOADS ERROR')
             #logger.debug('VizView > plot_data end')
@@ -130,9 +148,9 @@ class VizView(UnicornView):
     def plot_layout(self):
         #logger.debug('VizView > plot_layout start')
         import json
-        p = self.plot()
+        #p = self.plot()
         try:
-            y = json.loads(p)
+            y = json.loads(self.plot)
             #logger.debug('VizView > plot_layout end')
         except:
             print('JSON LOADS ERROR')

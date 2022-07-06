@@ -45,6 +45,7 @@ class DataframeView(UnicornView):
         #logger.debug('DataframeView > updated start')
         if name == 'file.description':
             self.file.save()
+            #self.parent.file.save()
         #logger.debug('DataframeView > updated end')
     
 #ACTIONS
@@ -73,7 +74,12 @@ class DataframeView(UnicornView):
     
     def records(self):
         return self.datatable['data'] if self.datatable else None
+    
+    '''
+    def file(self):
+        return self.parent.file
 
+    '''
     def rendered(self, html):
         #logger.debug('DataframeView > rendered start')
         logger.debug('DataframeView > rendered end')
