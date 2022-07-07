@@ -21,6 +21,7 @@ class AppView(UnicornView):
     project: Project = None
     files = File.objects.none()
     file: File = None
+    editing_file = False
     #datatable: dict = {}
     vizs = Viz.objects.none()
     
@@ -115,6 +116,11 @@ class AppView(UnicornView):
                 child.is_editing = False
         '''
         self.load_table()
+        return redirect('/projects/app')
+    
+    def saveFileInfo(self):
+        self.file.save()
+        self.editing_file = False
         
     def addViz(self, viz_type='NewViz'):
         #logger.debug('AppView > addViz start')

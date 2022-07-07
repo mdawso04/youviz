@@ -11,6 +11,7 @@ class Project(models.Model):
         return self.description
 
 class File(models.Model):
+    title = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=255, blank=True)
     document = models.FileField(upload_to='files/')
     uploaded_at = models.DateTimeField(auto_now_add=True)

@@ -55,6 +55,7 @@ class DataframeView(UnicornView):
         pass
         #logger.debug('DataframeView > calling end')
     
+    
     def delete(self):
         self.parent.deleteFile(self.file.pk)
         return redirect('/projects/app')

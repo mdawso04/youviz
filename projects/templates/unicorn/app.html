@@ -36,21 +36,53 @@
             <!-- BODY -->
             <div class="offcanvas-body">  
                 {% if file %}
-                <div class="card" style="max-width: 540px;">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-                            <div class="d-flex justify-content-center" 
-                                 style="height: 100%;"><i class="bi bi-filetype-csv align-self-center" style="font-size: 4rem;"></i></div>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">{{file.description}}</h5>
-                                <p class="card-text">Memo added by user</p>
-                                <p class="card-text"><small class="text-muted">Uploaded {{file.uploaded_at|naturaltime|capfirst}}</small></p>
+                <div class="d-grid gap-2" id="fileInfo">
+                        
+                    {% if editing_file %}
+                    <div class="form-floating">
+                        <input type="text" class="form-control" 
+                               unicorn:model.defer="file.title"
+                               id="fileNameText" unicorn:key="fileNameText"
+                               aria-label="File Name">
+                        <label for="fileNameText">Name</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" class="form-control" 
+                               unicorn:model.defer="file.description"
+                               id="fileDescText" unicorn:key="fileDescText"
+                               aria-label="File Description">
+                        <label for="fileDescText">Description</label>
+                    </div>
+                    <button onclick="editing_file=false;" unicorn:click="saveFileInfo" unicorn:partial.id="fileInfo">Save</button>
+                    <button onclick="editing_file=false;" unicorn:click.discard="$toggle('editing_file')" unicorn:partial.id="fileInfo" >Cancel</button>
+                    {% else %}
+                    <div class="card" 
+                         onclick="var editing_file = true;"
+                         unicorn:click="$toggle('editing_file')" 
+                         unicorn:partial.id="fileInfo" style="max-width: 540px;">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <div class="d-flex justify-content-center" 
+                                     style="height: 100%;"><i class="bi bi-filetype-csv align-self-center" style="font-size: 4rem;"></i></div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{file.title}}</h5>
+                                    <p class="card-text">{{file.description}}</p>
+                                    <p class="card-text"><small class="text-muted">Uploaded {{file.uploaded_at|naturaltime|capfirst}}</small></p>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <button type="button" class="btn btn-danger"
+                        id="datafileDeleteButton" unicorn:key="datafileDeleteButton"
+                        unicorn:click="deleteFile({{file.pk}})"
+                        aria-label="Delete data file">
+                            Delete this data file
+                    </button>
+                    {% endif %}
                 </div>
+                
                 {% else %}
                 No data files
                 {% endif %}

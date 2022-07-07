@@ -26,12 +26,6 @@
                                 aria-selected="false">Settings</button>
                     </li> 
                     <li class="nav-item modal-title" role="presentation">
-                        <button class="nav-link fw-bold" id="dataframe-more-tab" 
-                                data-bs-toggle="pill" 
-                                data-bs-target="#dataframeTabContentMore" role="tab" aria-controls="dataframe-more-tab" 
-                                aria-selected="false">More</button>
-                    </li>
-                    <li class="nav-item modal-title" role="presentation">
                         <button class="nav-link fw-bold" id="dataframe-share-tab" 
                                 data-bs-toggle="pill" 
                                 data-bs-target="#dataframeTabContentShare" role="tab" aria-controls="dataframe-share-tab" 
@@ -99,19 +93,6 @@
                                        aria-label="Data File Name">
                                 <label for="filenameText">Data file name</label>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- MORE TAB CONTENT -->
-                <div class="tab-pane fade" id="dataframeTabContentMore" role="tabpanel" aria-labelledby="dataframe-more-tab">
-                     <div class="row g-2" unicorn:key="dataframe-more-row-01">
-                        <div class="col-lg-2">
-                            <button type="button" class="btn btn-danger"
-                                id="datafileDeleteButton" unicorn:key="datafileDeleteButton"
-                                unicorn:click="delete()"
-                                aria-label="Delete data file">
-                                    Delete this data file
-                            </button>
                         </div>
                     </div>
                 </div>

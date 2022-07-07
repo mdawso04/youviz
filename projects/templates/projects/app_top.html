@@ -56,6 +56,8 @@
             var body = document.getElementById("body");
             body.appendChild(loginModal) 
             body.appendChild(datatableModal) 
+            
+            var editing_file = false;
 
             window.addEventListener("DOMContentLoaded", (event) => {
                 Unicorn.addEventListener("updated", (component) =>{
@@ -75,10 +77,11 @@
                     body.appendChild(loginModal); 
                     body.appendChild(datatableModal); 
 
-                    var testOffCanvas = document.getElementById("OFFCANVAS");
-                    var bsoc = bootstrap.Offcanvas.getOrCreateInstance(testOffCanvas);
-                    bsoc.hide();
-
+                    if (editing_file == true) {
+                        var testOffCanvas = document.getElementById("OFFCANVAS");
+                        var bsoc = bootstrap.Offcanvas.getOrCreateInstance(testOffCanvas);
+                        bsoc.hide();
+                    }
                     var testDropdown = document.getElementById("tab-add-dropdown");
                     var bsdd = bootstrap.Dropdown.getOrCreateInstance(testDropdown);
                     bsdd.dispose();
