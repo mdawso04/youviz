@@ -44,17 +44,10 @@ class AppView(UnicornView):
                 if not self.files:
                     self.getRemoteData()
                 if not self.file:
-                    self.file = File.objects.filter(pk=self.project.selected_file).last()
-                    if not self.file:
-                        self.file = File.objects.last()
-                '''
-                filepath= os.path.join(str(settings.MEDIA_ROOT), str(self.file.document))
-                a = pp.App()
-                a.add('READ_CSV', {'src': filepath})
-                df = a.call(return_df=True)
-                df = df[:200]
-                self.datatable = df.to_dict(orient='tight')
-                '''
+                    #self.file = File.objects.filter(pk=self.project.selected_file).last()
+                    self.file = self.files.last()
+                    #if not self.file:
+                    #    self.file = File.objects.last()
                 self.vizs = Viz.objects.filter(file=self.file).all().order_by('-id')
                 if not self.vizs:
                     self.addViz()

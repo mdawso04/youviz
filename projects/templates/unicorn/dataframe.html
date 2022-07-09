@@ -5,117 +5,37 @@
     <div class="modal-dialog modal-xl modal-fullscreen-xl-down" role="document">
         <div class="modal-content">
             <div class="modal-header border-0">
-                <!-- TAB BUTTONS START-->
-                <ul class="nav nav-pills modal-title" id="dataframeTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active fw-bold" id="dataframe-data-tab" 
-                                data-bs-toggle="pill" 
-                                data-bs-target="#dataframeTabContentData" role="tab" aria-controls="dataframe-data-tab" 
-                                aria-selected="true">Data</button>
-                    </li> 
-                    <li class="nav-item modal-title" role="presentation">
-                        <button class="nav-link fw-bold" id="dataframe-stats-tab" 
-                                data-bs-toggle="pill" 
-                                data-bs-target="#dataframeTabContentStats" role="tab" aria-controls="dataframe-stats-tab" 
-                                aria-selected="false">Stats</button>
-                    </li> 
-                    <li class="nav-item modal-title" role="presentation">
-                        <button class="nav-link fw-bold" id="dataframe-settings-tab" 
-                                data-bs-toggle="pill" 
-                                data-bs-target="#dataframeTabContentSettings" role="tab" aria-controls="dataframe-settings-tab" 
-                                aria-selected="false">Settings</button>
-                    </li> 
-                    <li class="nav-item modal-title" role="presentation">
-                        <button class="nav-link fw-bold" id="dataframe-share-tab" 
-                                data-bs-toggle="pill" 
-                                data-bs-target="#dataframeTabContentShare" role="tab" aria-controls="dataframe-share-tab" 
-                                aria-selected="false">Share</button>
-                    </li>
-                </ul>
+                <h3>Data</h3>
                 <!-- TAB BUTTONS END-->
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
         <div class="modal-body">
-            <!-- TAB CONTENT START-->
-            <div class="tab-content" id="dataframeTabContent">
-                <div class="tab-pane fade show active" id="dataframeTabContentData" role="tabpanel" aria-labelledby="dataframe-data-tab">
-                    <div>
-                        <!-- TABLE -->
-                        <table id="table"
-                            data-toggle="table"
-                            data-search="true"
-                            data-show-columns="true"
-                            data-height="450"
-                            data-show-columns-toggle-all="true"
-                            data-show-toggle="true"
-                            data-show-fullscreen="true">
-                            <thead>
-                                <tr>
-                                    {% for column in columns %}
-                                        <th data-field="col-{{ column }}">{{ column }}</th>
-                                    {% endfor %}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for record in records %}
-                                <tr>
-                                    {% for c in record %}
-                                    <td>{{ c }}</td>
-                                    {% endfor %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- MEMO FORM -->
-                    <div class="form-floating pt-2">
-                        <textarea 
-                            {% comment %} unicorn:model.lazy="viz.comment" unicorn:partial="floatingTextarea2{{vid}}" {% endcomment %}
-                            id="dataframeMemo" 
-                            class="form-control" placeholder="Leave a memo here" style="height: 100px"></textarea>
-                        <label for="dataframeMemo">Memo</label>
-                    </div>
-                </div>
-                <!-- STATS TAB CONTENT -->
-                <div class="tab-pane fade" id="dataframeTabContentStats" role="tabpanel" aria-labelledby="dataframe-stats-tab">
-                    Stats
-                </div>
-                <!-- SETTINGS TAB CONTENT -->
-                <div class="tab-pane fade" id="dataframeTabContentSettings" role="tabpanel" aria-labelledby="dataframe-settings-tab">
-                    <div class="row g-2" unicorn:key="dataframe-settings-row-01">
-                        <div class="col-lg-4">
-                            <div class="form-floating">
-                                <input type="text" class="form-control" 
-                                       unicorn:model.lazy="file.description" 
-                                       id="filenameText" unicorn:key="filenameText"
-                                       {% comment %} unicorn:partial.id="{{vid}}-tab" {% endcomment %} 
-                                       unicorn:partial.key="filenameText"
-                                       aria-label="Data File Name">
-                                <label for="filenameText">Data file name</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- SHARE TAB CONTENT -->
-                <div class="tab-pane fade" id="dataframeTabContentShare" role="tabpanel" aria-labelledby="dataframe-share-tab">
-                    <div class="row g-2" unicorn:key="share-row-01-dataframe">
-                        <div class="col-lg-2">
-                            <div id="dataframe-qrcode"></div>
-                            <script type="text/javascript">
-                                var qrcode = new QRCode(document.getElementById("dataframe-qrcode"), {
-                                    text: "{{ request.path }}",
-                                    width: 100,
-                                    height: 100,
-                                    colorDark : "#000000",
-                                    colorLight : "#ffffff",
-                                    correctLevel : QRCode.CorrectLevel.H
-                                });
-                            </script>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- TAB CONTENT END-->
+            <!-- TABLE -->
+            <table id="table"
+                data-toggle="table"
+                data-search="true"
+                data-show-columns="true"
+                data-height="450"
+                data-show-columns-toggle-all="true"
+                data-show-toggle="true"
+                data-show-fullscreen="true">
+                <thead>
+                    <tr>
+                        {% for column in file.columns %}
+                            <th data-field="col-{{ column }}">{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in file.records %}
+                    <tr>
+                        {% for c in record %}
+                        <td>{{ c }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
         <div class="modal-footer border-0">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

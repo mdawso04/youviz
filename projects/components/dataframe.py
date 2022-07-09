@@ -16,12 +16,13 @@ import pandas as pd
 
 class DataframeView(UnicornView):
     file: File = None
-    datatable: dict = {}
+    #datatable: dict = {}
     
 #LOAD/UPDATE
     
     def mount(self):
         #logger.debug('DataframeView > mount start')
+        '''
         if self.file:
             filepath= os.path.join(str(settings.MEDIA_ROOT), str(self.file.document))
             a = pp.App()
@@ -29,6 +30,7 @@ class DataframeView(UnicornView):
             df = a.call(return_df=True)
             df = df[:200]
             self.datatable = df.to_dict(orient='tight')
+        '''
         #logger.debug('DataframeView > mount end')
     
     def hydrate(self):
@@ -70,12 +72,13 @@ class DataframeView(UnicornView):
         logger.debug('DataframeView > complete end')
 
 #RENDER
+    '''
     def columns(self):
         return self.datatable['columns'] if self.datatable else None
     
     def records(self):
         return self.datatable['data'] if self.datatable else None
-    
+    '''
     '''
     def file(self):
         return self.parent.file

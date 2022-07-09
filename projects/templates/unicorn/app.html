@@ -12,7 +12,7 @@
     </div>
     <!-- SPINNER END -->
     <!-- APP START -->
-    <!-- NAVBAR START -->
+    <!-- TOP NAVBAR START -->
     <nav class="navbar navbar-dark bg-dark sticky-top">
         <div class="container-fluid d-flex">
             <a class="navbar-brand me-auto" href="/projects/app">YouViz</a>
@@ -23,14 +23,20 @@
             </button>
         </div>
     </nav>
-    <!--NAVBAR END -->
+    <!-- BOTTOM NAVBAR START -->
+    <nav class="navbar fixed-bottom bg-light">
+        <div class="container-fluid d-flex">
+            Viz settings
+        </div>
+    </nav>
+    <!--BOTTOM NAVBAR END -->
     <!-- MAIN CONTAINER -->
     <div class="container py-3">
         <!-- OFFCANVAS START --> 
         <div class="offcanvas offcanvas-end" tabindex="-1" id="OFFCANVAS" aria-labelledby="offcanvasExampleLabel">
             <!-- HEADER -->
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasExampleLabel">Viz Data</h5>
+                <h5 class="offcanvas-title" id="offcanvasExampleLabel">Data Source</h5>
                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <!-- BODY -->
@@ -69,16 +75,23 @@
                                 <div class="card-body">
                                     <h5 class="card-title">{{file.title}}</h5>
                                     <p class="card-text">{{file.description}}</p>
-                                    <p class="card-text"><small class="text-muted">Uploaded {{file.uploaded_at|naturaltime|capfirst}}</small></p>
+                                    <p class="card-text"><small class="text-muted">Cached {{file.uploaded_at|naturaltime|capfirst}}</small></p>
+                                    <a href="#" class="stretched-link"></a>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <button type="button" class="btn btn-secondary"
+                        id="datafileOpenButton" unicorn:key="datafileOpenButton"
+                        data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable">
+                            Show
+                    </button>
+                    {% unicorn 'dataframe' parent=view file=file id='dataframe' %}
                     <button type="button" class="btn btn-danger"
                         id="datafileDeleteButton" unicorn:key="datafileDeleteButton"
                         unicorn:click="deleteFile({{file.pk}})"
-                        aria-label="Delete data file">
-                            Delete this data file
+                        aria-label="Delete data source">
+                            Delete
                     </button>
                     {% endif %}
                 </div>
@@ -96,32 +109,43 @@
                                     type="button" data-bs-toggle="collapse" 
                                     data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"
                                     {% if files|length == 1 %} disabled{% endif %}>
-                            Select
+                            Change
                             </button>
                         </h2>
                         <!-- ACCORDIAN 1 BODY -->
                         <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                             <div class="accordion-body px-0">
-                                <!-- FILE LIST -->
-                                <div class="list-group list-group-flush">
-                                    {% for f in files %}
-                                        {% if f.pk != file.pk %}
-                                            <a href="#" 
-                                               unicorn:click="setFile({{f.pk}})"
-                                               onclick="bootstrap.Offcanvas.getInstance('#OFFCANVAS').hide();"
-                                               class="list-group-item list-group-item-action" aria-current="true">
-                                                <div class="d-flex w-100 justify-content-between">
-                                                    <h6 class="mb-1">{{f.description}}</h6>
-                                                    {% comment %}<small>{{f.uploaded_at|naturaltime|capfirst}}</small>{% endcomment %}
+                                <div class="d-grid gap-2"> 
+                                {% for f in files %}
+                                    {% if f.pk != file.pk %}
+                                    <!-- ADD FILE LIST -->
+                                        <div class="card"
+                                             unicorn:click="setFile({{f.pk}})"
+                                             onclick="bootstrap.Offcanvas.getInstance('#OFFCANVAS').hide();">
+                                             <div class="row g-0">
+                                                <div class="col-md-3">
+                                                    <div class="d-flex justify-content-center" 
+                                                         style="height: 100%;">
+                                                        <i class="bi bi-filetype-csv align-self-center" 
+                                                           style="font-size: 3rem;"></i>
+                                                    </div>
                                                 </div>
-                                                <small>{{f.uploaded_at|naturaltime|capfirst}}</small>
-                                            </a>
-                                        {% endif %}
-                                    {% empty %}
-                                    No other data files
-                                    {% endfor %}
+                                                <div class="col-md-9">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">{{f.title}}</h5>
+                                                        <p class="card-text">{{f.description}}</p>
+                                                        <p class="card-text"><small class="text-muted">
+                                                            Cached {{file.uploaded_at|naturaltime|capfirst}}</small></p>
+                                                        <a href="#" class="stretched-link"></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% empty %}
+                                No saved data sources
+                                {% endfor %}
                                 </div>
-                                <!-- END FILE LIST -->
                             </div>
                         </div>
                     </div>
@@ -132,65 +156,60 @@
                         <h2 class="accordion-header" id="headingThree">
                             <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" 
                                     data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
-                            Get Remote
+                            Get More
                             </button>
                         </h2>
                         <!-- ACCORDIAN 2 BODY -->
                         <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
                             <div class="accordion-body px-0">
-                                <!-- FILE LIST -->
-                                <div class="list-group list-group-flush">
+                                <!-- ADD FILE LIST -->
+                                <div class="d-grid gap-2"> 
+                                
                                     {% for d in remote_data %}
-                                    <a href="#" unicorn:click="getRemoteData('{{d}}')" 
-                                       onclick="bootstrap.Offcanvas.getInstance('#OFFCANVAS').hide();"
-                                       class="list-group-item list-group-item-action" aria-current="true">
-                                        <div class="d-flex w-100 justify-content-between">
-                                            <h6 class="mb-1">{{d}}</h6>
+                                    <div class="card"
+                                         unicorn:click="getRemoteData('{{d}}')" 
+                                         onclick="bootstrap.Offcanvas.getInstance('#OFFCANVAS').hide();"> 
+                                        <div class="row g-0">
+                                            <div class="col-md-3">
+                                                <div class="d-flex justify-content-center" 
+                                                     style="height: 100%;"><i class="bi bi-filetype-csv align-self-center" 
+                                                                              style="font-size: 3rem;"></i></div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">{{d}}</h5>
+                                                    <p class="card-text">CSV Data</p>
+                                                    <a href="#" class="stretched-link"></a>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <small>Copy this publicly available data to your account</small>
-                                    </a>
+                                    </div>
                                     {% empty %}
                                     No remote data
                                     {% endfor %}
+                                    <div class="card">
+                                         <!-- DROPZONE WIDGET -->
+                                        <div class="container mt-3">
+                                            <form action="/projects/upload/" method="POST" enctype="multipart/form-data" class="dropzone" id="drop">
+                                                {% csrf_token %}
+                                                <div class="fallback">
+                                                    <input name="document" type="file" multiple />
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <script>
+                                            Dropzone.options.drop = { // camelized version of the `id`
+                                                paramName: "document", // The name that will be used to transfer the file
+                                                maxFilesize: 2, // MB
+                                            };
+                                        </script>
+                                        <!-- END DROPZONE -->
+                                    </div>
                                 </div>
-                                <!-- END FILE LIST -->
                             </div>
                         </div>
                     </div>
                     <!-- END ACCORDIAN ITEM 2-->
-
-                   <!-- ACCORDIAN ITEM 3 -->
-                    <div class="accordion-item">
-                        <!-- ACCORDIAN 3 HEADER -->
-                        <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" 
-                                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Upload Local
-                            </button>
-                        </h2>
-                        <!-- ACCORDIAN 3 BODY -->
-                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <!-- DROPZONE WIDGET -->
-                                <div class="container mt-3">
-                                    <form action="/projects/upload/" method="POST" enctype="multipart/form-data" class="dropzone" id="drop">
-                                        {% csrf_token %}
-                                        <div class="fallback">
-                                            <input name="document" type="file" multiple />
-                                        </div>
-                                    </form>
-                                </div>
-                                <script>
-                                    Dropzone.options.drop = { // camelized version of the `id`
-                                        paramName: "document", // The name that will be used to transfer the file
-                                        maxFilesize: 2, // MB
-                                    };
-                                </script>
-                                <!-- END DROPZONE -->
-                            </div>
-                        </div>
-                    </div>
-                    <!-- END ACCORDIAN ITEM 3 -->
                 </div>
                 <!-- END ACCORDIAN -->
             </div>
@@ -204,7 +223,6 @@
             {% with vid="viz-"|add:vids %}
             <li class="nav-item" role="presentation">
                 <button class="nav-link {% if forloop.first %}active {% endif %}fw-bold" id="{{vid}}-tab" 
-                        {% comment %}unicorn:click="activeTab='{{vids}}'"{% endcomment %}
                         data-bs-toggle="pill" 
                         data-bs-target="#{{vid}}" role="tab" aria-controls="{{vid}}" 
                         aria-selected="true">{{v.title}}</button>
@@ -213,8 +231,9 @@
             {% endwith %}
             {% endfor %}
             <li class="nav-item dropdown fw-bold">
-                <a class="nav-link dropdown-toggle" id="tab-add-dropdown" data-bs-toggle="dropdown" href="#" 
-                   role="button" aria-expanded="false">New</a>
+                <a class="nav-link dropdown-toggle py-0" id="tab-add-dropdown" data-bs-toggle="dropdown" href="#" 
+                   role="button" aria-expanded="false">
+                <i class="bi bi-plus-square" style="font-size: 1.7rem;"></i></a>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" unicorn:click="addViz()" href="#">Add</a></li>
                     {% if vizs %}
@@ -224,15 +243,6 @@
                         <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" href="#">Copy {{viz.title}}</a></li>
                     {% endfor %}
                 </ul>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link fw-bold" id="dataframe-tab" 
-                        {% comment %}unicorn:click="activeTab='dataframe'"{% endcomment %}
-                        {% comment %}data-bs-toggle="pill" data-bs-target="#dataframe"{% endcomment %}
-                        data-bs-toggle="modal" data-bs-target="#modalTable"
-                        role="tab" aria-controls="modaltable" aria-selected="false">
-                    <i class="bi bi-box-arrow-up-right" style="font-size: 1.2rem;"></i> Data
-                </button>
             </li>
         </ul>
         <!-- TAB CONTENT -->
@@ -248,7 +258,6 @@
             </div>
             {% endfor %}
             <!-- TAB DF CONTENT -->
-            {% unicorn 'dataframe' parent=view file=file id='dataframe' %}
         </div>
     </div>
     <!-- MAIN CONTAINER END -->

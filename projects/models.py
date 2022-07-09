@@ -1,5 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.functional import cached_property
+
+from project import settings
+
+# pp
+import pp
+from pp.log import logger
+
+#python standard libraries
+import os
+
+#non-standard libraries
+import pandas as pd
 
 # Create your models here.
 class Project(models.Model):
@@ -19,6 +32,36 @@ class File(models.Model):
     
     def __str__(self):
         return self.description
+    
+    @cached_property
+    def datatable(self):
+        if self.document:
+            filepath = os.path.join(str(settings.MEDIA_ROOT), str(self.document))
+            a = pp.App()
+            a.add('READ_CSV', {'src': filepath})
+            df = a.call(return_df=True)
+            return df[:200].to_dict(orient='tight')
+        
+    @cached_property
+    def columns(self):
+        return self.datatable['columns'] if self.datatable else None
+    
+    @cached_property
+    def records(self):
+        return self.datatable['data'] if self.datatable else None
+    
+    def refresh_from_db(self, *args, **kwargs):
+        super(Foo, self).refresh_from_db(*args, **kwargs)
+        cached_properties[
+            'datatable',
+            'columns',
+            'records',
+        ]
+        for property in cached_properties:
+            try:
+                del self.__dict___[property]
+            except KeyError:
+                pass
     
 class Viz(models.Model):
     title = models.CharField(max_length=100, blank=True)
