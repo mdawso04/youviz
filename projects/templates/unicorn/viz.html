@@ -65,143 +65,164 @@
     <!-- MESSAGE BOX -->
     
     <!-- END MESSAGE BOX -->
-    <!-- TABS START -->
-    <!-- TAB BUTTONS -->
-    <ul class="nav nav-pills" id="myTab-{{vid}}" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active fw-bold" id="comment-tab-{{vid}}" data-bs-toggle="pill" 
-                    data-bs-target="#comment-pane-{{vid}}" role="tab" aria-controls="comment-pane" aria-selected="true">
-                <i class="bi bi-sticky" style="font-size: 1.2rem;"></i> Memo
+    
+    
+    <!-- BOTTOM NAVBAR START -->
+    <nav class="navbar fixed-bottom bg-light" id=bottom-navbar-{{vid}}>
+        <div class="container-fluid d-flex">
+            <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" 
+                    data-bs-target="#offcanvasBottom-{{vid}}" aria-controls="offcanvasBottom-{{vid}}">
+                <i class="bi bi-bar-chart" style="font-size: 1.2rem;"></i>
             </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link fw-bold" id="viz-settings-tab-{{vid}}" data-bs-toggle="pill" 
-                    data-bs-target="#viz-settings-pane-{{vid}}" role="tab" aria-controls="viz-settings-pane" aria-selected="false">
-                <i class="bi bi-sliders" style="font-size: 1.2rem;"></i> Settings
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link fw-bold" id="advanced-settings-tab-{{vid}}" data-bs-toggle="pill" 
-                    data-bs-target="#advanced-settings-pane-{{vid}}" role="tab" aria-controls="advanced-settings-pane" aria-selected="false">
-                <i class="bi bi-sticky" style="font-size: 1.2rem;"></i> More
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link fw-bold" id="share-tab-{{vid}}" data-bs-toggle="pill" 
-                    data-bs-target="#share-tab-pane-{{vid}}" role="tab" aria-controls="share-tab-pane" aria-selected="false">
-                <i class="bi bi-share-fill" style="font-size: 1.2rem;"></i> Share
-            </button>
-        </li>
-    </ul>
-    <!-- TAB CONTENT -->
-    <div class="tab-content mt-2" id="myTabContent-{{vid}}" unicorn:key="myTabContent-{{vid}}">
-        <!-- MEMO TAB -->
-        <div class="tab-pane fade show active" id="comment-pane-{{vid}}" role="tabpanel" aria-labelledby="comment-tab-{{vid}}">        
-            <!-- MEMO FORM -->
-            <div class="form-floating">
-                <textarea unicorn:model.lazy="viz.comment" unicorn:partial="floatingTextarea2{{vid}}" id="floatingTextarea2{{vid}}" 
-                          class="form-control" placeholder="Leave a memo here" style="height: 100px"></textarea>
-                <label for="floatingTextarea2{{vid}}">Memo</label>
-            </div>
         </div>
-        <!-- SETTINGS TAB -->
-        <div class="tab-pane fade" id="viz-settings-pane-{{vid}}" unicorn:key=viz-settings-pane-{{vid}} 
-             role="tabpanel" aria-labelledby="viz-settings-tab-{{vid}}">
-            <!-- SETTINGS -->
-            <div class="row g-2" unicorn:key="setting-row-01-{{vid}}">
-                <div class="col-lg-2">
-                    <!-- SELECT {{forloop.counter}} -->
-                    <div class="form-floating">
-                        <input type="text" class="form-control" 
-                               unicorn:model.lazy="viz.title"
-                               id="vizNameText{{vid}}" unicorn:key="vizNameText{{vid}}"
-                               {% comment %} unicorn:partial.id="{{vid}}-tab" {% endcomment %} 
-                               unicorn:partial.key="vizNameText{{vid}}"
-                               aria-label="Viz Name">
-                        <label for="vizNameText{{vid}}">Viz Name</label>
-                    </div>
-                </div>
-                <div class="col-lg-2">
-                    <!-- SELECT {{forloop.counter}} -->
-                    <div class="form-floating">
-                        <select class="form-select" unicorn:model="viz_settings.service.saved" 
-                                id="vizServiceSelect{{vid}}" unicorn:key="vizServiceSelect{{vid}}" 
-                                unicorn:partial.id="outerPlotBox-{{vid}}" unicorn:partial.key="setting-row-01-{{vid}}"
-                                aria-label="Viz Service Select">
-                            <option value="None" {% if viz_settings.service.saved == 'None' %} selected{% endif %}>Select viz</option>
-                            {% for v in viz_settings.service.available.viz %}
-                                <option {% if v == viz_settings.service.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
-                            {% endfor %}
-                        </select>
-                        <label for="vizServiceSelect{{vid}}">Viz Type</label>
-                    </div>
-                </div>  
-                {% for key, value in viz_settings.options.items %}
-                <div class="col-lg-2">
-                    <!-- SELECT {{forloop.counter}} -->
-                    <div class="form-floating">
-                        <select class="form-select" unicorn:model="viz_settings.options.{{key}}.saved" 
-                                id="data{{key|title}}Select{{vid}}" unicorn:key="data{{key|title}}Select{{vid}}" 
-                                unicorn:partial.id="outerPlotBox-{{vid}}" unicorn:partial.key="data{{key|title}}Select{{vid}}"
-                                aria-label="{{key|title}} Select">
-                            <option value="None" {% if value.saved == 'None' %} selected{% endif %}>Select field</option>
-                            {% for v in value.available %}
-                                <option {% if v == value.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
-                            {% endfor %}
-                        </select>
-                        <label for="data{{key|title}}Select{{vid}}">{{key|title}} Field</label>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        <!-- MORE TAB -->
-        <div class="tab-pane fade" id="advanced-settings-pane-{{vid}}" role="tabpanel" aria-labelledby="advanced-settings-tab-{{vid}}">
-            <div class="row g-2" unicorn:key="more-row-01-{{vid}}">
-                <div class="col-lg-4">
-                    <!-- SWITCH 1 -->
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault{{vid}}">
-                        <label class="form-check-label" for="flexSwitchCheckDefault{{vid}}">Exclude missing data</label>
-                    </div>
-                    <!-- SWITCH 2 -->
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked{{vid}}" checked>
-                        <label class="form-check-label" for="flexSwitchCheckChecked{{vid}}">Show legend</label>
-                    </div>
-                </div>
-                <div class="col-lg-2">
-                    <!-- SELECT {{forloop.counter}} -->
-                    <button type="button" class="btn btn-danger"
-                        id="vizDeleteButton{{vid}}" unicorn:key="vizDeleteButton{{vid}}"
-                        {% comment %} unicorn:partial.id="{{vid}}-tab" unicorn:partial.key="vizNameText{{vid}}" {% endcomment %}
-                        unicorn:click="delete()"
-                        {% comment %} onclick="Unicorn.call('app', 'deleteViz', {{viz.pk}});"  {% endcomment %}
-                        aria-label="Viz Name">
-                            Delete viz
+    </nav>
+    <div class="offcanvas offcanvas-bottom" tabindex="-1" data-bs-backdrop="false" id="offcanvasBottom-{{vid}}" aria-labelledby="offcanvasBottomLabel">
+        <div class="offcanvas-header d-flex">
+            <h5 class="offcanvas-title" id="offcanvasBottomLabel">Viz Settings</h5>
+            
+            
+            <!-- TAB BUTTONS -->
+            <ul class="nav nav-pills px-2" id="myTab-{{vid}}" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold active" id="viz-settings-tab-{{vid}}" data-bs-toggle="pill" 
+                            data-bs-target="#viz-settings-pane-{{vid}}" role="tab" aria-controls="viz-settings-pane" aria-selected="false">
+                        <i class="bi bi-sliders" style="font-size: 1.2rem;"></i>
                     </button>
-                </div>
-            </div>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold" id="share-tab-{{vid}}" data-bs-toggle="pill" 
+                            data-bs-target="#share-tab-pane-{{vid}}" role="tab" aria-controls="share-tab-pane" aria-selected="false">
+                        <i class="bi bi-share-fill" style="font-size: 1.2rem;"></i>
+                    </button>
+                </li>
+            </ul>
+            
+            
+            
+            <button type="button" class="btn-close text-reset ms-auto" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <!-- SHARE TAB -->
-        <div class="tab-pane fade" id="share-tab-pane-{{vid}}" role="tabpanel" aria-labelledby="share-tab-{{vid}}">
-             <div class="row g-2" unicorn:key="share-row-01-{{vid}}">
-                <div class="col-lg-2">      
-                    <div id="viz-qrcode-{{vid}}"></div>
-                    <script type="text/javascript">
-                        var qrcode = new QRCode(document.getElementById("viz-qrcode-{{vid}}"), {
-                            text: "{{ request.path }}",
-                            width: 100,
-                            height: 100,
-                            colorDark : "#000000",
-                            colorLight : "#ffffff",
-                            correctLevel : QRCode.CorrectLevel.H
-                        });
-                    </script>
+        <div class="offcanvas-body small pt-0">
+        
+            
+            
+            
+            <!-- TAB CONTENT -->
+            <div class="tab-content mt-2" id="myTabContent-{{vid}}" unicorn:key="myTabContent-{{vid}}">
+                <!-- SETTINGS TAB -->
+                <div class="tab-pane fade show active" id="viz-settings-pane-{{vid}}" unicorn:key=viz-settings-pane-{{vid}} 
+                     role="tabpanel" aria-labelledby="viz-settings-tab-{{vid}}">
+                    <!-- SETTINGS -->
+                    <div class="row g-2" unicorn:key="setting-row-01-{{vid}}">
+                        <div class="col-lg-2">
+                            <!-- SELECT {{forloop.counter}} -->
+                            <div class="form-floating">
+                                <input type="text" class="form-control" 
+                                       unicorn:model.lazy="viz.title"
+                                       id="vizNameText{{vid}}" unicorn:key="vizNameText{{vid}}"
+                                       {% comment %} unicorn:partial.id="{{vid}}-tab" {% endcomment %} 
+                                       unicorn:partial.key="vizNameText{{vid}}"
+                                       aria-label="Viz Name">
+                                <label for="vizNameText{{vid}}">Viz Name</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <!-- SELECT {{forloop.counter}} -->
+                            <div class="form-floating">
+                                <select class="form-select" unicorn:model="viz_settings.service.saved" 
+                                        id="vizServiceSelect{{vid}}" unicorn:key="vizServiceSelect{{vid}}" 
+                                        unicorn:partial.id="outerPlotBox-{{vid}}" unicorn:partial.key="setting-row-01-{{vid}}"
+                                        aria-label="Viz Service Select">
+                                    <option value="None" {% if viz_settings.service.saved == 'None' %} selected{% endif %}>Select viz</option>
+                                    {% for v in viz_settings.service.available.viz %}
+                                        <option {% if v == viz_settings.service.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="vizServiceSelect{{vid}}">Viz Type</label>
+                            </div>
+                        </div>  
+                        {% for key, value in viz_settings.options.items %}
+                        <div class="col-lg-2">
+                            <!-- SELECT {{forloop.counter}} -->
+                            <div class="form-floating">
+                                <select class="form-select" unicorn:model="viz_settings.options.{{key}}.saved" 
+                                        id="data{{key|title}}Select{{vid}}" unicorn:key="data{{key|title}}Select{{vid}}" 
+                                        unicorn:partial.id="outerPlotBox-{{vid}}" unicorn:partial.key="data{{key|title}}Select{{vid}}"
+                                        aria-label="{{key|title}} Select">
+                                    <option value="None" {% if value.saved == 'None' %} selected{% endif %}>Select field</option>
+                                    {% for v in value.available %}
+                                        <option {% if v == value.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="data{{key|title}}Select{{vid}}">{{key|title}} Field</label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="col-lg-2">
+                            <!-- SWITCH 1 -->
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault{{vid}}">
+                                <label class="form-check-label" for="flexSwitchCheckDefault{{vid}}">Exclude missing data</label>
+                            </div>
+                            <!-- SWITCH 2 -->
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked{{vid}}" checked>
+                                <label class="form-check-label" for="flexSwitchCheckChecked{{vid}}">Show legend</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <!-- SELECT {{forloop.counter}} -->
+                            <button type="button" class="btn btn-lg btn-outline-danger"
+                                id="vizDeleteButton{{vid}}" unicorn:key="vizDeleteButton{{vid}}"
+                                {% comment %} unicorn:partial.id="{{vid}}-tab" unicorn:partial.key="vizNameText{{vid}}" {% endcomment %}
+                                unicorn:click="delete()"
+                                {% comment %} onclick="Unicorn.call('app', 'deleteViz', {{viz.pk}});"  {% endcomment %}
+                                aria-label="Viz Name">
+                                    Delete viz
+                            </button>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <!-- SHARE TAB -->
+                <div class="tab-pane fade" id="share-tab-pane-{{vid}}" role="tabpanel" aria-labelledby="share-tab-{{vid}}">
+                     <div class="row g-2" unicorn:key="share-row-01-{{vid}}">
+                        <div class="col-lg-2">      
+                            <div id="viz-qrcode-{{vid}}"></div>
+                            <script type="text/javascript">
+                                var qrcode = new QRCode(document.getElementById("viz-qrcode-{{vid}}"), {
+                                    text: "{{ request.path }}",
+                                    width: 100,
+                                    height: 100,
+                                    colorDark : "#000000",
+                                    colorLight : "#ffffff",
+                                    correctLevel : QRCode.CorrectLevel.H
+                                });
+                            </script>
+                        </div>
+                    </div>
                 </div>
             </div>
+    
+            
+            
+            
+            
+            
+            
+            
+            
         </div>
     </div>
+    <!--BOTTOM NAVBAR END -->
+    
+    <div class="form-floating">
+        <textarea unicorn:model.lazy="viz.comment" unicorn:partial="floatingTextarea2{{vid}}" id="floatingTextarea2{{vid}}" 
+                  class="form-control" placeholder="Leave a memo here" style="height: 120px"></textarea>
+        <label for="floatingTextarea2{{vid}}">Memo</label>
+    </div>
+    
     {% endwith %}
     {% endwith %}
 </div>

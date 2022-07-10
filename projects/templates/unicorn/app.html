@@ -23,13 +23,7 @@
             </button>
         </div>
     </nav>
-    <!-- BOTTOM NAVBAR START -->
-    <nav class="navbar fixed-bottom bg-light">
-        <div class="container-fluid d-flex">
-            Viz settings
-        </div>
-    </nav>
-    <!--BOTTOM NAVBAR END -->
+    
     <!-- MAIN CONTAINER -->
     <div class="container py-3">
         <!-- OFFCANVAS START --> 
@@ -59,8 +53,10 @@
                                aria-label="File Description">
                         <label for="fileDescText">Description</label>
                     </div>
-                    <button onclick="editing_file=false;" unicorn:click="saveFileInfo" unicorn:partial.id="fileInfo">Save</button>
-                    <button onclick="editing_file=false;" unicorn:click.discard="$toggle('editing_file')" unicorn:partial.id="fileInfo" >Cancel</button>
+                    <button class="btn btn-outline-secondary" onclick="editing_file=false;" 
+                            unicorn:click="saveFileInfo" unicorn:partial.id="fileInfo">Save</button>
+                    <button class="btn btn-outline-secondary" onclick="editing_file=false;" 
+                            unicorn:click.discard="$toggle('editing_file')" unicorn:partial.id="fileInfo" >Cancel</button>
                     {% else %}
                     <div class="card" 
                          onclick="var editing_file = true;"
@@ -81,137 +77,147 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-secondary"
+                    <button type="button" class="btn btn-outline-secondary"
                         id="datafileOpenButton" unicorn:key="datafileOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable">
                             Show
                     </button>
                     {% unicorn 'dataframe' parent=view file=file id='dataframe' %}
-                    <button type="button" class="btn btn-danger"
+                    <button type="button" class="btn btn-outline-danger"
                         id="datafileDeleteButton" unicorn:key="datafileDeleteButton"
                         unicorn:click="deleteFile({{file.pk}})"
                         aria-label="Delete data source">
                             Delete
                     </button>
+                    
+                    
+                    
+                    <!--ACCORDIAN START -->
+                    <div class="accordion accordion-flush d-grid gap-2" id="accordionExample">
+                        <!-- ACCORDIAN ITEM 1 -->
+                        <div class="accordion-item border-0">
+                            <!-- ACCORDIAN 1 HEADER -->
+                            <h2 class="accordion-header w-100" id="headingTwo">
+                                <button class="btn btn-outline-secondary w-100 collapsed {% if files|length == 1 %}text-black-50{% endif %}" 
+                                        type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"
+                                        {% if files|length == 1 %} disabled{% endif %}>
+                                Change
+                                </button>
+                            </h2>
+                            <!-- ACCORDIAN 1 BODY -->
+                            <div id="collapseTwo" class="accordion-collapse collapse" 
+                                 aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                <div class="accordion-body px-0">
+                                    <div class="d-grid gap-2"> 
+                                    {% for f in files %}
+                                        {% if f.pk != file.pk %}
+                                        <!-- ADD FILE LIST -->
+                                            <div class="card"
+                                                 unicorn:click="setFile({{f.pk}})"
+                                                 onclick="bootstrap.Offcanvas.getInstance('#OFFCANVAS').hide();">
+                                                 <div class="row g-0">
+                                                    <div class="col-md-3">
+                                                        <div class="d-flex justify-content-center" 
+                                                             style="height: 100%;">
+                                                            <i class="bi bi-filetype-csv align-self-center" 
+                                                               style="font-size: 3rem;"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-9">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">{{f.title}}</h5>
+                                                            <p class="card-text">{{f.description}}</p>
+                                                            <p class="card-text"><small class="text-muted">
+                                                                Cached {{file.uploaded_at|naturaltime|capfirst}}</small></p>
+                                                            <a href="#" class="stretched-link"></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% empty %}
+                                    No saved data sources
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END ACCORDIAN ITEM 1-->
+                       <!-- ACCORDIAN ITEM 2 -->
+                        <div class="accordion-item border-0">
+                            <!-- ACCORDIAN 2 HEADER -->
+                            <h2 class="accordion-header w-100 border-0" id="headingThree">
+                                <button class="btn btn-outline-secondary w-100 collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                                Get More
+                                </button>
+                            </h2>
+                            <!-- ACCORDIAN 2 BODY -->
+                            <div id="collapseThree" class="accordion-collapse collapse" 
+                                 aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                                <div class="accordion-body px-0">
+                                    <!-- ADD FILE LIST -->
+                                    <div class="d-grid gap-2"> 
+
+                                        {% for d in remote_data %}
+                                        <div class="card"
+                                             unicorn:click="getRemoteData('{{d}}')" 
+                                             onclick="bootstrap.Offcanvas.getInstance('#OFFCANVAS').hide();"> 
+                                            <div class="row g-0">
+                                                <div class="col-md-3">
+                                                    <div class="d-flex justify-content-center" 
+                                                         style="height: 100%;"><i class="bi bi-filetype-csv align-self-center" 
+                                                                                  style="font-size: 3rem;"></i></div>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">{{d}}</h5>
+                                                        <p class="card-text">CSV Data</p>
+                                                        <a href="#" class="stretched-link"></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% empty %}
+                                        No remote data
+                                        {% endfor %}
+                                        <div class="card">
+                                             <!-- DROPZONE WIDGET -->
+                                            <div class="container mt-3">
+                                                <form action="/projects/upload/" method="POST" enctype="multipart/form-data" class="dropzone" id="drop">
+                                                    {% csrf_token %}
+                                                    <div class="fallback">
+                                                        <input name="document" type="file" multiple />
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <script>
+                                                Dropzone.options.drop = { // camelized version of the `id`
+                                                    paramName: "document", // The name that will be used to transfer the file
+                                                    maxFilesize: 2, // MB
+                                                };
+                                            </script>
+                                            <!-- END DROPZONE -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END ACCORDIAN ITEM 2-->
+                    </div>
+                    <!-- END ACCORDIAN -->
+                    
+                    
+                    
+                    
                     {% endif %}
                 </div>
                 
                 {% else %}
                 No data files
                 {% endif %}
-                <!--ACCORDIAN START -->
-                <div class="accordion accordion-flush" id="accordionExample">
-                    <!-- ACCORDIAN ITEM 1 -->
-                    <div class="accordion-item">
-                        <!-- ACCORDIAN 1 HEADER -->
-                        <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button fw-bold collapsed {% if files|length == 1 %}text-black-50{% endif %}" 
-                                    type="button" data-bs-toggle="collapse" 
-                                    data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"
-                                    {% if files|length == 1 %} disabled{% endif %}>
-                            Change
-                            </button>
-                        </h2>
-                        <!-- ACCORDIAN 1 BODY -->
-                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                            <div class="accordion-body px-0">
-                                <div class="d-grid gap-2"> 
-                                {% for f in files %}
-                                    {% if f.pk != file.pk %}
-                                    <!-- ADD FILE LIST -->
-                                        <div class="card"
-                                             unicorn:click="setFile({{f.pk}})"
-                                             onclick="bootstrap.Offcanvas.getInstance('#OFFCANVAS').hide();">
-                                             <div class="row g-0">
-                                                <div class="col-md-3">
-                                                    <div class="d-flex justify-content-center" 
-                                                         style="height: 100%;">
-                                                        <i class="bi bi-filetype-csv align-self-center" 
-                                                           style="font-size: 3rem;"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-9">
-                                                    <div class="card-body">
-                                                        <h5 class="card-title">{{f.title}}</h5>
-                                                        <p class="card-text">{{f.description}}</p>
-                                                        <p class="card-text"><small class="text-muted">
-                                                            Cached {{file.uploaded_at|naturaltime|capfirst}}</small></p>
-                                                        <a href="#" class="stretched-link"></a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                {% empty %}
-                                No saved data sources
-                                {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- END ACCORDIAN ITEM 1-->
-                   <!-- ACCORDIAN ITEM 2 -->
-                    <div class="accordion-item">
-                        <!-- ACCORDIAN 2 HEADER -->
-                        <h2 class="accordion-header" id="headingThree">
-                            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" 
-                                    data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
-                            Get More
-                            </button>
-                        </h2>
-                        <!-- ACCORDIAN 2 BODY -->
-                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-                            <div class="accordion-body px-0">
-                                <!-- ADD FILE LIST -->
-                                <div class="d-grid gap-2"> 
-                                
-                                    {% for d in remote_data %}
-                                    <div class="card"
-                                         unicorn:click="getRemoteData('{{d}}')" 
-                                         onclick="bootstrap.Offcanvas.getInstance('#OFFCANVAS').hide();"> 
-                                        <div class="row g-0">
-                                            <div class="col-md-3">
-                                                <div class="d-flex justify-content-center" 
-                                                     style="height: 100%;"><i class="bi bi-filetype-csv align-self-center" 
-                                                                              style="font-size: 3rem;"></i></div>
-                                            </div>
-                                            <div class="col-md-9">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">{{d}}</h5>
-                                                    <p class="card-text">CSV Data</p>
-                                                    <a href="#" class="stretched-link"></a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% empty %}
-                                    No remote data
-                                    {% endfor %}
-                                    <div class="card">
-                                         <!-- DROPZONE WIDGET -->
-                                        <div class="container mt-3">
-                                            <form action="/projects/upload/" method="POST" enctype="multipart/form-data" class="dropzone" id="drop">
-                                                {% csrf_token %}
-                                                <div class="fallback">
-                                                    <input name="document" type="file" multiple />
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <script>
-                                            Dropzone.options.drop = { // camelized version of the `id`
-                                                paramName: "document", // The name that will be used to transfer the file
-                                                maxFilesize: 2, // MB
-                                            };
-                                        </script>
-                                        <!-- END DROPZONE -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- END ACCORDIAN ITEM 2-->
-                </div>
-                <!-- END ACCORDIAN -->
+                
             </div>
         </div>
         <!-- OFFCANVAS END-->
@@ -235,7 +241,7 @@
                    role="button" aria-expanded="false">
                 <i class="bi bi-plus-square" style="font-size: 1.7rem;"></i></a>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" unicorn:click="addViz()" href="#">Add</a></li>
+                    <li><a class="dropdown-item" unicorn:click="addViz()" href="#">New</a></li>
                     {% if vizs %}
                         <li><hr class="dropdown-divider"></li>
                     {% endif %}
