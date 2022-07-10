@@ -80,9 +80,13 @@
                     <button type="button" class="btn btn-outline-secondary"
                         id="datafileOpenButton" unicorn:key="datafileOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable">
-                            Show
+                            View
                     </button>
                     {% unicorn 'dataframe' parent=view file=file id='dataframe' %}
+                    <a type="button" class="btn btn-outline-secondary"
+                        id="datafileDLButton" href="{{file.document.path}}" unicorn:key="datafileDLButton" download>
+                            Download
+                    </a>
                     <button type="button" class="btn btn-outline-danger"
                         id="datafileDeleteButton" unicorn:key="datafileDeleteButton"
                         unicorn:click="deleteFile({{file.pk}})"
@@ -237,7 +241,7 @@
             {% else %}
             {% if forloop.counter == 4 %}
             <li class="nav-item dropdown fw-bold">
-                <a class="nav-link dropdown-toggle py-0" id="tab-more-dropdown" data-bs-toggle="dropdown" href="#" 
+                <a class="nav-link dropdown-toggle no-arrow py-0" id="tab-more-dropdown" data-bs-toggle="dropdown" href="#" 
                    role="button" aria-expanded="false">
                 <i class="bi bi-three-dots" style="font-size: 1.7rem;"></i></a>
                 <ul class="dropdown-menu">
