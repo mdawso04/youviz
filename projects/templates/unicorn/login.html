@@ -11,7 +11,7 @@
     <!-- LOGIN START -->
     <div>
         {% if request.user.is_authenticated %}
-            <span class="navbar-brand mb-0">Hey {{ request.user.username }}!</span>
+            <span class="navbar-brand d-none d-lg-inline mb-0">Hey {{ request.user.username }}!</span>
             <button type="button" class="btn btn-primary me-2" id="logoutButton" data-bs-toggle="modal" 
                     data-bs-target="#staticBackdrop">Logout</button>
         {% else %}

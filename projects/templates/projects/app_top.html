@@ -34,8 +34,6 @@
             z-index: 10000;
             top: 40%;
             left: 0px;
-              {% comment %}opacity: 0.5;
-              filter: alpha(opacity=50);{% endcomment %}
         }
         </style>
     </head>
@@ -45,54 +43,67 @@
         {% unicorn 'app' id='app01' %}
         <script type="application/javascript">
             function elementUpdate(u) {
-                //var element = document.getElementById("viz-121-tab");
+                //update tab name on viz edit
                 var element = document.getElementById(u[0]);
-                element.innerHTML = u[1]; 
-                //alert(u);
+                element.innerHTML = u[1];
             }
             // run on page load
+            
+            //move modals to body for zorder fix
             var loginModal = document.getElementById("staticBackdrop");
             var datatableModal = document.getElementById("modalTable");
             var body = document.getElementById("body");
             body.appendChild(loginModal) 
             body.appendChild(datatableModal) 
             
+            //keep offcanvas open while editing data source
             var editing_file = false;
 
             window.addEventListener("DOMContentLoaded", (event) => {
                 Unicorn.addEventListener("updated", (component) =>{
-                    // load vizs
+                    
+                    // reload js / reset dom after ajax calls
+                    
+                    // edited viz
                     var arr = document.getElementsByClassName("youVizOnUpdate"); // only refreshed viz/s
                     for (var n = 0; n < arr.length; n++) {
                         eval(arr[n].innerHTML); // run script
-                        //arr[n].classList.remove("youVizOnUpdate");// remove 'toBeUpdated' class 
                     }
 
-                    //var bsTable = document.getElementById("table");
+                    //bootstrap table
                     $('#tableId').bootstrapTable(); // init via javascript
 
+                    // modals
                     var loginModal = document.getElementById("staticBackdrop");
                     var datatableModal = document.getElementById("modalTable");
                     var body = document.getElementById("body");
                     body.appendChild(loginModal); 
                     body.appendChild(datatableModal); 
-
+                    
+                    // data source off canvas
                     if (editing_file == true) {
                         var testOffCanvas = document.getElementById("OFFCANVAS");
                         var bsoc = bootstrap.Offcanvas.getOrCreateInstance(testOffCanvas);
                         bsoc.hide();
                     }
-                    var testDropdown = document.getElementById("tab-add-dropdown");
-                    var bsdd = bootstrap.Dropdown.getOrCreateInstance(testDropdown);
-                    bsdd.dispose();
-                    var bsdd = bootstrap.Dropdown.getOrCreateInstance(testDropdown);
+                    
+                    // dropdowns
+                    var tad = document.getElementById("tab-add-dropdown");
+                    var bsddone = bootstrap.Dropdown.getOrCreateInstance(tad);
+                    bsddone.dispose();
+                    var bsddone = bootstrap.Dropdown.getOrCreateInstance(tad);
+                    
+                    var tmd = document.getElementById("tab-more-dropdown");
+                    var bsddtwo = bootstrap.Dropdown.getOrCreateInstance(tmd);
+                    bsddtwo.dispose();
+                    var bsddtwo = bootstrap.Dropdown.getOrCreateInstance(tmd);
 
+                    //dropzone
                     var myDropzone = Dropzone.forElement("#drop");
-                    myDropzone.destroy();
-                    var myDropzone = new Dropzone("#drop");
-
-                    //alert(component.name);
-
+                    if (myDropzone != undefined){
+                        myDropzone.destroy();
+                        var myDropzone = new Dropzone("#drop");
+                    }
                 });
             });
         </script>

@@ -227,26 +227,46 @@
             {% for v in vizs %}
             {% with vids=v.pk|stringformat:"s" %}
             {% with vid="viz-"|add:vids %}
+            {% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 %}
             <li class="nav-item" role="presentation">
                 <button class="nav-link {% if forloop.first %}active {% endif %}fw-bold" id="{{vid}}-tab" 
                         data-bs-toggle="pill" 
                         data-bs-target="#{{vid}}" role="tab" aria-controls="{{vid}}" 
-                        aria-selected="true">{{v.title}}</button>
-            </li> 
+                        aria-selected="true">{{v.title|title}}</button>
+            </li>
+            {% else %}
+            {% if forloop.counter == 4 %}
+            <li class="nav-item dropdown fw-bold">
+                <a class="nav-link dropdown-toggle py-0" id="tab-more-dropdown" data-bs-toggle="dropdown" href="#" 
+                   role="button" aria-expanded="false">
+                <i class="bi bi-three-dots" style="font-size: 1.7rem;"></i></a>
+                <ul class="dropdown-menu">
+            {% endif %}
+            {% if forloop.counter >= 4 %}
+                    <li><a class="dropdown-item" id="{{vid}}-tab" href="#"
+                           data-bs-toggle="pill"
+                           data-bs-target="#{{vid}}" aria-controls="{{vid}}">{{v.title|title}}</a>
+                    </li>
+            {% endif %}
+            {% if forloop.last%}
+                </ul>    
+            </li>
+            {% endif %}
+            {% endif %}
             {% endwith %}
             {% endwith %}
             {% endfor %}
             <li class="nav-item dropdown fw-bold">
-                <a class="nav-link dropdown-toggle py-0" id="tab-add-dropdown" data-bs-toggle="dropdown" href="#" 
+                <a class="nav-link py-0" id="tab-add-dropdown" data-bs-toggle="dropdown" href="#" 
                    role="button" aria-expanded="false">
-                <i class="bi bi-plus-square" style="font-size: 1.7rem;"></i></a>
+                <i class="bi bi-plus" style="font-size: 1.7rem;"></i></a>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" unicorn:click="addViz()" href="#">New</a></li>
                     {% if vizs %}
-                        <li><hr class="dropdown-divider"></li>
+                    <li><hr class="dropdown-divider"></li>
                     {% endif %}
                     {% for viz in vizs %}
-                        <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" href="#">Copy {{viz.title}}</a></li>
+                    <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" href="#">Copy {{viz.title|title}}</a></li>
                     {% endfor %}
                 </ul>
             </li>

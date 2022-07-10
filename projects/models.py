@@ -29,6 +29,7 @@ class File(models.Model):
     document = models.FileField(upload_to='files/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, default=1)
+    selected_viz = models.IntegerField(null=True, blank=True)
     
     def __str__(self):
         return self.description
