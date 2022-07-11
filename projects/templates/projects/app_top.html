@@ -102,11 +102,14 @@
                     var bsddtwo = bootstrap.Dropdown.getOrCreateInstance(tmd);
 
                     //dropzone
-                    var myDropzone = Dropzone.forElement("#drop");
-                    if (myDropzone != undefined){
-                        myDropzone.destroy();
-                        var myDropzone = new Dropzone("#drop");
-                    }
+                    var dzElement = document.querySelector("#drop");
+                    var myDropzone;
+                    if (dzElement) {
+                        if (dzElement.dropzone) {
+                        dzElement.dropzone.destroy();
+                        }
+                        myDropzone = new Dropzone("#drop");
+                    };
                 });
             });
         </script>
