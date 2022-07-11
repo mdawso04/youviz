@@ -91,15 +91,18 @@
                     }
                     
                     // dropdowns
+                    // add-dropdown always available
                     var tad = document.getElementById("tab-add-dropdown");
                     var bsddone = bootstrap.Dropdown.getOrCreateInstance(tad);
                     bsddone.dispose();
                     var bsddone = bootstrap.Dropdown.getOrCreateInstance(tad);
                     
+                    // more-dropdown only available 4+ vizs
                     var tmd = document.getElementById("tab-more-dropdown");
-                    var bsddtwo = bootstrap.Dropdown.getOrCreateInstance(tmd);
-                    bsddtwo.dispose();
-                    var bsddtwo = bootstrap.Dropdown.getOrCreateInstance(tmd);
+                    if (tmd) {
+                        bootstrap.Dropdown.getOrCreateInstance(tmd).dispose();
+                        bootstrap.Dropdown.getOrCreateInstance(tmd);
+                    }
 
                     //dropzone
                     var dzElement = document.querySelector("#drop");
