@@ -1,4 +1,6 @@
 django
+gunicorn
 django-debug-toolbar
+django_heroku
 django_unicorn
 pandas-plotly
