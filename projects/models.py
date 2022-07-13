@@ -10,6 +10,8 @@ from pp.log import logger
 
 #python standard libraries
 import os
+from io import StringIO
+StringIO
 
 #non-standard libraries
 import pandas as pd
@@ -26,7 +28,8 @@ class Project(models.Model):
 class File(models.Model):
     title = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=255, blank=True)
-    document = models.FileField(upload_to='files/')
+    #document = models.FileField(upload_to='files/')
+    document = models.TextField()
     uploaded_at = models.DateTimeField(auto_now_add=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, default=1)
     selected_viz = models.IntegerField(null=True, blank=True)
@@ -37,11 +40,24 @@ class File(models.Model):
     @cached_property
     def datatable(self):
         if self.document:
-            filepath = os.path.join(str(settings.MEDIA_ROOT), str(self.document))
-            a = pp.App()
-            a.add('READ_CSV', {'src': filepath})
-            df = a.call(return_df=True)
+            #filepath = os.path.join(str(settings.MEDIA_ROOT), str(self.document))
+            #a = pp.App()
+            #a.add('READ_CSV', {'src': filepath})
+            #df = a.call(return_df=True)
+            # store csv in db, so no need to read from disk
+            io = StringIO(self.document)
+            df = pd.read_csv(io)
             return df[:200].to_dict(orient='tight')
+        
+    @cached_property
+    def databuffer(self):
+        if self.document:
+            #filepath = os.path.join(str(settings.MEDIA_ROOT), str(self.document))
+            #a = pp.App()
+            #a.add('READ_CSV', {'src': filepath})
+            #df = a.call(return_df=True)
+            # store csv in db, so no need to read from disk
+            return StringIO(self.document)
         
     @cached_property
     def columns(self):

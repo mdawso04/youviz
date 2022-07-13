@@ -11,6 +11,7 @@ from pp.log import logger
 #python standard libraries
 import os
 import pprint
+from copy import *
 
 #non-standard libraries
 import pandas as pd
@@ -34,7 +35,13 @@ class VizView(UnicornView):
     
     def load_viz(self):
         #logger.debug('VizView > load_viz start')
-        a = pp.App(self.viz.json)
+        
+        #temp patch to load csv from db
+        copied_json = deepcopy(self.viz.json)
+        copied_json[0]['options']['src'] = self.parent.file.databuffer
+        
+        #a = pp.App(self.viz.json)
+        a = pp.App(copied_json)
         self.viz_settings = a.data()
         for v in self.viz_settings['options'].values():
             if v['saved'] is None:

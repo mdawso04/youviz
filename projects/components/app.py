@@ -97,7 +97,8 @@ class AppView(UnicornView):
         return redirect('/projects/app')
         
     def deleteFile(self, pk):
-        self.file.document.delete()
+        # no files on disk so delete this
+        #self.file.document.delete()
         self.file.delete()
         self.files = File.objects.none()
         self.file = None
@@ -118,9 +119,11 @@ class AppView(UnicornView):
     def addViz(self, viz_type='NewViz'):
         #logger.debug('AppView > addViz start')
         #df = self.df()
-        filepath= os.path.join(str(settings.MEDIA_ROOT), str(self.file.document))
+        #read from db so patch this
+        #filepath= os.path.join(str(settings.MEDIA_ROOT), str(self.file.document))
         a = pp.App()
-        a.add('READ_CSV', {'src': filepath})
+        #a.add('READ_CSV', {'src': filepath})
+        a.add('READ_CSV', {'src': self.file.pk})
         a.add('VIZ_HIST', {'x': 'Age'})
         json = a.todos
         v = Viz(file=self.file, title=viz_type, json=json)
@@ -148,9 +151,10 @@ class AppView(UnicornView):
         a.add(service)
         df = a.call()
         content = df.to_csv(index=False)
-        temp_file = ContentFile(content.encode('utf-8'))
-        f = File(description=f'{service}.csv', project=self.project)
-        f.document.save(f'{service}.csv', temp_file)
+        # no files on disk so delete
+        #temp_file = ContentFile(content.encode('utf-8'))
+        f = File(description=f'{service}.csv', project=self.project, document=content)
+        #f.document.save(f'{service}.csv', temp_file)
         f.save()
         self.file = f
         self.load_table()
