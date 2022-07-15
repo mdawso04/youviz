@@ -79,7 +79,7 @@
         </div>
     </nav>
     <div class="offcanvas offcanvas-bottom" tabindex="-1" data-bs-backdrop="false" data-bs-scroll="true" 
-         id="offcanvasBottom-{{vid}}" aria-labelledby="offcanvasBottomLabel">
+         id="offcanvasBottom-{{vid}}" aria-labelledby="offcanvasBottomLabel" style="height: 300px;">
         <div class="offcanvas-header d-flex">
             <h5 class="offcanvas-title" id="offcanvasBottomLabel">Viz Settings</h5>
             
@@ -219,6 +219,11 @@
         </div>
     </div>
     <!--BOTTOM NAVBAR END -->
+    <script type="javascript">
+        var r = document.querySelector('#offcanvasBottom-{{vid}}');
+        alert(r);
+        r.style.setProperty('--#offcanvas-height', '600px');
+    </script>
     
     <div class="form-floating">
         <textarea unicorn:model.lazy="viz.comment" unicorn:partial="floatingTextarea2{{vid}}" id="floatingTextarea2{{vid}}" 
