@@ -21,7 +21,7 @@
                  var data = JSON.parse('{{plot_data|safe}}');
                  var layout = JSON.parse('{{plot_layout|safe}}');
                  //var config = {responsive: true};
-                 Plotly.react("plotBox-{{vid}}", data, layout, {editable: true, displayModeBar: false, scrollZoom: true});
+                 Plotly.react("plotBox-{{vid}}", data, layout, {displayModeBar: false, scrollZoom: true});
 
                  /*
                  resizeTarget = document.getElementById("plotBox-{{vid}}");
