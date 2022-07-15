@@ -21,7 +21,7 @@
                  var data = JSON.parse('{{plot_data|safe}}');
                  var layout = JSON.parse('{{plot_layout|safe}}');
                  //var config = {responsive: true};
-                 layout.height = 420;
+                 layout.height = 400;
                  layout.margin.t = 0;
                  layout.margin.b = 68;
                  Plotly.react("plotBox-{{vid}}", data, layout, {displayModeBar: false, scrollZoom: true});
