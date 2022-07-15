@@ -16,6 +16,42 @@
     <nav class="navbar navbar-dark bg-dark sticky-top">
         <div class="container-fluid d-flex">
             <a class="navbar-brand me-auto" href="/projects/app">YouViz</a>
+        
+            
+            
+            <!-- TAB BUTTONS -->
+            <ul class="nav nav-pills pe-4" role="tablist">
+                <li class="nav-item dropdown fw-bold">
+                    <a class="nav-link dropdown-toggle py-0 active" id="tab-more-dropdown" data-bs-toggle="dropdown" href="#" 
+                       role="button" aria-expanded="false">
+                        <i class="bi bi-three-dots" style="font-size: 1.7rem;"></i>
+                    </a>
+                    <ul class="dropdown-menu" id="myTab">
+                {% for v in vizs %}
+                {% with vids=v.pk|stringformat:"s" %}
+                {% with vid="viz-"|add:vids %}
+                        <li><a class="dropdown-item {% if forloop.first %}active {% endif %}" id="{{vid}}-tab" href="#"
+                               {% comment %}unicorn:click="selectViz({{v.pk}})" unicorn:partial.id="myTab"{% endcomment %}
+                               data-bs-toggle="pill"
+                               data-bs-target="#{{vid}}" aria-controls="{{vid}}">
+                               {{v.title|title}}
+                            </a>
+                        </li>
+                {% endwith %}
+                {% endwith %}
+                {% endfor %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" unicorn:click="addViz()" href="#">New</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                {% for viz in vizs %}
+                        <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" href="#">Copy {{viz.title|title}}</a></li>
+                {% endfor %}
+                    </ul>    
+                </li>
+            </ul>
+            <!-- END TAB BUTTONS -->
+
+            
             {% unicorn 'login' parent=view id='login' %}
             <button id="off-canvas-button" class="navbar-toggler d-block" type="button" data-bs-toggle="offcanvas" 
                     data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
@@ -53,9 +89,9 @@
                                aria-label="File Description">
                         <label for="fileDescText">Description</label>
                     </div>
-                    <button class="btn btn-outline-secondary" onclick="editing_file=false;" 
+                    <button class="btn btn-primary" onclick="editing_file=false;" 
                             unicorn:click="saveFileInfo" unicorn:partial.id="fileInfo">Save</button>
-                    <button class="btn btn-outline-secondary" onclick="editing_file=false;" 
+                    <button class="btn btn-secondary" onclick="editing_file=false;" 
                             unicorn:click.discard="$toggle('editing_file')" unicorn:partial.id="fileInfo" >Cancel</button>
                     {% else %}
                     <div class="card" 
@@ -77,24 +113,22 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-outline-secondary"
+                    <button type="button" class="btn btn-primary"
                         id="datafileOpenButton" unicorn:key="datafileOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable">
                             View
                     </button>
                     {% unicorn 'dataframe' parent=view file=file id='dataframe' %}
-                    <a type="button" class="btn btn-outline-secondary"
-                        id="datafileDLButton" href="{{file.document.path}}" unicorn:key="datafileDLButton" download>
-                            Download
-                    </a>
-                    <button type="button" class="btn btn-outline-danger"
+                    <button type="button" class="btn btn-danger"
                         id="datafileDeleteButton" unicorn:key="datafileDeleteButton"
                         unicorn:click="deleteFile({{file.pk}})"
                         aria-label="Delete data source">
                             Delete
                     </button>
-                    
-                    
+                    <button type="button" class="btn btn-outline-secondary"
+                        id="datafileDLButton" href="{{file.document.path}}" unicorn:key="datafileDLButton" download>
+                            Download
+                    </button>
                     
                     <!--ACCORDIAN START -->
                     <div class="accordion accordion-flush d-grid gap-2" id="accordionExample">
@@ -227,54 +261,7 @@
         <!-- OFFCANVAS END-->
         <!-- TABS START -->
         <!-- TAB BUTTONS -->
-        <ul class="nav nav-pills" id="myTab" role="tablist">
-            {% for v in vizs %}
-            {% with vids=v.pk|stringformat:"s" %}
-            {% with vid="viz-"|add:vids %}
-            {% if forloop.counter == 1 or forloop.counter == 2 or forloop.counter == 3 %}
-            <li class="nav-item" role="presentation">
-                <button class="nav-link {% if forloop.first %}active {% endif %}fw-bold" id="{{vid}}-tab" 
-                        data-bs-toggle="pill" 
-                        data-bs-target="#{{vid}}" role="tab" aria-controls="{{vid}}" 
-                        aria-selected="true">{{v.title|title}}</button>
-            </li>
-            {% else %}
-            {% if forloop.counter == 4 %}
-            <li class="nav-item dropdown fw-bold">
-                <a class="nav-link dropdown-toggle no-arrow py-0" id="tab-more-dropdown" data-bs-toggle="dropdown" href="#" 
-                   role="button" aria-expanded="false">
-                <i class="bi bi-three-dots" style="font-size: 1.7rem;"></i></a>
-                <ul class="dropdown-menu">
-            {% endif %}
-            {% if forloop.counter >= 4 %}
-                    <li><a class="dropdown-item" id="{{vid}}-tab" href="#"
-                           data-bs-toggle="pill"
-                           data-bs-target="#{{vid}}" aria-controls="{{vid}}">{{v.title|title}}</a>
-                    </li>
-            {% endif %}
-            {% if forloop.last%}
-                </ul>    
-            </li>
-            {% endif %}
-            {% endif %}
-            {% endwith %}
-            {% endwith %}
-            {% endfor %}
-            <li class="nav-item dropdown fw-bold">
-                <a class="nav-link py-0" id="tab-add-dropdown" data-bs-toggle="dropdown" href="#" 
-                   role="button" aria-expanded="false">
-                <i class="bi bi-plus" style="font-size: 1.7rem;"></i></a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" unicorn:click="addViz()" href="#">New</a></li>
-                    {% if vizs %}
-                    <li><hr class="dropdown-divider"></li>
-                    {% endif %}
-                    {% for viz in vizs %}
-                    <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" href="#">Copy {{viz.title|title}}</a></li>
-                    {% endfor %}
-                </ul>
-            </li>
-        </ul>
+        <!-- END TAB BUTTONS -->
         <!-- TAB CONTENT -->
         <div class="tab-content" id="myTabContent">
             {% for v in vizs %}

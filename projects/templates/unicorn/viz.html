@@ -21,7 +21,7 @@
                  var data = JSON.parse('{{plot_data|safe}}');
                  var layout = JSON.parse('{{plot_layout|safe}}');
                  //var config = {responsive: true};
-                 Plotly.react("plotBox-{{vid}}", data, layout);
+                 Plotly.react("plotBox-{{vid}}", data, layout, {editable: true, displayModeBar: false, scrollZoom: true});
 
                  /*
                  resizeTarget = document.getElementById("plotBox-{{vid}}");
@@ -76,7 +76,8 @@
             </button>
         </div>
     </nav>
-    <div class="offcanvas offcanvas-bottom" tabindex="-1" data-bs-backdrop="false" id="offcanvasBottom-{{vid}}" aria-labelledby="offcanvasBottomLabel">
+    <div class="offcanvas offcanvas-bottom" tabindex="-1" data-bs-backdrop="false" data-bs-scroll="true" 
+         id="offcanvasBottom-{{vid}}" aria-labelledby="offcanvasBottomLabel">
         <div class="offcanvas-header d-flex">
             <h5 class="offcanvas-title" id="offcanvasBottomLabel">Viz Settings</h5>
             
@@ -172,7 +173,7 @@
                         </div>
                         <div class="col-lg-2">
                             <!-- SELECT {{forloop.counter}} -->
-                            <button type="button" class="btn btn-lg btn-outline-danger"
+                            <button type="button" class="btn btn-lg btn-danger"
                                 id="vizDeleteButton{{vid}}" unicorn:key="vizDeleteButton{{vid}}"
                                 {% comment %} unicorn:partial.id="{{vid}}-tab" unicorn:partial.key="vizNameText{{vid}}" {% endcomment %}
                                 unicorn:click="delete()"

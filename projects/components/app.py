@@ -24,6 +24,7 @@ class AppView(UnicornView):
     editing_file = False
     #datatable: dict = {}
     vizs = Viz.objects.none()
+    selected_viz: Viz = None
     
 #LOAD/UPDATE
     
@@ -51,6 +52,8 @@ class AppView(UnicornView):
                 self.vizs = Viz.objects.filter(file=self.file).all().order_by('-id')
                 if not self.vizs:
                     self.addViz()
+                if not self.selected_viz:
+                    self.selected_viz = self.vizs.last()
                 #logger.debug('AppView > load_table (user authenticated) end')
             else:
                 #logger.debug('AppView > load_table (user not authenticated) start')
@@ -144,6 +147,11 @@ class AppView(UnicornView):
         v = Viz.objects.get(pk=pk)
         v.delete()
         self.load_table()
+        
+    def selectViz(self, pk):
+        #Viz.objects.filter(pk=pk).delete()
+        self.file.selected_viz = pk
+        self.file.save()
         
     def getRemoteData(self, service='READ_DATA_ATTRITION'):
         #logger.debug('AppView > addRemoteFile start')
