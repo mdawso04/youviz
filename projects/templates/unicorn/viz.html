@@ -21,7 +21,7 @@
                  var data = JSON.parse('{{plot_data|safe}}');
                  var layout = JSON.parse('{{plot_layout|safe}}');
                  //var config = {responsive: true};
-                 layout.height = 390;
+                 layout.height = 380;
                  layout.margin.t = 0;
                  layout.margin.b = 68;
                  Plotly.react("plotBox-{{vid}}", data, layout, {displayModeBar: false, scrollZoom: true});
@@ -228,7 +228,7 @@
     
     <div class="form-floating px-2">
         <textarea unicorn:model.lazy="viz.comment" unicorn:partial="floatingTextarea2{{vid}}" id="floatingTextarea2{{vid}}" 
-                  class="form-control" placeholder="Leave a memo here" style="height: 110px"></textarea>
+                  class="form-control" placeholder="Leave a memo here" style="height: 120px"></textarea>
         <label for="floatingTextarea2{{vid}}">Memo</label>
     </div>
     
