@@ -26,6 +26,9 @@ class AppView(UnicornView):
     vizs = Viz.objects.none()
     selected_viz: Viz = None
     
+    class Meta:
+        javascript_exclude = ('project', 'files', 'file', 'editing_file', 'vizs', 'selected_viz') 
+    
 #LOAD/UPDATE
     
     def mount(self):

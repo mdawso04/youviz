@@ -1,12 +1,12 @@
 <div>
     <!-- VIZ SPINNER START -->
-    <div unicorn:loading class="overlay">
+    <!--<div unicorn:loading class="overlay">
         <div class="d-flex justify-content-center">  
             <div class="spinner-grow text-danger" role="status" style="width: 3rem; height: 3rem; z-index: 20;">
                 <span class="sr-only">Loading...</span>
             </div>
         </div>
-    </div>
+    </div>-->
     <!-- SPINNER END -->
     <!-- PLOT -->
     {% with vids=viz.pk|stringformat:"s" %}
@@ -134,7 +134,8 @@
                             <div class="form-floating">
                                 <select class="form-select" unicorn:model="viz_settings.service.saved" 
                                         id="vizServiceSelect{{vid}}" unicorn:key="vizServiceSelect{{vid}}" 
-                                        unicorn:partial.id="outerPlotBox-{{vid}}" unicorn:partial.key="setting-row-01-{{vid}}"
+                                        unicorn:partial.id="outerPlotBox-{{vid}}" 
+                                        {% comment %}unicorn:partial.key="setting-row-01-{{vid}}"{% endcomment %}
                                         aria-label="Viz Service Select">
                                     <option value="None" {% if viz_settings.service.saved == 'None' %} selected{% endif %}>Select viz</option>
                                     {% for v in viz_settings.service.available.viz %}

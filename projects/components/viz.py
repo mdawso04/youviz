@@ -24,7 +24,7 @@ class VizView(UnicornView):
     plot: str = None
     
     class Meta:
-        exclude = ('plot', )   
+        exclude = ('plot', )
     
 #LOAD/UPDATE
 
