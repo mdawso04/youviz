@@ -27,7 +27,7 @@ class AppView(UnicornView):
     selected_viz: Viz = None
     
     class Meta:
-        javascript_exclude = ('project', 'files', 'file', 'editing_file', 'vizs', 'selected_viz') 
+        javascript_exclude = ('project', 'files', 'file.document', 'vizs', 'selected_viz') 
     
 #LOAD/UPDATE
     

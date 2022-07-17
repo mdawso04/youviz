@@ -15,7 +15,7 @@
         <div id="outerPlotBox-{{vid}}">
             <div id="plotBox-{{vid}}">
             </div>
-            <script src="https://cdn.plot.ly/plotly-2.8.3.min.js"></script>
+            <!--<script src="https://cdn.plot.ly/plotly-2.8.3.min.js"></script>-->
             <script class="youVizOnLoad youVizOnUpdate" type="application/javascript">
                 {% if plot_data %}
                  var data = JSON.parse('{{plot_data|safe}}');
@@ -123,7 +123,6 @@
                                 <input type="text" class="form-control" 
                                        unicorn:model.lazy="viz.title"
                                        id="vizNameText{{vid}}" unicorn:key="vizNameText{{vid}}"
-                                       {% comment %} unicorn:partial.id="{{vid}}-tab" {% endcomment %} 
                                        unicorn:partial.key="vizNameText{{vid}}"
                                        aria-label="Viz Name">
                                 <label for="vizNameText{{vid}}">Viz Name</label>
@@ -209,14 +208,6 @@
                     </div>
                 </div>
             </div>
-    
-            
-            
-            
-            
-            
-            
-            
             
         </div>
     </div>

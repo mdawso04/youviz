@@ -71,6 +71,7 @@ class File(models.Model):
         super(Foo, self).refresh_from_db(*args, **kwargs)
         cached_properties[
             'datatable',
+            'databuffer',
             'columns',
             'records',
         ]

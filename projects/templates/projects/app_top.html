@@ -23,6 +23,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
                 integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
+        <script src="https://cdn.plot.ly/plotly-2.8.3.min.js"></script>
         {% unicorn_scripts %}
         {% load static %}
         <script src="{% static 'projects/js/qrcode.min.js' %}"></script>
@@ -47,8 +48,11 @@
         <script type="application/javascript">
             function elementUpdate(u) {
                 //update tab name on viz edit
-                var element = document.getElementById(u[0]);
-                element.innerHTML = u[1];
+                for (var n = 0; n < u.length; n++) {
+                    var id = u[n][0];
+                    var value = u[n][1];
+                    document.getElementById(id).innerHTML = value;
+                }
             }
             // run on page load
             
@@ -59,7 +63,7 @@
             body.appendChild(loginModal) 
             body.appendChild(datatableModal) 
             
-            //keep offcanvas open while editing data source
+            //global toggle to keep offcanvas open while editing data source
             var editing_file = false;
             
             //window.addEventListener("deviceorientation", (event) => {
@@ -73,54 +77,56 @@
             window.addEventListener("DOMContentLoaded", (event) => {
                 Unicorn.addEventListener("updated", (component) =>{
                     
-                    // reload js / reset dom after ajax calls
-                    
-                    // edited viz
-                    var arr = document.getElementsByClassName("youVizOnUpdate"); // only refreshed viz/s
-                    for (var n = 0; n < arr.length; n++) {
-                        eval(arr[n].innerHTML); // run script
-                    }
-
-                    //bootstrap table
-                    $('#table').bootstrapTable(); // init via javascript
-
-                    // modals
-                    var loginModal = document.getElementById("staticBackdrop");
-                    var datatableModal = document.getElementById("modalTable");
-                    var body = document.getElementById("body");
-                    body.appendChild(loginModal); 
-                    body.appendChild(datatableModal); 
-                    
-                    // data source off canvas
-                    if (editing_file == true) {
-                        var testOffCanvas = document.getElementById("OFFCANVAS");
-                        var bsoc = bootstrap.Offcanvas.getOrCreateInstance(testOffCanvas);
-                        bsoc.hide();
-                    }
-                    
-                    // dropdowns
-                    // add-dropdown always available
-                    //var tad = document.getElementById("tab-add-dropdown");
-                    //var bsddone = bootstrap.Dropdown.getOrCreateInstance(tad);
-                    //bsddone.dispose();
-                    //var bsddone = bootstrap.Dropdown.getOrCreateInstance(tad);
-                    
-                    // more-dropdown only available 4+ vizs
-                    var tmd = document.getElementById("tab-more-dropdown");
-                    if (tmd) {
-                        bootstrap.Dropdown.getOrCreateInstance(tmd).dispose();
-                        bootstrap.Dropdown.getOrCreateInstance(tmd);
-                    }
-
-                    //dropzone
-                    var dzElement = document.querySelector("#drop");
-                    var myDropzone;
-                    if (dzElement) {
-                        if (dzElement.dropzone) {
-                        dzElement.dropzone.destroy();
+                    if (component.name == 'app') {
+                        // data source off canvas
+                        if (editing_file == true) {
+                            var testOffCanvas = document.getElementById("OFFCANVAS");
+                            var bsoc = bootstrap.Offcanvas.getOrCreateInstance(testOffCanvas);
+                            bsoc.hide();
                         }
-                        myDropzone = new Dropzone("#drop");
-                    };
+
+                        // dropdown menu
+                        var tmd = document.getElementById("tab-more-dropdown");
+                        if (tmd) {
+                            bootstrap.Dropdown.getOrCreateInstance(tmd).dispose();
+                            bootstrap.Dropdown.getOrCreateInstance(tmd);
+                        }
+
+                        //dropzone
+                        var dzElement = document.querySelector("#drop");
+                        var myDropzone;
+                        if (dzElement) {
+                            if (dzElement.dropzone) {
+                            dzElement.dropzone.destroy();
+                            }
+                            myDropzone = new Dropzone("#drop");
+                        };
+                    }
+                    
+                    if (component.name == 'login') {
+                        // append modals to prevent z-layer issues
+                        var loginModal = document.getElementById("staticBackdrop");
+                        var body = document.getElementById("body");
+                        body.appendChild(loginModal); 
+                    }
+                    
+                    if (component.name == 'viz') {
+                        var arr = document.getElementsByClassName("youVizOnUpdate"); // only refreshed viz/s
+                        for (var n = 0; n < arr.length; n++) {
+                            eval(arr[n].innerHTML); // run script
+                        }
+                    }
+                    
+                    if (component.name == 'datatable') {
+                        //bootstrap table
+                        $('#table').bootstrapTable(); // init via javascript
+                        
+                        // datatable modal
+                        // append modals to prevent z-layer issues
+                        var datatableModal = document.getElementById("modalTable");
+                        var body = document.getElementById("body");
+                        body.appendChild(datatableModal); 
+                    }
                 });
             });
         </script>

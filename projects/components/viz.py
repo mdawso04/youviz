@@ -79,7 +79,9 @@ class VizView(UnicornView):
             self.viz.json = a.todos
             self.viz.save()
             id = 'viz-' + str(self.viz.pk) + '-tab'
-            self.call("elementUpdate", [id, value])    
+            id_copy = id + '-copy'
+            value_copy = 'Copy ' + value
+            self.call("elementUpdate", [[id, value], [id_copy, value_copy]])    
         elif name == 'viz_settings.service.saved':
             todo['service'] = value
             # filter out unusable params

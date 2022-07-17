@@ -44,7 +44,8 @@
                         <li><a class="dropdown-item" unicorn:click="addViz()" href="#">New</a></li>
                         <li><hr class="dropdown-divider"></li>
                 {% for viz in vizs %}
-                        <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" href="#">Copy {{viz.title|title}}</a></li>
+                        <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" id="viz-{{viz.pk}}-tab-copy" 
+                               href="#">Copy {{viz.title|title}}</a></li>
                 {% endfor %}
                     </ul>    
                 </li>
