@@ -101,6 +101,16 @@
                             }
                             myDropzone = new Dropzone("#drop");
                         };
+                        
+                        //bootstrap table to handle return from file edit
+                        //bootstrap table
+                        $('#table').bootstrapTable(); // init via javascript
+                        
+                        // datatable modal
+                        // append modals to prevent z-layer issues
+                        var datatableModal = document.getElementById("modalTable");
+                        var body = document.getElementById("body");
+                        body.appendChild(datatableModal); 
                     }
                     
                     if (component.name == 'login') {

@@ -153,7 +153,11 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': lambda r: False,  # disables it
 }
 
-
+# settings.py
+UNICORN = {
+    "SCRIPT_LOCATION": "after",
+#    "SCRIPT_LOCATION": "append",
+}
 
 # Configure Django App for Heroku.
 import django_heroku
