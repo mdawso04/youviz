@@ -12,8 +12,10 @@
     <div>
         {% if request.user.is_authenticated %}
             <span class="navbar-brand d-none d-lg-inline mb-0">Hey {{ request.user.username }}!</span>
-            <button type="button" class="btn btn-primary me-2" id="logoutButton" data-bs-toggle="modal" 
-                    data-bs-target="#staticBackdrop">Logout</button>
+            <button type="button" class="btn btn-outline-secondary me-2 border-0" id="logoutButton" data-bs-toggle="modal" 
+                    data-bs-target="#staticBackdrop">
+                <i class="bi bi-gear-fill" style="font-size: 1.2rem;"></i>
+            </button>
         {% else %}
             <span class="navbar-brand mb-0">Welcome guest!</span>
             <button type="button" class="btn btn-primary me-2" id="loginButton" data-bs-toggle="modal" 

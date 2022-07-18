@@ -91,3 +91,12 @@ class Viz(models.Model):
     
     def __str__(self):
         return self.title + ": " +self.comment
+    
+class Report(models.Model):
+    title = models.CharField(max_length=100, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    file = models.ForeignKey(File, on_delete=models.CASCADE, default=1)
+    report = models.TextField()
+    
+    def __str__(self):
+        return self.title

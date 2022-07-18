@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
-from projects.models import Project, File, Viz
+from projects.models import Project, File, Viz, Report
 
 from django.core.files.base import ContentFile
 from django.shortcuts import render,redirect
@@ -25,9 +25,10 @@ class AppView(UnicornView):
     #datatable: dict = {}
     vizs = Viz.objects.none()
     selected_viz: Viz = None
+    report: Report = None
     
     class Meta:
-        javascript_exclude = ('project', 'files', 'file.document', 'vizs', 'selected_viz') 
+        javascript_exclude = ('project', 'files', 'file.document', 'vizs', 'selected_viz', 'report') 
     
 #LOAD/UPDATE
     
@@ -57,6 +58,9 @@ class AppView(UnicornView):
                     self.addViz()
                 if not self.selected_viz:
                     self.selected_viz = self.vizs.last()
+                self.report = Report.objects.filter(file=self.file).last()
+                if not self.report:
+                    self.addReport()
                 #logger.debug('AppView > load_table (user authenticated) end')
             else:
                 #logger.debug('AppView > load_table (user not authenticated) start')
@@ -156,6 +160,14 @@ class AppView(UnicornView):
         self.file.selected_viz = pk
         self.file.save()
         
+    def addReport(self, title='NewReport'):
+        #logger.debug('AppView > addViz start')
+        #df = self.df()
+        r = Report(title=title, file=self.file)
+        r.save()
+        self.load_table()
+        #logger.debug('AppView > addViz end')
+    
     def getRemoteData(self, service='READ_DATA_ATTRITION'):
         #logger.debug('AppView > addRemoteFile start')
         a = pp.App()
