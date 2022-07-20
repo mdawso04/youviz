@@ -1,0 +1,69 @@
+<!-- TODO: GETMORE SPINNER -->
+
+<div id="modalGetmore" class="modal fade" tabindex="-1" role="dialog">
+<!-- DATAFRAME START -->
+    <div class="modal-dialog modal-xl modal-fullscreen-xl-down" role="document">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h3 class="mb-0">Get More</h3>
+                <!-- TAB BUTTONS END-->
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        <div class="modal-body pt-0">
+            
+            
+            <div class="d-grid gap-2"> 
+
+                {% for d in remote_data %}
+                <div class="card"
+                     unicorn:click="getRemoteData('{{d}}')"> 
+                    <div class="row g-0">
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-center" 
+                                 style="height: 100%;"><i class="bi bi-filetype-csv align-self-center" 
+                                                          style="font-size: 3rem;"></i></div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="card-body">
+                                <h5 class="card-title">{{d}}</h5>
+                                <p class="card-text">CSV Data</p>
+                                <a href="#" class="stretched-link"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                No remote data
+                {% endfor %}
+                <div class="card">
+                     <!-- DROPZONE WIDGET -->
+                    <div class="container mt-3">
+                        <form action="/projects/upload/" method="POST" enctype="multipart/form-data" class="dropzone" id="drop">
+                            {% csrf_token %}
+                            <div class="fallback">
+                                <input name="document" type="file" multiple />
+                            </div>
+                        </form>
+                    </div>
+                    <script>
+                        Dropzone.options.drop = { // camelized version of the `id`
+                            paramName: "document", // The name that will be used to transfer the file
+                            maxFilesize: 2, // MB
+                        };
+                    </script>
+                    <!-- END DROPZONE -->
+                </div>
+            </div>
+        </div>
+            
+            
+            
+            
+            
+        </div>
+        <div class="modal-footer border-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+    </div>
+  </div>
+</div>
