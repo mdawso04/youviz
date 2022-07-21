@@ -47,22 +47,7 @@ class GetmoreView(UnicornView):
     
     def getRemoteData(self, service='READ_DATA_ATTRITION'):
         #logger.debug('AppView > addRemoteFile start')
-        a = pp.App()
-        a.add(service)
-        df = a.call()
-        content = df.to_csv(index=False)
-        # no files on disk so delete
-        #temp_file = ContentFile(content.encode('utf-8'))
-        f = File(description=f'{service}.csv', project=self.parent.project, document=content, learner_mode=self.parent.project.learner_mode)
-        #f.document.save(f'{service}.csv', temp_file)
-        f.save()
-        
-        if self.parent.project.learner_mode:
-            i = Item(title='List up relevant fields', description='Analyze provided data, find fields that seem relevant to employee attrition', 
-                     mission=f)
-            i.save()
-        self.parent.file = f
-        self.parent.load_table()
+        self.parent.getRemoteData(service)
         return redirect('/projects/app')
         #logger.debug('AppView > addRemoteFile end')
     
@@ -78,8 +63,7 @@ class GetmoreView(UnicornView):
 #RENDER
     def remote_data(self):
         #logger.debug('AppView > addViz start')
-        s = pp.App().services()['read']
-        return [i for i in s if i.startswith('READ_DATA')]
+        return self.parent.remote_data()
         #logger.debug('AppView > addViz end')
     
     def rendered(self, html):

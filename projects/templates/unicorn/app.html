@@ -73,6 +73,7 @@
             <!-- BODY -->
             <div class="offcanvas-body pt-0">  
                 
+                
                 {% if file %}
                 <div class="d-grid gap-2" id="fileInfo">
                         
@@ -96,9 +97,68 @@
                     <button class="btn btn-secondary" onclick="editing_file=false;" 
                             unicorn:click.discard="$toggle('editing_file')" unicorn:partial.id="fileInfo" >Cancel</button>
                     {% else %}
+                    
+                     <!-- BOTTOM NAVBAR START -->
+                    <nav class="navbar fixed-bottom bg-light" id=bottom-navbar-offcanvas>
+                        <div class="container-fluid d-flex justify-content-start d-grid gap-2">
+                            
+                            
+                            
+                            
+                            <button type="button" class="btn btn-outline-primary"
+                                id="datafileOpenButton" unicorn:key="datafileOpenButton"
+                                data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable">
+                                    <i class="bi bi-table" style="font-size: 1.2rem;"></i>
+                            </button>
+                            {% unicorn 'dataframe' parent=view file=file id='dataframe' %}
+
+                            <button type="button" class="btn btn-outline-primary"
+                                id="reportOpenButton" unicorn:key="reportOpenButton"
+                                data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport">
+                                    <i class="bi bi-file-earmark-check" style="font-size: 1.2rem;"></i>
+                            </button>
+                            {% unicorn 'vizreport' parent=view id='vizreport' %}
+
+                            <button type="button" class="btn btn-outline-danger"
+                                id="datafileDeleteButton" unicorn:key="datafileDeleteButton"
+                                unicorn:click="deleteFile({{file.pk}})"
+                                aria-label="Delete data source">
+                                    <i class="bi bi-x-lg" style="font-size: 1.2rem;"></i>
+                            </button>
+
+                            <button type="button" class="btn btn-outline-primary {% if files|length == 1 %}text-black-50{% endif %}"
+                                id="sourcecontrolOpenButton" unicorn:key="sourcecontrolOpenButton"
+                                data-bs-toggle="modal" data-bs-target="#modalSourcecontrol" aria-controls="modalsourcecontrol"
+                                {% if files|length == 1 %} disabled{% endif %}>
+                                    <i class="bi bi-box-arrow-up-right" style="font-size: 1.2rem;"></i>
+                            </button>
+                            {% unicorn 'sourcecontrol' parent=view id='sourcecontrol' %}
+
+                            <button type="button" class="btn btn-outline-primary"
+                                id="getmoreOpenButton" unicorn:key="getmoreOpenButton"
+                                data-bs-toggle="modal" data-bs-target="#modalGetmore" aria-controls="modalgetmore">
+                                    <i class="bi bi-plus-square" style="font-size: 1.2rem;"></i>
+                            </button>
+                            {% unicorn 'getmore' parent=view id='getmore' %}
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        </div>
+                    </nav>
+                    
+                    
+                    
                     <!-- LEARNER MODE SWITCH -->
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="learnerModeSwitch">
+                        <input class="form-check-input" 
+                               unicorn:click="switch_learner_mode"
+                               {% comment %}unicorn:model="project.learner_mode" {% endcomment %}
+                               type="checkbox" id="learnerModeSwitch"{% if project.learner_mode %} checked{% endif %}>
                         <label class="form-check-label" for="learnerModeSwitch">Learner Mode</label>
                     </div>
                           
@@ -121,159 +181,25 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-primary"
-                        id="datafileOpenButton" unicorn:key="datafileOpenButton"
-                        data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable">
-                            Show Data
-                    </button>
-                    {% unicorn 'dataframe' parent=view file=file id='dataframe' %}
-                    <button type="button" class="btn btn-danger"
-                        id="datafileDeleteButton" unicorn:key="datafileDeleteButton"
-                        unicorn:click="deleteFile({{file.pk}})"
-                        aria-label="Delete data source">
-                            Delete Source
-                    </button>
                     
-                    <!--ACCORDIAN START -->
-                    <div class="accordion accordion-flush d-grid gap-2" id="accordionExample">
-                        <!-- ACCORDIAN ITEM 0 -->
-                        <div class="accordion-item border-0">
-                            <!-- ACCORDIAN 0 HEADER -->
-                            <h2 class="accordion-header w-100" id="headingZero">
-                                <button class="btn btn-outline-secondary w-100 collapsed" 
-                                        type="button" data-bs-toggle="collapse" 
-                                        data-bs-target="#collapseZero" aria-expanded="true" aria-controls="collapseZero">
-                                Show Report
-                                </button>
-                            </h2>
-                            <!-- ACCORDIAN 0 BODY -->
-                            <div id="collapseZero" class="accordion-collapse collapse" 
-                                 aria-labelledby="headingZero" data-bs-parent="#accordionExample">
-                                <div class="accordion-body px-0">
-                                    <div class="d-grid gap-2"> 
-                                    {% if report.report %}{{report.report}}
-                                    {% else %}No report available{% endif %}
-                                    </div>
+                    {% if project.learner_mode %} 
+                    {% for item in items %}
+                    <div class="card" 
+                         style="max-width: 540px;">
+                        <div class="row g-0">
+                            <div class="col-md-12">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{item.title}}</h5>
+                                    <p class="card-text">{{item.description}}</p>
+                                    <p class="card-text"><small class="text-muted">Open</small></p>
                                 </div>
                             </div>
                         </div>
-                        <!-- END ACCORDIAN ITEM 0-->
-                        
-                        <!-- ACCORDIAN ITEM 1 -->
-                        <div class="accordion-item border-0">
-                            <!-- ACCORDIAN 1 HEADER -->
-                            <h2 class="accordion-header w-100" id="headingTwo">
-                                <button class="btn btn-outline-secondary w-100 collapsed {% if files|length == 1 %}text-black-50{% endif %}" 
-                                        type="button" data-bs-toggle="collapse" 
-                                        data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"
-                                        {% if files|length == 1 %} disabled{% endif %}>
-                                Change Source
-                                </button>
-                            </h2>
-                            <!-- ACCORDIAN 1 BODY -->
-                            <div id="collapseTwo" class="accordion-collapse collapse" 
-                                 aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                                <div class="accordion-body px-0">
-                                    <div class="d-grid gap-2"> 
-                                    {% for f in files %}
-                                        {% if f.pk != file.pk %}
-                                        <!-- ADD FILE LIST -->
-                                            <div class="card"
-                                                 unicorn:click="setFile({{f.pk}})"
-                                                 onclick="bootstrap.Offcanvas.getInstance('#OFFCANVAS').hide();">
-                                                 <div class="row g-0">
-                                                    <div class="col-md-3">
-                                                        <div class="d-flex justify-content-center" 
-                                                             style="height: 100%;">
-                                                            <i class="bi bi-filetype-csv align-self-center" 
-                                                               style="font-size: 3rem;"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-9">
-                                                        <div class="card-body">
-                                                            <h5 class="card-title">{{f.title}}</h5>
-                                                            <p class="card-text">{{f.description}}</p>
-                                                            <p class="card-text"><small class="text-muted">
-                                                                Cached {{file.uploaded_at|naturaltime|capfirst}}</small></p>
-                                                            <a href="#" class="stretched-link"></a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                    {% empty %}
-                                    No saved data sources
-                                    {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- END ACCORDIAN ITEM 1-->
-                       <!-- ACCORDIAN ITEM 2 -->
-                        <div class="accordion-item border-0">
-                            <!-- ACCORDIAN 2 HEADER -->
-                            <h2 class="accordion-header w-100 border-0" id="headingThree">
-                                <button class="btn btn-outline-secondary w-100 collapsed" type="button" data-bs-toggle="collapse" 
-                                        data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
-                                Get More Sources
-                                </button>
-                            </h2>
-                            <!-- ACCORDIAN 2 BODY -->
-                            <div id="collapseThree" class="accordion-collapse collapse" 
-                                 aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-                                <div class="accordion-body px-0">
-                                    <!-- ADD FILE LIST -->
-                                    <div class="d-grid gap-2"> 
-
-                                        {% for d in remote_data %}
-                                        <div class="card"
-                                             unicorn:click="getRemoteData('{{d}}')" 
-                                             onclick="bootstrap.Offcanvas.getInstance('#OFFCANVAS').hide();"> 
-                                            <div class="row g-0">
-                                                <div class="col-md-3">
-                                                    <div class="d-flex justify-content-center" 
-                                                         style="height: 100%;"><i class="bi bi-filetype-csv align-self-center" 
-                                                                                  style="font-size: 3rem;"></i></div>
-                                                </div>
-                                                <div class="col-md-9">
-                                                    <div class="card-body">
-                                                        <h5 class="card-title">{{d}}</h5>
-                                                        <p class="card-text">CSV Data</p>
-                                                        <a href="#" class="stretched-link"></a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {% empty %}
-                                        No remote data
-                                        {% endfor %}
-                                        <div class="card">
-                                             <!-- DROPZONE WIDGET -->
-                                            <div class="container mt-3">
-                                                <form action="/projects/upload/" method="POST" enctype="multipart/form-data" class="dropzone" id="drop">
-                                                    {% csrf_token %}
-                                                    <div class="fallback">
-                                                        <input name="document" type="file" multiple />
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            <script>
-                                                Dropzone.options.drop = { // camelized version of the `id`
-                                                    paramName: "document", // The name that will be used to transfer the file
-                                                    maxFilesize: 2, // MB
-                                                };
-                                            </script>
-                                            <!-- END DROPZONE -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- END ACCORDIAN ITEM 2-->
                     </div>
-                    <!-- END ACCORDIAN -->
                     
-                    
+                    {% endfor %}
+                    {% endif %}
+                
                     
                     
                     {% endif %}

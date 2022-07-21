@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
-from projects.models import Project, File, Viz, Report
+from projects.models import Project, File, Viz, Report, Item
 
 from django.core.files.base import ContentFile
 from django.shortcuts import render,redirect
@@ -21,6 +21,7 @@ class AppView(UnicornView):
     project: Project = None
     files = File.objects.none()
     file: File = None
+    items = Item.objects.none()
     editing_file = False
     #datatable: dict = {}
     vizs = Viz.objects.none()
@@ -45,14 +46,14 @@ class AppView(UnicornView):
                 self.project = Project.objects.filter(user=self.request.user).last()
                 if not self.project:
                     self.addProject()
-                self.files = File.objects.filter(project=self.project).all().order_by('-id')
+                self.files = File.objects.filter(project=self.project, learner_mode=self.project.learner_mode).all().order_by('-id')
                 if not self.files:
                     self.getRemoteData()
-                if not self.file:
-                    #self.file = File.objects.filter(pk=self.project.selected_file).last()
-                    self.file = self.files.last()
-                    #if not self.file:
-                    #    self.file = File.objects.last()
+                self.file = self.files.last()
+                if self.project.learner_mode:
+                    self.items = Item.objects.filter(mission=self.file).all().order_by('-id')
+                else:
+                    self.items = Item.objects.none()
                 self.vizs = Viz.objects.filter(file=self.file).all().order_by('-id')
                 if not self.vizs:
                     self.addViz()
@@ -81,7 +82,14 @@ class AppView(UnicornView):
     
     def updated(self, name, value):
         #logger.debug('AppView > updated start')
-        pass
+        '''
+        if name == 'project.learner_mode':
+            self.project.learner_mode = value
+            self.project.save()
+            #self.project.refresh_from_db()
+            self.load_table()
+            #return redirect('/projects/app')
+        '''
         #logger.debug('AppView > updated end')
         
 #ACTIONS
@@ -104,7 +112,7 @@ class AppView(UnicornView):
         self.project.selected_file = f
         self.project.save()
         self.load_table()
-        return redirect('/projects/app')
+        #return redirect('/projects/app')
         
     def deleteFile(self, pk):
         # no files on disk so delete this
@@ -160,6 +168,13 @@ class AppView(UnicornView):
         self.file.selected_viz = pk
         self.file.save()
         
+    def switch_learner_mode(self):
+        self.project.learner_mode = not self.project.learner_mode
+        self.project.save()
+        #self.project.refresh_from_db()
+        self.load_table()
+        return redirect('/projects/app')
+    
     def addReport(self, title='NewReport'):
         #logger.debug('AppView > addViz start')
         #df = self.df()
@@ -176,9 +191,14 @@ class AppView(UnicornView):
         content = df.to_csv(index=False)
         # no files on disk so delete
         #temp_file = ContentFile(content.encode('utf-8'))
-        f = File(description=f'{service}.csv', project=self.project, document=content)
+        f = File(description=f'{service}.csv', project=self.project, document=content, learner_mode=self.project.learner_mode)
         #f.document.save(f'{service}.csv', temp_file)
         f.save()
+        
+        if self.project.learner_mode:
+            i = Item(title='List up relevant fields', description='Analyze provided data, find fields that seem relevant to employee attrition', 
+                     mission=f)
+            i.save()
         self.file = f
         self.load_table()
         #logger.debug('AppView > addRemoteFile end')

@@ -21,6 +21,7 @@ class Project(models.Model):
     description = models.CharField(max_length=255, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     selected_file = models.IntegerField(null=True, blank=True)
+    learner_mode = models.BooleanField(default=False)
     
     def __str__(self):
         return self.description
@@ -33,6 +34,7 @@ class File(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, default=1)
     selected_viz = models.IntegerField(null=True, blank=True)
+    learner_mode = models.BooleanField(default=False)
     
     def __str__(self):
         return self.description
@@ -97,6 +99,16 @@ class Report(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     file = models.ForeignKey(File, on_delete=models.CASCADE, default=1)
     report = models.TextField()
+    
+    def __str__(self):
+        return self.title
+
+class Item(models.Model):
+    title = models.CharField(max_length=100, blank=True)
+    description = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    mission = models.ForeignKey(File, on_delete=models.CASCADE, default=1)
+    viz = models.ForeignKey(Viz, on_delete=models.SET_NULL, null=True)
     
     def __str__(self):
         return self.title

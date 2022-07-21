@@ -59,9 +59,15 @@
             //move modals to body for zorder fix
             var loginModal = document.getElementById("staticBackdrop");
             var datatableModal = document.getElementById("modalTable");
+            var getmoreModal = document.getElementById("modalGetmore");
+            var sourcecontrolModal = document.getElementById("modalSourcecontrol");
+            var reportModal = document.getElementById("modalReport");
             var body = document.getElementById("body");
             body.appendChild(loginModal) 
             body.appendChild(datatableModal) 
+            body.appendChild(getmoreModal) 
+            body.appendChild(sourcecontrolModal) 
+            body.appendChild(reportModal) 
             
             //global toggle to keep offcanvas open while editing data source
             var editing_file = false;
@@ -108,9 +114,18 @@
                         
                         // datatable modal
                         // append modals to prevent z-layer issues
+                        var loginModal = document.getElementById("staticBackdrop");
                         var datatableModal = document.getElementById("modalTable");
+                        var getmoreModal = document.getElementById("modalGetmore");
+                        var sourcecontrolModal = document.getElementById("modalSourcecontrol");
+                        var reportModal = document.getElementById("modalReport");
                         var body = document.getElementById("body");
-                        body.appendChild(datatableModal); 
+                        body.appendChild(loginModal) 
+                        body.appendChild(datatableModal) 
+                        body.appendChild(getmoreModal) 
+                        body.appendChild(sourcecontrolModal) 
+                        body.appendChild(reportModal) 
+                    
                     }
                     
                     if (component.name == 'login') {
@@ -137,6 +152,31 @@
                         var body = document.getElementById("body");
                         body.appendChild(datatableModal); 
                     }
+                    
+                    if (component.name == 'getmore') {
+                        // datatable modal
+                        // append modals to prevent z-layer issues
+                        var getmoreModal = document.getElementById("modalGetmore");
+                        var body = document.getElementById("body");
+                        body.appendChild(getmoreModal); 
+                    }
+                    
+                    if (component.name == 'sourcecontrol') {
+                        // datatable modal
+                        // append modals to prevent z-layer issues
+                        var sourcecontrolModal = document.getElementById("modalSourcecontrol");
+                        var body = document.getElementById("body");
+                        body.appendChild(sourcecontrolModal); 
+                    }
+                    
+                    if (component.name == 'report') {
+                        // datatable modal
+                        // append modals to prevent z-layer issues
+                        var reportModal = document.getElementById("modalReport");
+                        var body = document.getElementById("body");
+                        body.appendChild(reportModal); 
+                    }
+                    
                 });
             });
         </script>
