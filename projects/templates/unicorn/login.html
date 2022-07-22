@@ -12,10 +12,21 @@
     <div>
         {% if request.user.is_authenticated %}
             <span class="navbar-brand d-none d-lg-inline mb-0">Hey {{ request.user.username }}!</span>
-            <button type="button" class="btn btn-outline-secondary me-2 border-0" id="logoutButton" data-bs-toggle="modal" 
-                    data-bs-target="#staticBackdrop">
-                <i class="bi bi-gear-fill" style="font-size: 1.2rem;"></i>
-            </button>
+        
+            <div class="dropdown">
+                <button class="btn btn-dark dropdown-toggle me-2 border-0" id="user-settings-dropdown" 
+                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-gear-fill" style="font-size: 1.2rem;"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <button type="button" class="dropdown-item" id="logoutButton" 
+                            data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                        Logout
+                    </button>
+                    <li><a class="dropdown-item" href="https://github.com/mdawso04/youviz/issues" target="_blank">Visit GitHub</a></li>
+                </ul>
+            </div>
+            
         {% else %}
             <span class="navbar-brand mb-0">Welcome guest!</span>
             <button type="button" class="btn btn-primary me-2" id="loginButton" data-bs-toggle="modal" 

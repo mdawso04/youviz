@@ -91,11 +91,17 @@
                             bsoc.hide();
                         }
 
-                        // dropdown menu
+                        // dropdown menus
                         var tmd = document.getElementById("tab-more-dropdown");
                         if (tmd) {
                             bootstrap.Dropdown.getOrCreateInstance(tmd).dispose();
                             bootstrap.Dropdown.getOrCreateInstance(tmd);
+                        }
+                        
+                        var usd = document.getElementById("user-settings-dropdown");
+                        if (usd) {
+                            bootstrap.Dropdown.getOrCreateInstance(usd).dispose();
+                            bootstrap.Dropdown.getOrCreateInstance(usd);
                         }
 
                         //dropzone
@@ -133,6 +139,13 @@
                         var loginModal = document.getElementById("staticBackdrop");
                         var body = document.getElementById("body");
                         body.appendChild(loginModal); 
+                        
+                        var usd = document.getElementById("user-settings-dropdown");
+                        if (usd) {
+                            bootstrap.Dropdown.getOrCreateInstance(usd).dispose();
+                            bootstrap.Dropdown.getOrCreateInstance(usd);
+                        }
+                        
                     }
                     
                     if (component.name == 'viz') {
