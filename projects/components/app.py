@@ -21,8 +21,8 @@ class AppView(UnicornView):
     project: Project = None
     files = File.objects.none()
     file: File = None
-    items = Item.objects.none()
-    editing_file = False
+    #items = Item.objects.none()
+    #editing_file = False
     #datatable: dict = {}
     vizs = Viz.objects.none()
     selected_viz: Viz = None
@@ -50,10 +50,10 @@ class AppView(UnicornView):
                 if not self.files:
                     self.getRemoteData()
                 self.file = self.files.last()
-                if self.project.learner_mode:
-                    self.items = Item.objects.filter(mission=self.file).all().order_by('-id')
-                else:
-                    self.items = Item.objects.none()
+                #if self.file.learner_mode:
+                #    self.items = Item.objects.filter(mission=self.file).all().order_by('-id')
+                #else:
+                #    self.items = Item.objects.none()
                 self.vizs = Viz.objects.filter(file=self.file).all().order_by('-id')
                 if not self.vizs:
                     self.addViz()
@@ -82,14 +82,7 @@ class AppView(UnicornView):
     
     def updated(self, name, value):
         #logger.debug('AppView > updated start')
-        '''
-        if name == 'project.learner_mode':
-            self.project.learner_mode = value
-            self.project.save()
-            #self.project.refresh_from_db()
-            self.load_table()
-            #return redirect('/projects/app')
-        '''
+        pass
         #logger.debug('AppView > updated end')
         
 #ACTIONS
@@ -130,10 +123,6 @@ class AppView(UnicornView):
         self.load_table()
         return redirect('/projects/app')
     
-    def saveFileInfo(self):
-        self.file.save()
-        self.editing_file = False
-        
     def addViz(self, viz_type='NewViz'):
         #logger.debug('AppView > addViz start')
         #df = self.df()

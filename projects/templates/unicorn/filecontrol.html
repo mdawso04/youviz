@@ -1,0 +1,73 @@
+{% load humanize %}
+<div>
+    <div class="d-grid gap-2" id="fileInfo">
+        <!-- FILECONTROL SPINNER START -->
+        <div unicorn:loading class="overlay">
+            <div class="d-flex justify-content-center">  
+                <div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem; z-index: 20;">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+        <!-- SPINNER END -->
+        {% if editing_file %}
+            <div class="form-floating">
+                <input type="text" class="form-control" 
+                       unicorn:model.defer="file.title"
+                       id="fileNameText" unicorn:key="fileNameText"
+                       aria-label="File Name">
+                <label for="fileNameText">Name</label>
+            </div>
+            <div class="form-floating">
+                <input type="text" class="form-control" 
+                       unicorn:model.defer="file.description"
+                       id="fileDescText" unicorn:key="fileDescText"
+                       aria-label="File Description">
+                <label for="fileDescText">Description</label>
+            </div>
+            <button class="btn btn-primary" onclick="editing_file=false;" 
+                    unicorn:click="saveFileInfo" unicorn:partial.id="fileInfo">Save</button>
+            <button class="btn btn-secondary" onclick="editing_file=false;" 
+                    unicorn:click.discard="$toggle('editing_file')" unicorn:partial.id="fileInfo" >Cancel</button>
+        {% else %}
+            <!-- FILE CARD -->
+            <div class="card" 
+                 unicorn:click="$toggle('editing_file')" 
+                 onclick="editing_file = true;"
+                 unicorn:partial.id="fileInfo" 
+                 style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <div class="d-flex justify-content-center" 
+                             style="height: 100%;"><i class="bi bi-filetype-csv align-self-center" style="font-size: 4rem;"></i></div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{file.title}}</h5>
+                            <p class="card-text">{{file.description}}</p>
+                            <p class="card-text"><small class="text-muted">Cached {{file.uploaded_at|naturaltime|capfirst}}</small></p>
+                            <a href="#" class="stretched-link"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <!-- ITEM CARD/S -->
+        {% if file.learner_mode %} 
+            {% for item in items %}
+                <div class="card" 
+                     style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-12">
+                            <div class="card-body">
+                                <h5 class="card-title">{{item.title}}</h5>
+                                <p class="card-text">{{item.description}}</p>
+                                <p class="card-text"><small class="text-muted">Open</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>

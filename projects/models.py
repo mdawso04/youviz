@@ -108,6 +108,16 @@ class Item(models.Model):
     description = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     mission = models.ForeignKey(File, on_delete=models.CASCADE, default=1)
+    
+    def __str__(self):
+        return self.title
+    
+class Answer(models.Model):
+    title = models.CharField(max_length=100, blank=True)
+    description = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     viz = models.ForeignKey(Viz, on_delete=models.SET_NULL, null=True)
     
     def __str__(self):
