@@ -19,7 +19,7 @@ import pandas as pd
 # Create your models here.
 class Project(models.Model):
     description = models.CharField(max_length=255, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     selected_file = models.IntegerField(null=True, blank=True)
     learner_mode = models.BooleanField(default=False)
     
@@ -32,7 +32,7 @@ class File(models.Model):
     #document = models.FileField(upload_to='files/')
     document = models.TextField()
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, default=1)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='files')
     selected_viz = models.IntegerField(null=True, blank=True)
     learner_mode = models.BooleanField(default=False)
     
@@ -88,7 +88,7 @@ class Viz(models.Model):
     comment = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    file = models.ForeignKey(File, on_delete=models.CASCADE, default=1)
+    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name='vizs')
     json = models.JSONField(blank=True, null=True)
     
     def __str__(self):
@@ -97,7 +97,7 @@ class Viz(models.Model):
 class Report(models.Model):
     title = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    file = models.ForeignKey(File, on_delete=models.CASCADE, default=1)
+    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name='reports')
     report = models.TextField()
     
     def __str__(self):
@@ -107,7 +107,7 @@ class Item(models.Model):
     title = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    mission = models.ForeignKey(File, on_delete=models.CASCADE, default=1)
+    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name='items')
     
     def __str__(self):
         return self.title
@@ -117,8 +117,8 @@ class Answer(models.Model):
     description = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    viz = models.ForeignKey(Viz, on_delete=models.SET_NULL, null=True)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='answers')
+    viz = models.OneToOneField(Viz, on_delete=models.SET_NULL, null=True)
     
     def __str__(self):
         return self.title
