@@ -25,7 +25,7 @@ class FilecontrolView(UnicornView):
         
     def load_table(self):
         if self.file.learner_mode:
-            self.items = Item.objects.filter(mission=self.file).all().order_by('-id')
+            self.items = Item.objects.filter(file=self.file).all().order_by('-id')
         else:
             self.items = Item.objects.none()
         
