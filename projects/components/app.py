@@ -13,6 +13,7 @@ from pp.log import logger
 
 #python standard libraries
 import os
+import copy
 
 #non-standard libraries
 #none
@@ -21,15 +22,12 @@ class AppView(UnicornView):
     project: Project = None
     files = File.objects.none()
     file: File = None
-    #items = Item.objects.none()
-    #editing_file = False
-    #datatable: dict = {}
     vizs = Viz.objects.none()
-    selected_viz: Viz = None
+    #selected_viz: Viz = None
     report: Report = None
     
     class Meta:
-        javascript_exclude = ('project', 'files', 'file.document', 'vizs', 'selected_viz', 'report') 
+        javascript_exclude = ('project', 'files', 'file.document', 'vizs', 'report') 
     
 #LOAD/UPDATE
     
@@ -46,19 +44,21 @@ class AppView(UnicornView):
                 self.project = Project.objects.filter(user=self.request.user).last()
                 if not self.project:
                     self.addProject()
-                self.files = File.objects.filter(project=self.project, learner_mode=self.project.learner_mode).all().order_by('-id')
+                self.files = (
+                    File.objects.filter(project=self.project, learner_mode=self.project.learner_mode)
+                    .all().order_by('-id')
+                )
                 if not self.files:
                     self.getRemoteData()
-                self.file = self.files.last()
-                #if self.file.learner_mode:
-                #    self.items = Item.objects.filter(mission=self.file).all().order_by('-id')
-                #else:
-                #    self.items = Item.objects.none()
+                if not self.file:
+                    self.file = self.files.last()
                 self.vizs = Viz.objects.filter(file=self.file).all().order_by('-id')
                 if not self.vizs:
                     self.addViz()
+                '''
                 if not self.selected_viz:
                     self.selected_viz = self.vizs.last()
+                '''
                 self.report = Report.objects.filter(file=self.file).last()
                 if not self.report:
                     self.addReport()
@@ -106,7 +106,7 @@ class AppView(UnicornView):
         self.project.save()
         self.load_table()
         #return redirect('/projects/app')
-        
+                    
     def deleteFile(self, pk):
         # no files on disk so delete this
         #self.file.document.delete()
@@ -151,12 +151,13 @@ class AppView(UnicornView):
         v = Viz.objects.get(pk=pk)
         v.delete()
         self.load_table()
-        
+    
+    '''
     def selectViz(self, pk):
         #Viz.objects.filter(pk=pk).delete()
         self.file.selected_viz = pk
         self.file.save()
-        
+    '''    
     def switch_learner_mode(self):
         self.project.learner_mode = not self.project.learner_mode
         self.project.save()
@@ -208,6 +209,11 @@ class AppView(UnicornView):
         s = pp.App().services()['read']
         return [i for i in s if i.startswith('READ_DATA')]
         #logger.debug('AppView > addViz end')
+        
+    def selected_file_for_editing(self):
+        '''Return shallow copy to prevent checksum error 
+        when editing from different component '''
+        return copy.copy(self.file)
     
     def rendered(self, html):
         #logger.debug('AppView > rendered start')
