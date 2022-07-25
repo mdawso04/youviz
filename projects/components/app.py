@@ -20,9 +20,11 @@ import copy
 
 class AppView(UnicornView):
     project: Project = None
-    files = File.objects.none()
+    files: QuerySetType[File] = None
+    #files = File.objects.none()
     file: File = None
-    vizs = Viz.objects.none()
+    vizs: QuerySetType[Viz] = None
+    #vizs = Viz.objects.none()
     #selected_viz: Viz = None
     report: Report = None
     
@@ -41,25 +43,29 @@ class AppView(UnicornView):
         if self.request:
             if self.request.user.is_authenticated:
                 #logger.debug('AppView > load_table (user authenticated) start')
-                self.project = Project.objects.filter(user=self.request.user).last()
                 if not self.project:
-                    self.addProject()
+                    self.project = Project.objects.filter(user=self.request.user).last()
+                    if not self.project:
+                        self.addProject()
                 self.files = (
                     File.objects.filter(project=self.project, learner_mode=self.project.learner_mode)
                     .all().order_by('-id')
+                    .prefetch_related('vizs', 'reports', 'items__answers')
                 )
                 if not self.files:
                     self.getRemoteData()
                 if not self.file:
                     self.file = self.files.last()
-                self.vizs = Viz.objects.filter(file=self.file).all().order_by('-id')
+                #self.vizs = Viz.objects.filter(file=self.file).all().order_by('-id')
+                self.vizs = self.file.vizs.all()
                 if not self.vizs:
                     self.addViz()
                 '''
                 if not self.selected_viz:
                     self.selected_viz = self.vizs.last()
                 '''
-                self.report = Report.objects.filter(file=self.file).last()
+                #self.report = Report.objects.filter(file=self.file).last()
+                self.report = self.file.reports.last()
                 if not self.report:
                     self.addReport()
                 #logger.debug('AppView > load_table (user authenticated) end')

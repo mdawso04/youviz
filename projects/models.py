@@ -32,9 +32,12 @@ class File(models.Model):
     #document = models.FileField(upload_to='files/')
     document = models.TextField()
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='files')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     selected_viz = models.IntegerField(null=True, blank=True)
     learner_mode = models.BooleanField(default=False)
+    
+    class Meta:
+        default_related_name = 'files'
     
     def __str__(self):
         return self.description
@@ -88,26 +91,36 @@ class Viz(models.Model):
     comment = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name='vizs')
+    file = models.ForeignKey(File, on_delete=models.CASCADE)
     json = models.JSONField(blank=True, null=True)
+    
+    class Meta:
+        default_related_name = 'vizs'
     
     def __str__(self):
         return self.title + ": " +self.comment
     
+    
 class Report(models.Model):
     title = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name='reports')
+    file = models.ForeignKey(File, on_delete=models.CASCADE)
     report = models.TextField()
     
+    class Meta:
+        default_related_name = 'reports'
+
     def __str__(self):
         return self.title
-
+    
 class Item(models.Model):
     title = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name='items')
+    file = models.ForeignKey(File, on_delete=models.CASCADE)
+    
+    class Meta:
+        default_related_name = 'items'
     
     def __str__(self):
         return self.title
@@ -117,8 +130,11 @@ class Answer(models.Model):
     description = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='answers')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     viz = models.OneToOneField(Viz, on_delete=models.SET_NULL, null=True)
+    
+    class Meta:
+        default_related_name = 'answers'
     
     def __str__(self):
         return self.title
