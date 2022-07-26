@@ -50,7 +50,7 @@ class AppView(UnicornView):
                 self.files = (
                     File.objects.filter(project=self.project, learner_mode=self.project.learner_mode)
                     .all().order_by('-id')
-                    .prefetch_related('vizs', 'report', 'items__answers')
+                    .prefetch_related('vizs', 'items__answers')
                 )
                 if not self.files:
                     self.getRemoteData()
@@ -65,7 +65,8 @@ class AppView(UnicornView):
                     self.selected_viz = self.vizs.last()
                 '''
                 #self.report = Report.objects.filter(file=self.file).last()
-                self.report = self.file.report
+                if hasattr(self.file, 'report'):
+                    self.report = self.file.report
                 if not self.report:
                     self.addReport()
                 #logger.debug('AppView > load_table (user authenticated) end')
