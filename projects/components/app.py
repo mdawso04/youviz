@@ -193,7 +193,7 @@ class AppView(UnicornView):
         
         if self.project.learner_mode:
             i = Item(title='List up relevant fields', description='Analyze provided data, find fields that seem relevant to employee attrition', 
-                     mission=f)
+                     file=f)
             i.save()
         self.file = f
         self.load_table()
