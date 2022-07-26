@@ -50,7 +50,7 @@ class AppView(UnicornView):
                 self.files = (
                     File.objects.filter(project=self.project, learner_mode=self.project.learner_mode)
                     .all().order_by('-id')
-                    .prefetch_related('vizs', 'reports', 'items__answers')
+                    .prefetch_related('vizs', 'report', 'items__answers')
                 )
                 if not self.files:
                     self.getRemoteData()
@@ -65,7 +65,7 @@ class AppView(UnicornView):
                     self.selected_viz = self.vizs.last()
                 '''
                 #self.report = Report.objects.filter(file=self.file).last()
-                self.report = self.file.reports.last()
+                self.report = self.file.report
                 if not self.report:
                     self.addReport()
                 #logger.debug('AppView > load_table (user authenticated) end')
@@ -187,7 +187,7 @@ class AppView(UnicornView):
         content = df.to_csv(index=False)
         # no files on disk so delete
         #temp_file = ContentFile(content.encode('utf-8'))
-        f = File(description=f'{service}.csv', project=self.project, document=content, learner_mode=self.project.learner_mode)
+        f = File(description=service, project=self.project, document=content, learner_mode=self.project.learner_mode)
         #f.document.save(f'{service}.csv', temp_file)
         f.save()
         

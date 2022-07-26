@@ -21,6 +21,7 @@ class Project(models.Model):
     description = models.CharField(max_length=255, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     selected_file = models.IntegerField(null=True, blank=True)
+    #selected_file = models.OneToOneField(File, on_delete=models.SET_NULL, null=True)
     learner_mode = models.BooleanField(default=False)
     
     def __str__(self):
@@ -104,11 +105,8 @@ class Viz(models.Model):
 class Report(models.Model):
     title = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    file = models.ForeignKey(File, on_delete=models.CASCADE)
+    file = models.OneToOneField(File, on_delete=models.CASCADE)
     report = models.TextField()
-    
-    class Meta:
-        default_related_name = 'reports'
 
     def __str__(self):
         return self.title
