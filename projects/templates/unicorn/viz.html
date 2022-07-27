@@ -82,7 +82,7 @@
     <div class="offcanvas offcanvas-bottom" tabindex="-1" data-bs-backdrop="false" data-bs-scroll="true" 
          id="offcanvasBottom-{{vid}}" aria-labelledby="offcanvasBottomLabel" style="height: 216px;">
         <div class="offcanvas-header d-flex">
-            <h5 class="offcanvas-title" id="offcanvasBottomLabel">Viz Settings</h5>
+            <h5 class="offcanvas-title" id="offcanvasBottomLabel">Viz</h5>
             
             
             <!-- TAB BUTTONS -->
@@ -178,15 +178,42 @@
                             <!-- SELECT {{forloop.counter}} -->
                             <button type="button" class="btn btn-lg btn-danger"
                                 id="vizDeleteButton{{vid}}" unicorn:key="vizDeleteButton{{vid}}"
-                                {% comment %} unicorn:partial.id="{{vid}}-tab" unicorn:partial.key="vizNameText{{vid}}" {% endcomment %}
-                                unicorn:click="delete()"
-                                {% comment %} onclick="Unicorn.call('app', 'deleteViz', {{viz.pk}});"  {% endcomment %}
+                                data-bs-toggle="modal" data-bs-target="#deleteVizConfirm{{vid}}"
                                 aria-label="Viz Name">
                                     Delete viz
                             </button>
+                            
+                            <!-- VIZ DELETE MODAL START -->
+                            <div class="modal fade yvmodal" id="deleteVizConfirm{{vid}}" data-bs-backdrop="static" data-bs-keyboard="false" 
+                                 tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-sm">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="staticBackdropLabel">Delete Viz</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Would you like to delete this viz?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" 
+                                                    data-bs-dismiss="modal">Cancel</button>
+                                            <button type="button" id="modalLogoutButton" 
+                                                    {% comment %}unicorn:click="delete()"{% endcomment %}
+                                                    onclick="bootstrap.Modal.getInstance('#deleteVizConfirm{{vid}}').hide(); 
+                                                    document.getElementById('app-spinner').hidden = false;
+                                                    Unicorn.call('app', 'deleteViz', '{{viz.pk}}');"
+                                                    class="btn btn-primary">OK</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- END MODAL -->
+                            
+                            
+                            
+                            
                         </div>
-                        
-                        
                     </div>
                 </div>
                 <!-- SHARE TAB -->
@@ -213,9 +240,9 @@
     </div>
     <!--BOTTOM NAVBAR END -->
     <script type="javascript">
-        var r = document.querySelector('#offcanvasBottom-{{vid}}');
-        alert(r);
-        r.style.setProperty('--#offcanvas-height', '600px');
+        //var r = document.querySelector('#offcanvasBottom-{{vid}}');
+        //alert(r);
+        //r.style.setProperty('--#offcanvas-height', '600px');
     </script>
     
     <div class="form-floating px-2">

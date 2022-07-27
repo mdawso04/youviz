@@ -158,6 +158,7 @@ class AppView(UnicornView):
         v = Viz.objects.get(pk=pk)
         v.delete()
         self.load_table()
+        return redirect('/projects/app')
     
     '''
     def selectViz(self, pk):

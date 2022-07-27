@@ -110,9 +110,9 @@ class VizView(UnicornView):
         self.call(fun, params)
         
     def delete(self):
-        self.parent.deleteViz(self.viz.pk)
-        return redirect('/projects/app')
-        #pass
+        #self.parent.deleteViz(self.viz.pk)
+        #return redirect('/projects/app')
+        pass
     
     def called(self, name, args):
         #logger.debug('VizView > called start')

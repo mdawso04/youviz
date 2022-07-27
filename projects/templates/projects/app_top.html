@@ -69,6 +69,12 @@
             body.appendChild(sourcecontrolModal) 
             body.appendChild(reportModal) 
             
+            var yvmodals = document.getElementsByClassName("yvmodal");
+            for (var n = 0; n < yvmodals.length; n++) {
+                body.appendChild(yvmodals[n]); 
+            }
+            
+            
             //global toggle to keep offcanvas open while editing data source
             var editing_file = false;
             
@@ -131,6 +137,11 @@
                         body.appendChild(getmoreModal) 
                         body.appendChild(sourcecontrolModal) 
                         body.appendChild(reportModal) 
+                        
+                        var yvmodals = document.getElementsByClassName("yvmodal");
+                        for (var n = 0; n < yvmodals.length; n++) {
+                            body.appendChild(yvmodals[n]); 
+                        }
                     
                     }
                     
