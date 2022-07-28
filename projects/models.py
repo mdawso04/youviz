@@ -87,6 +87,13 @@ class File(models.Model):
             except KeyError:
                 pass
     
+    @classmethod
+    def remote_data(self):
+        #logger.debug('AppView > addViz start')
+        s = pp.App().services()['read']
+        return [i for i in s if i.startswith('READ_DATA')]
+        #logger.debug('AppView > addViz end')
+    
 class Viz(models.Model):
     title = models.CharField(max_length=100, blank=True)
     comment = models.CharField(max_length=255, blank=True)

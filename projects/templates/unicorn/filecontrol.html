@@ -1,5 +1,7 @@
 {% load humanize %}
-<div>
+{% load unicorn %} 
+<div>                               
+    
     <div class="d-grid gap-2" id="fileInfo">
         <!-- FILECONTROL SPINNER START -->
         <div unicorn:loading class="overlay">
@@ -30,6 +32,19 @@
             <button class="btn btn-secondary" onclick="editing_file=false;" 
                     unicorn:click.discard="$toggle('editing_file')" unicorn:partial.id="fileInfo" >Cancel</button>
         {% else %}
+        
+        <!-- LEARNER MODE SWITCH -->
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" 
+                               unicorn:click="switch_learner_mode"
+                               {% comment %}unicorn:model="project.learner_mode" {% endcomment %}
+                               type="checkbox" id="learnerModeSwitch"{% if project.learner_mode %} checked{% endif %}>
+                        <label class="form-check-label" for="learnerModeSwitch">Learner Mode</label>
+                    </div>
+    
+        
+        
+        
             <!-- FILE CARD -->
             <div class="card" 
                  unicorn:click="$toggle('editing_file')" 
@@ -51,7 +66,6 @@
                     </div>
                 </div>
             </div>
-        {% endif %}
         <!-- ITEM CARD/S -->
         {% if file.learner_mode %} 
             {% for item in items %}
@@ -69,5 +83,53 @@
                 </div>
             {% endfor %}
         {% endif %}
+    
+    
+    
+    
+    <!-- BOTTOM NAVBAR START -->
+                    <nav class="navbar fixed-bottom bg-light" id=bottom-navbar-offcanvas>
+                        <div class="container-fluid d-flex justify-content-start d-grid gap-2">
+                            <button type="button" class="btn btn-outline-primary"
+                                id="datafileOpenButton" unicorn:key="datafileOpenButton"
+                                data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable">
+                                    <i class="bi bi-table" style="font-size: 1.2rem;"></i>
+                            </button>
+                            {% unicorn 'dataframe' parent=view file=file id='dataframe' %}
+
+                            <button type="button" class="btn btn-outline-primary"
+                                id="reportOpenButton" unicorn:key="reportOpenButton"
+                                data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport">
+                                    <i class="bi bi-file-earmark-check" style="font-size: 1.2rem;"></i>
+                            </button>
+                            {% unicorn 'vizreport' parent=view id='vizreport' %}
+
+                            <button type="button" class="btn btn-outline-danger"
+                                id="datafileDeleteButton" unicorn:key="datafileDeleteButton"
+                                unicorn:click="deleteFile({{file.pk}})"
+                                aria-label="Delete data source">
+                                    <i class="bi bi-x-lg" style="font-size: 1.2rem;"></i>
+                            </button>
+
+                            <button type="button" class="btn btn-outline-primary {% if files|length == 1 %}text-black-50{% endif %}"
+                                id="sourcecontrolOpenButton" unicorn:key="sourcecontrolOpenButton"
+                                data-bs-toggle="modal" data-bs-target="#modalSourcecontrol" aria-controls="modalsourcecontrol"
+                                {% if files|length == 1 %} disabled{% endif %}>
+                                    <i class="bi bi-box-arrow-up-right" style="font-size: 1.2rem;"></i>
+                            </button>
+                            {% unicorn 'sourcecontrol' parent=view id='sourcecontrol' %}
+
+                            <button type="button" class="btn btn-outline-primary"
+                                id="getmoreOpenButton" unicorn:key="getmoreOpenButton"
+                                data-bs-toggle="modal" data-bs-target="#modalGetmore" aria-controls="modalgetmore">
+                                    <i class="bi bi-plus-square" style="font-size: 1.2rem;"></i>
+                            </button>
+                            {% unicorn 'getmore' parent=view id='getmore' %}    
+                        </div>
+                    </nav>
+    
+        {% endif %}
     </div>
+    
+    
 </div>

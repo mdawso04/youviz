@@ -12,6 +12,7 @@ from pp.log import logger
 
 class FilecontrolView(UnicornView):
     editing_file = False
+    files: File.objects.none()
     file: File = None
     items = Item.objects.none()
         
@@ -54,6 +55,13 @@ class FilecontrolView(UnicornView):
     def saveFileInfo(self):
         self.file.save()
         self.editing_file = False
+        
+    def switch_learner_mode(self):
+        self.parent.project.learner_mode = not self.parent.project.learner_mode
+        self.parent.project.save()
+        #self.project.refresh_from_db()
+        self.parent.load_table()
+        return redirect('/projects/app')
         
     def called(self, name, args):
         #logger.debug('LoginView > called start')

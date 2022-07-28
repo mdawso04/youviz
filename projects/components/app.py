@@ -166,12 +166,15 @@ class AppView(UnicornView):
         self.file.selected_viz = pk
         self.file.save()
     '''    
+    
+    '''
     def switch_learner_mode(self):
         self.project.learner_mode = not self.project.learner_mode
         self.project.save()
         #self.project.refresh_from_db()
         self.load_table()
         return redirect('/projects/app')
+    '''
     
     def addReport(self, title='NewReport'):
         #logger.debug('AppView > addViz start')
@@ -212,12 +215,14 @@ class AppView(UnicornView):
 
 #RENDER
 
+    '''
     def remote_data(self):
         #logger.debug('AppView > addViz start')
         s = pp.App().services()['read']
         return [i for i in s if i.startswith('READ_DATA')]
         #logger.debug('AppView > addViz end')
-        
+    '''
+       
     def selected_file_for_editing(self):
         '''Return shallow copy to prevent checksum error 
         when editing from different component '''

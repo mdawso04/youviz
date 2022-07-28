@@ -63,7 +63,8 @@ class GetmoreView(UnicornView):
 #RENDER
     def remote_data(self):
         #logger.debug('AppView > addViz start')
-        return self.parent.remote_data()
+        #return self.parent.remote_data()
+        return File.remote_data()
         #logger.debug('AppView > addViz end')
     
     def rendered(self, html):
