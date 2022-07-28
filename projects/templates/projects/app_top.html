@@ -201,9 +201,27 @@
                         body.appendChild(reportModal); 
                     }
                     
-                    //if (component.name == 'filecontrol') {
-                    //    alert(editing_file);
-                    //}
+                    if (component.name == 'filecontrol') {
+                        $('#table').bootstrapTable(); // init via javascript
+                        
+                        // datatable modal
+                        // append modals to prevent z-layer issues
+                        var datatableModal = document.getElementById("modalTable");
+                        var body = document.getElementById("body");
+                        body.appendChild(datatableModal); 
+                        
+                        var reportModal = document.getElementById("modalReport");
+                        var body = document.getElementById("body");
+                        body.appendChild(reportModal); 
+                        
+                        var getmoreModal = document.getElementById("modalGetmore");
+                        var body = document.getElementById("body");
+                        body.appendChild(getmoreModal); 
+                        
+                        var sourcecontrolModal = document.getElementById("modalSourcecontrol");
+                        var body = document.getElementById("body");
+                        body.appendChild(sourcecontrolModal); 
+                    }
                     
                 });
             });
