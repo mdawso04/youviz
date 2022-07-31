@@ -67,9 +67,11 @@ class DataframeView(UnicornView):
 
 #RENDER
     def rendered(self, html):
+        pass
         #logger.debug('DataframeView > rendered start')
-        logger.debug('DataframeView > rendered end')
+        #logger.debug('DataframeView > rendered end')
     
     def parent_rendered(self, html):
+        pass
         #logger.debug('DataframeView > parent_rendered start')
-        logger.debug('DataframeView > parent_rendered end')
+        #logger.debug('DataframeView > parent_rendered end')

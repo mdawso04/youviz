@@ -121,8 +121,7 @@ class VizView(UnicornView):
     
     def complete(self):
         #logger.debug('VizView > complete start')
-        pass
-        #logger.debug('VizView > complete end')
+        logger.debug('VizView > complete end')
 
 #RENDER
 

@@ -25,10 +25,14 @@ class FilecontrolView(UnicornView):
         #logger.debug('AppView > mount end')
         
     def load_table(self):
-        if self.file.learner_mode:
-            self.items = Item.objects.filter(file=self.file).all().order_by('-id')
+        if hasattr(self.file, 'items'):
+            self.items = self.file.items.all()
         else:
             self.items = Item.objects.none()
+        #if self.file.learner_mode:
+        #    self.items = Item.objects.filter(file=self.file).all().order_by('-id')
+        #else:
+        #    self.items = Item.objects.none()
         
     def hydrate(self):
         #logger.debug('LoginView > hydrate start')
@@ -57,10 +61,11 @@ class FilecontrolView(UnicornView):
         self.editing_file = False
         
     def switch_learner_mode(self):
+        print('**************************')
         self.parent.project.learner_mode = not self.parent.project.learner_mode
         self.parent.project.save()
         #self.project.refresh_from_db()
-        self.parent.load_table()
+        #self.parent.load_table()
         return redirect('/projects/app')
         
     def called(self, name, args):
@@ -70,8 +75,7 @@ class FilecontrolView(UnicornView):
         
     def complete(self):
         #logger.debug('LoginView > complete start')
-        pass
-        #logger.debug('LoginView > complete end')
+        logger.debug('FileControlView > complete end')
         
 #RENDER
         

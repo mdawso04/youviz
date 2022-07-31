@@ -7,6 +7,13 @@ from django.shortcuts import render,redirect
 from project import settings
 #from django.contrib import messages
 
+from .dataframe import DataframeView
+from .login import LoginView
+from .vizreport import VizreportView
+from .sourcecontrol import SourcecontrolView
+from .getmore import GetmoreView
+from .filecontrol import FilecontrolView
+
 # pp
 import pp
 from pp.log import logger
@@ -14,6 +21,7 @@ from pp.log import logger
 #python standard libraries
 import os
 import copy
+from io import BufferedIOBase
 
 #non-standard libraries
 #none
@@ -70,6 +78,7 @@ class AppView(UnicornView):
                 if not self.report:
                     self.addReport()
                 #logger.debug('AppView > load_table (user authenticated) end')
+                #print(self.__dict__)
             else:
                 #logger.debug('AppView > load_table (user not authenticated) start')
                 self.files = File.objects.none()

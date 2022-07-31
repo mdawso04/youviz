@@ -71,8 +71,7 @@
             <div class="offcanvas-body pt-0">  
                     
                     <!-- FILE CONTROL -->
-                    {% unicorn 'filecontrol' parent=view files=files file=selected_file_for_editing id='filecontrol01' %}
-                    
+                {% unicorn 'filecontrol' parent=view files=files file=selected_file_for_editing id='filecontrol01' %}    
                 
             </div>
         </div>
@@ -90,6 +89,8 @@
             </div>
             {% endfor %}
         </div>
+        
+        
     </div>
     <!-- MAIN CONTAINER END -->
 <!-- APP END -->

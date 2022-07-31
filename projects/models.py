@@ -11,7 +11,6 @@ from pp.log import logger
 #python standard libraries
 import os
 from io import StringIO
-StringIO
 
 #non-standard libraries
 import pandas as pd
@@ -64,7 +63,7 @@ class File(models.Model):
             #df = a.call(return_df=True)
             # store csv in db, so no need to read from disk
             return StringIO(self.document)
-        
+    
     @cached_property
     def columns(self):
         return self.datatable['columns'] if self.datatable else None
@@ -86,6 +85,20 @@ class File(models.Model):
                 del self.__dict___[property]
             except KeyError:
                 pass
+            
+    def __getstate__(self):
+        ''' Override to customize pickling '''
+        state = self.__dict__.copy()
+        # Don't pickle baz
+        if 'databuffer' in state.keys():  
+            del state['databuffer']
+        return state
+
+    def __setstate__(self, state):
+        ''' Override to customize unpickling '''
+        self.__dict__.update(state)
+        # Add baz back since it doesn't exist in the pickle
+        #self.baz = 0
     
     @classmethod
     def remote_data(self):

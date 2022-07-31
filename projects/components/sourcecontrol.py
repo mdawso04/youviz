@@ -56,16 +56,18 @@ class SourcecontrolView(UnicornView):
     
     def complete(self):
         #logger.debug('DataframeView > complete start')
-        logger.debug('DataframeView > complete end')
+        logger.debug('SourceControlView > complete end')
 
 #RENDER
     def files(self):
         return self.parent.files
     
     def rendered(self, html):
+        pass
         #logger.debug('DataframeView > rendered start')
-        logger.debug('DataframeView > rendered end')
+        #logger.debug('DataframeView > rendered end')
     
     def parent_rendered(self, html):
+        pass
         #logger.debug('DataframeView > parent_rendered start')
-        logger.debug('DataframeView > parent_rendered end')
+        #logger.debug('DataframeView > parent_rendered end')
