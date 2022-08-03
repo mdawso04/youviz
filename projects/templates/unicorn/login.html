@@ -34,8 +34,8 @@
         {% endif %}
     </div>
     <!-- LOGIN/OUT MODAL START -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" 
-         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div id="staticBackdrop" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
+         tabindex="-1" aria-hidden="true" aria-labelledby="staticBackdropLabel">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
                 {% if request.user.is_authenticated %}

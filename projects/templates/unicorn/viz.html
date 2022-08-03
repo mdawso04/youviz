@@ -102,6 +102,12 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold" id="filter-tab-{{vid}}" data-bs-toggle="pill" 
+                            data-bs-target="#filter-tab-pane-{{vid}}" role="tab" aria-controls="filter-tab-pane" aria-selected="false">
+                        <i class="bi bi-filter" style="font-size: 1.2rem;"></i>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
                     <button class="nav-link fw-bold" id="share-tab-{{vid}}" data-bs-toggle="pill" 
                             data-bs-target="#share-tab-pane-{{vid}}" role="tab" aria-controls="share-tab-pane" aria-selected="false">
                         <i class="bi bi-share-fill" style="font-size: 1.2rem;"></i>
@@ -211,7 +217,7 @@
                                                     onclick="bootstrap.Modal.getInstance('#deleteVizConfirm{{vid}}').hide(); 
                                                     document.getElementById('app-spinner').hidden = false;
                                                     Unicorn.call('app', 'deleteViz', '{{viz.pk}}');"
-                                                    class="btn btn-primary">OK</button>
+                                                    class="btn btn-danger">OK</button>
                                         </div>
                                     </div>
                                 </div>
@@ -224,6 +230,15 @@
                         </div>
                     </div>
                 </div>
+                <!-- FILTER TAB -->
+                <div class="tab-pane fade" id="filter-tab-pane-{{vid}}" role="tabpanel" aria-labelledby="filter-tab-{{vid}}">
+                     <div class="row g-2" unicorn:key="filter-row-01-{{vid}}">
+                        <div class="col-lg-2">      
+                            Sort/filter
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- SHARE TAB -->
                 <div class="tab-pane fade" id="share-tab-pane-{{vid}}" role="tabpanel" aria-labelledby="share-tab-{{vid}}">
                      <div class="row g-2" unicorn:key="share-row-01-{{vid}}">

@@ -57,22 +57,25 @@
             // run on page load
             
             //move modals to body for zorder fix
-            var loginModal = document.getElementById("staticBackdrop");
-            var datatableModal = document.getElementById("modalTable");
-            var getmoreModal = document.getElementById("modalGetmore");
-            var sourcecontrolModal = document.getElementById("modalSourcecontrol");
-            var reportModal = document.getElementById("modalReport");
-            var body = document.getElementById("body");
-            body.appendChild(loginModal) 
-            body.appendChild(datatableModal) 
-            body.appendChild(getmoreModal) 
-            body.appendChild(sourcecontrolModal) 
-            body.appendChild(reportModal) 
+            //var loginModal = document.getElementById("staticBackdrop");
+            //var datatableModal = document.getElementById("modalTable");
+            //var getmoreModal = document.getElementById("modalGetmore");
+            //var sourcecontrolModal = document.getElementById("modalSourcecontrol");
+            //var reportModal = document.getElementById("modalReport");
+            //var body = document.getElementById("body");
+            //body.appendChild(loginModal) 
+            //body.appendChild(datatableModal) 
+            //body.appendChild(getmoreModal) 
+            //body.appendChild(sourcecontrolModal) 
+            //body.appendChild(reportModal) 
             
-            var yvmodals = document.getElementsByClassName("yvmodal");
-            for (var n = 0; n < yvmodals.length; n++) {
-                body.appendChild(yvmodals[n]); 
+            //var yvmodals = document.getElementsByClassName("yvmodal");
+            var yvmodals = document.querySelectorAll('.yvmodal');
+            var body = document.getElementById("body");
+            for (let i = 0; i < yvmodals.length; i++) {
+                body.appendChild(yvmodals[i]); 
             }
+            
             
             
             //global toggle to keep offcanvas open while editing data source
@@ -126,30 +129,21 @@
                         
                         // datatable modal
                         // append modals to prevent z-layer issues
-                        var loginModal = document.getElementById("staticBackdrop");
-                        var datatableModal = document.getElementById("modalTable");
-                        var getmoreModal = document.getElementById("modalGetmore");
-                        var sourcecontrolModal = document.getElementById("modalSourcecontrol");
-                        var reportModal = document.getElementById("modalReport");
+                        var yvmodals = document.querySelectorAll('.yvmodal');
                         var body = document.getElementById("body");
-                        body.appendChild(loginModal) 
-                        body.appendChild(datatableModal) 
-                        body.appendChild(getmoreModal) 
-                        body.appendChild(sourcecontrolModal) 
-                        body.appendChild(reportModal) 
-                        
-                        var yvmodals = document.getElementsByClassName("yvmodal");
-                        for (var n = 0; n < yvmodals.length; n++) {
-                            body.appendChild(yvmodals[n]); 
+                        for (let i = 0; i < yvmodals.length; i++) {
+                            body.appendChild(yvmodals[i]); 
                         }
                     
                     }
                     
                     if (component.name == 'login') {
                         // append modals to prevent z-layer issues
-                        var loginModal = document.getElementById("staticBackdrop");
+                        var yvmodals = document.querySelectorAll('.yvmodal');
                         var body = document.getElementById("body");
-                        body.appendChild(loginModal); 
+                        for (let i = 0; i < yvmodals.length; i++) {
+                            body.appendChild(yvmodals[i]); 
+                        }
                         
                         var usd = document.getElementById("user-settings-dropdown");
                         if (usd) {
@@ -172,33 +166,41 @@
                         
                         // datatable modal
                         // append modals to prevent z-layer issues
-                        var datatableModal = document.getElementById("modalTable");
+                        var yvmodals = document.querySelectorAll('.yvmodal');
                         var body = document.getElementById("body");
-                        body.appendChild(datatableModal); 
+                        for (let i = 0; i < yvmodals.length; i++) {
+                            body.appendChild(yvmodals[i]); 
+                        }
                     }
                     
                     if (component.name == 'getmore') {
                         // datatable modal
                         // append modals to prevent z-layer issues
-                        var getmoreModal = document.getElementById("modalGetmore");
+                        var yvmodals = document.querySelectorAll('.yvmodal');
                         var body = document.getElementById("body");
-                        body.appendChild(getmoreModal); 
+                        for (let i = 0; i < yvmodals.length; i++) {
+                            body.appendChild(yvmodals[i]); 
+                        }
                     }
                     
                     if (component.name == 'sourcecontrol') {
                         // datatable modal
                         // append modals to prevent z-layer issues
-                        var sourcecontrolModal = document.getElementById("modalSourcecontrol");
+                        var yvmodals = document.querySelectorAll('.yvmodal');
                         var body = document.getElementById("body");
-                        body.appendChild(sourcecontrolModal); 
+                        for (let i = 0; i < yvmodals.length; i++) {
+                            body.appendChild(yvmodals[i]); 
+                        }
                     }
                     
                     if (component.name == 'report') {
                         // datatable modal
                         // append modals to prevent z-layer issues
-                        var reportModal = document.getElementById("modalReport");
+                        var yvmodals = document.querySelectorAll('.yvmodal');
                         var body = document.getElementById("body");
-                        body.appendChild(reportModal); 
+                        for (let i = 0; i < yvmodals.length; i++) {
+                            body.appendChild(yvmodals[i]); 
+                        }
                     }
                     
                     if (component.name == 'filecontrol') {
@@ -206,21 +208,11 @@
                         
                         // datatable modal
                         // append modals to prevent z-layer issues
-                        var datatableModal = document.getElementById("modalTable");
+                        var yvmodals = document.querySelectorAll('.yvmodal');
                         var body = document.getElementById("body");
-                        body.appendChild(datatableModal); 
-                        
-                        var reportModal = document.getElementById("modalReport");
-                        var body = document.getElementById("body");
-                        body.appendChild(reportModal); 
-                        
-                        var getmoreModal = document.getElementById("modalGetmore");
-                        var body = document.getElementById("body");
-                        body.appendChild(getmoreModal); 
-                        
-                        var sourcecontrolModal = document.getElementById("modalSourcecontrol");
-                        var body = document.getElementById("body");
-                        body.appendChild(sourcecontrolModal); 
+                        for (let i = 0; i < yvmodals.length; i++) {
+                            body.appendChild(yvmodals[i]); 
+                        }
                     }
                     
                 });
