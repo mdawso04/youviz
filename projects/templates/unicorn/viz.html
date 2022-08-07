@@ -234,18 +234,32 @@
                 <div class="tab-pane fade" id="filter-tab-pane-{{vid}}" role="tabpanel" aria-labelledby="filter-tab-{{vid}}">
                      <div class="row g-2" unicorn:key="filter-row-01-{{vid}}">
                         <div class="col-lg-2">
-                            {{drawings}}
                             {% for d in drawings %}
-                            <input type="text" class="form-control" unicorn:model.lazy="drawings.{{forloop.counter0}}.x"
-                                       id="drawingNameText{{forloop.counter0}}" unicorn:key="drawingNameText{{forloop.counter0}}"
-                                       unicorn:partial.key="filter-row-01-{{vid}}"
-                                       aria-label="Drawing Name">
-                            <button type="button" id="drawingButton{{forloop.counter0}}" class="btn btn-danger" 
-                                    unicorn:click="deleteDrawing({{forloop.counter0}})"
-                                    unicorn:partial.key="filter-row-01-{{vid}}"
-                                    unicorn:partial.id="outerPlotBox-{{vid}}">Delete</button>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="drawingAddonOne{{forloop.counter0}}">{{forloop.counter}}</span>
+                                <select class="form-select" id="drawingTypeSelect{{forloop.counter0}}">
+                                    <option value="DRAW_VLINE" selected>VLINE</option>
+                                    <option value="DRAW_HLINE">HLINE</option>
+                                    <option value="DRAW_VRECT">VRECT</option>
+                                    <option value="DRAW_HRECT">HRECT</option>
+                                </select>
+                                <input type="text" class="form-control" unicorn:model.lazy="drawings.{{forloop.counter0}}.annotation_text"
+                                           id="drawingNameText{{forloop.counter0}}" unicorn:key="drawingNameText{{forloop.counter0}}"
+                                           unicorn:partial.key="filter-row-01-{{vid}}"
+                                           unicorn:partial.id="outerPlotBox-{{vid}}" 
+                                           aria-label="Drawing Name">
+                                <input type="number" class="form-control" unicorn:model.lazy="drawings.{{forloop.counter0}}.x"
+                                           id="drawingNumber{{forloop.counter0}}" unicorn:key="drawingNumber{{forloop.counter0}}"
+                                           unicorn:partial.key="filter-row-01-{{vid}}"
+                                           unicorn:partial.id="outerPlotBox-{{vid}}" 
+                                           aria-label="Drawing Number">
+                                <button type="button" id="drawingButton{{forloop.counter0}}" class="btn btn-danger" 
+                                        unicorn:click="deleteDrawing({{forloop.counter0}})"
+                                        unicorn:partial.key="filter-row-01-{{vid}}"
+                                        unicorn:partial.id="outerPlotBox-{{vid}}">×</button>
+                            </div>
                             {% endfor %}
-                            <button type="button" id="addDrawingButton{{forloop.counter0}}" class="btn btn-secondary" 
+                            <button type="button" id="addDrawingButton" class="btn btn-secondary" 
                                     unicorn:click="addDrawing('new drawing')"
                                     unicorn:partial.key="filter-row-01-{{vid}}"
                                     unicorn:partial.id="outerPlotBox-{{vid}}">Add</button>

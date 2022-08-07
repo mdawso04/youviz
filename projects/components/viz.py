@@ -107,6 +107,17 @@ class VizView(UnicornView):
             a.todos[1]['options'][name.split('.')[2]] = value
             #self.viz.json = a.todos
             #self.viz.save()
+        elif name.startswith('drawings'):
+            if value == 'None':
+                value = None
+            todo_index = int(name.split('.')[1]) + 2
+            key = name.split('.')[2]
+            if key == 'x':
+                if value is not None:
+                    value = int(value)
+            a.todos[todo_index]['options'][key] = value
+            #self.viz.json = a.todos
+            #self.viz.save()
         self.viz.json = a.todos
         self.viz.save()
         self.load_viz()
@@ -137,7 +148,7 @@ class VizView(UnicornView):
     def addDrawing(self, d):
         a = pp.App(self.viz.json)
         a.todos.append(
-            {"name": d, "type": "draw", "service": "DRAW_VLINE", "options": {"x": 30}}
+            {"name": d, "type": "draw", "service": "DRAW_VLINE", "options": {"x": 30, 'line_color': 'red'}}
         )
         self.viz.json = a.todos
         self.viz.save()
