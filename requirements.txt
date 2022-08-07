@@ -4,4 +4,4 @@ gunicorn
 django-debug-toolbar
 django_heroku
 django_unicorn
-pandas-plotly==0.2.2
+pandas-plotly==0.2.3

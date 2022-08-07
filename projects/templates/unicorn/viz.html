@@ -235,7 +235,7 @@
                      <div class="row g-2" unicorn:key="filter-row-01-{{vid}}">
                         <div class="col-lg-2">
                             {% for d in drawings %}
-                            <div class="input-group mb-3">
+                            <div class="input-group input-group-sm mb-3">
                                 <span class="input-group-text" id="drawingAddonOne{{forloop.counter0}}">{{forloop.counter}}</span>
                                 <select class="form-select" id="drawingTypeSelect{{forloop.counter0}}">
                                     <option value="DRAW_VLINE" selected>VLINE</option>
@@ -243,16 +243,31 @@
                                     <option value="DRAW_VRECT">VRECT</option>
                                     <option value="DRAW_HRECT">HRECT</option>
                                 </select>
-                                <input type="text" class="form-control" unicorn:model.lazy="drawings.{{forloop.counter0}}.annotation_text"
+                                <select class="form-select"  unicorn:model.lazy="drawings.{{forloop.counter0}}.x"
+                                           id="drawingNumberOne{{forloop.counter0}}" unicorn:key="drawingNumberOne{{forloop.counter0}}"
+                                           unicorn:partial.key="filter-row-01-{{vid}}"
+                                           unicorn:partial.id="outerPlotBox-{{vid}}" 
+                                           aria-label="Drawing Number One">
+                                    <option value="10" selected>10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                </select>
+                                <select class="form-select"  unicorn:model.lazy="drawings.{{forloop.counter0}}.x1"
+                                           id="drawingNumberTwo{{forloop.counter0}}" unicorn:key="drawingNumberTwo{{forloop.counter0}}"
+                                           unicorn:partial.key="filter-row-01-{{vid}}"
+                                           unicorn:partial.id="outerPlotBox-{{vid}}" 
+                                           aria-label="Drawing Number Two" disabled>
+                                    <option value="10" selected>10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                </select>
+                                <input type="text" class="form-control flex-grow-1" unicorn:model.lazy="drawings.{{forloop.counter0}}.annotation_text"
                                            id="drawingNameText{{forloop.counter0}}" unicorn:key="drawingNameText{{forloop.counter0}}"
                                            unicorn:partial.key="filter-row-01-{{vid}}"
                                            unicorn:partial.id="outerPlotBox-{{vid}}" 
                                            aria-label="Drawing Name">
-                                <input type="number" class="form-control" unicorn:model.lazy="drawings.{{forloop.counter0}}.x"
-                                           id="drawingNumber{{forloop.counter0}}" unicorn:key="drawingNumber{{forloop.counter0}}"
-                                           unicorn:partial.key="filter-row-01-{{vid}}"
-                                           unicorn:partial.id="outerPlotBox-{{vid}}" 
-                                           aria-label="Drawing Number">
                                 <button type="button" id="drawingButton{{forloop.counter0}}" class="btn btn-danger" 
                                         unicorn:click="deleteDrawing({{forloop.counter0}})"
                                         unicorn:partial.key="filter-row-01-{{vid}}"
