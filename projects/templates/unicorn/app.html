@@ -15,13 +15,13 @@
     <!-- TOP NAVBAR START -->
     <nav class="navbar navbar-dark bg-dark sticky-top">
         <div class="container-fluid d-flex">
-            <a class="navbar-brand me-auto" href="/projects/app">YouViz</a>
+            <a class="navbar-brand me-auto" href="/projects/app">YouViz<span class="text-warning">Alpha</span></a>
             <!-- TAB BUTTONS -->
             <ul class="nav nav-pills pe-2" role="tablist">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle active" id="tab-more-dropdown" data-bs-toggle="dropdown" href="#" 
+                    <a class="nav-link dropdown-toggle active fw-bold" id="tab-more-dropdown" data-bs-toggle="dropdown" href="#" 
                        role="button" aria-expanded="false">
-                        {{ vizs|length }}
+                        {{ vizs|length }} viz{{ vizs|pluralize }}
                     </a>
                     <ul class="dropdown-menu" id="myTab">
                 {% for v in vizs %}
@@ -51,9 +51,9 @@
 
             
             {% unicorn 'login' parent=view id='login' %}
-            <button id="off-canvas-button" class="navbar-toggler d-block" type="button" data-bs-toggle="offcanvas" 
+            <button id="off-canvas-button" class="btn btn-dark border-0 text-white text-opacity-75" type="button" data-bs-toggle="offcanvas" 
                     data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
-                <span class="navbar-toggler-icon"></span>
+                <i class="bi bi-list" style="font-size: 1.2rem;"></i>
             </button>
         </div>
     </nav>
