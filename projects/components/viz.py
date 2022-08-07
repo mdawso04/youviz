@@ -22,6 +22,7 @@ class VizView(UnicornView):
     viz: Viz = None
     viz_settings: dict = {}
     plot: str = None
+    drawings: list = []
     
     class Meta:
         exclude = ('plot', )
@@ -36,22 +37,23 @@ class VizView(UnicornView):
     def load_viz(self):
         #logger.debug('VizView > load_viz start')
         
-        #temp patch to load csv from db
+        #load csv from db
         copied_json = deepcopy(self.viz.json)
         copied_json[0]['options']['src'] = self.parent.file.databuffer
-        
-        #a = pp.App(self.viz.json)
         a = pp.App(copied_json)
-        self.viz_settings = a.data()
+        
+        #build viz options cache for current state
+        self.viz_settings = a.data(todo=1) #2nd item should be viz
         for v in self.viz_settings['options'].values():
             if v['saved'] is None:
                 v['saved'] = 'None'
+                
+        #build drawing list for current state
+        self.drawings = a.todos[2:]
         
-        #a = pp.App(self.viz.json)
-        #todo = a.todos[-1]
+        #build viz (including drawings) for current state
         fig = a.call(return_df=False)[0]
         fig.update_layout(width=None, height=None,autosize=True, margin={'l': 0})
-        #logger.debug('VizView > plot end')
         self.plot = pio.to_json(fig=fig, engine='json')
 
         #logger.debug('VizView > load_viz end')
@@ -68,34 +70,45 @@ class VizView(UnicornView):
         #logger.debug('VizView > updated start')
         
         a = pp.App(self.viz.json)
-        todo = a.todos[-1]
+        #todo = a.todos[-1]
         if name == 'viz_settings.name':
-            todo['name'] = value
-            self.viz.json = a.todos
-            self.viz.save()
+            #todo['name'] = value
+            #self.viz.json = a.todos
+            #self.viz.json[1]['name'] = value
+            a.todos[1]['name'] = value
+            #self.viz.save()
         elif name == 'viz.title':
             #logger.debug('VizView > viz.title updated ("{}") start'.format(value))
-            todo['name'] = value
-            self.viz.json = a.todos
-            self.viz.save()
+            #todo['name'] = value
+            #self.viz.json = a.todos
+            #self.viz.json[1]['name'] = value
+            #self.viz.save()
+            a.todos[1]['name'] = value
+            # call javascript to update related gui elements
             id = 'viz-' + str(self.viz.pk) + '-tab'
             id_copy = id + '-copy'
             value_copy = 'Copy ' + value
             self.call("elementUpdate", [[id, value], [id_copy, value_copy]])    
         elif name == 'viz_settings.service.saved':
-            todo['service'] = value
+            #todo['service'] = value
+            #self.viz.json[1]['service'] = value
+            a.todos[1]['service'] = value
             # filter out unusable params
             new_service_params = list(a.options(value, df=pd.DataFrame()).keys())
-            todo['options'] = {k: v for k, v in todo['options'].items() if k in new_service_params}
-            self.load_viz()
-            self.viz.json = a.todos
-            self.viz.save()
+            a.todos[1]['options'] = {k: v for k, v in a.todos[1]['options'].items() if k in new_service_params}
+            #self.viz.json[1]['options'] = {k: v for k, v in self.viz.json[1]['options'].items() if k in new_service_params}
+            #self.load_viz()
+            #self.viz.json = a.todos
+            #self.viz.save()
         elif name.startswith('viz_settings.options'):
             if value == 'None':
                 value = None
-            todo['options'][name.split('.')[2]] = value
-            self.viz.json = a.todos
-            self.viz.save()
+            #todo['options'][name.split('.')[2]] = value
+            a.todos[1]['options'][name.split('.')[2]] = value
+            #self.viz.json = a.todos
+            #self.viz.save()
+        self.viz.json = a.todos
+        self.viz.save()
         self.load_viz()
         #logger.debug('VizView > updated end')
 
@@ -113,6 +126,22 @@ class VizView(UnicornView):
         #self.parent.deleteViz(self.viz.pk)
         #return redirect('/projects/app')
         pass
+    
+    def deleteDrawing(self, d):
+        a = pp.App(self.viz.json)
+        del a.todos[d + 2] # Count from 3rd element
+        self.viz.json = a.todos
+        self.viz.save()
+        self.load_viz()
+        
+    def addDrawing(self, d):
+        a = pp.App(self.viz.json)
+        a.todos.append(
+            {"name": d, "type": "draw", "service": "DRAW_VLINE", "options": {"x": 30}}
+        )
+        self.viz.json = a.todos
+        self.viz.save()
+        self.load_viz()
     
     def called(self, name, args):
         #logger.debug('VizView > called start')
@@ -166,7 +195,7 @@ class VizView(UnicornView):
             return None
         else:
             return json.dumps(y['layout'])
-
+        
     def rendered(self, html):
         #logger.debug('VizView > rendered start')
         pass

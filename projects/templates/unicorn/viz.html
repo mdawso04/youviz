@@ -104,7 +104,7 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link fw-bold" id="filter-tab-{{vid}}" data-bs-toggle="pill" 
                             data-bs-target="#filter-tab-pane-{{vid}}" role="tab" aria-controls="filter-tab-pane" aria-selected="false">
-                        <i class="bi bi-filter" style="font-size: 1.2rem;"></i>
+                        <i class="bi bi-pen" style="font-size: 1.2rem;"></i>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
@@ -139,7 +139,7 @@
                                        id="vizNameText{{vid}}" unicorn:key="vizNameText{{vid}}"
                                        unicorn:partial.key="vizNameText{{vid}}"
                                        aria-label="Viz Name">
-                                <label for="vizNameText{{vid}}">Viz Name</label>
+                                <label for="vizNameText{{vid}}">Name</label>
                             </div>
                         </div>
                         <div class="col-lg-2">
@@ -155,7 +155,7 @@
                                         <option {% if v == viz_settings.service.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
                                     {% endfor %}
                                 </select>
-                                <label for="vizServiceSelect{{vid}}">Viz Type</label>
+                                <label for="vizServiceSelect{{vid}}">Type</label>
                             </div>
                         </div>  
                         {% for key, value in viz_settings.options.items %}
@@ -171,7 +171,7 @@
                                         <option {% if v == value.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
                                     {% endfor %}
                                 </select>
-                                <label for="data{{key|title}}Select{{vid}}">{{key|title}} Field</label>
+                                <label for="data{{key|title}}Select{{vid}}">{{key|title}}</label>
                             </div>
                         </div>
                         {% endfor %}
@@ -233,8 +233,22 @@
                 <!-- FILTER TAB -->
                 <div class="tab-pane fade" id="filter-tab-pane-{{vid}}" role="tabpanel" aria-labelledby="filter-tab-{{vid}}">
                      <div class="row g-2" unicorn:key="filter-row-01-{{vid}}">
-                        <div class="col-lg-2">      
-                            Sort/filter
+                        <div class="col-lg-2">
+                            {{drawings}}
+                            {% for d in drawings %}
+                            <input type="text" class="form-control" unicorn:model.lazy="drawings.{{forloop.counter0}}.x"
+                                       id="drawingNameText{{forloop.counter0}}" unicorn:key="drawingNameText{{forloop.counter0}}"
+                                       unicorn:partial.key="filter-row-01-{{vid}}"
+                                       aria-label="Drawing Name">
+                            <button type="button" id="drawingButton{{forloop.counter0}}" class="btn btn-danger" 
+                                    unicorn:click="deleteDrawing({{forloop.counter0}})"
+                                    unicorn:partial.key="filter-row-01-{{vid}}"
+                                    unicorn:partial.id="outerPlotBox-{{vid}}">Delete</button>
+                            {% endfor %}
+                            <button type="button" id="addDrawingButton{{forloop.counter0}}" class="btn btn-secondary" 
+                                    unicorn:click="addDrawing('new drawing')"
+                                    unicorn:partial.key="filter-row-01-{{vid}}"
+                                    unicorn:partial.id="outerPlotBox-{{vid}}">Add</button>
                         </div>
                     </div>
                 </div>
