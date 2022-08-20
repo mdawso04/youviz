@@ -1,147 +1,152 @@
 {% load humanize %}
 {% load unicorn %} 
-<div>                               
+<div>
     
-    <div class="d-grid gap-2" id="fileInfo">
-        <!-- FILECONTROL SPINNER START -->
-        <div unicorn:loading class="overlay">
-            <div class="d-flex justify-content-center">  
-                <div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem; z-index: 20;">
-                    <span class="sr-only">Loading...</span>
+    <div class="card mb-2">
+        <div class="card-body">
+            <h6 class="card-subtitle mb-2 text-muted">User</h6>                            
+
+            <div class="d-grid gap-2" id="fileInfo">
+                <div class="col-lg-2">
+                    <div class="mb-2">
+                        Hey {{ request.user.username }}! Last login yesterday.
+                    </div>
+                    <button type="button" class="btn btn-sm btn-secondary" id="logoutButton" 
+                            data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                        Logout
+                    </button>
+                    
+                    <!-- LOGIN/OUT MODAL START -->
+                    <div id="staticBackdrop" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
+                         tabindex="-1" aria-hidden="true" aria-labelledby="staticBackdropLabel">
+                        <div class="modal-dialog modal-dialog-centered modal-sm">
+                            <div class="modal-content">
+                                {% if request.user.is_authenticated %}
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Logout</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Would you like to logout?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" 
+                                            data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" id="modalLogoutButton" 
+                                            onclick="bootstrap.Modal.getInstance('#staticBackdrop').hide(); 
+                                                     document.getElementById('login-spinner').hidden = false;
+                                                     Unicorn.call('login', 'logout');"
+                                            {% comment %} unicorn:click="logout" {% endcomment %}
+                                            class="btn btn-primary">OK</button>
+                                </div>
+                                {% else %}
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Login</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-floating mb-3">
+                                        <input type="input" unicorn:model.defer="username" class="form-control" 
+                                               id="floatingInputEmail" placeholder="name@example.com">
+                                        <label for="floatingInputEmail">Username</label>
+                                    </div>
+                                    <div class="form-floating">
+                                        <input type="password" unicorn:model.defer="password" class="form-control" 
+                                               id="floatingInputPassword" placeholder="Password">
+                                        <label for="floatingInputPassword">Password</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" id="modalCancelButton" class="btn btn-secondary" 
+                                            unicorn:click.discard="cancel" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" id="modalLoginButton" unicorn:click="login" class="btn btn-primary">OK</button>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END MODAL -->
+                    
+                    
                 </div>
             </div>
         </div>
-        <!-- SPINNER END -->
-        {% if editing_file %}
-            <div class="form-floating">
-                <input type="text" class="form-control" 
-                       unicorn:model.defer="file.title"
-                       id="fileNameText" unicorn:key="fileNameText"
-                       aria-label="File Name">
-                <label for="fileNameText">Name</label>
-            </div>
-            <div class="form-floating">
-                <input type="text" class="form-control" 
-                       unicorn:model.defer="file.description"
-                       id="fileDescText" unicorn:key="fileDescText"
-                       aria-label="File Description">
-                <label for="fileDescText">Description</label>
-            </div>
-            <button class="btn btn-primary" onclick="editing_file=false;" 
-                    unicorn:click=saveFileInfo unicorn:partial.id="fileInfo">Save</button>
-            <button class="btn btn-secondary" onclick="editing_file=false;" 
-                    unicorn:click.discard="$toggle('editing_file')" unicorn:partial.id="fileInfo" >Cancel</button>
-        {% else %}
-        
-        <!-- LEARNER MODE SWITCH -->
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" 
-                               unicorn:click="switch_learner_mode"
-                               {% comment %}unicorn:model="project.learner_mode" {% endcomment %}
-                               type="checkbox" id="learnerModeSwitch"{% if project.learner_mode %} checked{% endif %}>
-                        <label class="form-check-label" for="learnerModeSwitch">Learner Mode</label>
-                    </div>
-    
-        
-        
-        
-            <!-- FILE CARD -->
-            <div class="card" 
-                 unicorn:click="$toggle('editing_file')" 
-                 onclick="editing_file = true;"
-                 unicorn:partial.id="fileInfo" 
-                 style="max-width: 540px;">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        <div class="d-flex justify-content-center" 
-                             style="height: 100%;"><i class="bi bi-filetype-csv align-self-center" style="font-size: 4rem;"></i></div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">{{file.title}}</h5>
-                            <p class="card-text">{{file.description}}</p>
-                            <p class="card-text"><small class="text-muted">Cached {{file.uploaded_at|naturaltime|capfirst}}</small></p>
-                            <a href="#" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        <!-- ITEM CARD/S -->
-        {% if file.learner_mode %} 
-            {% for item in items %}
-                <div class="card" 
-                     style="max-width: 540px;">
-                    <div class="row g-0">
-                        <div class="col-md-12">
-                            <div class="card-body">
-                                <h5 class="card-title">{{item.title}}</h5>
-                                <p class="card-text">{{item.description}}</p>
-                                <p class="card-text"><small class="text-muted">Open</small></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        {% endif %}
-    
-    
-    
-    
-    <!-- BOTTOM NAVBAR START -->
-                    <nav class="navbar fixed-bottom bg-light" id=bottom-navbar-offcanvas>
-                        <div class="container-fluid d-flex justify-content-start d-grid gap-2">
-                            <button type="button" class="btn btn-outline-danger border-0"
-                                id="dataDeleteButton" unicorn:key="dataDeleteButton"
-                                data-bs-toggle="modal" data-bs-target="#deleteDataConfirm"
-                                aria-label="Delete data">
-                                    <i class="bi bi-x-lg" style="font-size: 1.2rem;"></i>
-                            </button>
-                            
-                            <!-- VIZ DELETE MODAL START -->
-                            <div class="modal fade yvmodal" id="deleteDataConfirm" data-bs-backdrop="static" data-bs-keyboard="false" 
-                                 tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered modal-sm">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="staticBackdropLabel">Delete Data</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            Would you like to delete this data?
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" 
-                                                    data-bs-dismiss="modal">Cancel</button>
-                                            <button type="button" id="modalLogoutButton" 
-                                                    onclick="bootstrap.Modal.getInstance('#deleteDataConfirm').hide(); 
-                                                    document.getElementById('app-spinner').hidden = false;
-                                                    Unicorn.call('app', 'deleteFile', '{{file.pk}}');"
-                                                    class="btn btn-danger">OK</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- END MODAL -->
-
-                            <button type="button" class="btn btn-outline-primary border-0 {% if files|length == 1 %}disabled{% endif %}"
-                                id="sourcecontrolOpenButton" unicorn:key="sourcecontrolOpenButton"
-                                data-bs-toggle="modal" data-bs-target="#modalSourcecontrol" aria-controls="modalsourcecontrol"
-                                {% if files|length == 1 %} disabled{% endif %}>
-                                    <i class="bi bi-box-arrow-up-right" style="font-size: 1.2rem;"></i>
-                            </button>
-                            {% unicorn 'sourcecontrol' parent=view id='sourcecontrol' %}
-
-                            <button type="button" class="btn btn-outline-primary border-0"
-                                id="getmoreOpenButton" unicorn:key="getmoreOpenButton"
-                                data-bs-toggle="modal" data-bs-target="#modalGetmore" aria-controls="modalgetmore">
-                                    <i class="bi bi-plus-square" style="font-size: 1.2rem;"></i>
-                            </button>
-                            {% unicorn 'getmore' parent=view id='getmore' %}    
-                        </div>
-                    </nav>
-    
-        {% endif %}
     </div>
     
     
+    <div class="card mb-2">
+        <div class="card-body">
+            <h6 class="card-subtitle mb-2 text-muted">Data Source</h6>                            
+
+            <div class="d-grid gap-2" id="fileInfo">
+                <div class="input-group mb-2">
+                    <span class="input-group-text" id="file-name-input">Name</span>
+                    <input type="text" class="form-control" 
+                           unicorn:model.lazy="file.title"
+                           unicorn:partial.id="fileInfo" 
+                           id="fileNameText" unicorn:key="fileNameText"
+                           aria-label="File Name">
+                </div>
+                <div class="input-group mb-2">
+                    <span class="input-group-text" id="file-description-input">Description</span>    
+                    <input type="text" class="form-control" 
+                           unicorn:model.lazy="file.description"
+                           unicorn:partial.id="fileInfo" 
+                           id="fileDescText" unicorn:key="fileDescText"
+                           aria-label="File Description">
+                </div>
+                
+                <div class="col-lg-2">
+                    <button type="button" class="btn btn-sm btn-danger"
+                        id="dataDeleteButton" unicorn:key="dataDeleteButton"
+                        data-bs-toggle="modal" data-bs-target="#deleteDataConfirm"
+                        aria-label="Delete data">
+                            Delete source
+                    </button>
+
+                    <!-- VIZ DELETE MODAL START -->
+                    <div class="modal fade yvmodal" id="deleteDataConfirm" data-bs-backdrop="static" data-bs-keyboard="false" 
+                         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Delete Data</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Would you like to delete this data?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" 
+                                            data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" id="modalLogoutButton" 
+                                            onclick="bootstrap.Modal.getInstance('#deleteDataConfirm').hide(); 
+                                            document.getElementById('app-spinner').hidden = false;
+                                            Unicorn.call('app', 'deleteFile', '{{file.pk}}');"
+                                            class="btn btn-danger">OK</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END MODAL -->
+                    
+                    <button type="button" class="btn btn-sm btn-secondary {% if files|length == 1 %}disabled{% endif %}"
+                        id="sourcecontrolOpenButton" unicorn:key="sourcecontrolOpenButton"
+                        data-bs-toggle="modal" data-bs-target="#modalSourcecontrol" aria-controls="modalsourcecontrol"
+                        {% if files|length == 1 %} disabled{% endif %}>
+                        Change Source
+                    </button>
+                    {% unicorn 'sourcecontrol' parent=view id='sourcecontrol' %}
+
+                    <button type="button" class="btn btn-sm btn-secondary"
+                        id="getmoreOpenButton" unicorn:key="getmoreOpenButton"
+                        data-bs-toggle="modal" data-bs-target="#modalGetmore" aria-controls="modalgetmore">
+                        Get More
+                    </button>
+                    {% unicorn 'getmore' parent=view id='getmore' %}    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
