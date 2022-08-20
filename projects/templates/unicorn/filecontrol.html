@@ -90,20 +90,6 @@
     <!-- BOTTOM NAVBAR START -->
                     <nav class="navbar fixed-bottom bg-light" id=bottom-navbar-offcanvas>
                         <div class="container-fluid d-flex justify-content-start d-grid gap-2">
-                            <button type="button" class="btn btn-outline-primary border-0"
-                                id="datafileOpenButton" unicorn:key="datafileOpenButton"
-                                data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable">
-                                    <i class="bi bi-table" style="font-size: 1.2rem;"></i>
-                            </button>
-                            {% unicorn 'dataframe' parent=view file=file id='dataframe' %}
-
-                            <button type="button" class="btn btn-outline-primary border-0"
-                                id="reportOpenButton" unicorn:key="reportOpenButton"
-                                data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport">
-                                    <i class="bi bi-file-earmark-check" style="font-size: 1.2rem;"></i>
-                            </button>
-                            {% unicorn 'vizreport' parent=view id='vizreport' %}
-
                             <button type="button" class="btn btn-outline-danger border-0"
                                 id="dataDeleteButton" unicorn:key="dataDeleteButton"
                                 data-bs-toggle="modal" data-bs-target="#deleteDataConfirm"

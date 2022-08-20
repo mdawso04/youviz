@@ -79,72 +79,40 @@
     
     
     <!-- BOTTOM NAVBAR START -->
-    <nav class="navbar fixed-bottom bg-light" id=bottom-navbar-{{vid}}>
-        <div class="container-fluid d-flex">
-            <button class="btn btn-outline-primary border-0" type="button" data-bs-toggle="offcanvas" 
-                    data-bs-target="#offcanvasBottom-{{vid}}" aria-controls="offcanvasBottom-{{vid}}">
-                <i class="bi bi-bar-chart" style="font-size: 1.2rem;"></i>
-            </button>
-        </div>
-    </nav>
-    <div class="offcanvas offcanvas-bottom" tabindex="-1" data-bs-backdrop="false" data-bs-scroll="true" 
+   <div class="offcanvas offcanvas-bottom" tabindex="-1" data-bs-backdrop="false" data-bs-scroll="true" 
          id="offcanvasBottom-{{vid}}" aria-labelledby="offcanvasBottomLabel" style="height: 216px;">
-        <div class="offcanvas-header d-flex">
-            <h5 class="offcanvas-title" id="offcanvasBottomLabel">Viz</h5>
+        <div class="d-flex offcanvas-header">
+            <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Viz Settings</h5>
+            <!-- OFFCANVAS BUTTONS -->
             
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="maximize"
+                       onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');">
+            </div>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             
-            <!-- TAB BUTTONS -->
-            <ul class="nav nav-pills px-2" id="myTab-{{vid}}" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-bold active" id="viz-settings-tab-{{vid}}" data-bs-toggle="pill" 
-                            data-bs-target="#viz-settings-pane-{{vid}}" role="tab" aria-controls="viz-settings-pane" aria-selected="false">
-                        <i class="bi bi-sliders" style="font-size: 1.2rem;"></i>
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-bold" id="filter-tab-{{vid}}" data-bs-toggle="pill" 
-                            data-bs-target="#filter-tab-pane-{{vid}}" role="tab" aria-controls="filter-tab-pane" aria-selected="false">
-                        <i class="bi bi-pen" style="font-size: 1.2rem;"></i>
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-bold" id="share-tab-{{vid}}" data-bs-toggle="pill" 
-                            data-bs-target="#share-tab-pane-{{vid}}" role="tab" aria-controls="share-tab-pane" aria-selected="false">
-                        <i class="bi bi-share-fill" style="font-size: 1.2rem;"></i>
-                    </button>
-                </li>
-            </ul>
-            
-            
-            
-            <button type="button" class="btn-close text-reset ms-auto" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body small pt-0">
         
-            
-            
-            
-            <!-- TAB CONTENT -->
-            <div class="tab-content mt-2" id="myTabContent-{{vid}}" unicorn:key="myTabContent-{{vid}}">
-                <!-- SETTINGS TAB -->
-                <div class="tab-pane fade show active" id="viz-settings-pane-{{vid}}" unicorn:key=viz-settings-pane-{{vid}} 
-                     role="tabpanel" aria-labelledby="viz-settings-tab-{{vid}}">
                     <!-- SETTINGS -->
                     <div class="row g-2" unicorn:key="setting-row-01-{{vid}}">
                         <div class="col-lg-2">
                             <!-- SELECT {{forloop.counter}} -->
-                            <div class="form-floating">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text" id="viz-name-input">Name</span>
                                 <input type="text" class="form-control" 
                                        unicorn:model.lazy="viz.title"
                                        id="vizNameText{{vid}}" unicorn:key="vizNameText{{vid}}"
                                        unicorn:partial.key="vizNameText{{vid}}"
                                        aria-label="Viz Name">
-                                <label for="vizNameText{{vid}}">Name</label>
                             </div>
+                            
                         </div>
                         <div class="col-lg-2">
                             <!-- SELECT {{forloop.counter}} -->
-                            <div class="form-floating">
+                            
+                            <div class="input-group mb-2">
+                                <span class="input-group-text" id="viz-type-select">Type</span>
                                 <select class="form-select" unicorn:model="viz_settings.service.saved" 
                                         id="vizServiceSelect{{vid}}" unicorn:key="vizServiceSelect{{vid}}" 
                                         unicorn:partial.id="outerPlotBox-{{vid}}" 
@@ -155,13 +123,13 @@
                                         <option {% if v == viz_settings.service.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
                                     {% endfor %}
                                 </select>
-                                <label for="vizServiceSelect{{vid}}">Type</label>
                             </div>
                         </div>  
                         {% for key, value in viz_settings.options.items %}
                         <div class="col-lg-2">
                             <!-- SELECT {{forloop.counter}} -->
-                            <div class="form-floating">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text" id="viz-settings-{{forloop.counter0}}">{{key|title}}</span>
                                 <select class="form-select" unicorn:model="viz_settings.options.{{key}}.saved" 
                                         id="data{{key|title}}Select{{vid}}" unicorn:key="data{{key|title}}Select{{vid}}" 
                                         unicorn:partial.id="outerPlotBox-{{vid}}" unicorn:partial.key="data{{key|title}}Select{{vid}}"
@@ -171,7 +139,6 @@
                                         <option {% if v == value.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
                                     {% endfor %}
                                 </select>
-                                <label for="data{{key|title}}Select{{vid}}">{{key|title}}</label>
                             </div>
                         </div>
                         {% endfor %}
@@ -190,7 +157,7 @@
                         </div>
                         <div class="col-lg-2">
                             <!-- SELECT {{forloop.counter}} -->
-                            <button type="button" class="btn btn-lg btn-danger"
+                            <button type="button" class="btn btn-sm btn-danger"
                                 id="vizDeleteButton{{vid}}" unicorn:key="vizDeleteButton{{vid}}"
                                 data-bs-toggle="modal" data-bs-target="#deleteVizConfirm{{vid}}"
                                 aria-label="Viz Name">
@@ -223,87 +190,56 @@
                                 </div>
                             </div>
                             <!-- END MODAL -->
-                            
-                            
-                            
-                            
                         </div>
                     </div>
-                </div>
-                <!-- FILTER TAB -->
-                <div class="tab-pane fade" id="filter-tab-pane-{{vid}}" role="tabpanel" aria-labelledby="filter-tab-{{vid}}">
-                     <div class="row g-2" unicorn:key="filter-row-01-{{vid}}">
+                <!-- FILTER SETTINGS -->
+                     <div class="row g-2 mt-2" unicorn:key="filter-row-01-{{vid}}">
                         <div class="col-lg-2">
                             {% for d in drawings %}
-                            <div class="input-group input-group-sm mb-3">
+                            <div class="input-group input-group-sm mb-2">
                                 <span class="input-group-text" id="drawingAddonOne{{forloop.counter0}}">{{forloop.counter}}</span>
-                                <select class="form-select" id="drawingTypeSelect{{forloop.counter0}}">
-                                    <option value="DRAW_VLINE" selected>VLINE</option>
-                                    <option value="DRAW_HLINE">HLINE</option>
-                                    <option value="DRAW_VRECT">VRECT</option>
-                                    <option value="DRAW_HRECT">HRECT</option>
-                                </select>
-                                <select class="form-select"  unicorn:model.lazy="drawings.{{forloop.counter0}}.x"
-                                           id="drawingNumberOne{{forloop.counter0}}" unicorn:key="drawingNumberOne{{forloop.counter0}}"
-                                           unicorn:partial.key="filter-row-01-{{vid}}"
-                                           unicorn:partial.id="outerPlotBox-{{vid}}" 
-                                           aria-label="Drawing Number One">
-                                    <option value="10" selected>10</option>
-                                    <option value="20">20</option>
-                                    <option value="30">30</option>
-                                    <option value="40">40</option>
-                                </select>
-                                <select class="form-select"  unicorn:model.lazy="drawings.{{forloop.counter0}}.x1"
-                                           id="drawingNumberTwo{{forloop.counter0}}" unicorn:key="drawingNumberTwo{{forloop.counter0}}"
-                                           unicorn:partial.key="filter-row-01-{{vid}}"
-                                           unicorn:partial.id="outerPlotBox-{{vid}}" 
-                                           aria-label="Drawing Number Two" disabled>
-                                    <option value="10" selected>10</option>
-                                    <option value="20">20</option>
-                                    <option value="30">30</option>
-                                    <option value="40">40</option>
-                                </select>
-                                <input type="text" class="form-control flex-grow-1" unicorn:model.lazy="drawings.{{forloop.counter0}}.annotation_text"
-                                           id="drawingNameText{{forloop.counter0}}" unicorn:key="drawingNameText{{forloop.counter0}}"
-                                           unicorn:partial.key="filter-row-01-{{vid}}"
-                                           unicorn:partial.id="outerPlotBox-{{vid}}" 
-                                           aria-label="Drawing Name">
-                                <button type="button" id="drawingButton{{forloop.counter0}}" class="btn btn-danger" 
+                                <input type="text" class="form-control" disabled>
+                                <a tabindex="0" type="button" class="btn btn-secondary" data-bs-toggle="popover" href="#"
+                                        data-bs-title="Edit" data-bs-placement="top" 
+                                        data-bs-content-id="popover-content{{forloop.counter0}}">Edit</a>
+                                <button type="button" class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
+                                <button type="button" class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
+                                <!-- POPOVER CONTENT -->
+                                <div id="popover-content{{forloop.counter0}}" class="d-none">
+                                    <div class="input-group input-group-sm mb-3">
+                                        <span class="input-group-text" id="inputGroup-0">Type</span>
+                                        <select class="form-select" id="inputGroupSelect01">
+                                            <option value="1" selected>One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div><div class="input-group input-group-sm mb-3">
+                                        <span class="input-group-text" id="inputGroup-1">x1</span>
+                                        <input type="text" class="form-control" aria-label="Sizing example input" 
+                                                 aria-describedby="inputGroup-sizing-sm">
+                                        <span class="input-group-text" id="inputGroup-2">x2</span>
+                                        <input type="text" class="form-control" aria-label="Sizing example input" 
+                                                 aria-describedby="inputGroup-sizing-sm">
+                                    </div>
+                                </div>
+                                
+                                <button type="button" id="drawingButton{{forloop.counter0}}-{{vid}}" class="btn btn-danger" 
                                         unicorn:click="deleteDrawing({{forloop.counter0}})"
                                         unicorn:partial.key="filter-row-01-{{vid}}"
                                         unicorn:partial.id="outerPlotBox-{{vid}}">×</button>
                             </div>
                             {% endfor %}
-                            <button type="button" id="addDrawingButton" class="btn btn-secondary" 
+                            <button type="button" id="addDrawingButton" class="btn btn-sm btn-secondary" 
                                     unicorn:click="addDrawing('new drawing')"
                                     unicorn:partial.key="filter-row-01-{{vid}}"
                                     unicorn:partial.id="outerPlotBox-{{vid}}">Add</button>
                         </div>
                     </div>
-                </div>
                 
-                <!-- SHARE TAB -->
-                <div class="tab-pane fade" id="share-tab-pane-{{vid}}" role="tabpanel" aria-labelledby="share-tab-{{vid}}">
-                     <div class="row g-2" unicorn:key="share-row-01-{{vid}}">
-                        <div class="col-lg-2">      
-                            <div id="viz-qrcode-{{vid}}"></div>
-                            <script type="text/javascript">
-                                var qrcode = new QRCode(document.getElementById("viz-qrcode-{{vid}}"), {
-                                    text: "{{ request.path }}",
-                                    width: 100,
-                                    height: 100,
-                                    colorDark : "#000000",
-                                    colorLight : "#ffffff",
-                                    correctLevel : QRCode.CorrectLevel.H
-                                });
-                            </script>
-                        </div>
-                    </div>
+                
                 </div>
-            </div>
             
         </div>
-    </div>
     <!--BOTTOM NAVBAR END -->
     <script type="javascript">
         //var r = document.querySelector('#offcanvasBottom-{{vid}}');

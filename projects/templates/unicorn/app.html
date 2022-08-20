@@ -16,45 +16,77 @@
     <nav class="navbar navbar-dark bg-dark sticky-top">
         <div class="container-fluid d-flex">
             <a class="navbar-brand me-auto" href="/projects/app">YouViz<span class="text-warning">Alpha</span></a>
-            <!-- TAB BUTTONS -->
-            <ul class="nav nav-pills pe-2" role="tablist">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle active fw-bold" id="tab-more-dropdown" data-bs-toggle="dropdown" href="#" 
-                       role="button" aria-expanded="false">
-                        {{ vizs|length }} viz{{ vizs|pluralize }}
-                    </a>
-                    <ul class="dropdown-menu" id="myTab">
-                {% for v in vizs %}
-                {% with vids=v.pk|stringformat:"s" %}
-                {% with vid="viz-"|add:vids %}
-                        <li><a class="dropdown-item {% if forloop.first %}active {% endif %}" id="{{vid}}-tab" href="#"
-                               {% comment %}unicorn:click="selectViz({{v.pk}})" unicorn:partial.id="myTab"{% endcomment %}
-                               data-bs-toggle="pill"
-                               data-bs-target="#{{vid}}" aria-controls="{{vid}}">
-                               {{v.title|title}}
-                            </a>
-                        </li>
-                {% endwith %}
-                {% endwith %}
-                {% endfor %}
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" unicorn:click="addViz()" href="#">New</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                {% for viz in vizs %}
-                        <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" id="viz-{{viz.pk}}-tab-copy" 
-                               href="#">Copy {{viz.title|title}}</a></li>
-                {% endfor %}
-                    </ul>    
-                </li>
-            </ul>
-            <!-- END TAB BUTTONS -->
-
             
             {% unicorn 'login' parent=view id='login' %}
             <button id="off-canvas-button" class="btn btn-dark border-0 text-white text-opacity-75" type="button" data-bs-toggle="offcanvas" 
                     data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
                 <i class="bi bi-list" style="font-size: 1.2rem;"></i>
             </button>
+        </div>
+    </nav>
+    
+    <!-- BOTTOM NAVBAR START -->
+    <nav class="navbar fixed-bottom bg-light" id=bottom-navbar>
+        <div class="container-fluid d-flex justify-content-start d-grid gap-2">
+            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group btn-group-sm me-2" role="group" aria-label="button group">
+                    <button type="button" class="btn btn-primary"><i class="bi bi-caret-left-fill" style="font-size: 1rem;"></i></button>
+                    
+                    <div class="btn-group btn-group-sm nav dropup" role="group tablist" aria-label="button group">
+                        <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" 
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            Hist <span class="badge rounded-pill bg-warning text-dark">{{ vizs|length }} vizs</span>
+                        </button>
+
+                            <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                <li><h6 class="dropdown-header">Select viz</h6></li>
+                            {% for v in vizs %}
+                            {% with vids=v.pk|stringformat:"s" %}
+                            {% with vid="viz-"|add:vids %}
+                                <li>
+                                    <button class="dropdown-item {% if forloop.first %}active {% endif %}" id="{{vid}}-tab"
+                                       data-bs-toggle="tab"
+                                       data-bs-target="#{{vid}}"
+                                       offcanvasID="offcanvasBottom-{{vid}}"
+                                       role="tab"
+                                       type="button"
+                                       onclick="tabChange('#{{vid}}-tab')"
+                                       yv-list-no="{{forloop.counter}}"
+                                       aria-controls="{{vid}}">
+                                       {{v.title|title}}
+                                    </button>
+                                </li>
+                            {% endwith %}
+                            {% endwith %}
+                            {% endfor %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">Add viz</h6></li>
+                                <li><a class="dropdown-item" unicorn:click="addViz()" href="#">New</a></li>
+                        {% for viz in vizs %}
+                                <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" id="viz-{{viz.pk}}-tab-copy" 
+                                       href="#">Copy {{viz.title|title}}</a></li>
+                        {% endfor %}
+                            
+                            </ul>    
+                    </div>    
+                    <button type="button" class="btn btn-primary" onclick="showVizOffcanvas()"><i class="bi bi-bar-chart" style="font-size: 1rem;"></i></button>
+                    <button type="button" class="btn btn-primary"><i class="bi bi-caret-right-fill" style="font-size: 1rem;"></i></button>
+                </div>
+                <div class="btn-group btn-group-sm" role="group" aria-label="button group">
+                    <button type="button" class="btn btn-secondary" id="datafileOpenButton" unicorn:key="datafileOpenButton"
+                        data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable">
+                            <i class="bi bi-table" style="font-size: 1rem;"></i>
+                    </button>
+                    {% unicorn 'dataframe' parent=view file=file id='dataframe' %}
+                    
+                    <button type="button" class="btn btn-secondary" id="reportOpenButton" unicorn:key="reportOpenButton"
+                        data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport">
+                            <i class="bi bi-file-earmark-check" style="font-size: 1rem;"></i>
+                    </button>
+                    {% unicorn 'vizreport' parent=view id='vizreport' %}
+                    
+                </div>
+            </div>
         </div>
     </nav>
     
@@ -81,7 +113,7 @@
                 {% with vids=v.pk|stringformat:"s" %}
                 {% with vid="viz-"|add:vids %}
                     <!-- TAB {{ forloop.counter }} CONTENT -->
-                    <div class="tab-pane fade show {% if forloop.first %}active{% endif %}" id="{{vid}}" 
+                    <div class="tab-pane yv fade show {% if forloop.first %}active{% endif %}" id="{{vid}}" 
                          role="tabpanel" aria-labelledby="{{vid}}-tab">
                         {% unicorn 'viz' parent=view viz=v id=vid %}
                 {% endwith %}

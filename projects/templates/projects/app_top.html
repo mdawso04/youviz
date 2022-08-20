@@ -39,6 +39,9 @@
           .dropdown-toggle.no-arrow::after {
               content: none;
             }
+            
+        
+            
         </style>
     </head>
 
@@ -54,6 +57,38 @@
                     document.getElementById(id).innerHTML = value;
                 }
             }
+            
+            function tabChange(t) {
+                var deactivate = document.querySelector(".dropdown-item.active:not("+t+")");
+                deactivate.classList.remove("active");
+                
+                //var activate = document.querySelector(t);
+                //var tab = bootstrap.Tab.getOrCreateInstance(triggerEl);
+                //alert(tab);
+                //tab.show();
+                //activate.classList.add("active");
+            }
+            
+            function updateButtonGroup() {
+                
+                // update dropdown-item active status
+                // bootstrap tab change
+                // button name
+                // button enable/disable
+            }
+            
+            function showVizOffcanvas() {
+                var element = document.querySelector(".dropdown-item.active");
+                var offcanvasID =  element.getAttribute("offcanvasID");
+                var offcanvas = document.getElementById(offcanvasID);
+                var vizOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvas);
+                vizOffcanvas.show();
+            }
+            
+            function vizOffcanvasMaximize(c, oc) {
+                document.querySelector(oc).classList.toggle('h-100');
+            }
+            
             // run on page load
             
             //move modals to body for zorder fix
@@ -76,6 +111,26 @@
                 body.appendChild(yvmodals[i]); 
             }
             
+            
+            
+            // popover setup
+            
+            const list = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+            list.map((el) => {
+              let opts = {
+                animation: false,
+              }
+              if (el.hasAttribute('data-bs-content-id')) {
+                opts.content = document.getElementById(el.getAttribute('data-bs-content-id')).innerHTML;
+                opts.html = true;
+                opts.sanitize = false;
+                opts.trigger = 'focus';
+              }
+              new bootstrap.Popover(el, opts);
+            })
+            
+            //const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+            //const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
             
             
             //global toggle to keep offcanvas open while editing data source
