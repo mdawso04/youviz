@@ -9,31 +9,41 @@
                 <!-- TAB BUTTONS END-->
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        <div class="modal-body pt-0">
-            <div class="d-grid gap-2"> 
-            
-                <!-- SHARE TAB -->
-                     <div class="row g-2" unicorn:key="share-row-01-{{vid}}">
-                        <div class="col-lg-2">      
-                            <div id="viz-qrcode-{{vid}}"></div>
-                            <script type="text/javascript">
-                                var qrcode = new QRCode(document.getElementById("viz-qrcode-{{vid}}"), {
-                                    text: "{{ request.path }}",
-                                    width: 100,
-                                    height: 100,
-                                    colorDark : "#000000",
-                                    colorLight : "#ffffff",
-                                    correctLevel : QRCode.CorrectLevel.H
-                                });
-                            </script>
+            <div class="modal-body pt-0">
+                <div class="row g-2"> 
+                    <div class="col-lg-2"> 
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <button type="button" class="btn btn-secondary"><i class="bi bi-arrow-clockwise"></i></button>
                         </div>
                     </div>
+                </div>
                 
+                <div class="row g-2"> 
+                    <div class="col-lg-2"> 
+                        <!-- REPORT HTML -->
+                        {% for v in vizs_html %}
+                        <div>{{v|safe}}</div>
+                        {% endfor %}
+                    </div>
+                </div>  
+                        
+                <div id="viz-qrcode-{{vid}}">
+                </div>
+                <script type="text/javascript">
+                    var qrcode = new QRCode(document.getElementById("viz-qrcode-{{vid}}"), {
+                        text: "{{ request.path }}",
+                        width: 100,
+                        height: 100,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+                </script>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
-        <div class="modal-footer border-0">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
     </div>
-  </div>
 </div>
