@@ -64,10 +64,10 @@ class AppView(UnicornView):
                     self.getRemoteData()
                 if not self.file:
                     self.file = self.files.last()
-                #self.vizs = Viz.objects.filter(file=self.file).all().order_by('-id')
                 self.vizs = self.file.vizs.all()
                 if not self.vizs:
-                    self.addViz()
+                    self.addViz(call_redirect=False)
+                    self.vizs = Viz.objects.filter(file=self.file).all().order_by('-id')
                 '''
                 if not self.selected_viz:
                     self.selected_viz = self.vizs.last()
@@ -112,8 +112,8 @@ class AppView(UnicornView):
         #logger.debug('AppView > addViz start')
         #df = self.df()
         p = Project(description=description, user=self.request.user)
+        self.project = p
         p.save()
-        self.load_table()
         #logger.debug('AppView > addViz end')
         
     def setFile(self, f):
@@ -139,7 +139,7 @@ class AppView(UnicornView):
         self.load_table()
         return redirect('/projects/app')
     
-    def addViz(self, viz_type='NewViz'):
+    def addViz(self, viz_type='NewViz', call_redirect=True):
         #logger.debug('AppView > addViz start')
         #df = self.df()
         #read from db so patch this
@@ -151,8 +151,9 @@ class AppView(UnicornView):
         json = a.todos
         v = Viz(file=self.file, title=viz_type, json=json)
         v.save()
-        self.load_table()
-        return redirect('/projects/app')
+        #self.load_table()
+        if call_redirect:
+            return redirect('/projects/app')
         #logger.debug('AppView > addViz end')
         
     def copyViz(self, pk):
@@ -190,7 +191,7 @@ class AppView(UnicornView):
         #df = self.df()
         r = Report(title=title, file=self.file)
         r.save()
-        self.load_table()
+        #self.load_table()
         #logger.debug('AppView > addViz end')
     
     def getRemoteData(self, service='READ_DATA_ATTRITION'):
@@ -204,13 +205,15 @@ class AppView(UnicornView):
         f = File(description=service, project=self.project, document=content, learner_mode=self.project.learner_mode)
         #f.document.save(f'{service}.csv', temp_file)
         f.save()
-        
         if self.project.learner_mode:
             i = Item(title='List up relevant fields', description='Analyze provided data, find fields that seem relevant to employee attrition', 
                      file=f)
             i.save()
-        self.file = f
-        self.load_table()
+        self.files = (
+                    File.objects.filter(project=self.project, learner_mode=self.project.learner_mode)
+                    .all().order_by('-id')
+                    .prefetch_related('vizs', 'items__answers')
+        )
         #logger.debug('AppView > addRemoteFile end')
         
     def called(self, name, args):

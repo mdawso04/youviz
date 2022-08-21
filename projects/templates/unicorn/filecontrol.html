@@ -1,11 +1,10 @@
 {% load humanize %}
 {% load unicorn %} 
 <div>
-    
+    <!-- USER -->
     <div class="card mb-2">
         <div class="card-body">
             <h6 class="card-subtitle mb-2 text-muted">User</h6>                            
-
             <div class="d-grid gap-2" id="fileInfo">
                 <div class="col-lg-2">
                     <div class="mb-2">
@@ -16,7 +15,7 @@
                         Logout
                     </button>
                     
-                    <!-- LOGIN/OUT MODAL START -->
+                    <!-- LOGOUT MODAL -->
                     <div id="staticBackdrop" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
                          tabindex="-1" aria-hidden="true" aria-labelledby="staticBackdropLabel">
                         <div class="modal-dialog modal-dialog-centered modal-sm">
@@ -65,19 +64,15 @@
                             </div>
                         </div>
                     </div>
-                    <!-- END MODAL -->
-                    
-                    
                 </div>
             </div>
         </div>
     </div>
     
-    
+    <!-- DATA SOURCE -->
     <div class="card mb-2">
         <div class="card-body">
             <h6 class="card-subtitle mb-2 text-muted">Data Source</h6>                            
-
             <div class="d-grid gap-2" id="fileInfo">
                 <div class="input-group mb-2">
                     <span class="input-group-text" id="file-name-input">Name</span>
@@ -95,7 +90,6 @@
                            id="fileDescText" unicorn:key="fileDescText"
                            aria-label="File Description">
                 </div>
-                
                 <div class="col-lg-2">
                     <button type="button" class="btn btn-sm btn-danger"
                         id="dataDeleteButton" unicorn:key="dataDeleteButton"
@@ -104,7 +98,7 @@
                             Delete source
                     </button>
 
-                    <!-- VIZ DELETE MODAL START -->
+                    <!-- VIZ DELETE MODAL -->
                     <div class="modal fade yvmodal" id="deleteDataConfirm" data-bs-backdrop="static" data-bs-keyboard="false" 
                          tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered modal-sm">
@@ -128,7 +122,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- END MODAL -->
                     
                     <button type="button" class="btn btn-sm btn-secondary {% if files|length == 1 %}disabled{% endif %}"
                         id="sourcecontrolOpenButton" unicorn:key="sourcecontrolOpenButton"

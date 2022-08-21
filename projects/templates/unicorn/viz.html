@@ -7,7 +7,6 @@
             </div>
         </div>
     </div>-->
-    <!-- SPINNER END -->
     <!-- PLOT -->
     {% with vids=viz.pk|stringformat:"s" %}
     {% with vid='viz-'|add:vids %}
@@ -72,32 +71,22 @@
             </script>
         </div>
     </div>
-    <!-- END PLOT -->
-    <!-- MESSAGE BOX -->
     
-    <!-- END MESSAGE BOX -->
-    
-    
-    <!-- BOTTOM NAVBAR START -->
+    <!-- BOTTOM OFFCANVAS -->
    <div class="offcanvas offcanvas-bottom" tabindex="-1" data-bs-backdrop="false" data-bs-scroll="true" 
          id="offcanvasBottom-{{vid}}" aria-labelledby="offcanvasBottomLabel" style="height: 216px;">
         <div class="d-flex offcanvas-header">
             <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Viz Settings</h5>
-            <!-- OFFCANVAS BUTTONS -->
-            
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" id="maximize"
-                       onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');">
+                       onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
             </div>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            
         </div>
         <div class="offcanvas-body small pt-0">
-            
             <div class="card mb-2">
                 <div class="card-body">
                     <h6 class="card-subtitle mb-2 text-muted">Basic</h6>
-        
                     <!-- SETTINGS -->
                     <div class="row g-2" unicorn:key="setting-row-01-{{vid}}">
                         <div class="col-lg-2">
@@ -110,11 +99,8 @@
                                        unicorn:partial.key="vizNameText{{vid}}"
                                        aria-label="Viz Name">
                             </div>
-                            
                         </div>
                         <div class="col-lg-2">
-                            <!-- SELECT {{forloop.counter}} -->
-                            
                             <div class="input-group mb-2">
                                 <span class="input-group-text" id="viz-type-select">Type</span>
                                 <select class="form-select" unicorn:model="viz_settings.service.saved" 
@@ -129,9 +115,9 @@
                                 </select>
                             </div>
                         </div>  
+                        
                         {% for key, value in viz_settings.options.items %}
                         <div class="col-lg-2">
-                            <!-- SELECT {{forloop.counter}} -->
                             <div class="input-group mb-2">
                                 <span class="input-group-text" id="viz-settings-{{forloop.counter0}}">{{key|title}}</span>
                                 <select class="form-select" unicorn:model="viz_settings.options.{{key}}.saved" 
@@ -160,7 +146,6 @@
                             </div>
                         </div>
                         <div class="col-lg-2">
-                            <!-- SELECT {{forloop.counter}} -->
                             <button type="button" class="btn btn-sm btn-danger"
                                 id="vizDeleteButton{{vid}}" unicorn:key="vizDeleteButton{{vid}}"
                                 data-bs-toggle="modal" data-bs-target="#deleteVizConfirm{{vid}}"
@@ -168,7 +153,7 @@
                                     Delete viz
                             </button>
                             
-                            <!-- VIZ DELETE MODAL START -->
+                            <!-- VIZ DELETE MODAL -->
                             <div class="modal fade yvmodal" id="deleteVizConfirm{{vid}}" data-bs-backdrop="static" data-bs-keyboard="false" 
                                  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-sm">
@@ -193,18 +178,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- END MODAL -->
                         </div>
                     </div>
-                    
                 </div>
             </div>
-                <!-- FILTER SETTINGS -->
             
+            <!-- FILTER SETTINGS -->
             <div class="card mb-2">
                 <div class="card-body">
                     <h6 class="card-subtitle mb-2 text-muted">Viz Presentation</h6>
-            
                      <div class="row g-2 mt-2" unicorn:key="filter-row-01-{{vid}}">
                         <div class="col-lg-2">
                             {% for d in drawings %}
@@ -216,6 +198,7 @@
                                         data-bs-content-id="popover-content{{forloop.counter0}}">Edit</a>
                                 <button type="button" class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
                                 <button type="button" class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
+                                
                                 <!-- POPOVER CONTENT -->
                                 <div id="popover-content{{forloop.counter0}}" class="d-none">
                                     <div class="input-group input-group-sm mb-3">
@@ -247,14 +230,11 @@
                                     unicorn:partial.id="outerPlotBox-{{vid}}">Add</button>
                         </div>
                     </div>
-                
-                
                 </div>
             </div>
        </div>
-            
-        </div>
-    <!--BOTTOM NAVBAR END -->
+    </div>
+    
     <script type="javascript">
         //var r = document.querySelector('#offcanvasBottom-{{vid}}');
         //alert(r);
@@ -266,7 +246,6 @@
                   class="form-control" placeholder="Leave a memo here" style="height: 120px"></textarea>
         <label for="floatingTextarea2{{vid}}">Memo</label>
     </div>
-    
     {% endwith %}
     {% endwith %}
 </div>
