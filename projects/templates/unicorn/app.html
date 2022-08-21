@@ -22,13 +22,21 @@
     </nav>
     
     <!-- BOTTOM NAVBAR -->
+    
+    <style>
+    .dropup .dropdown-toggle::after {
+        float: right;
+        margin: 6px 0;
+    }
+    </style>
+    
     <nav class="navbar fixed-bottom bg-light" id=bottom-navbar>
-        <div class="container-fluid d-flex justify-content-start d-grid gap-2">
-            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="btn-group btn-group-sm me-2" role="group" aria-label="button group">
+        <div class="container-fluid d-flex d-grid gap-2">
+            <div class="btn-toolbar d-flex w-100" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group btn-group-sm d-flex flex-grow-1 me-2" role="group" aria-label="button group">
                     <button type="button" class="btn btn-primary"><i class="bi bi-caret-left-fill" style="font-size: 1rem;"></i></button>
-                    <div class="btn-group btn-group-sm nav dropup" role="group tablist" aria-label="button group">
-                        <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" 
+                    <div class="btn-group btn-group-sm nav dropup d-flex w-100" role="group tablist" aria-label="button group">
+                        <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle w-100 text-start" 
                                 data-bs-toggle="dropdown" aria-expanded="false">
                             Hist <span class="badge rounded-pill bg-warning text-dark">{{ vizs|length }} vizs</span>
                         </button>
