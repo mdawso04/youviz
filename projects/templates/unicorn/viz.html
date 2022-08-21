@@ -144,7 +144,7 @@
                             </div>
                         </div>
                         <div class="col-lg-2">
-                            <button type="button" class="btn btn-sm btn-danger"
+                            <button type="button" class="btn btn-danger"
                                 id="vizDeleteButton{{vid}}" unicorn:key="vizDeleteButton{{vid}}"
                                 data-bs-toggle="modal" data-bs-target="#deleteVizConfirm{{vid}}"
                                 aria-label="Viz Name">
@@ -179,14 +179,14 @@
                         </div>
                     </div>
             
-        <hr class="mb-4"/>
+        <hr/>
             
             <!-- FILTER SETTINGS -->
-                    <h6 class="card-subtitle mb-2 text-muted">Viz Presentation</h6>
-                     <div class="row g-2 mt-2" unicorn:key="filter-row-01-{{vid}}">
+                    <h6 class="card-subtitle mb-2 text-muted">Annotations</h6>
+                     <div class="row g-2" unicorn:key="filter-row-01-{{vid}}">
                         <div class="col-lg-2">
                             {% for d in drawings %}
-                            <div class="input-group input-group-sm mb-2">
+                            <div class="input-group mb-2">
                                 <span class="input-group-text" id="drawingAddonOne{{forloop.counter0}}">{{forloop.counter}}</span>
                                 <input type="text" class="form-control" disabled>
                                 <button class="btn btn-secondary" data-bs-toggle="popover"
@@ -221,7 +221,7 @@
                                         unicorn:partial.id="outerPlotBox-{{vid}}">×</button>
                             </div>
                             {% endfor %}
-                            <button type="button" id="addDrawingButton" class="btn btn-sm btn-secondary" 
+                            <button type="button" id="addDrawingButton" class="btn btn-secondary" 
                                     unicorn:click="addDrawing('new drawing')"
                                     unicorn:partial.key="filter-row-01-{{vid}}"
                                     unicorn:partial.id="outerPlotBox-{{vid}}">Add</button>

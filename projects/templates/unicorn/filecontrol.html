@@ -3,12 +3,12 @@
 <div>
     <!-- USER -->
             <h6 class="card-subtitle mb-2 text-muted">User</h6>                            
-            <div class="d-grid gap-2" id="fileInfo">
+            <div class="row g-2" id="fileInfo">
                 <div class="col-lg-2">
                     <div class="mb-2">
-                        Hey {{ request.user.username }}! Last login yesterday.
+                        Hey {{ request.user.username }}! BTW, your last login was yesterday.
                     </div>
-                    <button type="button" class="btn btn-sm btn-secondary" id="logoutButton" 
+                    <button type="button" class="btn btn-secondary" id="logoutButton" 
                             data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                         Logout
                     </button>
@@ -65,12 +65,12 @@
                 </div>
             </div>
     
-    <hr class="mb-4" />
+    <hr />
     
     <!-- DATA SOURCE -->
             <h6 class="card-subtitle mb-2 text-muted">Data Source</h6>                            
-            <div class="d-grid gap-2" id="fileInfo">
-                <div class="input-group mb-2">
+            <div class="row g-2" id="fileInfo">
+                <div class="input-group">
                     <span class="input-group-text" id="file-name-input">Name</span>
                     <input type="text" class="form-control" 
                            unicorn:model.lazy="file.title"
@@ -78,7 +78,7 @@
                            id="fileNameText" unicorn:key="fileNameText"
                            aria-label="File Name">
                 </div>
-                <div class="input-group mb-2">
+                <div class="input-group">
                     <span class="input-group-text" id="file-description-input">Description</span>    
                     <input type="text" class="form-control" 
                            unicorn:model.lazy="file.description"
@@ -87,11 +87,11 @@
                            aria-label="File Description">
                 </div>
                 <div class="col-lg-2">
-                    <button type="button" class="btn btn-sm btn-danger"
+                    <button type="button" class="btn btn-danger"
                         id="dataDeleteButton" unicorn:key="dataDeleteButton"
                         data-bs-toggle="modal" data-bs-target="#deleteDataConfirm"
                         aria-label="Delete data">
-                            Delete source
+                            Delete
                     </button>
 
                     <!-- VIZ DELETE MODAL -->
@@ -100,11 +100,11 @@
                         <div class="modal-dialog modal-dialog-centered modal-sm">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="staticBackdropLabel">Delete Data</h5>
+                                    <h5 class="modal-title" id="staticBackdropLabel">Delete Data Source</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    Would you like to delete this data?
+                                    Would you like to delete this data source?
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" 
@@ -119,15 +119,15 @@
                         </div>
                     </div>
                     
-                    <button type="button" class="btn btn-sm btn-secondary {% if files|length == 1 %}disabled{% endif %}"
+                    <button type="button" class="btn btn-secondary {% if files|length == 1 %}disabled{% endif %}"
                         id="sourcecontrolOpenButton" unicorn:key="sourcecontrolOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalSourcecontrol" aria-controls="modalsourcecontrol"
                         {% if files|length == 1 %} disabled{% endif %}>
-                        Change Source
+                        Change
                     </button>
                     {% unicorn 'sourcecontrol' parent=view id='sourcecontrol' %}
 
-                    <button type="button" class="btn btn-sm btn-secondary"
+                    <button type="button" class="btn btn-secondary"
                         id="getmoreOpenButton" unicorn:key="getmoreOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalGetmore" aria-controls="modalgetmore">
                         Get More
