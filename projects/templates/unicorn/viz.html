@@ -193,8 +193,9 @@
                             <div class="input-group input-group-sm mb-2">
                                 <span class="input-group-text" id="drawingAddonOne{{forloop.counter0}}">{{forloop.counter}}</span>
                                 <input type="text" class="form-control" disabled>
-                                <a tabindex="0" type="button" class="btn btn-secondary" data-bs-toggle="popover" href="#"
+                                <a tabindex="0" class="btn btn-secondary" data-bs-toggle="popover" href="#"
                                         data-bs-title="Edit" data-bs-placement="top" 
+                                        role="button" data-bs-trigger="focus"
                                         data-bs-content-id="popover-content{{forloop.counter0}}">Edit</a>
                                 <button type="button" class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
                                 <button type="button" class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
