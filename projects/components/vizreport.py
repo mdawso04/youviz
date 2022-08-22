@@ -55,7 +55,13 @@ class VizreportView(UnicornView):
                     'bgcolor': '#000000',
                 }
             )
-            self.vizs_html.append(pio.to_html(fig=fig, full_html=False, default_width='100%', include_plotlyjs=False))
+            self.vizs_html.append(pio.to_html(
+                fig=fig, 
+                config={'displayModeBar': False, 'scrollZoom': False},
+                full_html=False, 
+                default_width='100%', 
+                include_plotlyjs=False,
+            ))
 
         #logger.debug('VizView > load_viz end')
     
@@ -92,6 +98,10 @@ class VizreportView(UnicornView):
         #logger.debug('DataframeView > complete end')
 
 #RENDER
+    
+    def vizData(self):
+        return list(zip(self.vizs, self.vizs_html))
+    
     def rendered(self, html):
         #logger.debug('DataframeView > rendered start')
         pass
