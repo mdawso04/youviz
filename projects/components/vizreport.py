@@ -33,14 +33,13 @@ class VizreportView(UnicornView):
         
         for v in self.vizs:
             #load csv from db
-            '''
             copied_json = deepcopy(v.json)
             copied_json[0]['options']['src'] = self.parent.file.databuffer
             a = pp.App(copied_json)
             fig = a.call(return_df=False)[0]
             fig.update_layout(
-                height=370,
-                width=300,
+                width=317, 
+                height=300,
                 autosize=True, 
                 margin={
                     'l': 0,
@@ -56,9 +55,7 @@ class VizreportView(UnicornView):
                     'bgcolor': '#000000',
                 }
             )
-            self.vizs_html.append(pio.to_html(fig=fig))
-            '''
-            pass
+            self.vizs_html.append(pio.to_html(fig=fig, full_html=False, default_width='100%', include_plotlyjs=False))
 
         #logger.debug('VizView > load_viz end')
     
