@@ -39,13 +39,14 @@
                         </script>
                     </div>
                 </div>
+            </div>
             <div class="modal-footer border-0">
                 <div class="row g-2 pb-4"> 
                     <div class="col"> 
                         <div class="input-group">
                             <input type="text" class="form-control">
                             <button type="button" class="btn btn-secondary" id="report-button-refresh" 
-                                    unicorn:click="load_vizs()">
+                                    unicorn:click="load_vizs()" unicorn:partial.id="report-body">
                                 <i class="bi bi-arrow-clockwise"></i>
                             </button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
