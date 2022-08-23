@@ -9,50 +9,49 @@
                 <!-- TAB BUTTONS END-->
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body pt-0" id="report-body">
-                <div class="row g-2"> 
-                    <div class="col-lg-2"> 
+            <div class="modal-body" id="report-body">
+                {% for v, html in vizData %}
+                <div class="row g-2 pb-4"> 
+                    <div class="col"> 
+                    <!-- REPORT HTML -->
+                        <h6 class="card-subtitle mb-2 text-muted">{{v.title}}</h6>
+                        <div class="d-flex justify-content-center">{{html|safe}}</div>
+                        <div>{{v.comment}}</div>
+                        <hr/>
+                    </div>
+                </div> 
+                {% endfor %}
+                
+                <div class="row g-2 pb-4"> 
+                    <div class="col"> 
+                        <h6 class="card-subtitle mb-2 text-muted">Share</h6>
+                        <div id="viz-qrcode-{{vid}}">
+                        </div>
+                        <script type="text/javascript">
+                            var qrcode = new QRCode(document.getElementById("viz-qrcode-{{vid}}"), {
+                                text: "{{ request.path }}",
+                                width: 60,
+                                height: 60,
+                                colorDark : "#000000",
+                                colorLight : "#ffffff",
+                                correctLevel : QRCode.CorrectLevel.H
+                            });
+                        </script>
+                    </div>
+                </div>
+            <div class="modal-footer border-0">
+                <div class="row g-2 pb-4"> 
+                    <div class="col"> 
                         <div class="input-group">
                             <input type="text" class="form-control">
                             <button type="button" class="btn btn-secondary" id="report-button-refresh" 
                                     unicorn:click="load_vizs()">
                                 <i class="bi bi-arrow-clockwise"></i>
                             </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
-                
-                {% for v, html in vizData %}
-                <div class="row g-2"> 
-                    <div class="col-lg-2"> 
-                    <!-- REPORT HTML -->
-                        <h6 class="card-subtitle mb-2 text-muted">{{v.title}}</h6>
-                    </div>
-                    <div class="col-lg-2"> 
-                        <div class="d-flex justify-content-center">{{html|safe}}</div>
-                    </div>
-                    <div class="col-lg-2"> 
-                        <div>{{v.comment}}</div>
-                    </div>
-                </div>  
-                <hr/>
-                {% endfor %}
-                        
-                <div id="viz-qrcode-{{vid}}">
-                </div>
-                <script type="text/javascript">
-                    var qrcode = new QRCode(document.getElementById("viz-qrcode-{{vid}}"), {
-                        text: "{{ request.path }}",
-                        width: 60,
-                        height: 60,
-                        colorDark : "#000000",
-                        colorLight : "#ffffff",
-                        correctLevel : QRCode.CorrectLevel.H
-                    });
-                </script>
-            </div>
-            <div class="modal-footer border-0">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

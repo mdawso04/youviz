@@ -38,8 +38,8 @@ class VizreportView(UnicornView):
             a = pp.App(copied_json)
             fig = a.call(return_df=False)[0]
             fig.update_layout(
-                width=317, 
-                height=300,
+                width=350, 
+                height=250,
                 autosize=True, 
                 margin={
                     'l': 0,
@@ -57,9 +57,15 @@ class VizreportView(UnicornView):
             )
             self.vizs_html.append(pio.to_html(
                 fig=fig, 
-                config={'displayModeBar': False, 'scrollZoom': False},
+                config={
+                    'displayModeBar': False,
+                    'scrollZoom': False,
+                    'responsive': True,
+                    'staticPlot': True,
+                },
                 full_html=False, 
-                default_width='100%', 
+                #default_width='100%',
+                #default_height='100%',
                 include_plotlyjs=False,
             ))
 
