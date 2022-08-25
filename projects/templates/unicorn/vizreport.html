@@ -37,22 +37,43 @@
                                 correctLevel : QRCode.CorrectLevel.H
                             });
                         </script>
+                        
+                        {% load social_share %}
+
+                        {% post_to_facebook %}
+                        {% post_to_twitter "Post to Twitter" %}
+                        {% post_to_gplus "Post to Google+!" %}
+                        {% post_to_linkedin %}
+                        {% send_email "Check it out!" "www.google.com" "Share via email" %}
+                        {% copy_to_clipboard object_or_url "Copy to clipboard!" %}
+                        {% add_copy_script %} 
                     </div>
                 </div>
+                
+                
+                <nav class="navbar fixed-bottom bg-light d-none d-lg-block" id=vizreport-bottom-navbar>
+                    <div class="container-fluid d-flex">
+                        <div class="input-group flex-shrink-1">
+                            <input type="text" class="form-control">
+                            <button type="button" class="btn btn-secondary" id="report-button-refresh" 
+                                    unicorn:click="load_vizs()" unicorn:partial.id="report-body">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </button>    
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </nav>
+                
             </div>
             <div class="modal-footer border-0">
-                <div class="row g-2 pb-4"> 
-                    <div class="col"> 
                         <div class="input-group">
                             <input type="text" class="form-control">
                             <button type="button" class="btn btn-secondary" id="report-button-refresh" 
                                     unicorn:click="load_vizs()" unicorn:partial.id="report-body">
                                 <i class="bi bi-arrow-clockwise"></i>
-                            </button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </button>    
                         </div>
-                    </div>
-                </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
         </div>
     </div>

@@ -2,10 +2,10 @@
 {% load unicorn %} 
 <div>
     <!-- USER -->
-            <h6 class="card-subtitle mb-2 text-muted">User</h6>                            
-            <div class="row g-2" id="fileInfo">
+            <h6 class="card-subtitle mb-3 text-muted">User</h6>                            
+            <div class="row g-3" id="fileInfo">
                 <div class="col-lg-2">
-                    <div class="mb-2">
+                    <div class="mb-3">
                         Hey {{ request.user.username }}! BTW, your last login was yesterday.
                     </div>
                     <button type="button" class="btn btn-secondary" id="logoutButton" 
@@ -65,11 +65,11 @@
                 </div>
             </div>
     
-    <hr />
+    <hr class="my-4"/>
     
     <!-- DATA SOURCE -->
-            <h6 class="card-subtitle mb-2 text-muted">Data Source</h6>                            
-            <div class="row g-2" id="fileInfo">
+            <h6 class="card-subtitle mb-3 text-muted">Data Source</h6>                            
+            <div class="row g-3" id="fileInfo">
                 <div class="input-group">
                     <span class="input-group-text" id="file-name-input">Name</span>
                     <input type="text" class="form-control" 

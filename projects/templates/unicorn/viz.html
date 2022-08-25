@@ -85,7 +85,7 @@
         </div>
         <div class="offcanvas-body small pt-1">
                     <!-- SETTINGS -->
-                    <div class="row g-2" unicorn:key="setting-row-01-{{vid}}">
+                    <div class="row g-3" unicorn:key="setting-row-01-{{vid}}">
                         <div class="col-lg-2">
                             <h6 class="card-subtitle mb-2 text-muted">Basic</h6>
                         </div>
@@ -181,16 +181,16 @@
                         </div>
                     </div>
             
-        <hr/>
+        <hr class="my-4"/>
             
             <!-- FILTER SETTINGS -->
-                     <div class="row g-2" unicorn:key="filter-row-01-{{vid}}">
+                     <div class="row g-3" unicorn:key="filter-row-01-{{vid}}">
                         <div class="col-lg-2">
                             <h6 class="card-subtitle mb-2 text-muted">Annotations</h6>
                          </div>
                         <div class="col-lg-2">
                             {% for d in drawings %}
-                            <div class="input-group mb-2">
+                            <div class="input-group mb-3">
                                 <span class="input-group-text" id="drawingAddonOne{{forloop.counter0}}">{{forloop.counter}}</span>
                                 <input type="text" class="form-control" disabled>
                                 <button class="btn btn-secondary" data-bs-toggle="popover"
