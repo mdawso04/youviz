@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
-from projects.models import Project, File, Viz, Report, Item
+from projects.models import Project, Datasource, Viz, Report, Item
 
 from django.core.files.base import ContentFile
 from django.shortcuts import render,redirect
@@ -28,16 +28,16 @@ from io import BufferedIOBase
 
 class AppView(UnicornView):
     project: Project = None
-    files: QuerySetType[File] = None
+    datasources: QuerySetType[Datasource] = None
     #files = File.objects.none()
-    file: File = None
+    datasource: Datasource = None
     vizs: QuerySetType[Viz] = None
     #vizs = Viz.objects.none()
     #selected_viz: Viz = None
     report: Report = None
     
     class Meta:
-        javascript_exclude = ('project', 'files', 'file.document', 'vizs', 'report') 
+        javascript_exclude = ('project', 'datasources', 'datasource.document', 'vizs', 'report') 
     
 #LOAD/UPDATE
     
@@ -55,34 +55,35 @@ class AppView(UnicornView):
                     self.project = Project.objects.filter(user=self.request.user).last()
                     if not self.project:
                         self.addProject()
-                self.files = (
-                    File.objects.filter(project=self.project, learner_mode=self.project.learner_mode)
+                self.datasources = (
+                    Datasource.objects.filter(project=self.project, learner_mode=self.project.learner_mode)
                     .all().order_by('-id')
                     .prefetch_related('vizs', 'items__answers')
                 )
-                if not self.files:
+                if not self.datasources:
                     self.getRemoteData()
-                if not self.file:
-                    self.file = self.files.last()
-                self.vizs = self.file.vizs.all()
+                if not self.datasource:
+                    self.datasource = self.datasources.last()
+                
+                self.vizs = self.datasource.vizs.all()
                 if not self.vizs:
                     self.addViz(call_redirect=False)
-                    self.vizs = Viz.objects.filter(file=self.file).all().order_by('-id')
+                    self.vizs = Viz.objects.filter(datasource=self.datasource).all().order_by('-id')
                 '''
                 if not self.selected_viz:
                     self.selected_viz = self.vizs.last()
                 '''
                 #self.report = Report.objects.filter(file=self.file).last()
-                if hasattr(self.file, 'report'):
-                    self.report = self.file.report
+                if hasattr(self.datasource, 'report'):
+                    self.report = self.datasource.report
                 if not self.report:
                     self.addReport()
                 #logger.debug('AppView > load_table (user authenticated) end')
                 #print(self.__dict__)
             else:
                 #logger.debug('AppView > load_table (user not authenticated) start')
-                self.files = File.objects.none()
-                self.file = None
+                self.datasources = Datasource.objects.none()
+                self.datasource = None
                 self.vizs = Viz.objects.none()
                 #logger.debug('AppView > load_table (user not authenticated) end')
     
@@ -116,19 +117,19 @@ class AppView(UnicornView):
         p.save()
         #logger.debug('AppView > addViz end')
         
-    def setFile(self, f):
-        self.file = self.files.get(pk=f)
-        self.project.selected_file = f
+    def setDatasource(self, f):
+        self.datasource = self.datasources.get(pk=f)
+        self.project.selected_datasource = f
         self.project.save()
         self.load_table()
         #return redirect('/projects/app')
                     
-    def deleteFile(self, pk):
+    def deleteDatasource(self, pk):
         # no files on disk so delete this
         #self.file.document.delete()
-        self.file.delete()
-        self.files = File.objects.none()
-        self.file = None
+        self.datasource.delete()
+        self.datasources = Datasource.objects.none()
+        self.datasource = None
         self.vizs = Viz.objects.none()
         #Viz.objects.filter(file=self.file).all().delete()
         '''
@@ -146,10 +147,10 @@ class AppView(UnicornView):
         #filepath= os.path.join(str(settings.MEDIA_ROOT), str(self.file.document))
         a = pp.App()
         #a.add('READ_CSV', {'src': filepath})
-        a.add('READ_CSV', {'src': self.file.pk})
+        a.add('READ_CSV', {'src': self.datasource.pk})
         a.add('VIZ_HIST', {'x': 'Age'})
         json = a.todos
-        v = Viz(file=self.file, title=viz_type, json=json)
+        v = Viz(datasource=self.datasource, name=viz_type, json=json)
         v.save()
         #self.load_table()
         if call_redirect:
@@ -186,15 +187,15 @@ class AppView(UnicornView):
         return redirect('/projects/app')
     '''
     
-    def addReport(self, title='NewReport'):
+    def addReport(self, name='NewReport'):
         #logger.debug('AppView > addViz start')
         #df = self.df()
-        r = Report(title=title, file=self.file)
+        r = Report(name=name, datasource=self.datasource)
         r.save()
         #self.load_table()
         #logger.debug('AppView > addViz end')
     
-    def getRemoteData(self, service='READ_DATA_ATTRITION'):
+    def getRemoteData(self, service='READ_DATA_ATTRITION', name='no_name'):
         #logger.debug('AppView > addRemoteFile start')
         a = pp.App()
         a.add(service)
@@ -202,17 +203,17 @@ class AppView(UnicornView):
         content = df.to_csv(index=False)
         # no files on disk so delete
         #temp_file = ContentFile(content.encode('utf-8'))
-        f = File(description=service, project=self.project, document=content, learner_mode=self.project.learner_mode)
+        f = Datasource(name=name, description=service, project=self.project, document=content, learner_mode=self.project.learner_mode)
         #f.document.save(f'{service}.csv', temp_file)
         f.save()
         if self.project.learner_mode:
-            i = Item(title='List up relevant fields', description='Analyze provided data, find fields that seem relevant to employee attrition', 
-                     file=f)
+            i = Item(name='List up relevant fields', description='Analyze provided data, find fields that seem relevant to employee attrition', 
+                     datasource=f)
             i.save()
-        self.files = (
-                    File.objects.filter(project=self.project, learner_mode=self.project.learner_mode)
-                    .all().order_by('-id')
-                    .prefetch_related('vizs', 'items__answers')
+        self.datasources = (
+            Datasource.objects.filter(project=self.project, learner_mode=self.project.learner_mode)
+            .all().order_by('-id')
+            .prefetch_related('vizs', 'items__answers')
         )
         #logger.debug('AppView > addRemoteFile end')
         
@@ -235,10 +236,10 @@ class AppView(UnicornView):
         #logger.debug('AppView > addViz end')
     '''
        
-    def selected_file_for_editing(self):
+    def selected_datasource_for_editing(self):
         '''Return shallow copy to prevent checksum error 
         when editing from different component '''
-        return copy.copy(self.file)
+        return copy.copy(self.datasource)
     
     def rendered(self, html):
         #logger.debug('AppView > rendered start')

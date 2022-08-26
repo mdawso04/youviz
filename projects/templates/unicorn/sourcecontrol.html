@@ -13,11 +13,11 @@
         <div class="modal-body pt-0">
             
             <div class="d-grid gap-2"> 
-            {% for f in files %}
-                {% if f.pk != file.pk %}
+            {% for f in datasources %}
+                {% if f.pk != datasource.pk %}
                 <!-- ADD FILE LIST -->
                     <div class="card"
-                         unicorn:click="setFile({{f.pk}})"
+                         unicorn:click="setDatasource({{f.pk}})"
                          {% comment %}onclick="bootstrap.Offcanvas.getInstance('#OFFCANVAS').hide();" {% endcomment %}
                          >
                          <div class="row g-0">
@@ -33,7 +33,7 @@
                                     <h5 class="card-title">{{f.title}}</h5>
                                     <p class="card-text">{{f.description}}</p>
                                     <p class="card-text"><small class="text-muted">
-                                        Cached {{file.uploaded_at|naturaltime|capfirst}}</small></p>
+                                        Cached {{datasource.uploaded_at|naturaltime|capfirst}}</small></p>
                                     <a href="#" class="stretched-link"></a>
                                 </div>
                             </div>

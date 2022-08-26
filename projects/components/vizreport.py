@@ -34,7 +34,7 @@ class VizreportView(UnicornView):
         for v in self.vizs:
             #load csv from db
             copied_json = deepcopy(v.json)
-            copied_json[0]['options']['src'] = self.parent.file.databuffer
+            copied_json[0]['options']['src'] = self.parent.datasource.databuffer
             a = pp.App(copied_json)
             fig = a.call(return_df=False)[0]
             fig.update_layout(

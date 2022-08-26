@@ -55,7 +55,7 @@
                                        onclick="tabChange('#{{vid}}-tab')"
                                        yv-list-no="{{forloop.counter}}"
                                        aria-controls="{{vid}}">
-                                       {{v.title|title}}
+                                       {{v.name|title}}
                                     </button>
                                 </li>
                             {% endwith %}
@@ -66,7 +66,7 @@
                                 <li><a class="dropdown-item" unicorn:click="addViz()" href="#">New</a></li>
                         {% for viz in vizs %}
                                 <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" id="viz-{{viz.pk}}-tab-copy" 
-                                       href="#">Copy {{viz.title|title}}</a></li>
+                                       href="#">Copy {{viz.name|title}}</a></li>
                         {% endfor %}
                             </ul>    
                     </div>    
@@ -82,7 +82,7 @@
                         data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable">
                             <i class="bi bi-table" style="font-size: 1rem;"></i>
                     </button>
-                    {% unicorn 'dataframe' parent=view file=file id='dataframe' %}
+                    {% unicorn 'dataframe' parent=view datasource=datasource id='dataframe' %}
                     <button type="button" class="btn btn-secondary" id="reportOpenButton" unicorn:key="reportOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport">
                             <i class="bi bi-file-earmark-check" style="font-size: 1rem;"></i>
@@ -102,7 +102,7 @@
             </div>
             <div class="offcanvas-body pt-0">  
             <!-- FILE CONTROL -->
-                {% unicorn 'filecontrol' parent=view files=files file=selected_file_for_editing id='filecontrol01' %}    
+                {% unicorn 'filecontrol' parent=view datasources=datasources datasource=selected_datasource_for_editing id='filecontrol01' %}    
             </div>
         </div>
         <!-- TAB CONTENTS -->

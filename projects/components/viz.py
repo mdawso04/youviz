@@ -39,7 +39,7 @@ class VizView(UnicornView):
         
         #load csv from db
         copied_json = deepcopy(self.viz.json)
-        copied_json[0]['options']['src'] = self.parent.file.databuffer
+        copied_json[0]['options']['src'] = self.parent.datasource.databuffer
         a = pp.App(copied_json)
         
         #build viz options cache for current state
@@ -77,7 +77,7 @@ class VizView(UnicornView):
             #self.viz.json[1]['name'] = value
             a.todos[1]['name'] = value
             #self.viz.save()
-        elif name == 'viz.title':
+        elif name == 'viz.name':
             #logger.debug('VizView > viz.title updated ("{}") start'.format(value))
             #todo['name'] = value
             #self.viz.json = a.todos

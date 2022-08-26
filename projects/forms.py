@@ -1,7 +1,7 @@
 from django import forms
-from .models import File
+from .models import Datasource
 
-class FileForm(forms.ModelForm):
+class DatasourceForm(forms.ModelForm):
     class Meta:
-        model = File
+        model = Datasource
         fields = ('document', )

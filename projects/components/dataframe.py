@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import UnicornView
-from projects.models import File
+from projects.models import Datasource
 from project import settings
 from django.shortcuts import render, redirect
 
@@ -15,10 +15,10 @@ import os
 import pandas as pd
 
 class DataframeView(UnicornView):
-    file: File = None
+    datasource: Datasource = None
     
     class Meta:
-        javascript_exclude = ('file', ) 
+        javascript_exclude = ('datasource', ) 
     
 #LOAD/UPDATE
     
@@ -39,8 +39,8 @@ class DataframeView(UnicornView):
     
     def updated(self, name, value):
         #logger.debug('DataframeView > updated start')
-        if name == 'file.description':
-            self.file.save()
+        if name == 'datasource.description':
+            self.datasource.save()
             #self.parent.file.save()
         #logger.debug('DataframeView > updated end')
     
@@ -53,7 +53,7 @@ class DataframeView(UnicornView):
     
     
     def delete(self):
-        self.parent.deleteFile(self.file.pk)
+        self.parent.deleteDatasource(self.datasource.pk)
         return redirect('/projects/app')
         
     def called(self, name, args):

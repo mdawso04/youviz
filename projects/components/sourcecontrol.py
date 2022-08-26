@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import UnicornView
-from projects.models import File, Item
+from projects.models import Datasource, Item
 from project import settings
 from django.shortcuts import render, redirect
 
@@ -45,8 +45,8 @@ class SourcecontrolView(UnicornView):
         pass
         #logger.debug('DataframeView > calling end')
         
-    def setFile(self, f):
-        self.parent.setFile(f)
+    def setDatasource(self, f):
+        self.parent.setDatasource(f)
         return redirect('/projects/app')
     
     def called(self, name, args):
@@ -59,8 +59,8 @@ class SourcecontrolView(UnicornView):
         logger.debug('SourceControlView > complete end')
 
 #RENDER
-    def files(self):
-        return self.parent.files
+    def datasources(self):
+        return self.parent.datasources
     
     def rendered(self, html):
         pass

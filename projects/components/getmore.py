@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import UnicornView
-from projects.models import File, Item
+from projects.models import Datasource, Item
 from project import settings
 from django.shortcuts import render, redirect
 
@@ -64,7 +64,7 @@ class GetmoreView(UnicornView):
     def remote_data(self):
         #logger.debug('AppView > addViz start')
         #return self.parent.remote_data()
-        return File.remote_data()
+        return Datasource.remote_data()
         #logger.debug('AppView > addViz end')
     
     def rendered(self, html):

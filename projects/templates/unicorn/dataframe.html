@@ -31,13 +31,13 @@
                 data-card-view="true">
                 <thead>
                     <tr>
-                        {% for column in file.columns %}
+                        {% for column in datasource.columns %}
                             <th data-field="col-{{ column }}">{{ column }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for record in file.records %}
+                    {% for record in datasource.records %}
                     <tr>
                         {% for c in record %}
                         <td>{{ c }}</td>

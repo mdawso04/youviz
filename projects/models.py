@@ -19,15 +19,15 @@ import pandas as pd
 class Project(models.Model):
     description = models.CharField(max_length=255, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    selected_file = models.IntegerField(null=True, blank=True)
+    selected_datasource = models.IntegerField(null=True, blank=True)
     #selected_file = models.OneToOneField(File, on_delete=models.SET_NULL, null=True)
     learner_mode = models.BooleanField(default=False)
     
     def __str__(self):
         return self.description
 
-class File(models.Model):
-    title = models.CharField(max_length=100, blank=True)
+class Datasource(models.Model):
+    name = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=255, blank=True)
     #document = models.FileField(upload_to='files/')
     document = models.TextField()
@@ -37,7 +37,7 @@ class File(models.Model):
     learner_mode = models.BooleanField(default=False)
     
     class Meta:
-        default_related_name = 'files'
+        default_related_name = 'datasources'
     
     def __str__(self):
         return self.description
@@ -108,43 +108,43 @@ class File(models.Model):
         #logger.debug('AppView > addViz end')
     
 class Viz(models.Model):
-    title = models.CharField(max_length=100, blank=True)
+    name = models.CharField(max_length=100, blank=True)
     comment = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    file = models.ForeignKey(File, on_delete=models.CASCADE)
+    datasource = models.ForeignKey(Datasource, on_delete=models.CASCADE)
     json = models.JSONField(blank=True, null=True)
     
     class Meta:
         default_related_name = 'vizs'
     
     def __str__(self):
-        return self.title + ": " +self.comment
+        return self.name
     
     
 class Report(models.Model):
-    title = models.CharField(max_length=100, blank=True)
+    name = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    file = models.OneToOneField(File, on_delete=models.CASCADE)
+    datasource = models.OneToOneField(Datasource, on_delete=models.CASCADE)
     report = models.TextField()
 
     def __str__(self):
-        return self.title
+        return self.name
     
 class Item(models.Model):
-    title = models.CharField(max_length=100, blank=True)
+    name = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    file = models.ForeignKey(File, on_delete=models.CASCADE)
+    datasource = models.ForeignKey(Datasource, on_delete=models.CASCADE)
     
     class Meta:
         default_related_name = 'items'
     
     def __str__(self):
-        return self.title
+        return self.name
     
 class Answer(models.Model):
-    title = models.CharField(max_length=100, blank=True)
+    name = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -155,4 +155,4 @@ class Answer(models.Model):
         default_related_name = 'answers'
     
     def __str__(self):
-        return self.title
+        return self.name

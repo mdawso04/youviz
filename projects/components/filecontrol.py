@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import UnicornView
-from projects.models import File, Item
+from projects.models import Datasource, Item
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -11,9 +11,9 @@ import pp
 from pp.log import logger
 
 class FilecontrolView(UnicornView):
-    editing_file = False
-    files: File.objects.none()
-    file: File = None
+    editing_datasource = False
+    datasources: Datasource.objects.none()
+    datasource: Datasource = None
     items = Item.objects.none()
         
 #LOAD/UPDATE
@@ -25,8 +25,8 @@ class FilecontrolView(UnicornView):
         #logger.debug('AppView > mount end')
         
     def load_table(self):
-        if hasattr(self.file, 'items'):
-            self.items = self.file.items.all()
+        if hasattr(self.datasource, 'items'):
+            self.items = self.datasource.items.all()
         else:
             self.items = Item.objects.none()
         #if self.file.learner_mode:
@@ -46,7 +46,8 @@ class FilecontrolView(UnicornView):
         
     def updated(self, name, value):
         #logger.debug('LoginView > updated start')
-        pass
+        if name:
+            self.datasource.save()
         #logger.debug('LoginView > updated end')
         
 #ACTIONS    
@@ -56,9 +57,9 @@ class FilecontrolView(UnicornView):
         pass
         #logger.debug('LoginView > calling end')
         
-    def saveFileInfo(self):
-        self.file.save()
-        self.editing_file = False
+    def saveDatasourceInfo(self):
+        self.datasource.save()
+        self.editing_datasource = False
         
     def switch_learner_mode(self):
         print('**************************')

@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 
 # Create your views here.
-from .models import File
-from .forms import FileForm
+from .models import Datasource
+from .forms import DatasourceForm
 from project import settings
 import os
 
@@ -14,13 +14,13 @@ def app_top(request):
 
 def model_form_upload(request):
     if request.method == 'POST':
-        form = FileForm(request.POST, request.FILES)
+        form = DatasourceForm(request.POST, request.FILES)
         print(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('/table/')
     else:
-        form = FileForm()
+        form = DatasourceForm()
     return render(request, 'projects/model_form_upload.html', {
         'form': form
     })
