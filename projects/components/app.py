@@ -11,7 +11,6 @@ from .dataframe import DataframeView
 from .login import LoginView
 from .vizreport import VizreportView
 from .sourcecontrol import SourcecontrolView
-from .getmore import GetmoreView
 from .filecontrol import FilecontrolView
 
 # pp
