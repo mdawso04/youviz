@@ -23,15 +23,16 @@
                     <div class="list-group list-group-flush">
                     {% endif %}
                         <button type="button" 
-                                class="list-group-item list-group-item-action{% if d.pk == datasource.pk %} active aria-current='true'{% else %}"{% endif %}
+                                class="list-group-item list-group-item-action
+                                       {% if d.pk == datasource.pk %} active aria-current='true'{% else %}"{% endif %}
                                 {% if d.pk == datasource.pk %}disabled{% endif %}
                                 unicorn:click="setDatasource({{d.pk}})">
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">{{d.name}}</h5>
-                                <small>Click</small>
+                                <small>{% if d.pk == datasource.pk %}Selected{% else %}Click{% endif %}</small>
                             </div>
                             <p class="mb-1">{{d.description}}</p>
-                            <small>Cached {{datasource.uploaded_at|naturaltime|capfirst}}</small>
+                            <small>Cached {{d.uploaded_at|naturaltime|capfirst}}</small>
                         </button>
                     {% if forloop.last %}
                     </div>
