@@ -6,46 +6,99 @@
     <div class="modal-dialog modal-xl modal-fullscreen-xl-down" role="document">
         <div class="modal-content">
             <div class="modal-header border-0">
-                <h3 class="mb-0">Change Source</h3>
+                <h3>Change Source</h3>
                 <!-- TAB BUTTONS END-->
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
         <div class="modal-body pt-0">
-            
-            <div class="d-grid gap-2"> 
-            {% for f in datasources %}
-                {% if f.pk != datasource.pk %}
-                <!-- ADD FILE LIST -->
-                    <div class="card"
-                         unicorn:click="setDatasource({{f.pk}})"
-                         {% comment %}onclick="bootstrap.Offcanvas.getInstance('#OFFCANVAS').hide();" {% endcomment %}
-                         >
-                         <div class="row g-0">
-                            <div class="col-md-3">
-                                <div class="d-flex justify-content-center" 
-                                     style="height: 100%;">
-                                    <i class="bi bi-filetype-csv align-self-center" 
-                                       style="font-size: 3rem;"></i>
-                                </div>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{f.title}}</h5>
-                                    <p class="card-text">{{f.description}}</p>
-                                    <p class="card-text"><small class="text-muted">
-                                        Cached {{datasource.uploaded_at|naturaltime|capfirst}}</small></p>
-                                    <a href="#" class="stretched-link"></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-            {% empty %}
-            No saved data sources
-            {% endfor %}
+            <div class="row g-3">
+                <div class="col">
+                    <h6 class="card-subtitle mb-3 text-muted">Cached Sources</h6>
+                </div>
             </div>
+            <div class="row g-3">
+                <div class="col">
+                    {% for d in datasources %}
+                    {% if forloop.first %}
+                    <div class="list-group list-group-flush">
+                    {% endif %}
+                        <button type="button" 
+                                class="list-group-item list-group-item-action{% if d.pk == datasource.pk %} active aria-current='true'{% else %}"{% endif %}
+                                {% if d.pk == datasource.pk %}disabled{% endif %}
+                                unicorn:click="setDatasource({{d.pk}})">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{d.name}}</h5>
+                                <small>Click</small>
+                            </div>
+                            <p class="mb-1">{{d.description}}</p>
+                            <small>Cached {{datasource.uploaded_at|naturaltime|capfirst}}</small>
+                        </button>
+                    {% if forloop.last %}
+                    </div>
+                    {% endif %}
+                    {% empty %}
+                    No cached data sources
+                    {% endfor %}
+                </div>
+            </div>  
             
+            <hr class="my-4"/>
             
+            <div class="row g-3">
+                <div class="col">
+                    <h6 class="card-subtitle mb-3 text-muted">More Sources</h6>
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col">
+                    {% for d in remote_data %}
+                    {% if forloop.first %}
+                    <div class="list-group list-group-flush">
+                    {% endif %}
+                        <button type="button" 
+                                class="list-group-item list-group-item-action"
+                                unicorn:click="getRemoteData('{{d}}')">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{d}}</h5>
+                                <small>Click</small>
+                            </div>
+                            <p class="mb-1">Remote CSV data</p>
+                        </button>
+                    {% if forloop.last %}
+                    </div>
+                    {% endif %}
+                    {% empty %}
+                    No more data sources
+                    {% endfor %}
+                </div>
+            </div>  
+            
+            <hr class="my-4"/>
+            
+            <div class="row g-3">
+                <div class="col">
+                    <h6 class="card-subtitle mb-3 text-muted">File Upload</h6>
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col">
+                     <!-- DROPZONE WIDGET -->
+                    <div class="container mt-3">
+                        <form action="/projects/upload/" method="POST" enctype="multipart/form-data" class="dropzone" id="drop">
+                            {% csrf_token %}
+                            <div class="fallback">
+                                <input name="document" type="file" multiple />
+                            </div>
+                        </form>
+                    </div>
+                    <script>
+                        Dropzone.options.drop = { // camelized version of the `id`
+                            paramName: "document", // The name that will be used to transfer the file
+                            maxFilesize: 2, // MB
+                        };
+                    </script>
+                </div>
+            </div>
         </div>
         <div class="modal-footer border-0">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

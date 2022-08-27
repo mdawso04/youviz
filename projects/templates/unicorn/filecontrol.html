@@ -96,21 +96,26 @@
                         </div>
                     </div>
                     
-                    <button type="button" class="btn btn-secondary {% if datasources|length == 1 %}disabled{% endif %}"
+                    <button type="button" class="btn btn-secondary"
                         id="sourcecontrolOpenButton" unicorn:key="sourcecontrolOpenButton"
-                        data-bs-toggle="modal" data-bs-target="#modalSourcecontrol" aria-controls="modalsourcecontrol"
-                        {% if datasources|length == 1 %} disabled{% endif %}>
+                        data-bs-toggle="modal" data-bs-target="#modalSourcecontrol" aria-controls="modalsourcecontrol">
                         Change
                     </button>
-                    {% unicorn 'sourcecontrol' parent=view id='sourcecontrol' %}
-
-                    <button type="button" class="btn btn-secondary"
-                        id="getmoreOpenButton" unicorn:key="getmoreOpenButton"
-                        data-bs-toggle="modal" data-bs-target="#modalGetmore" aria-controls="modalgetmore">
-                        Get More
-                    </button>
-                    {% unicorn 'getmore' parent=view id='getmore' %}    
+                    {% unicorn 'sourcecontrol' parent=view id='sourcecontrol' %}    
                     
+                </div>
+            </div>
+    
+    
+            <hr class="my-4"/>
+    
+    <!-- SUPPORT -->
+            <h6 class="card-subtitle mb-3 text-muted">Support</h6>                            
+            <div class="row g-3" id="fileInfo">
+                <div class="col-lg-2">
+                    <a type="button" class="btn btn-secondary" href="https://github.com/mdawso04/youviz" target="_blank" aria-label="Visit Github">
+                            Visit us on Github
+                    </a>
                 </div>
             </div>
         </div>

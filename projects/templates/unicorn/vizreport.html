@@ -40,11 +40,11 @@
                         
                         {% load social_share %}
 
-                        {% post_to_facebook %}
-                        {% post_to_twitter "Post to Twitter" %}
-                        {% post_to_gplus "Post to Google+!" %}
-                        {% post_to_linkedin %}
-                        {% send_email "Check it out!" "www.google.com" "Share via email" %}
+                        {% comment %}{% post_to_facebook %}{% endcomment %}
+                        {% comment %}{% post_to_twitter "Post to Twitter" %}{% endcomment %}
+                        {% comment %}{% post_to_gplus "Post to Google+!" %}{% endcomment %}
+                        {% comment %}{% post_to_linkedin %}{% endcomment %}
+                        {% comment %}{% send_email "Check it out!" "www.google.com" "Share via email" %}{% endcomment %}
                         {% copy_to_clipboard object_or_url "Copy to clipboard!" %}
                         {% add_copy_script %} 
                     </div>
