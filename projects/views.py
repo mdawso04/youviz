@@ -11,6 +11,9 @@ def app_top(request):
         return render(request, 'projects/app_top.html')
     else:
         return render(request, 'projects/landing_top.html')
+    
+def report(request, pk):
+    return render(request, 'projects/report.html', {'pk' : pk})
 
 def model_form_upload(request):
     if request.method == 'POST':

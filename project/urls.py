@@ -19,11 +19,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('', include("projects.urls")),
     path('admin/', admin.site.urls),
     #path('accounts/', include('django.contrib.auth.urls')), # new
     #path('accounts/login/', views.login, name='login')
     path('debug/', include('debug_toolbar.urls')),
-    path("projects/", include("projects.urls")),
     path("unicorn/", include("django_unicorn.urls")),
 ] 
 
