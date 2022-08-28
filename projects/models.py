@@ -29,13 +29,15 @@ class Project(models.Model):
 class Datasource(models.Model):
     name = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=255, blank=True)
-    #document = models.FileField(upload_to='files/')
     json = models.JSONField(blank=True, null=True)
     document = models.TextField()
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+    #document = models.FileField(upload_to='files/')
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     selected_viz = models.IntegerField(null=True, blank=True)
     learner_mode = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+    last_cached = models.DateTimeField(auto_now_add=False, auto_now=False, null=True, blank=True)
     
     class Meta:
         default_related_name = 'datasources'
@@ -112,7 +114,7 @@ class Viz(models.Model):
     name = models.CharField(max_length=100, blank=True)
     comment = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    last_updated = models.DateTimeField(auto_now=True)
     datasource = models.ForeignKey(Datasource, on_delete=models.CASCADE)
     json = models.JSONField(blank=True, null=True)
     

@@ -21,6 +21,7 @@ from pp.log import logger
 import os
 import copy
 from io import BufferedIOBase
+from datetime import datetime
 
 #non-standard libraries
 #none
@@ -200,6 +201,7 @@ class AppView(UnicornView):
         df = a.call()
         content = df.to_csv(index=False)
         self.datasource.document = content
+        self.datasource.last_cached = datetime.utcnow()
         self.datasource.save()
         #self.load_table()
         #logger.debug('AppView > addViz end')
@@ -213,7 +215,8 @@ class AppView(UnicornView):
         json = a.todos
         # no files on disk so delete
         #temp_file = ContentFile(content.encode('utf-8'))
-        f = Datasource(name=name, description=service, project=self.project, json=json, document=content, learner_mode=self.project.learner_mode)
+        f = Datasource(name=name, description=service, project=self.project, 
+                       json=json, document=content, learner_mode=self.project.learner_mode, last_cached = datetime.utcnow())
         #f.document.save(f'{service}.csv', temp_file)
         f.save()
         if self.project.learner_mode:
