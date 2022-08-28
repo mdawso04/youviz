@@ -63,6 +63,9 @@
                            id="fileDescText" unicorn:key="fileDescText"
                            aria-label="File Description">
                 </div>
+                <div>
+                    <small>Cached {{datasource.uploaded_at|naturaltime|capfirst}}</small>
+                </div>
                 <div class="col-lg-2">
                     <button type="button" class="btn btn-danger"
                         id="dataDeleteButton" unicorn:key="dataDeleteButton"

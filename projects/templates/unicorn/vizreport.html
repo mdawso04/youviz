@@ -25,8 +25,15 @@
                 <div class="row g-2 pb-4"> 
                     <div class="col"> 
                         <h6 class="card-subtitle mb-2 text-muted">Share</h6>
-                        <div id="viz-qrcode-{{vid}}">
+                        <div>
+                            <span id="viz-qrcode-{{vid}}">
+                            </span>
+                            <button type="button" class="btn btn-secondary" id="report-button-share" style="height:60px; width:60px;">
+                                <i class="bi bi-share"></i>
+                            </button>
+                            <p id="report-share-result"></p>
                         </div>
+
                         <script type="text/javascript">
                             var qrcode = new QRCode(document.getElementById("viz-qrcode-{{vid}}"), {
                                 text: "{{ request.path }}",
@@ -37,16 +44,27 @@
                                 correctLevel : QRCode.CorrectLevel.H
                             });
                         </script>
-                        
-                        {% load social_share %}
 
-                        {% comment %}{% post_to_facebook %}{% endcomment %}
-                        {% comment %}{% post_to_twitter "Post to Twitter" %}{% endcomment %}
-                        {% comment %}{% post_to_gplus "Post to Google+!" %}{% endcomment %}
-                        {% comment %}{% post_to_linkedin %}{% endcomment %}
-                        {% comment %}{% send_email "Check it out!" "www.google.com" "Share via email" %}{% endcomment %}
-                        {% copy_to_clipboard object_or_url "Copy to clipboard!" %}
-                        {% add_copy_script %} 
+                        <script type="text/javascript">
+                        const shareData = {
+                          title: 'MDN',
+                          text: 'Learn web development on MDN!',
+                          url: 'https://developer.mozilla.org'
+                        }
+
+                        const btn = document.querySelector('#report-button-share');
+                        const resultPara = document.querySelector('#report-share-result');
+
+                        // Share must be triggered by "user activation"
+                        btn.addEventListener('click', async () => {
+                          try {
+                            await navigator.share(shareData);
+                            //resultPara.textContent = 'MDN shared successfully';
+                          } catch (err) {
+                            resultPara.textContent = `Error: ${err}`;
+                          }
+                        });
+                        </script>
                     </div>
                 </div>
                 
@@ -66,14 +84,13 @@
                 
             </div>
             <div class="modal-footer border-0">
-                        <div class="input-group">
-                            <input type="text" class="form-control">
-                            <button type="button" class="btn btn-secondary" id="report-button-refresh" 
-                                    unicorn:click="load_vizs()" unicorn:partial.id="report-body">
-                                <i class="bi bi-arrow-clockwise"></i>
-                            </button>    
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="input-group">
+                    <input type="text" class="form-control">
+                    <button type="button" class="btn btn-secondary" id="report-button-refresh" 
+                            unicorn:click="load_vizs()" unicorn:partial.id="report-body">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>    
+                </div>
             </div>
         </div>
     </div>
