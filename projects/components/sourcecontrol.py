@@ -48,12 +48,12 @@ class SourcecontrolView(UnicornView):
     def getRemoteData(self, service='READ_DATA_ATTRITION'):
         #logger.debug('AppView > addRemoteFile start')
         self.parent.getRemoteData(service)
-        return redirect('/projects/app')
+        return redirect('/')
         #logger.debug('AppView > addRemoteFile end')
     
     def setDatasource(self, f):
         self.parent.setDatasource(f)
-        return redirect('/projects/app')
+        return redirect('/')
     
     def called(self, name, args):
         #logger.debug('DataframeView > called start')

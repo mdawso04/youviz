@@ -138,7 +138,7 @@ class AppView(UnicornView):
                 child.is_editing = False
         '''
         self.load_table()
-        return redirect('/projects/app')
+        return redirect('/')
     
     def addViz(self, viz_type='NewViz', call_redirect=True):
         #logger.debug('AppView > addViz start')
@@ -154,7 +154,7 @@ class AppView(UnicornView):
         v.save()
         #self.load_table()
         if call_redirect:
-            return redirect('/projects/app')
+            return redirect('/')
         #logger.debug('AppView > addViz end')
         
     def copyViz(self, pk):
@@ -162,14 +162,14 @@ class AppView(UnicornView):
         v.pk = None
         v.save()
         self.load_table()
-        return redirect('/projects/app')
+        return redirect('/')
         
     def deleteViz(self, pk):
         #Viz.objects.filter(pk=pk).delete()
         v = Viz.objects.get(pk=pk)
         v.delete()
         self.load_table()
-        return redirect('/projects/app')
+        return redirect('/')
     
     '''
     def selectViz(self, pk):

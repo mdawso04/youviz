@@ -70,7 +70,7 @@ class LandingView(UnicornView):
         if user:
             if user.is_active:
                 login(self.request, user)
-                return redirect('/projects/app')
+                return redirect('/')
         else:
             messages.error(self.request,'username or password not correct')
         #logger.debug('AppView > addViz end')
@@ -80,7 +80,7 @@ class LandingView(UnicornView):
         if user:
             if user.is_active:
                 login(self.request, user)
-                return redirect('/projects/app')
+                return redirect('/')
         else:
             messages.error(self.request,'username or password not correct')
             

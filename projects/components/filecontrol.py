@@ -63,7 +63,7 @@ class FilecontrolView(UnicornView):
         
     def refreshDatasource(self):
         self.parent.refreshDatasource()
-        return redirect('/projects/app')
+        return redirect('/')
         
     def switch_learner_mode(self):
         print('**************************')
@@ -71,7 +71,7 @@ class FilecontrolView(UnicornView):
         self.parent.project.save()
         #self.project.refresh_from_db()
         #self.parent.load_table()
-        return redirect('/projects/app')
+        return redirect('/')
         
     def called(self, name, args):
         #logger.debug('LoginView > called start')

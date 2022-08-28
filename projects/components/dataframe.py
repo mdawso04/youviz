@@ -54,7 +54,7 @@ class DataframeView(UnicornView):
     
     def delete(self):
         self.parent.deleteDatasource(self.datasource.pk)
-        return redirect('/projects/app')
+        return redirect('/')
         
     def called(self, name, args):
         #logger.debug('DataframeView > called start')
