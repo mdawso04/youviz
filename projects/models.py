@@ -30,6 +30,7 @@ class Datasource(models.Model):
     name = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=255, blank=True)
     #document = models.FileField(upload_to='files/')
+    json = models.JSONField(blank=True, null=True)
     document = models.TextField()
     uploaded_at = models.DateTimeField(auto_now_add=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)

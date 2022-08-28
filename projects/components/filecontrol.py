@@ -61,6 +61,10 @@ class FilecontrolView(UnicornView):
         self.datasource.save()
         self.editing_datasource = False
         
+    def refreshDatasource(self):
+        self.parent.refreshDatasource()
+        return redirect('/projects/app')
+        
     def switch_learner_mode(self):
         print('**************************')
         self.parent.project.learner_mode = not self.parent.project.learner_mode

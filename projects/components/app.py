@@ -193,6 +193,16 @@ class AppView(UnicornView):
         r.save()
         #self.load_table()
         #logger.debug('AppView > addViz end')
+        
+    def refreshDatasource(self):
+        #logger.debug('AppView > addViz start')
+        a = pp.App(self.datasource.json)
+        df = a.call()
+        content = df.to_csv(index=False)
+        self.datasource.document = content
+        self.datasource.save()
+        #self.load_table()
+        #logger.debug('AppView > addViz end')
     
     def getRemoteData(self, service='READ_DATA_ATTRITION', name='no_name'):
         #logger.debug('AppView > addRemoteFile start')
@@ -200,9 +210,10 @@ class AppView(UnicornView):
         a.add(service)
         df = a.call()
         content = df.to_csv(index=False)
+        json = a.todos
         # no files on disk so delete
         #temp_file = ContentFile(content.encode('utf-8'))
-        f = Datasource(name=name, description=service, project=self.project, document=content, learner_mode=self.project.learner_mode)
+        f = Datasource(name=name, description=service, project=self.project, json=json, document=content, learner_mode=self.project.learner_mode)
         #f.document.save(f'{service}.csv', temp_file)
         f.save()
         if self.project.learner_mode:
