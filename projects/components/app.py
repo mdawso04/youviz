@@ -8,10 +8,9 @@ from project import settings
 #from django.contrib import messages
 
 from .dataframe import DataframeView
-from .login import LoginView
 from .vizreport import VizreportView
 from .sourcecontrol import SourcecontrolView
-from .filecontrol import FilecontrolView
+from .appsettings import AppsettingsView
 
 # pp
 import pp
@@ -58,7 +57,7 @@ class AppView(UnicornView):
                 self.datasources = (
                     Datasource.objects.filter(project=self.project, learner_mode=self.project.learner_mode)
                     .all().order_by('-id')
-                    .prefetch_related('vizs', 'items__answers')
+                    .prefetch_related('vizs', 'report', 'items__answers')
                 )
                 if not self.datasources:
                     self.getRemoteData()
@@ -191,7 +190,9 @@ class AppView(UnicornView):
         #logger.debug('AppView > addViz start')
         #df = self.df()
         r = Report(name=name, datasource=self.datasource)
+        self.report = r
         r.save()
+        print('********************************')
         #self.load_table()
         #logger.debug('AppView > addViz end')
         

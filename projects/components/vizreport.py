@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
-from projects.models import Viz
+from projects.models import Viz, Report
 from project import settings
 from django.shortcuts import render, redirect
 
@@ -18,6 +18,7 @@ import plotly.io as pio
 
 class VizreportView(UnicornView):
     
+    report: Report = None
     vizs: QuerySetType[Viz] = None
     vizs_html: list = []
     

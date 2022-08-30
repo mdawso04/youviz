@@ -1,6 +1,7 @@
 <!-- TODO: GETMORE SPINNER -->
 
 <div id="modalReport" class="modal fade yvmodal" tabindex="-1" role="dialog">
+    <div id="vizreport-partial-dummy" class="d-none"></div>
 <!-- DATAFRAME START -->
     <div class="modal-dialog modal-xl modal-fullscreen-xl-down" role="document">
         <div class="modal-content">
@@ -25,15 +26,24 @@
                 <div class="row g-2 pb-4"> 
                     <div class="col"> 
                         <h6 class="card-subtitle mb-2 text-muted">Share</h6>
-                        <div>
-                            <span id="viz-qrcode-{{vid}}">
-                            </span>
-                            <button type="button" class="btn btn-secondary" id="report-button-share" style="height:60px; width:60px;">
-                                <i class="bi bi-share"></i>
-                            </button>
-                            <p id="report-share-result"></p>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="vizreport-share"
+                                   onclick="document.querySelector('#vizreport-share-buttons').classList.toggle('d-none');"
+                                   unicorn:model="report.share"
+                                   unicorn:partial.id="vizreport-partial-dummy">
+                            <label class="form-check-label" for="vizreport-share">Share this report in the gallery</label>
                         </div>
-
+                        <div class="d-flex flex-row bd-highlight mb-3 d-none" id="vizreport-share-buttons">
+                            <div class="p-2">
+                                <button type="button" class="btn btn-secondary" id="report-button-share" style="height:60px; width:60px;">
+                                <i class="bi bi-share"></i>
+                                </button>
+                                <p id="report-share-result"></p>
+                            </div>
+                            <div class="p-2" id="viz-qrcode-{{vid}}">
+                            </div>
+                        </div>
+                    
                         <script type="text/javascript">
                             var qrcode = new QRCode(document.getElementById("viz-qrcode-{{vid}}"), {
                                 text: "{{ request.path }}",

@@ -87,7 +87,7 @@
                         data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport">
                             <i class="bi bi-file-earmark-check" style="font-size: 1rem;"></i>
                     </button>
-                    {% unicorn 'vizreport' parent=view vizs=vizs id='vizreport01' %}
+                    {% unicorn 'vizreport' parent=view vizs=vizs report=report id='vizreport01' %}
                 </div>
             </div>
         </div>
@@ -102,7 +102,7 @@
             </div>
             <div class="offcanvas-body pt-0">  
             <!-- FILE CONTROL -->
-                {% unicorn 'filecontrol' parent=view datasources=datasources datasource=selected_datasource_for_editing id='filecontrol01' %}    
+                {% unicorn 'appsettings' parent=view datasources=datasources datasource=selected_datasource_for_editing id='filecontrol01' %}    
             </div>
         </div>
         <!-- TAB CONTENTS -->

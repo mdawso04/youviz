@@ -22,7 +22,8 @@ urlpatterns = [
     path('', include("projects.urls")),
     path('admin/', admin.site.urls),
     #path('accounts/', include('django.contrib.auth.urls')), # new
-    #path('accounts/login/', views.login, name='login')
+    #path('accounts/login/', views.login, name='login'),
+    path('s/', include('shortener.urls')),
     path('debug/', include('debug_toolbar.urls')),
     path("unicorn/", include("django_unicorn.urls")),
 ] 
