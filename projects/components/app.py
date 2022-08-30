@@ -4,7 +4,7 @@ from projects.models import Project, Datasource, Viz, Report, Item, Answer
 
 from django.core.files.base import ContentFile
 from django.shortcuts import render, redirect
-from project import settings
+from project import settings 
 #from django.contrib import messages
 
 #from .dataframe import DataframeView
