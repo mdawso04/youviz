@@ -1,16 +1,17 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
-from projects.models import Project, Datasource, Viz, Report, Item
+from projects.models import Project, Datasource, Viz, Report, Item, Answer
 
 from django.core.files.base import ContentFile
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from project import settings
 #from django.contrib import messages
 
-from .dataframe import DataframeView
-from .vizreport import VizreportView
-from .sourcecontrol import SourcecontrolView
-from .appsettings import AppsettingsView
+#from .dataframe import DataframeView
+#from .vizreport import VizreportView
+#from .appsettings import AppsettingsView
+#from .sourcecontrol import SourcecontrolView
+#from .viz import VizView
 
 # pp
 import pp
