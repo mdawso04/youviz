@@ -28,25 +28,34 @@
                         <h6 class="card-subtitle mb-2 text-muted">Share</h6>
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="vizreport-share"
-                                   onclick="document.querySelector('#vizreport-share-buttons').classList.toggle('d-none');"
+                                   onclick="document.querySelector('#vizreport-share-panel').classList.toggle('d-none');"
                                    unicorn:model="report.share"
                                    unicorn:partial.id="vizreport-partial-dummy">
                             <label class="form-check-label" for="vizreport-share">Share this report in the gallery</label>
                         </div>
-                        <div class="d-flex flex-row bd-highlight mb-3 d-none" id="vizreport-share-buttons">
-                            <div class="p-2">
-                                <button type="button" class="btn btn-secondary" id="report-button-share" style="height:60px; width:60px;">
-                                <i class="bi bi-share"></i>
-                                </button>
-                                <p id="report-share-result"></p>
+                        <div id="vizreport-share-panel" class="d-none">
+                            <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill" style="font-size: 1rem;"></i>
+                            <div>
+                            This report is publicly visible
                             </div>
-                            <div class="p-2" id="viz-qrcode-{{vid}}">
+                            </div>
+                            <div class="d-flex flex-row">
+                                <div class="pe-2">
+                                    <button type="button" class="btn btn-secondary" id="report-button-share" style="height:60px; width:60px;">
+                                    <i class="bi bi-share"></i>
+                                    </button>
+                                    <p id="report-share-result"></p>
+                                </div>
+                                <div class="pe-2" id="viz-qrcode-{{vid}}">
+                                </div>
                             </div>
                         </div>
+                        
                     
                         <script type="text/javascript">
                             var qrcode = new QRCode(document.getElementById("viz-qrcode-{{vid}}"), {
-                                text: "{{ request.path }}",
+                                text: "{{report.get_absolute_url}}",
                                 width: 60,
                                 height: 60,
                                 colorDark : "#000000",
@@ -57,9 +66,9 @@
 
                         <script type="text/javascript">
                         const shareData = {
-                          title: 'MDN',
-                          text: 'Learn web development on MDN!',
-                          url: 'https://developer.mozilla.org'
+                          title: '{{report.name}}',
+                          text: 'Check out this data vizualization on YouViz!',
+                          url: '{{report.get_absolute_url}}'
                         }
 
                         const btn = document.querySelector('#report-button-share');

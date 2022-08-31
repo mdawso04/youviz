@@ -14,6 +14,7 @@ from io import StringIO
 
 #non-standard libraries
 import pandas as pd
+import shortener
 
 # Create your models here.
 class Project(models.Model):
@@ -134,6 +135,9 @@ class Report(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return '/report/%i/' % self.id
     
 class Item(models.Model):
     name = models.CharField(max_length=100, blank=True)
