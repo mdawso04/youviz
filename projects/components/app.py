@@ -58,7 +58,7 @@ class AppView(UnicornView):
                 self.datasources = (
                     Datasource.objects.filter(project=self.project, learner_mode=self.project.learner_mode)
                     .all().order_by('-id')
-                    .prefetch_related('vizs', 'report', 'items__answers')
+                    .prefetch_related('vizs', 'items__answers')
                 )
                 if not self.datasources:
                     self.getRemoteData()
