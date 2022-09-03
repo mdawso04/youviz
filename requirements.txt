@@ -3,6 +3,7 @@ whitenoise
 gunicorn
 django-debug-toolbar
 django-link-shortener
+django-pwa
 django_heroku
 django_unicorn
 pandas-plotly==0.2.4

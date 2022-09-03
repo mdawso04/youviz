@@ -24,6 +24,9 @@ urlpatterns = [
     #path('accounts/', include('django.contrib.auth.urls')), # new
     #path('accounts/login/', views.login, name='login'),
     path('s/', include('shortener.urls')),
+    #path('', include('pwa.urls')),
+    # if you used the patch for django 4 compatibility then use the following code instead
+    path('', include('pwa1.urls')),
     path('debug/', include('debug_toolbar.urls')),
     path("unicorn/", include("django_unicorn.urls")),
 ] 
