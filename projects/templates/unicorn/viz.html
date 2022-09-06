@@ -10,6 +10,7 @@
     <!-- PLOT -->
     {% with vids=viz.pk|stringformat:"s" %}
     {% with vid='viz-'|add:vids %}
+    <div class="d-none" unicorn:key="viz-no-update{{vid}}"></div>
     <div id="outerOuterPlotBox-{{vid}}" class="sticky-top" style="z-index: 995">
         <div id="outerPlotBox-{{vid}}">
             <div id="plotBox-{{vid}}">
@@ -96,7 +97,7 @@
                                 <input type="text" class="form-control" 
                                        unicorn:model.lazy="viz.name"
                                        id="vizNameText{{vid}}" unicorn:key="vizNameText{{vid}}"
-                                       unicorn:partial.key="vizNameText{{vid}}"
+                                       unicorn:partial.key="viz-no-update{{vid}}"
                                        aria-label="Viz Name">
                             </div>
                         </div>
@@ -106,7 +107,7 @@
                                 <select class="form-select" unicorn:model="viz_settings.service.saved" 
                                         id="vizServiceSelect{{vid}}" unicorn:key="vizServiceSelect{{vid}}" 
                                         unicorn:partial.id="outerPlotBox-{{vid}}" 
-                                        {% comment %}unicorn:partial.key="setting-row-01-{{vid}}"{% endcomment %}
+                                        unicorn:partial.key="setting-row-01-{{vid}}"
                                         aria-label="Viz Service Select">
                                     <option value="None" {% if viz_settings.service.saved == 'None' %} selected{% endif %}>Select viz</option>
                                     {% for v in viz_settings.service.available.viz %}
@@ -122,7 +123,8 @@
                                 <span class="input-group-text" id="viz-settings-{{forloop.counter0}}">{{key|title}}</span>
                                 <select class="form-select" unicorn:model="viz_settings.options.{{key}}.saved" 
                                         id="data{{key|title}}Select{{vid}}" unicorn:key="data{{key|title}}Select{{vid}}" 
-                                        unicorn:partial.id="outerPlotBox-{{vid}}" unicorn:partial.key="data{{key|title}}Select{{vid}}"
+                                        unicorn:partial.id="outerPlotBox-{{vid}}" 
+                                        {# unicorn:partial.key="data{{key|title}}Select{{vid}}" #}
                                         aria-label="{{key|title}} Select">
                                     <option value="None" {% if value.saved == 'None' %} selected{% endif %}>Select field</option>
                                     {% for v in value.available %}
