@@ -56,7 +56,7 @@ class Datasource(models.Model):
             # store csv in db, so no need to read from disk
             io = StringIO(self.document)
             df = pd.read_csv(io)
-            return df[:200].to_dict(orient='tight')
+            return df[:5].to_dict(orient='tight')
         
     @cached_property
     def databuffer(self):
@@ -132,6 +132,9 @@ class Report(models.Model):
     datasource = models.ForeignKey(Datasource, on_delete=models.CASCADE)
     report = models.TextField()
     share = models.BooleanField(default=False)
+    
+    class Meta:
+        default_related_name = 'reports'
 
     def __str__(self):
         return self.name
