@@ -206,7 +206,7 @@ class AppView(UnicornView):
         self.datasource.save()
         #self.load_table()
         #logger.debug('AppView > addViz end')
-    
+        
     def getRemoteData(self, service='READ_DATA_ATTRITION', name='no_name'):
         #logger.debug('AppView > addRemoteFile start')
         a = pp.App()
