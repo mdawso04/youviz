@@ -15,6 +15,9 @@ class AppsettingsView(UnicornView):
     datasources: Datasource.objects.none()
     datasource: Datasource = None
     #items = Item.objects.none()
+    
+    class Meta:
+        javascript_exclude = ('datasources', 'datasource.document') 
         
 #LOAD/UPDATE
 
