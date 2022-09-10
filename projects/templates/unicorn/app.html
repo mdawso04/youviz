@@ -82,12 +82,12 @@
                         data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable">
                             <i class="bi bi-table" style="font-size: 1rem;"></i>
                     </button>
-                    {% unicorn 'dataframe' parent=view datasource=datasource id='dataframe' %}
+                    {# {% unicorn 'dataframe' parent=view datasource=datasource id='dataframe' %} #}
                     <button type="button" class="btn btn-secondary" id="reportOpenButton" unicorn:key="reportOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport">
                             <i class="bi bi-file-earmark-check" style="font-size: 1rem;"></i>
                     </button>
-                    {% unicorn 'vizreport' parent=view vizs=vizs report=report id='vizreport01' %}
+                    {# {% unicorn 'vizreport' parent=view vizs=vizs report=report id='vizreport01' %} #}
                 </div>
             </div>
         </div>
@@ -113,7 +113,7 @@
                     <!-- TAB {{ forloop.counter }} CONTENT -->
                     <div class="tab-pane yv fade show {% if forloop.first %}active{% endif %}" id="{{vid}}" 
                          role="tabpanel" aria-labelledby="{{vid}}-tab">
-                        {% unicorn 'viz' parent=view viz=v id=vid %}
+                        {# {% unicorn 'viz' parent=view viz=v id=vid %} #}
                 {% endwith %}
                 {% endwith %}
                     </div>
