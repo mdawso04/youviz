@@ -3,6 +3,7 @@ var staticCacheName = "django-pwa-v" + new Date().getTime();
 var filesToCache = [
     {% for f in staticfile_list %}'/static/{{f}}',
     {% endfor %}
+    '/dataframe/2',
     '/dataframe/8',
     'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css',
     'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css',
