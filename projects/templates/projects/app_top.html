@@ -46,6 +46,7 @@
         {% csrf_token %}
         {% unicorn 'app' id='app01' %}
         <script type="application/javascript">
+            
             function elementUpdate(u) {
                 //update tab name on viz edit
                 for (var n = 0; n < u.length; n++) {
@@ -109,6 +110,27 @@
             }
             
             
+            // fetch dataframe component add to DOM
+            //div class="yv-dataframe" 
+            //             data-yv-datasource="{{ datasource.pk }}"
+            //             data-yv-version="{{ datasource.last_cached }}" 
+            //             data-yv-button="#datafileOpenButton">
+            //        </div>
+            
+            const df = document.querySelector(".yv-dataframe");
+            fetch("./dataframe/" + df.dataset.yvDatasource)
+                .then(response => {
+                    return response.text()
+                })
+                .then(data => {
+                    document.querySelector(".yv-dataframe").innerHTML = data;
+                    const m = document.querySelector("#modalTable");
+                    if (m) {
+                        bootstrap.Modal.getOrCreateInstance(m).dispose();
+                        bootstrap.Modal.getOrCreateInstance(m);
+                        document.getElementById("body").appendChild(m);
+                    }
+                });
             
             // popover setup
             

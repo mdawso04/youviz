@@ -16,7 +16,6 @@ from io import StringIO
 import pandas as pd
 import shortener
 
-# Create your models here.
 class Project(models.Model):
     description = models.CharField(max_length=255, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -56,7 +55,7 @@ class Datasource(models.Model):
             # store csv in db, so no need to read from disk
             io = StringIO(self.document)
             df = pd.read_csv(io)
-            return df[:5].to_dict(orient='tight')
+            return df[:200].to_dict(orient='tight')
         
     @cached_property
     def databuffer(self):

@@ -12,6 +12,14 @@ def app_top(request):
     else:
         return render(request, 'projects/landing_top.html')
     
+def dataframe(request, pk):
+    if request.user.is_authenticated:
+        d = Datasource.objects.filter(pk=int(pk)).last()
+        if d and d.project.user == request.user:
+            return render(request, 'projects/dataframe.html', {'datasource' : d})
+    else:
+        return render(request, 'projects/landing_top.html')
+
 def report(request, pk):
     return render(request, 'projects/report.html', {'pk' : pk})
 

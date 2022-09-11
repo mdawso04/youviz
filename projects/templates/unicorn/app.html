@@ -83,6 +83,11 @@
                             <i class="bi bi-table" style="font-size: 1rem;"></i>
                     </button>
                     {# {% unicorn 'dataframe' parent=view datasource=datasource id='dataframe' %} #}
+                    <div class="yv-dataframe d-none" 
+                         data-yv-datasource="{{ datasource.pk }}"
+                         data-yv-version="{{ datasource.last_cached }}" 
+                         data-yv-button="#datafileOpenButton">
+                    </div>
                     <button type="button" class="btn btn-secondary" id="reportOpenButton" unicorn:key="reportOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport">
                             <i class="bi bi-file-earmark-check" style="font-size: 1rem;"></i>
