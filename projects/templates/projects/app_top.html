@@ -130,9 +130,18 @@
                         bootstrap.Modal.getOrCreateInstance(m);
                         document.getElementById("body").appendChild(m);
                         
-                        var table = document.querySelector("#table");
-                        m.addEventListener('shown.bs.modal', function () {
-                            table.bootstrapTable('resetView');
+                        //var table = document.querySelector("#table");
+                        //table.bootstrapTable();
+                        //m.addEventListener('shown.bs.modal', function () {
+                        //    table.bootstrapTable('resetView');
+                        //});
+                        
+                        // JQuery for Bootstrap Table compatibility
+                        var $table = $('#table')
+                        $(function() {
+                            $('#modalTable').on('shown.bs.modal', function () {
+                              $table.bootstrapTable('resetView');
+                            })
                         });
                         document.querySelector("#datafileOpenButton").disabled = false;
                     }
