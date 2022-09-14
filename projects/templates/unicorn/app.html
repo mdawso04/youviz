@@ -89,10 +89,15 @@
                          data-yv-button="#datafileOpenButton">
                     </div>
                     <button type="button" class="btn btn-secondary" id="reportOpenButton" unicorn:key="reportOpenButton"
-                        data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport">
+                        data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport" disabled>
                             <i class="bi bi-file-earmark-check" style="font-size: 1rem;"></i>
                     </button>
                     {# {% unicorn 'vizreport' parent=view vizs=vizs report=report id='vizreport01' %} #}
+                    <div class="yv-vizreport d-none" 
+                         data-yv-datasource="{{ report.pk }}"
+                         data-yv-button="#reportOpenButton">
+                    </div>
+                    
                 </div>
             </div>
         </div>

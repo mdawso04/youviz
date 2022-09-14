@@ -32,10 +32,15 @@ class VizreportView(UnicornView):
     def load_vizs(self):
         #logger.debug('VizView > load_viz start')
         
+        
+        self.report = Report.objects.filter(pk=self.kwargs['pk']).all().prefetch_related('datasource__vizs').last()
+        self.vizs = self.report.datasource.vizs.all()
+        
         for v in self.vizs:
             #load csv from db
             copied_json = deepcopy(v.json)
-            copied_json[0]['options']['src'] = self.parent.datasource.databuffer
+            #copied_json[0]['options']['src'] = self.parent.datasource.databuffer
+            copied_json[0]['options']['src'] = self.report.datasource.databuffer
             a = pp.App(copied_json)
             fig = a.call(return_df=False)[0]
             fig.update_layout(

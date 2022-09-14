@@ -7,12 +7,6 @@ from django.shortcuts import render, redirect
 from project import settings
 #from django.contrib import messages
 
-#from .dataframe import DataframeView
-#from .vizreport import VizreportView
-#from .appsettings import AppsettingsView
-#from .sourcecontrol import SourcecontrolView
-#from .viz import VizView
-
 # pp
 import pp
 from pp.log import logger
