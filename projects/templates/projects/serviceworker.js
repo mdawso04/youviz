@@ -13,7 +13,7 @@ workbox.loadModule('workbox-routing');
 workbox.loadModule('workbox-strategies');
 
 workbox.precaching.precacheAndRoute([
-    {% for f in staticfile_list %}{url: '/static/{{f}}', revision: null},
+    {% for f in staticfile_list %}{url: '/static/{{f}}', revision: null}, 
     {% endfor %}
     {url: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css', revision: '1'},
     {url: 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js', revision: '1'},
