@@ -17,9 +17,9 @@ workbox.precaching.precacheAndRoute([
     {% endfor %}
     {url: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css', revision: '1'},
     {url: 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js', revision: '1'},
+    {url: 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css', revision: '1'},
     /*{url: '/dataframe/8', revision: '1'},
     {url: '/report/153', revision: '1'},
-    {url: 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css', revision: '1'},
     {url: 'https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css', revision: '1'},
     {url: 'https://code.jquery.com/jquery-3.5.1.min.js', revision: '1'},
     {url: 'https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js', revision: '1'},
