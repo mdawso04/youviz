@@ -100,12 +100,14 @@
                 </div>
                 <!-- DATA PAYLOAD -->
                 <div class="yv-dataframe d-none" 
-                     data-yv-datasource="{{ datasource.pk }}"
+                     data-yv-component="dataframe"
+                     data-yv-pk="{{ datasource.pk }}"
                      data-yv-version="{{ datasource.last_cached }}" 
                      data-yv-button="#datafileOpenButton">
                 </div>
                 <div class="yv-vizreport d-none" 
-                     data-yv-datasource="{{ report.pk }}"
+                     data-yv-component="report"
+                     data-yv-pk="{{ report.pk }}"
                      data-yv-button="#reportOpenButton">
                 </div>
             </div>
