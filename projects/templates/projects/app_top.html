@@ -140,14 +140,16 @@
                         bootstrap.Modal.getOrCreateInstance(m).dispose();
                         bootstrap.Modal.getOrCreateInstance(m);
                         document.getElementById("body").appendChild(m);
-                        
+                        var $table = $('#table');
+                                
                         // JQuery for Bootstrap Table compatibility
                         let myVar = setInterval(function() {
                             if(assetLog.scripts['bs'] !== undefined &&
                               assetLog.scripts['btc'] !== undefined &&
-                              assetLog.scripts['bts'] !== undefined){
+                              assetLog.scripts['bts'] !== undefined &&
+                              $table.bootstrapTable !== undefined){
+                                alert(typeof $table.bootstrapTable);
                                 clearInterval(myVar);
-                                var $table = $('#table');
                                 $table.bootstrapTable('resetView');
                                 //$(function() {
                                 //    $('#modalTable').on('shown.bs.modal', function () {
