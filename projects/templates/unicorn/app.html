@@ -5,7 +5,8 @@
     <!-- APP SPINNER -->
     <div unicorn:loading class="overlay" id="app-spinner">
         <div class="d-flex justify-content-center">  
-            <div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem; z-index: 20;">
+            <div class="spinner-grow text-primary" 
+                 role="status" style="width: 3rem; height: 3rem; z-index: 20;">
                 <span class="sr-only">Loading...</span>
             </div>
         </div>
@@ -13,8 +14,11 @@
     <!-- TOP NAVBAR -->
     <nav class="navbar navbar-dark bg-dark sticky-top">
         <div class="container-fluid d-flex">
-            <a class="navbar-brand me-auto" href="/projects/app">YouViz<span class="text-warning">Alpha</span></a>
-            <button id="off-canvas-button" class="btn btn-dark border-0 text-white text-opacity-75" type="button" data-bs-toggle="offcanvas" 
+            <a class="navbar-brand me-auto" 
+               href="/projects/app">YouViz<span class="text-warning">Alpha</span></a>
+            <button id="off-canvas-button" 
+                    class="btn btn-dark border-0 text-white text-opacity-75" 
+                    type="button" data-bs-toggle="offcanvas" 
                     data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
                 <i class="bi bi-gear-fill" style="font-size: 1.2rem;"></i>
             </button>
@@ -32,13 +36,20 @@
     
     <nav class="navbar fixed-bottom bg-light" id=bottom-navbar>
         <div class="container-fluid d-flex d-grid mb-2 gap-2">
-            <div class="btn-toolbar d-flex w-100" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="btn-group d-flex flex-grow-1 me-2" role="group" aria-label="button group">
-                    <button type="button" class="btn btn-primary" disabled><i class="bi bi-caret-left-fill" style="font-size: 1rem;"></i></button>
-                    <div class="btn-group nav dropup d-flex w-100" role="group tablist" aria-label="button group">
-                        <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle w-100 text-start" 
+            <div class="btn-toolbar d-flex w-100" role="toolbar" 
+                 aria-label="Toolbar with button groups">
+                <div class="btn-group d-flex flex-grow-1 me-2" role="group" 
+                     aria-label="button group">
+                    <button type="button" class="btn btn-primary" disabled>
+                        <i class="bi bi-caret-left-fill" style="font-size: 1rem;"></i>
+                    </button>
+                    <div class="btn-group nav dropup d-flex w-100" 
+                         role="group tablist" aria-label="button group">
+                        <button id="btnGroupDrop1" type="button" 
+                                class="btn btn-primary dropdown-toggle w-100 text-start" 
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                            Hist <span class="badge rounded-pill bg-warning text-dark">{{ vizs|length }} vizs</span>
+                            Hist <span class="badge rounded-pill bg-warning text-dark">
+                            {{ vizs|length }} vizs</span>
                         </button>
                             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                 <li><h6 class="dropdown-header">Select viz</h6></li>
@@ -82,22 +93,20 @@
                         data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable" disabled>
                             <i class="bi bi-table" style="font-size: 1rem;"></i>
                     </button>
-                    {# {% unicorn 'dataframe' parent=view datasource=datasource id='dataframe' %} #}
-                    <div class="yv-dataframe d-none" 
-                         data-yv-datasource="{{ datasource.pk }}"
-                         data-yv-version="{{ datasource.last_cached }}" 
-                         data-yv-button="#datafileOpenButton">
-                    </div>
                     <button type="button" class="btn btn-secondary" id="reportOpenButton" unicorn:key="reportOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport" disabled>
                             <i class="bi bi-file-earmark-check" style="font-size: 1rem;"></i>
                     </button>
-                    {# {% unicorn 'vizreport' parent=view vizs=vizs report=report id='vizreport01' %} #}
-                    <div class="yv-vizreport d-none" 
-                         data-yv-datasource="{{ report.pk }}"
-                         data-yv-button="#reportOpenButton">
-                    </div>
-                    
+                </div>
+                <!-- DATA PAYLOAD -->
+                <div class="yv-dataframe d-none" 
+                     data-yv-datasource="{{ datasource.pk }}"
+                     data-yv-version="{{ datasource.last_cached }}" 
+                     data-yv-button="#datafileOpenButton">
+                </div>
+                <div class="yv-vizreport d-none" 
+                     data-yv-datasource="{{ report.pk }}"
+                     data-yv-button="#reportOpenButton">
                 </div>
             </div>
         </div>
