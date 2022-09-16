@@ -135,11 +135,14 @@
                         
                         // JQuery for Bootstrap Table compatibility
                         var $table = $('#table')
+                        $table.bootstrapTable('resetView');
+                        /*
                         $(function() {
                             $('#modalTable').on('shown.bs.modal', function () {
                               $table.bootstrapTable('resetView');
                             })
                         });
+                        */
                         document.querySelector("#datafileOpenButton").disabled = false;
                     }
                 });
