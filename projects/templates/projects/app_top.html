@@ -129,20 +129,17 @@
                     df.innerHTML = data;
                     const m = document.querySelector("#modalTable");
                     if (m) {
+                        // JQuery for Bootstrap Table compatibility
+                        var $table = $('#table')
+                        $(function() {
+                            $('#modalTable').on('shown.bs.modal', function () {
+                                $table.bootstrapTable('resetView');
+                            })
+                        });
                         bootstrap.Modal.getOrCreateInstance(m).dispose();
                         bootstrap.Modal.getOrCreateInstance(m);
                         document.getElementById("body").appendChild(m);
                         
-                        // JQuery for Bootstrap Table compatibility
-                        var $table = $('#table')
-                        $table.bootstrapTable('resetView');
-                        /*
-                        $(function() {
-                            $('#modalTable').on('shown.bs.modal', function () {
-                              $table.bootstrapTable('resetView');
-                            })
-                        });
-                        */
                         document.querySelector("#datafileOpenButton").disabled = false;
                     }
                 });
