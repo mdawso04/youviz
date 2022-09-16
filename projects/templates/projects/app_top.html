@@ -141,19 +141,19 @@
                         document.getElementById("body").appendChild(m);
                         
                         // JQuery for Bootstrap Table compatibility
-                        
                         let myVar = setInterval(function() {
                             if(assetLog.scripts['bt'] !== undefined){
                                 clearInterval(myVar);
                                 var $table = $('#table');
-                                $(function() {
+                                //$(function() {
                                     $('#modalTable').on('shown.bs.modal', function () {
                                         $table.bootstrapTable('resetView');
-                                    })
-                                });
+                                    });
+                                //});
                                 document.querySelector(df.dataset.yvButton).disabled = false;
                             }
                         }, 1000);
+                        
                     }
                 });
             
