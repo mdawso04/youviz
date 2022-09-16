@@ -148,14 +148,20 @@
                               assetLog.scripts['btc'] !== undefined &&
                               assetLog.scripts['bts'] !== undefined &&
                               $table.bootstrapTable !== undefined){
-                                alert(typeof $table.bootstrapTable);
                                 clearInterval(myVar);
-                                $table.bootstrapTable('resetView');
-                                //$(function() {
-                                //    $('#modalTable').on('shown.bs.modal', function () {
-                                //        $table.bootstrapTable('resetView');
-                                //    });
-                                //});
+                                //$table.bootstrapTable('resetView');
+                                $(function() {
+                                    /*
+                                    $('#modalTable').on('shown.bs.modal', function () {
+                                        $table.bootstrapTable('resetView');
+                                        alert(typeof $table.bootstrapTable);
+                                    });
+                                    */
+                                    m.addEventListener('shown.bs.modal',function () {
+                                        $table.bootstrapTable('resetView');
+                                        alert(typeof $table.bootstrapTable);
+                                    });
+                                });
                                 document.querySelector(df.dataset.yvButton).disabled = false;
                             }
                         }, 1000);
