@@ -29,7 +29,7 @@
                 integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"
                 onload="assetLog.scripts['bs']=true"></script>
         <!-- 1.20.2 -->
-        <script src="{% static 'projects/js/bootstrap-table.min.js' %}" onload="assetLog.scripts['bts']=true"></script>
+        <!--<script src="{% static 'projects/js/bootstrap-table.min.js' %}" onload="assetLog.scripts['bts']=true"></script>-->
         <!-- 2.14.0 -->
         <script src="{% static 'projects/js/plotly-2.14.0.min.js' %}"></script>
         <script src="{% static 'projects/js/qrcode.min.js' %}"></script>
@@ -141,7 +141,13 @@
                         bootstrap.Modal.getOrCreateInstance(m);
                         document.getElementById("body").appendChild(m);
                         var $table = $('#table');
-                                
+                        
+                        var newScript = document.createElement("script");
+                        newScript.src = "{% static 'projects/js/bootstrap-table.min.js' %}";
+                        newScript.addEventListener("load", () => {
+                            assetLog.scripts['bts'] = true;
+                        });
+                        df.appendChild(newScript);
                         // JQuery for Bootstrap Table compatibility
                         let myVar = setInterval(function() {
                             if(assetLog.scripts['bs'] !== undefined &&
@@ -150,18 +156,12 @@
                               $table.bootstrapTable !== undefined){
                                 clearInterval(myVar);
                                 //$table.bootstrapTable('resetView');
+                                /*
                                 $(function() {
-                                    /*
-                                    $('#modalTable').on('shown.bs.modal', function () {
-                                        $table.bootstrapTable('resetView');
-                                        alert(typeof $table.bootstrapTable);
-                                    });
-                                    */
                                     m.addEventListener('shown.bs.modal',function () {
                                         $table.bootstrapTable('resetView');
-                                        alert(typeof $table.bootstrapTable);
                                     });
-                                });
+                                });*/
                                 document.querySelector(df.dataset.yvButton).disabled = false;
                             }
                         }, 1000);
