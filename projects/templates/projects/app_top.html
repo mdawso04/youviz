@@ -145,10 +145,11 @@
                             if(assetLog.scripts['bt'] !== undefined){
                                 clearInterval(myVar);
                                 var $table = $('#table');
+                                $table.bootstrapTable('resetView');
                                 //$(function() {
-                                    $('#modalTable').on('shown.bs.modal', function () {
-                                        $table.bootstrapTable('resetView');
-                                    });
+                                //    $('#modalTable').on('shown.bs.modal', function () {
+                                //        $table.bootstrapTable('resetView');
+                                //    });
                                 //});
                                 document.querySelector(df.dataset.yvButton).disabled = false;
                             }
