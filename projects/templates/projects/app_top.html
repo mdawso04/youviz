@@ -130,11 +130,11 @@
                             if(window.Unicorn !== undefined){
                                 clearInterval(myVar);
                                 //window.Unicorn.init("/unicorn/message", "X-CSRFTOKEN");
-                                alert('clear interval');
+                                //alert('clear interval');
                                 Unicorn.componentInit(JSON.parse(document.querySelector('.yv-viz script[id^="unicorn:data"]').textContent)); 
-                                alert('component init');
+                                //alert('component init');
                                 document.querySelector(v.dataset.yvButton).disabled = false;
-                                alert('button enabled');
+                                //alert('button enabled');
                             }
                         }, 500);
                 });
