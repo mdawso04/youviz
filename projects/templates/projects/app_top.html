@@ -46,10 +46,7 @@
         }
           .dropdown-toggle.no-arrow::after {
               content: none;
-            }
-            
-        
-            
+        }   
         </style>
     </head>
 
@@ -121,13 +118,27 @@
             }
             
             
-            // fetch dataframe component add to DOM
-            //div class="yv-dataframe" 
-            //             data-yv-datasource="{{ datasource.pk }}"
-            //             data-yv-version="{{ datasource.last_cached }}" 
-            //             data-yv-button="#datafileOpenButton">
-            //        </div>
+            // LOAD VIZ
+            const v = document.querySelector(".yv-viz");
+            fetch("./" + v.dataset.yvComponent + "/" + v.dataset.yvPk)
+                .then(response => {
+                    return response.text()
+                })
+                .then(data => {
+                    v.innerHTML = data;
+                    let myVar = setInterval(function() {
+                            if(window.Unicorn !== undefined){
+                                clearInterval(myVar);
+                                //window.Unicorn.init("/unicorn/message", "X-CSRFTOKEN");
+                                //alert(window.Unicorn !== undefined);
+                                Unicorn.componentInit(JSON.parse(document.getElementById('unicorn:data:CZRmCwzU').textContent)); 
+                                document.querySelector(v.dataset.yvButton).disabled = false;
+                            }
+                        }, 500);
+                });
             
+            
+            // LOAD DATAFRAME
             const df = document.querySelector(".yv-dataframe");
             fetch("./" + df.dataset.yvComponent + "/" + df.dataset.yvPk)
                 .then(response => {
@@ -164,17 +175,12 @@
                                 });*/
                                 document.querySelector(df.dataset.yvButton).disabled = false;
                             }
-                        }, 1000);
+                        }, 500);
                         
                     }
                 });
             
-            // fetch vizreport component add to DOM
-            //<div class="yv-vizreport d-none" 
-            //             data-yv-datasource="{{ report.pk }}"
-            //             data-yv-button="#reportOpenButton">
-            //        </div>
-            
+            // LOAD VIZREPORT
             const c = document.querySelector(".yv-vizreport");
             fetch("./" + c.dataset.yvComponent + "/" + c.dataset.yvPk)
                 .then(response => {
@@ -198,7 +204,6 @@
                 });
             
             // popover setup
-            
             const list = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
             list.map((el) => {
               let opts = {

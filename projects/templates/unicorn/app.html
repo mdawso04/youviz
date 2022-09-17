@@ -81,7 +81,7 @@
                         {% endfor %}
                             </ul>    
                     </div>    
-                    <button type="button" class="btn btn-primary" onclick="showVizOffcanvas()">
+                    <button id="showVizOffcanvas" type="button" class="btn btn-primary" onclick="showVizOffcanvas()" disabled>
                         <i class="bi bi-bar-chart" style="font-size: 1rem;"></i>
                     </button>
                     <button type="button" class="btn btn-primary" disabled>
@@ -131,10 +131,14 @@
             {% for v in vizs %}
                 {% with vids=v.pk|stringformat:"s" %}
                 {% with vid="viz-"|add:vids %}
-                    <!-- TAB {{ forloop.counter }} CONTENT -->
                     <div class="tab-pane yv fade show {% if forloop.first %}active{% endif %}" id="{{vid}}" 
                          role="tabpanel" aria-labelledby="{{vid}}-tab">
                         {# {% unicorn 'viz' parent=view viz=v id=vid %} #}
+                        <div class="yv-viz" 
+                             data-yv-component="viz"
+                             data-yv-pk="{{ v.pk }}"
+                             data-yv-button="#showVizOffcanvas">
+                        </div>
                 {% endwith %}
                 {% endwith %}
                     </div>

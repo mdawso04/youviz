@@ -37,9 +37,11 @@ class VizView(UnicornView):
     def load_viz(self):
         #logger.debug('VizView > load_viz start')
         
+        self.viz = Viz.objects.filter(pk=self.kwargs['pk']).all().prefetch_related('datasource').last()
+        
         #load csv from db
         copied_json = deepcopy(self.viz.json)
-        copied_json[0]['options']['src'] = self.parent.datasource.databuffer
+        copied_json[0]['options']['src'] = self.viz.datasource.databuffer
         a = pp.App(copied_json)
         
         #build viz options cache for current state
