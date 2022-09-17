@@ -122,7 +122,7 @@
             const v = document.querySelector(".yv-viz");
             fetch("./" + v.dataset.yvComponent + "/" + v.dataset.yvPk)
                 .then(response => {
-                    return response.text()
+                    return response.text() 
                 })
                 .then(data => {
                     v.innerHTML = data;
@@ -131,7 +131,8 @@
                                 clearInterval(myVar);
                                 //window.Unicorn.init("/unicorn/message", "X-CSRFTOKEN");
                                 //alert(window.Unicorn !== undefined);
-                                Unicorn.componentInit(JSON.parse(document.getElementById('unicorn:data:CZRmCwzU').textContent)); 
+                                Unicorn.componentInit(JSON.parse(document.querySelector('.yv-viz script[id^="unicorn:data"]').textContent)); 
+                                //Unicorn.componentInit(JSON.parse(document.getElementById('unicorn:data:' + 'viz-' + v.dataset.yvPk).textContent)); 
                                 document.querySelector(v.dataset.yvButton).disabled = false;
                             }
                         }, 500);
