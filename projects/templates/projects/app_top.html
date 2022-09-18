@@ -111,13 +111,6 @@
             //body.appendChild(sourcecontrolModal) 
             //body.appendChild(reportModal) 
             
-            //var yvmodals = document.getElementsByClassName("yvmodal");
-            var yvmodals = document.querySelectorAll('.yvmodal');
-            var body = document.getElementById("body");
-            for (let i = 0; i < yvmodals.length; i++) {
-                body.appendChild(yvmodals[i]); 
-            }
-            
             Handler.vizInit = function (node) {
                 //get plot div, tab
                 var d = node.dataset;
@@ -223,36 +216,6 @@
             });
             
             
-            // LOAD VIZ
-            /*
-            const v = document.querySelector(".yv-viz");
-            fetch("./" + v.dataset.yvComponent + "/" + v.dataset.yvId)
-                .then(response => {
-                    return response.text() 
-                })
-                .then(data => {
-                    v.innerHTML = data;
-                    let myVar = setInterval(function() {
-                        if(window.Unicorn !== undefined){
-                            // stop loop
-                            clearInterval(myVar);
-
-                            // init component to setup after download
-                            if(Handler[v.dataset.yvInit] !== undefined){
-                                Handler[v.dataset.yvInit](v.dataset);
-                            }
-
-                            // init unicorn component for ajax editing
-                            Unicorn.componentInit(JSON.parse(document.querySelector('.yv-viz script[id^="unicorn:data"]').textContent)); 
-
-                            // activate button
-                            document.querySelector(v.dataset.yvButton).disabled = false;
-                        }
-                    }, 500);
-                });
-                */
-            
-            
             // LOAD DATAFRAME
             const df = document.querySelector(".yv-dataframe");
             fetch("./" + df.dataset.yvComponent + "/" + df.dataset.yvPk)
@@ -295,31 +258,13 @@
                     }
                 });
             
-            // LOAD VIZREPORT
-            /*
-            const c = document.querySelector(".yv-vizreport");
-            fetch("./" + c.dataset.yvComponent + "/" + c.dataset.yvPk)
-                .then(response => {
-                    return response.text()
-                })
-                .then(data => {
-                    c.innerHTML = data;
-                    const mr = document.querySelector("#modalReport");
-                    if (mr) {
-                        bootstrap.Modal.getOrCreateInstance(mr).dispose();
-                        bootstrap.Modal.getOrCreateInstance(mr);
-                        document.getElementById("body").appendChild(mr);
+            //var yvmodals = document.getElementsByClassName("yvmodal");
+            var yvmodals = document.querySelectorAll('.yvmodal');
+            var body = document.getElementById("body");
+            for (let i = 0; i < yvmodals.length; i++) {
+                body.appendChild(yvmodals[i]); 
+            }
                         
-                        var arr = document.querySelectorAll(".yv-vizreport div script"); // only report viz/s
-                        for (var n = 0; n < arr.length; n++) {
-                            eval(arr[n].innerHTML); // run script
-                        }
-                        
-                        document.querySelector(c.dataset.yvButton).disabled = false;
-                    }
-                });
-                */
-            
             // popover setup
             const list = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
             list.map((el) => {
