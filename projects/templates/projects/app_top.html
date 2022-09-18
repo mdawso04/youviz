@@ -9,27 +9,28 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- 5.1.3 -->
         <script>
-            var assetLog = {
+            const Handler = {
                 styles: {},
                 scripts: {},
+                func: {},
             };
         </script>        
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" 
               rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" 
-              crossorigin="anonymous" onload="assetLog.styles[this.href]=true">
+              crossorigin="anonymous" onload="Handler.styles[this.href]=true">
         <!-- 1.8.1 -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
         <!-- 1.20.2 -->
-        <link rel="stylesheet" href="{% static 'projects/css/bootstrap-table.min.css' %}" onload="assetLog.scripts['btc']=true"/>
+        <link rel="stylesheet" href="{% static 'projects/css/bootstrap-table.min.css' %}" onload="Handler.scripts['btc']=true"/>
         
         <script src="{% static 'projects/js/jquery-3.5.1.min.js' %}"></script>
         <script src="{% static 'projects/js/dropzone.min.js' %}"></script>
         <!-- 5.1.3 -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
                 integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"
-                onload="assetLog.scripts['bs']=true"></script>
+                onload="Handler.scripts['bs']=true"></script>
         <!-- 1.20.2 -->
-        <!--<script src="{% static 'projects/js/bootstrap-table.min.js' %}" onload="assetLog.scripts['bts']=true"></script>-->
+        <!--<script src="{% static 'projects/js/bootstrap-table.min.js' %}" onload="Handler.scripts['bts']=true"></script>-->
         <!-- 2.14.0 -->
         <script src="{% static 'projects/js/plotly-2.14.0.min.js' %}"></script>
         <script src="{% static 'projects/js/qrcode.min.js' %}"></script>
@@ -117,27 +118,139 @@
                 body.appendChild(yvmodals[i]); 
             }
             
+            Handler.vizInit = function (node) {
+                //get plot div, tab
+                var d = node.dataset;
+                var vid = "viz-" + d.yvId;
+                var plot_div = "plotBox-" + vid;
+                var plot_div_el = document.getElementById(plot_div);
+                var tab_div = vid;
+                var tab_div_el = document.getElementById(tab_div);
+                
+                //get json
+                var json_el = document.getElementById("youviz:data:" + vid);
+                var json = JSON.parse(json_el.textContent);
+                
+                //make plot
+                var data = json.plot_data;
+                var layout = json.plot_layout;
+                //var config = {responsive: true};
+                layout.height = 370;
+                layout.margin.t = 15;
+                layout.margin.b = 68;
+                layout.margin.r = 10;
+                layout.showlegend = true;
+                layout.legend = {
+                    x: 1,
+                    xanchor: 'right',
+                    y: 1,
+                    bgcolor: '#00000000',
+                };
+                Plotly.react(plot_div, data, layout, {displayModeBar: false, scrollZoom: false});
+
+                //add resize, tab listeners
+                window.addEventListener("resize", (event) => {
+                 if (window.getComputedStyle(plot_div_el).display !== "none") {
+                     var update = {
+                        width: plot_div_el.clientWidth,
+                        height: plot_div_el.clientHeight
+                     };
+                     Plotly.relayout(plot_div, update);
+                 }
+                });
+                tab_div_el.addEventListener('shown.bs.tab', function (event) {
+                 if (event.target.id === tab_div) { // newly activated tab
+                     //event.relatedTarget // previous active tab
+                     var update = {
+                        width: plot_div_el.clientWidth,
+                        height: plot_div_el.clientHeight
+                     };
+                     Plotly.relayout(plot_div, update);
+                 }
+                });
+            }
+            
+            Handler.vizreportInit = function (node) {
+                var d = node.dataset;
+                //get modal
+                const mr = document.querySelector("#modalReport");
+                if (mr) {
+                    bootstrap.Modal.getOrCreateInstance(mr).dispose();
+                    bootstrap.Modal.getOrCreateInstance(mr);
+                    document.getElementById("body").appendChild(mr);
+                    
+                    var arr = document.querySelectorAll(".yv-vizreport div script"); // only report viz/s
+                    for (var n = 0; n < arr.length; n++) {
+                        eval(arr[n].innerHTML); // run script
+                    }
+                }
+            }
+            
+            // LOAD YV-COMPS
+            const nodes = document.querySelectorAll(".yv-component");
+            nodes.forEach(async (node) => {
+                var node_data = node.dataset;
+                
+                fetch("./" + node_data.yvComponent + "/" + node_data.yvId)
+                .then(response => {
+                    return response.text() 
+                })
+                .then(data => {
+                    node.innerHTML = data;
+                    let timer = setInterval(function() {
+                        if(window.Unicorn !== undefined){
+                            // stop loop
+                            clearInterval(timer);
+
+                            // init component to setup after download
+                            if(Handler[node_data.yvInit] !== undefined){
+                                Handler[node_data.yvInit](node);
+                            }
+
+                            // init unicorn component for ajax editing
+                            var u_script = document.querySelector('#' + node.id + ' script[id^="unicorn:data"]');
+                            if(u_script !== undefined) {
+                                Unicorn.componentInit(JSON.parse(u_script.textContent)); 
+                            }
+
+                            // activate button
+                            if(document.querySelector(node_data.yvButton) !== undefined){
+                                document.querySelector(node_data.yvButton).disabled = false;
+                            }
+                        }
+                    }, 500);
+                });
+            });
+            
             
             // LOAD VIZ
+            /*
             const v = document.querySelector(".yv-viz");
-            fetch("./" + v.dataset.yvComponent + "/" + v.dataset.yvPk)
+            fetch("./" + v.dataset.yvComponent + "/" + v.dataset.yvId)
                 .then(response => {
                     return response.text() 
                 })
                 .then(data => {
                     v.innerHTML = data;
                     let myVar = setInterval(function() {
-                            if(window.Unicorn !== undefined){
-                                clearInterval(myVar);
-                                //window.Unicorn.init("/unicorn/message", "X-CSRFTOKEN");
-                                //alert('clear interval');
-                                Unicorn.componentInit(JSON.parse(document.querySelector('.yv-viz script[id^="unicorn:data"]').textContent)); 
-                                //alert('component init');
-                                document.querySelector(v.dataset.yvButton).disabled = false;
-                                //alert('button enabled');
+                        if(window.Unicorn !== undefined){
+                            // stop loop
+                            clearInterval(myVar);
+
+                            // init component to setup after download
+                            if(Handler[v.dataset.yvInit] !== undefined){
+                                Handler[v.dataset.yvInit](v.dataset);
                             }
-                        }, 500);
+
+                            // init unicorn component for ajax editing
+                            Unicorn.componentInit(JSON.parse(document.querySelector('.yv-viz script[id^="unicorn:data"]').textContent)); 
+
+                            // activate button
+                            document.querySelector(v.dataset.yvButton).disabled = false;
+                        }
+                    }, 500);
                 });
+                */
             
             
             // LOAD DATAFRAME
@@ -158,14 +271,14 @@
                         var newScript = document.createElement("script");
                         newScript.src = "{% static 'projects/js/bootstrap-table.min.js' %}";
                         newScript.addEventListener("load", () => {
-                            assetLog.scripts['bts'] = true;
+                            Handler.scripts['bts'] = true;
                         });
                         df.appendChild(newScript);
                         // JQuery for Bootstrap Table compatibility
                         let myVar = setInterval(function() {
-                            if(assetLog.scripts['bs'] !== undefined &&
-                              assetLog.scripts['btc'] !== undefined &&
-                              assetLog.scripts['bts'] !== undefined &&
+                            if(Handler.scripts['bs'] !== undefined &&
+                              Handler.scripts['btc'] !== undefined &&
+                              Handler.scripts['bts'] !== undefined &&
                               $table.bootstrapTable !== undefined){
                                 clearInterval(myVar);
                                 //$table.bootstrapTable('resetView');
@@ -183,6 +296,7 @@
                 });
             
             // LOAD VIZREPORT
+            /*
             const c = document.querySelector(".yv-vizreport");
             fetch("./" + c.dataset.yvComponent + "/" + c.dataset.yvPk)
                 .then(response => {
@@ -204,6 +318,7 @@
                         document.querySelector(c.dataset.yvButton).disabled = false;
                     }
                 });
+                */
             
             // popover setup
             const list = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))

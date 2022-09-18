@@ -105,10 +105,11 @@
                      data-yv-version="{{ datasource.last_cached }}" 
                      data-yv-button="#datafileOpenButton">
                 </div>
-                <div class="yv-vizreport d-none" 
+                <div class="yv-component vizreport d-none" id="yv-component-vizreport-{{ report.pk }}"
                      data-yv-component="report"
-                     data-yv-pk="{{ report.pk }}"
-                     data-yv-button="#reportOpenButton">
+                     data-yv-id="{{ report.pk }}"
+                     data-yv-button="#reportOpenButton"
+                     data-yv-init="vizreportInit">
                 </div>
             </div>
         </div>
@@ -134,10 +135,11 @@
                     <div class="tab-pane yv fade show {% if forloop.first %}active{% endif %}" id="{{vid}}" 
                          role="tabpanel" aria-labelledby="{{vid}}-tab">
                         {# {% unicorn 'viz' parent=view viz=v id=vid %} #}
-                        <div class="yv-viz" 
+                        <div class="yv-component viz" id="yv-component-viz-{{ v.pk }}"
                              data-yv-component="viz"
-                             data-yv-pk="{{ v.pk }}"
-                             data-yv-button="#showVizOffcanvas">
+                             data-yv-id="{{ v.pk }}"
+                             data-yv-button="#showVizOffcanvas"
+                             data-yv-init="vizInit">
                         </div>
                 {% endwith %}
                 {% endwith %}

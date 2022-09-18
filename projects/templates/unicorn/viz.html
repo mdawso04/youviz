@@ -11,11 +11,14 @@
     {% with vids=viz.pk|stringformat:"s" %}
     {% with vid='viz-'|add:vids %}
     <div class="d-none" unicorn:key="viz-no-update{{vid}}"></div>
+    <script type="application/json" id="youviz:data:{{vid}}">
+    {"plot_data":{{plot_data|safe}}, "plot_layout":{{plot_layout|safe}}}
+    </script>
     <div id="outerOuterPlotBox-{{vid}}" class="sticky-top" style="z-index: 995">
         <div id="outerPlotBox-{{vid}}">
             <div id="plotBox-{{vid}}">
             </div>
-            <!--<script src="https://cdn.plot.ly/plotly-2.8.3.min.js"></script>-->
+            <!--
             <script class="youVizOnLoad youVizOnUpdate" type="application/javascript">
                 {% if plot_data %}
                  var data = JSON.parse('{{plot_data|safe}}');
@@ -34,15 +37,6 @@
                  };
                  Plotly.react("plotBox-{{vid}}", data, layout, {displayModeBar: false, scrollZoom: false});
 
-                 /*
-                 resizeTarget = document.getElementById("plotBox-{{vid}}");
-                 var update = {
-                    width: resizeTarget.clientWidth,
-                    height: resizeTarget.clientHeight
-                 };
-                 alert(update.width);
-                 Plotly.relayout("plotBox-{{vid}}", update);
-                 */
                  window.addEventListener("resize", (event) => {
                      resizeTarget = document.getElementById("plotBox-{{vid}}");
                      if (window.getComputedStyle(resizeTarget).display !== "none") {
@@ -69,7 +63,7 @@
                      }
                  })
                  {% endif %}
-            </script>
+            </script>-->
         </div>
     </div>
     
