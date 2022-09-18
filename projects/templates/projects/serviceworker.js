@@ -17,6 +17,7 @@ workbox.precaching.precacheAndRoute([
 ]);
 
 // Handle scripts:
+/*
 const unicornRoute = new workbox.routing.Route(({ request }) => {
   return /(viz|dataframe|report)/.test(request.url);
 }, new workbox.strategies.CacheFirst({
@@ -25,3 +26,11 @@ const unicornRoute = new workbox.routing.Route(({ request }) => {
 
 // Register routes
 workbox.routing.registerRoute(unicornRoute);
+*/
+
+workbox.routing.registerRoute(
+  ({request}) => /(viz|dataframe|report)/.test(request.url),
+  new workbox.strategies.CacheFirst({
+    cacheName: 'unicorn',
+  })
+);
