@@ -304,135 +304,127 @@
             window.addEventListener("DOMContentLoaded", (event) => {
                 Unicorn.addEventListener("updated", (component) =>{
                     
-                    
-                    if (component.name == 'app') {
-                        // data source off canvas
-                        if (editing_file == true) {
-                            var testOffCanvas = document.getElementById("OFFCANVAS");
-                            var bsoc = bootstrap.Offcanvas.getOrCreateInstance(testOffCanvas);
-                            bsoc.hide();
-                        }
-
-                        // dropdown menus
-                        var tmd = document.getElementById("tab-more-dropdown");
-                        if (tmd) {
-                            bootstrap.Dropdown.getOrCreateInstance(tmd).dispose();
-                            bootstrap.Dropdown.getOrCreateInstance(tmd);
-                        }
-                        
-                        var usd = document.getElementById("user-settings-dropdown");
-                        if (usd) {
-                            bootstrap.Dropdown.getOrCreateInstance(usd).dispose();
-                            bootstrap.Dropdown.getOrCreateInstance(usd);
-                        }
-
-                        //dropzone
-                        var dzElement = document.querySelector("#drop");
-                        var myDropzone;
-                        if (dzElement) {
-                            if (dzElement.dropzone) {
-                            dzElement.dropzone.destroy();
+                    switch(component.name) {
+                        case 'app':
+                            // data source off canvas
+                            if (editing_file == true) {
+                                var testOffCanvas = document.getElementById("OFFCANVAS");
+                                var bsoc = bootstrap.Offcanvas.getOrCreateInstance(testOffCanvas);
+                                bsoc.hide();
                             }
-                            myDropzone = new Dropzone("#drop");
-                        };
-                        
-                        //bootstrap table to handle return from file edit
-                        //bootstrap table
-                        $('#table').bootstrapTable(); // init via javascript
-                        
-                        // datatable modal
-                        // append modals to prevent z-layer issues
-                        var yvmodals = document.querySelectorAll('.yvmodal');
-                        var body = document.getElementById("body");
-                        for (let i = 0; i < yvmodals.length; i++) {
-                            body.appendChild(yvmodals[i]); 
-                        }
-                    
-                    }
-                    
-                    if (component.name == 'login') {
-                        // append modals to prevent z-layer issues
-                        var yvmodals = document.querySelectorAll('.yvmodal');
-                        var body = document.getElementById("body");
-                        for (let i = 0; i < yvmodals.length; i++) {
-                            body.appendChild(yvmodals[i]); 
-                        }
-                        
-                        var usd = document.getElementById("user-settings-dropdown");
-                        if (usd) {
-                            bootstrap.Dropdown.getOrCreateInstance(usd).dispose();
-                            bootstrap.Dropdown.getOrCreateInstance(usd);
-                        }
-                        
-                    }
-                    
-                    if (component.name == 'viz') {
-                        /*
-                        var arr = document.getElementsByClassName("youVizOnUpdate"); // only refreshed viz/s
-                        for (var n = 0; n < arr.length; n++) {
-                            eval(arr[n].innerHTML); // run script
-                        }*/
-                        //Handler.vizInit(document.querySelector('#' + component.id));
-                        //alert(component.parentNode);
-                        //alert(component.id);
-                        //alert(component.root.parentNode);
-                        Handler.vizInit(component.root.parentNode);                    
-                    
-                    }
-                    
-                    if (component.name == 'datatable') {
-                        //bootstrap table
-                        $('#table').bootstrapTable(); // init via javascript
-                        
-                        // datatable modal
-                        // append modals to prevent z-layer issues
-                        var yvmodals = document.querySelectorAll('.yvmodal');
-                        var body = document.getElementById("body");
-                        for (let i = 0; i < yvmodals.length; i++) {
-                            body.appendChild(yvmodals[i]); 
-                        }
-                    }
-                    
-                    if (component.name == 'getmore') {
-                        // datatable modal
-                        // append modals to prevent z-layer issues
-                        var yvmodals = document.querySelectorAll('.yvmodal');
-                        var body = document.getElementById("body");
-                        for (let i = 0; i < yvmodals.length; i++) {
-                            body.appendChild(yvmodals[i]); 
-                        }
-                    }
-                    
-                    if (component.name == 'sourcecontrol') {
-                        // datatable modal
-                        // append modals to prevent z-layer issues
-                        var yvmodals = document.querySelectorAll('.yvmodal');
-                        var body = document.getElementById("body");
-                        for (let i = 0; i < yvmodals.length; i++) {
-                            body.appendChild(yvmodals[i]); 
-                        }
-                    }
-                    
-                    if (component.name == 'report') {
-                        // datatable modal
-                        // append modals to prevent z-layer issues
-                        var yvmodals = document.querySelectorAll('.yvmodal');
-                        var body = document.getElementById("body");
-                        for (let i = 0; i < yvmodals.length; i++) {
-                            body.appendChild(yvmodals[i]); 
-                        }
-                    }
-                    
-                    if (component.name == 'filecontrol') {
-                        $('#table').bootstrapTable(); // init via javascript
-                        
-                        // datatable modal
-                        // append modals to prevent z-layer issues
-                        var yvmodals = document.querySelectorAll('.yvmodal');
-                        var body = document.getElementById("body");
-                        for (let i = 0; i < yvmodals.length; i++) {
-                            body.appendChild(yvmodals[i]); 
-                        }
+
+                            // dropdown menus
+                            var tmd = document.getElementById("tab-more-dropdown");
+                            if (tmd) {
+                                bootstrap.Dropdown.getOrCreateInstance(tmd).dispose();
+                                bootstrap.Dropdown.getOrCreateInstance(tmd);
+                            }
+
+                            var usd = document.getElementById("user-settings-dropdown");
+                            if (usd) {
+                                bootstrap.Dropdown.getOrCreateInstance(usd).dispose();
+                                bootstrap.Dropdown.getOrCreateInstance(usd);
+                            }
+
+                            //dropzone
+                            var dzElement = document.querySelector("#drop");
+                            var myDropzone;
+                            if (dzElement) {
+                                if (dzElement.dropzone) {
+                                dzElement.dropzone.destroy();
+                                }
+                                myDropzone = new Dropzone("#drop");
+                            };
+
+                            //bootstrap table to handle return from file edit
+                            //bootstrap table
+                            $('#table').bootstrapTable(); // init via javascript
+
+                            // datatable modal
+                            // append modals to prevent z-layer issues
+                            var yvmodals = document.querySelectorAll('.yvmodal');
+                            var body = document.getElementById("body");
+                            for (let i = 0; i < yvmodals.length; i++) {
+                                body.appendChild(yvmodals[i]); 
+                            }
+                            break;
+                        case 'login':
+                            // append modals to prevent z-layer issues
+                            var yvmodals = document.querySelectorAll('.yvmodal');
+                            var body = document.getElementById("body");
+                            for (let i = 0; i < yvmodals.length; i++) {
+                                body.appendChild(yvmodals[i]); 
+                            }
+
+                            var usd = document.getElementById("user-settings-dropdown");
+                            if (usd) {
+                                bootstrap.Dropdown.getOrCreateInstance(usd).dispose();
+                                bootstrap.Dropdown.getOrCreateInstance(usd);
+                            }
+                            break;
+                        case 'viz':
+                            /*
+                            var arr = document.getElementsByClassName("youVizOnUpdate"); // only refreshed viz/s
+                            for (var n = 0; n < arr.length; n++) {
+                                eval(arr[n].innerHTML); // run script
+                            }*/
+                            //Handler.vizInit(document.querySelector('#' + component.id));
+                            //alert(component.parentNode);
+                            //alert(component.id);
+                            //alert(component.root.parentNode);
+                            Handler.vizInit(component.root.parentNode);
+                            break;
+                        case 'datatable':
+                            //bootstrap table
+                            $('#table').bootstrapTable(); // init via javascript
+
+                            // datatable modal
+                            // append modals to prevent z-layer issues
+                            var yvmodals = document.querySelectorAll('.yvmodal');
+                            var body = document.getElementById("body");
+                            for (let i = 0; i < yvmodals.length; i++) {
+                                body.appendChild(yvmodals[i]); 
+                            }
+                            break;
+                        case 'getmore':
+                            // datatable modal
+                            // append modals to prevent z-layer issues
+                            var yvmodals = document.querySelectorAll('.yvmodal');
+                            var body = document.getElementById("body");
+                            for (let i = 0; i < yvmodals.length; i++) {
+                                body.appendChild(yvmodals[i]); 
+                            }
+                            break;
+                        case 'sourcecontrol':
+                            // datatable modal
+                            // append modals to prevent z-layer issues
+                            var yvmodals = document.querySelectorAll('.yvmodal');
+                            var body = document.getElementById("body");
+                            for (let i = 0; i < yvmodals.length; i++) {
+                                body.appendChild(yvmodals[i]); 
+                            }
+                            break;
+                        case 'report':
+                            // datatable modal
+                            // append modals to prevent z-layer issues
+                            var yvmodals = document.querySelectorAll('.yvmodal');
+                            var body = document.getElementById("body");
+                            for (let i = 0; i < yvmodals.length; i++) {
+                                body.appendChild(yvmodals[i]); 
+                            }
+                            break;
+                        case 'filecontrol':
+                            $('#table').bootstrapTable(); // init via javascript
+                            // datatable modal
+                            // append modals to prevent z-layer issues
+                            var yvmodals = document.querySelectorAll('.yvmodal');
+                            var body = document.getElementById("body");
+                            for (let i = 0; i < yvmodals.length; i++) {
+                                body.appendChild(yvmodals[i]); 
+                            }
+                            break;
+                        default:
+                            break;
                     }
                     
                 });
