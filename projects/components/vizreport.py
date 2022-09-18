@@ -33,7 +33,8 @@ class VizreportView(UnicornView):
         #logger.debug('VizView > load_viz start')
         
         
-        self.report = Report.objects.filter(pk=self.kwargs['pk']).all().prefetch_related('datasource__vizs').last()
+        if not self.report:
+            self.report = Report.objects.filter(pk=self.kwargs['pk']).all().prefetch_related('datasource__vizs').last()
         self.vizs = self.report.datasource.vizs.all()
         
         for v in self.vizs:

@@ -37,7 +37,8 @@ class VizView(UnicornView):
     def load_viz(self):
         #logger.debug('VizView > load_viz start')
         
-        self.viz = Viz.objects.filter(pk=self.kwargs['pk']).all().prefetch_related('datasource').last()
+        if not self.viz:
+            self.viz = Viz.objects.filter(pk=self.kwargs['pk']).all().prefetch_related('datasource').last()
         
         #load csv from db
         copied_json = deepcopy(self.viz.json)

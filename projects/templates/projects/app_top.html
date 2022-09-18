@@ -352,6 +352,7 @@
             window.addEventListener("DOMContentLoaded", (event) => {
                 Unicorn.addEventListener("updated", (component) =>{
                     
+                    
                     if (component.name == 'app') {
                         // data source off canvas
                         if (editing_file == true) {
@@ -414,10 +415,17 @@
                     }
                     
                     if (component.name == 'viz') {
+                        /*
                         var arr = document.getElementsByClassName("youVizOnUpdate"); // only refreshed viz/s
                         for (var n = 0; n < arr.length; n++) {
                             eval(arr[n].innerHTML); // run script
-                        }
+                        }*/
+                        //Handler.vizInit(document.querySelector('#' + component.id));
+                        //alert(component.parentNode);
+                        //alert(component.id);
+                        //alert(component.root.parentNode);
+                        Handler.vizInit(component.root.parentNode);                    
+                    
                     }
                     
                     if (component.name == 'datatable') {
