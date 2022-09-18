@@ -41,6 +41,7 @@ class VizreportView(UnicornView):
             elif hasattr(self, 'kwargs'):
                 pk = self.kwargs['pk']
             self.report = Report.objects.filter(pk=pk).all().prefetch_related('datasource__vizs').last()
+            self.vizs = self.report.datasource.vizs.all()
         
         #if not self.report:
         #    self.report = Report.objects.filter(pk=self.kwargs['pk']).all().prefetch_related('datasource__vizs').last()
