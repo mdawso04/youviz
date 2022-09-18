@@ -140,6 +140,27 @@
                     bgcolor: '#00000000',
                 };
                 Plotly.react(plot_div, data, layout, {displayModeBar: false, scrollZoom: false});
+                
+                // popover setup
+                const list = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+                list.map((el) => {
+                  let opts = {
+                    animation: false,
+                  }
+                  if (el.hasAttribute('data-bs-content-id')) {
+                    opts.content = document.getElementById(el.getAttribute('data-bs-content-id')).innerHTML;
+                    opts.html = true;
+                    opts.sanitize = false;
+                  }
+                  new bootstrap.Popover(el, opts);
+                })
+                
+                //var yvmodals = document.getElementsByClassName("yvmodal");
+                var yvmodals = document.querySelectorAll('.yvmodal.viz');
+                var body = document.getElementById("body");
+                for (let i = 0; i < yvmodals.length; i++) {
+                    body.appendChild(yvmodals[i]); 
+                }
 
                 //add resize, tab listeners
                 window.addEventListener("resize", (event) => {
@@ -265,20 +286,6 @@
                 body.appendChild(yvmodals[i]); 
             }
                         
-            // popover setup
-            const list = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-            list.map((el) => {
-              let opts = {
-                animation: false,
-              }
-              if (el.hasAttribute('data-bs-content-id')) {
-                opts.content = document.getElementById(el.getAttribute('data-bs-content-id')).innerHTML;
-                opts.html = true;
-                opts.sanitize = false;
-              }
-              new bootstrap.Popover(el, opts);
-            })
-            
             //const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
             //const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
             
