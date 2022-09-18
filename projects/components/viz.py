@@ -12,6 +12,7 @@ from pp.log import logger
 import os
 import pprint
 from copy import *
+import json
 
 #non-standard libraries
 import pandas as pd
@@ -36,9 +37,18 @@ class VizView(UnicornView):
     
     def load_viz(self):
         #logger.debug('VizView > load_viz start')
+        #import pprint
+        #pp = pprint.PrettyPrinter(depth=4)
+        #logger.debug(pp.pprint(self.request.__dict__))
         
         if not self.viz:
-            self.viz = Viz.objects.filter(pk=self.kwargs['pk']).all().prefetch_related('datasource').last()
+            pk = None
+            if hasattr(self.request, '_body'):
+                b = json.loads(self.request._body)
+                pk = b.data.viz.pk
+            elif hasattr(self, 'kwargs'):
+                pk = self.kwargs['pk']
+            self.viz = Viz.objects.filter(pk=pk).all().prefetch_related('datasource').last()
         
         #load csv from db
         copied_json = deepcopy(self.viz.json)
