@@ -46,8 +46,10 @@ class VizView(UnicornView):
             if hasattr(self.request, '_body'):
                 b = json.loads(self.request._body)
                 pk = b.data.viz.pk
+                logger.debug('PK FROM BODY: ' + str(pk))
             elif hasattr(self, 'kwargs'):
                 pk = self.kwargs['pk']
+                logger.debug('PK FROM KWARGS: ' + str(pk))
             self.viz = Viz.objects.filter(pk=pk).all().prefetch_related('datasource').last()
         
         #load csv from db
