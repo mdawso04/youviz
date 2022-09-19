@@ -160,6 +160,7 @@ Handler.vizreportInit = function (node) {
         }
         
         //qr code
+        /*
         var qrcode = new QRCode(document.getElementById("viz-qrcode-{{vid}}"), {
             text: "{{report.get_absolute_url}}",
             width: 60,
@@ -167,7 +168,7 @@ Handler.vizreportInit = function (node) {
             colorDark : "#000000",
             colorLight : "#ffffff",
             correctLevel : QRCode.CorrectLevel.H
-        });
+        });*/
         
         // share button
         const shareData = {
