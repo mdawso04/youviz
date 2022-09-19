@@ -44,20 +44,21 @@ class VizView(UnicornView):
             pk = None
             if hasattr(self.request, '_body'):
                 b = json.loads(self.request._body)
-                pk = b.data.viz.pk
+                pk = b['data']['viz']['pk']
                 logger.debug('PK FROM BODY: ' + str(pk))
             elif hasattr(self, 'kwargs'):
                 pk = self.kwargs['pk']
                 logger.debug('PK FROM KWARGS: ' + str(pk))
             self.viz = Viz.objects.filter(pk=pk).all().prefetch_related('datasource').last()
         
+        '''
         if hasattr(self.request, '_body'):
             b = json.loads(self.request._body)
             pretty = pprint.PrettyPrinter(depth=4)
             logger.debug(pretty.pprint(b))
             #pk = b.data.viz.pk
             #logger.debug('PK FROM BODY: ' + str(pk))
-        
+        '''
         
         #load csv from db
         copied_json = deepcopy(self.viz.json)
