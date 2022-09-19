@@ -140,7 +140,7 @@ Handler.dataframeInit = function (node) {
                     });
                 });*/
             }
-        }, 500);
+        }, 250);
     }
 }
 
@@ -193,7 +193,7 @@ nodes.forEach(async (node) => {
                     document.querySelector(node_data.yvButton).disabled = false;
                 }
             }
-        }, 500);
+        }, 250);
     });
 });
 
