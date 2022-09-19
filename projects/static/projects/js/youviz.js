@@ -184,7 +184,7 @@ Handler.vizreportInit = function (node) {
                 await navigator.share(shareData);
                 //resultPara.textContent = 'MDN shared successfully';
             } catch (err) {
-                resultPara.textContent = `Error: ${err}`;
+                console.log(`Error: ${err}`);
             }
         });
     }
