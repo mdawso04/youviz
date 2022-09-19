@@ -101,9 +101,9 @@
                 <!-- DATA PAYLOAD -->
                 <div class="yv-component dataframe d-none" id="yv-component-dataframe-{{ datasource.pk }}"
                      data-yv-component="dataframe"
-                     data-yv-pk="{{ datasource.pk }}"
-                     data-yv-version="{{ datasource.last_cached }}" 
-                     data-yv-button="#datafileOpenButton">
+                     data-yv-id="{{ datasource.pk }}"
+                     data-yv-button="#datafileOpenButton"
+                     data-yv-init="dataframeInit">
                 </div>
                 <div class="yv-component vizreport d-none" id="yv-component-vizreport-{{ report.pk }}"
                      data-yv-component="report"
