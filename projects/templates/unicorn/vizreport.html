@@ -51,39 +51,6 @@
                                 </div>
                             </div>
                         </div>
-                        
-                    
-                        <script type="text/javascript">
-                            var qrcode = new QRCode(document.getElementById("viz-qrcode-{{vid}}"), {
-                                text: "{{report.get_absolute_url}}",
-                                width: 60,
-                                height: 60,
-                                colorDark : "#000000",
-                                colorLight : "#ffffff",
-                                correctLevel : QRCode.CorrectLevel.H
-                            });
-                        </script>
-
-                        <script type="text/javascript">
-                        const shareData = {
-                          title: '{{report.name}}',
-                          text: 'Check out this data vizualization on YouViz!',
-                          url: '{{report.get_absolute_url}}'
-                        }
-
-                        const btn = document.querySelector('#report-button-share');
-                        const resultPara = document.querySelector('#report-share-result');
-
-                        // Share must be triggered by "user activation"
-                        btn.addEventListener('click', async () => {
-                          try {
-                            await navigator.share(shareData);
-                            //resultPara.textContent = 'MDN shared successfully';
-                          } catch (err) {
-                            resultPara.textContent = `Error: ${err}`;
-                          }
-                        });
-                        </script>
                     </div>
                 </div>
             </div>

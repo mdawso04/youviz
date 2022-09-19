@@ -153,10 +153,39 @@ Handler.vizreportInit = function (node) {
         bootstrap.Modal.getOrCreateInstance(mr);
         document.getElementById("body").appendChild(mr);
 
-        var arr = document.querySelectorAll(".yv-vizreport div script"); // only report viz/s
+        // init vizs
+        var arr = document.querySelectorAll(".yv-vizreport div script");
         for (var n = 0; n < arr.length; n++) {
-            eval(arr[n].innerHTML); // run script
+            eval(arr[n].innerHTML);
         }
+        
+        //qr code
+        var qrcode = new QRCode(document.getElementById("viz-qrcode-{{vid}}"), {
+            text: "{{report.get_absolute_url}}",
+            width: 60,
+            height: 60,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+        
+        // share button
+        const shareData = {
+            title: '{{report.name}}',
+            text: 'Check out this data vizualization on YouViz!',
+            url: '{{report.get_absolute_url}}'
+        }
+        const btn = document.querySelector('#report-button-share');
+        const resultPara = document.querySelector('#report-share-result');
+        // Share must be triggered by "user activation"
+        btn.addEventListener('click', async () => {
+            try {
+                await navigator.share(shareData);
+                //resultPara.textContent = 'MDN shared successfully';
+            } catch (err) {
+                resultPara.textContent = `Error: ${err}`;
+            }
+        });
     }
 }
 
