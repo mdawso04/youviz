@@ -198,7 +198,7 @@
                     newScript.addEventListener("load", () => {
                         Handler.scripts['bts'] = true;
                     });
-                    df.appendChild(newScript);
+                    node.appendChild(newScript);
                     // JQuery for Bootstrap Table compatibility
                     let myVar = setInterval(function() {
                         if(Handler.scripts['bs'] !== undefined &&

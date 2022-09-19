@@ -24,8 +24,19 @@ class DataframeView(UnicornView):
     
     def mount(self):
         #logger.debug('DataframeView > mount start')
-        pass
+        self.load_table()
         #logger.debug('DataframeView > mount end')
+        
+    def load_table(self):
+        #if not self.datasource:
+        pk = None
+        if hasattr(self.request, '_body'):
+            b = json.loads(self.request._body)
+            pk = b['data']['dataframe']['pk']
+        elif hasattr(self, 'kwargs'):
+            pk = self.kwargs['pk']
+        self.datasource = Datasource.objects.filter(pk=pk).last()
+        #logger.debug('df pk:' + str(pk))
     
     def hydrate(self):
         #logger.debug('DataframeView > hydrate start')

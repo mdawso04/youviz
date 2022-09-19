@@ -33,15 +33,14 @@ class VizreportView(UnicornView):
     def load_vizs(self):
         #logger.debug('VizView > load_viz start')
         
-        if not self.report:
-            pk = None
-            if hasattr(self.request, '_body'):
-                b = json.loads(self.request._body)
-                pk = b['data']['report']['pk']
-            elif hasattr(self, 'kwargs'):
-                pk = self.kwargs['pk']
-            self.report = Report.objects.filter(pk=pk).all().prefetch_related('datasource__vizs').last()
-            self.vizs = self.report.datasource.vizs.all()
+        pk = None
+        if hasattr(self.request, '_body'):
+            b = json.loads(self.request._body)
+            pk = b['data']['report']['pk']
+        elif hasattr(self, 'kwargs'):
+            pk = self.kwargs['pk']
+        self.report = Report.objects.filter(pk=pk).all().prefetch_related('datasource__vizs').last()
+        self.vizs = self.report.datasource.vizs.all()
         
         #if not self.report:
         #    self.report = Report.objects.filter(pk=self.kwargs['pk']).all().prefetch_related('datasource__vizs').last()

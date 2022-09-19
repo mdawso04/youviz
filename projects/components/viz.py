@@ -38,18 +38,15 @@ class VizView(UnicornView):
     def load_viz(self):
         #logger.debug('VizView > load_viz start')
         #import pprint
-        
-        
-        if not self.viz:
-            pk = None
-            if hasattr(self.request, '_body'):
-                b = json.loads(self.request._body)
-                pk = b['data']['viz']['pk']
-                logger.debug('PK FROM BODY: ' + str(pk))
-            elif hasattr(self, 'kwargs'):
-                pk = self.kwargs['pk']
-                logger.debug('PK FROM KWARGS: ' + str(pk))
-            self.viz = Viz.objects.filter(pk=pk).all().prefetch_related('datasource').last()
+        pk = None
+        if hasattr(self.request, '_body'):
+            b = json.loads(self.request._body)
+            pk = b['data']['viz']['pk']
+            logger.debug('PK FROM BODY: ' + str(pk))
+        elif hasattr(self, 'kwargs'):
+            pk = self.kwargs['pk']
+            logger.debug('PK FROM KWARGS: ' + str(pk))
+        self.viz = Viz.objects.filter(pk=pk).all().prefetch_related('datasource').last()
         
         '''
         if hasattr(self.request, '_body'):
