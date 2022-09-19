@@ -37,7 +37,7 @@ class VizreportView(UnicornView):
             pk = None
             if hasattr(self.request, '_body'):
                 b = json.loads(self.request._body)
-                pk = b.data.report.pk
+                pk = b['data']['report']['pk']
             elif hasattr(self, 'kwargs'):
                 pk = self.kwargs['pk']
             self.report = Report.objects.filter(pk=pk).all().prefetch_related('datasource__vizs').last()
