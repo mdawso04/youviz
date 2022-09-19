@@ -121,7 +121,7 @@ Handler.dataframeInit = function (node) {
         var $table = $('#table');
 
         var newScript = document.createElement("script");
-        newScript.src = "{% static 'projects/js/bootstrap-table.min.js' %}";
+        newScript.src = Handler.href.bootstrap_table;
         newScript.addEventListener("load", () => {
             Handler.scripts['bts'] = true;
         });
