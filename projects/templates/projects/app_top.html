@@ -184,6 +184,38 @@
                 });
             }
             
+            Handler.dataframeInit = function (node) {
+                var d = node.dataset;
+                const m = document.querySelector("#modalTable");
+                if (m) {
+                    bootstrap.Modal.getOrCreateInstance(m).dispose();
+                    bootstrap.Modal.getOrCreateInstance(m);
+                    document.getElementById("body").appendChild(m);
+                    var $table = $('#table');
+
+                    var newScript = document.createElement("script");
+                    newScript.src = "{% static 'projects/js/bootstrap-table.min.js' %}";
+                    newScript.addEventListener("load", () => {
+                        Handler.scripts['bts'] = true;
+                    });
+                    df.appendChild(newScript);
+                    // JQuery for Bootstrap Table compatibility
+                    let myVar = setInterval(function() {
+                        if(Handler.scripts['bs'] !== undefined &&
+                          Handler.scripts['btc'] !== undefined &&
+                          Handler.scripts['bts'] !== undefined &&
+                          $table.bootstrapTable !== undefined){
+                            clearInterval(myVar);
+                            /*
+                            $(function() {
+                                m.addEventListener('shown.bs.modal',function () {
+                                    $table.bootstrapTable('resetView');
+                                });
+                            });*/
+                        }
+                    }, 500);
+            }
+            
             Handler.vizreportInit = function (node) {
                 var d = node.dataset;
                 //get modal
@@ -217,6 +249,7 @@
                             clearInterval(timer);
 
                             // init component to setup after download
+                            // TODO - make init support async by default?
                             if(Handler[node_data.yvInit] !== undefined){
                                 Handler[node_data.yvInit](node);
                             }
@@ -236,7 +269,7 @@
                 });
             });
             
-            
+            /*
             // LOAD DATAFRAME
             const df = document.querySelector(".yv-dataframe");
             fetch("./" + df.dataset.yvComponent + "/" + df.dataset.yvPk)
@@ -277,7 +310,7 @@
                         }, 500);
                         
                     }
-                });
+                });*/
             
             //var yvmodals = document.getElementsByClassName("yvmodal");
             var yvmodals = document.querySelectorAll('.yvmodal');
