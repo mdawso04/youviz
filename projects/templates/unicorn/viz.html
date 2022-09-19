@@ -16,55 +16,8 @@
             <script type="application/json" id="youviz:data:{{vid}}">
             {"plot_data":{{plot_data|safe}}, "plot_layout":{{plot_layout|safe}}}
             </script>
-    
             <div id="plotBox-{{vid}}">
             </div>
-            <!--
-            <script class="youVizOnLoad youVizOnUpdate" type="application/javascript">
-                {% if plot_data %}
-                 var data = JSON.parse('{{plot_data|safe}}');
-                 var layout = JSON.parse('{{plot_layout|safe}}');
-                 //var config = {responsive: true};
-                 layout.height = 370;
-                 layout.margin.t = 15;
-                 layout.margin.b = 68;
-                 layout.margin.r = 10;
-                 layout.showlegend = true;
-                 layout.legend = {
-                    x: 1,
-                    xanchor: 'right',
-                    y: 1,
-                    bgcolor: '#00000000',
-                 };
-                 Plotly.react("plotBox-{{vid}}", data, layout, {displayModeBar: false, scrollZoom: false});
-
-                 window.addEventListener("resize", (event) => {
-                     resizeTarget = document.getElementById("plotBox-{{vid}}");
-                     if (window.getComputedStyle(resizeTarget).display !== "none") {
-                         var update = {
-                            width: resizeTarget.clientWidth,
-                            height: resizeTarget.clientHeight
-                         };
-                         Plotly.relayout("plotBox-{{vid}}", update);
-                     }
-                 });
-                 var tabEl = document.querySelector("#{{vid}}-tab")
-                 //console.log("query selector: " + tabEl.id);
-                 tabEl.addEventListener('shown.bs.tab', function (event) {
-                     //console.log("shown event: "+ event.target.id);
-                     if (event.target.id === "{{vid}}-tab") { // newly activated tab
-                         //event.relatedTarget // previous active tab
-                         resizeTarget = document.getElementById("plotBox-{{vid}}");
-                         var update = {
-                            width: resizeTarget.clientWidth,
-                            height: resizeTarget.clientHeight
-                         };
-                         Plotly.relayout("plotBox-{{vid}}", update);
-                         //console.log("shown event: "+event.target.id);
-                     }
-                 })
-                 {% endif %}
-            </script>-->
         </div>
     </div>
     
