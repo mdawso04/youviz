@@ -28,18 +28,35 @@
                         <h6 class="card-subtitle mb-2 text-muted">Share</h6>
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="vizreport-share"
-                                   onclick="document.querySelector('#vizreport-share-panel').classList.toggle('d-none');"
-                                   unicorn:model="report.share"
-                                   unicorn:partial.id="vizreport-partial-dummy">
+                                   {#onclick="document.querySelector('#vizreport-share-panel').classList.toggle('d-none');"#}
+                                   unicorn:model="show_in_gallery"
+                                   unicorn:click="$toggle('show_in_gallery')"
+                                   unicorn:partial.id="vizreport-share-panel">
                             <label class="form-check-label" for="vizreport-share">Share this report in the gallery</label>
                         </div>
-                        <div id="vizreport-share-panel" class="d-none">
+                        <div id="vizreport-share-panel" class="{% if not show_in_gallery %}d-none{% endif %}">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="vizreport-public"
+                                       unicorn:model="public_access"
+                                       unicorn:click="$toggle('public_access')"
+                                       unicorn:partial.id="vizreport-share-panel">
+                                <label class="form-check-label" for="vizreport-share">Allow access to all internet users</label>
+                            </div>
+                            {% if public_access %}
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill pe-2" style="font-size: 1.2rem;"></i>
+                                <div>
+                                All internet users can see this report
+                                </div>
+                            </div>
+                            {% else %}
                             <div class="alert alert-warning d-flex align-items-center" role="alert">
-                                <i class="bi bi-exclamation-triangle-fill" style="font-size: 1rem;"></i>
-                            <div>
-                            This report is publicly visible
+                                <i class="bi bi-exclamation-triangle-fill pe-2" style="font-size: 1.2rem;"></i>
+                                <div>
+                                All YouViz users can see this report
+                                </div>
                             </div>
-                            </div>
+                            {% endif %}    
                             <div class="d-flex flex-row">
                                 <div class="pe-2">
                                     <button type="button" class="btn btn-secondary" id="report-button-share" style="height:60px; width:60px;">

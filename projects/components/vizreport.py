@@ -22,6 +22,8 @@ class VizreportView(UnicornView):
     report: Report = None
     vizs: QuerySetType[Viz] = None
     vizs_html: list = []
+    show_in_gallery = False
+    public_access = False
     
 #LOAD/UPDATE
     
@@ -99,7 +101,8 @@ class VizreportView(UnicornView):
     
     def updated(self, name, value):
         #logger.debug('DataframeView > updated start')
-        pass
+        if name == 'show_in_gallery' and value == False:
+            self.public_access = False
         #logger.debug('DataframeView > updated end')
     
 #ACTIONS
