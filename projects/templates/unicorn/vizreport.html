@@ -16,7 +16,17 @@
                     <div class="col"> 
                     <!-- REPORT HTML -->
                         <h6 class="card-subtitle mb-2 text-muted">{{v.name}}</h6>
-                        <div class="yv-vizreport d-flex justify-content-center">{{html|safe}}</div>
+                        
+                        <div id="outerOuterPlotBox-report-{{v.pk}}" class="yv-vizreport">
+                            <div id="outerPlotBox-report-{{v.pk}}">
+                                <script type="application/json" id="youviz:data:report-outerOuterPlotBox-report-{{v.pk}}">
+                                {"plot_data":{{html.plot_data|safe}}, "plot_layout":{{html.plot_layout|safe}}}
+                                </script>
+                                <div id="plotBox-report-outerOuterPlotBox-report-{{v.pk}}">
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div>{{v.comment}}</div>
                         <hr/>
                     </div>
@@ -35,7 +45,7 @@
                             <label class="form-check-label" for="vizreport-share">Share this report in the gallery</label>
                         </div>
                         <div id="vizreport-share-panel" class="{% if not show_in_gallery %}d-none{% endif %}">
-                            <div class="form-check form-switch">
+                            <div class="form-check form-switch pb-1">
                                 <input class="form-check-input" type="checkbox" id="vizreport-public"
                                        unicorn:model="public_access"
                                        unicorn:click="$toggle('public_access')"

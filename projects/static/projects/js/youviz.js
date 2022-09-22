@@ -154,9 +154,49 @@ Handler.vizreportInit = function (node) {
         document.getElementById("body").appendChild(mr);
 
         // init vizs
-        var arr = document.querySelectorAll(".yv-vizreport div script");
+        //var arr = document.querySelectorAll(".yv-vizreport div script");
+        var arr = document.querySelectorAll(".yv-vizreport");
         for (var n = 0; n < arr.length; n++) {
-            eval(arr[n].innerHTML);
+            
+            //get plot div, tab
+            var rep = arr[n];
+            var rid = rep.id;
+            var plot_div = "plotBox-report-" + rid;
+            var plot_div_el = document.getElementById(plot_div);
+            
+            //get json
+            var json_el = document.getElementById("youviz:data:report-" + rid);
+            var json = JSON.parse(json_el.textContent);
+
+            //make plot
+            var data = json.plot_data;
+            var layout = json.plot_layout;
+            //var config = {responsive: true};
+            layout.height = 392;
+            layout.margin.t = 15;
+            layout.margin.b = 68;
+            layout.margin.r = 10;
+            layout.showlegend = true;
+            layout.legend = {
+                x: 1,
+                xanchor: 'right',
+                y: 1,
+                bgcolor: '#00000000',
+            };
+            Plotly.react(plot_div, data, layout, {displayModeBar: false, scrollZoom: false});
+            
+            //add resize listener
+            window.addEventListener("resize", (event) => {
+             if (window.getComputedStyle(plot_div_el).display !== "none") {
+                 var update = {
+                    width: plot_div_el.clientWidth,
+                    height: plot_div_el.clientHeight
+                 };
+                 Plotly.relayout(plot_div, update);
+                 //eval(script.innerHTML);
+             }
+            });
+            
         }
         
         //qr code

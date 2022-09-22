@@ -73,6 +73,7 @@ class VizreportView(UnicornView):
                     'bgcolor': '#000000',
                 }
             )
+            '''
             self.vizs_html.append(pio.to_html(
                 fig=fig, 
                 config={
@@ -86,6 +87,12 @@ class VizreportView(UnicornView):
                 #default_height='100%',
                 include_plotlyjs=False,
             ))
+            '''
+            j = json.loads(pio.to_json(fig=fig, engine='json'))
+            self.vizs_html.append({
+                'plot_data': json.dumps(j['data']),
+                'plot_layout': json.dumps(j['layout']),
+            })
 
         #logger.debug('VizView > load_viz end')
     
