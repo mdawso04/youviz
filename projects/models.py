@@ -36,7 +36,7 @@ class BaseModel(models.Model):
         )
     
     def _getHashPayload(self):
-        return [self.name, self.description, self.last_updated]
+        return [self.__class__.__name__, self.id, self.last_updated]
     
     def _createHash(self):
         """This function generate 10 character long hash"""
@@ -207,6 +207,10 @@ class Viz(BaseModel):
     
     class Meta:
         default_related_name = 'vizs'
+    
+    #same hash for same viz settings (json)
+    def _getHashPayload(self):
+        return [self.__class__.__name__, self.id, self.json]
     
 class Report(BaseModel):
     #parent_class

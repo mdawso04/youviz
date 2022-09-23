@@ -7,6 +7,7 @@ importScripts(
 workbox.loadModule('workbox-precaching');
 workbox.loadModule('workbox-routing');
 workbox.loadModule('workbox-strategies');
+workbox.loadModule('workbox-expiration');
 
 workbox.precaching.precacheAndRoute([
     {url: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css', revision: '1'},
@@ -29,14 +30,28 @@ workbox.routing.registerRoute(unicornRoute);
 */
 
 workbox.routing.registerRoute(
+    ({url}) => url.pathname === '/', 
+    new workbox.strategies.NetworkOnly()
+);
+
+workbox.routing.registerRoute(
     ({url}) => url.pathname.startsWith('/admin/'), 
     new workbox.strategies.NetworkOnly()
 );
 
 workbox.routing.registerRoute(
-    ({request}) => /(viz|datasource|report)/.test(request.url),
+    ({url}) => /^\/(viz|datasource|report)/.test(url.pathname),
+    //({request}) => /(viz|datasource|report)/.test(request.url),
     //({url}) => url.pathname.startsWith(('/viz/', '/datasource/', '/report/')),
     new workbox.strategies.CacheFirst({
     cacheName: 'unicorn',
+    plugins: [
+      new workbox.expiration.ExpirationPlugin({
+        // Only cache requests for a week
+        maxAgeSeconds: 7 * 24 * 60 * 60,
+        // Only cache 10 requests.
+        //maxEntries: 10,
+      }),
+    ],
   })
 );
