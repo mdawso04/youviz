@@ -44,10 +44,6 @@ class VizreportView(UnicornView):
         self.report = Report.objects.filter(pk=pk).all().prefetch_related('datasource__vizs').last()
         self.vizs = self.report.datasource.vizs.all()
         
-        #if not self.report:
-        #    self.report = Report.objects.filter(pk=self.kwargs['pk']).all().prefetch_related('datasource__vizs').last()
-        #self.vizs = self.report.datasource.vizs.all()
-        
         for v in self.vizs:
             #load csv from db
             copied_json = deepcopy(v.json)

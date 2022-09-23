@@ -235,7 +235,8 @@ const nodes = document.querySelectorAll(".yv-component");
 nodes.forEach(async (node) => {
     var node_data = node.dataset;
 
-    fetch("./" + node_data.yvComponent + "/" + node_data.yvId)
+    //fetch("./" + node_data.yvComponent + "/" + node_data.yvId)
+    fetch("." + node_data.yvLink)
     .then(response => {
         return response.text() 
     })

@@ -103,10 +103,10 @@ class AppView(UnicornView):
         pass
         #logger.debug('AppView > calling end')
 
-    def addProject(self, description='NewProject'):
+    def addProject(self, name='NewProject', description='NewProject'):
         #logger.debug('AppView > addViz start')
         #df = self.df()
-        p = Project(description=description, user=self.request.user)
+        p = Project(name=name, description=description, user=self.request.user)
         self.project = p
         p.save()
         #logger.debug('AppView > addViz end')

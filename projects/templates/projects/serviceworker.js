@@ -29,8 +29,14 @@ workbox.routing.registerRoute(unicornRoute);
 */
 
 workbox.routing.registerRoute(
-  ({request}) => /(viz|dataframe|report)/.test(request.url),
-  new workbox.strategies.CacheFirst({
+    ({url}) => url.pathname.startsWith('/admin/'), 
+    new workbox.strategies.NetworkOnly()
+);
+
+workbox.routing.registerRoute(
+    ({request}) => /(viz|datasource|report)/.test(request.url),
+    //({url}) => url.pathname.startsWith(('/viz/', '/datasource/', '/report/')),
+    new workbox.strategies.CacheFirst({
     cacheName: 'unicorn',
   })
 );

@@ -102,12 +102,14 @@
                 <div class="yv-component dataframe d-none" id="yv-component-dataframe-{{ datasource.pk }}"
                      data-yv-component="dataframe"
                      data-yv-id="{{ datasource.pk }}"
+                     data-yv-link="{{ datasource.get_absolute_url }}"
                      data-yv-button="#datafileOpenButton"
                      data-yv-init="dataframeInit">
                 </div>
                 <div class="yv-component vizreport d-none" id="yv-component-vizreport-{{ report.pk }}"
                      data-yv-component="report"
                      data-yv-id="{{ report.pk }}"
+                     data-yv-link="{{ report.get_absolute_url }}"
                      data-yv-button="#reportOpenButton"
                      data-yv-init="vizreportInit">
                 </div>
@@ -138,6 +140,7 @@
                         <div class="yv-component viz" id="yv-component-viz-{{ v.pk }}"
                              data-yv-component="viz"
                              data-yv-id="{{ v.pk }}"
+                             data-yv-link="{{ v.get_absolute_url }}"
                              data-yv-button="#showVizOffcanvas"
                              data-yv-init="vizInit">
                         </div>
