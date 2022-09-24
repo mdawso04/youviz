@@ -1,138 +1,155 @@
 {% load humanize %}
 {% load unicorn %} 
-<div>
+<div class="container-xl p-0">
+    <div class="row row-cols-auto g-3 pb-3">
+        <div class="col">
+            <h6 class="card-subtitle text-muted">User</h6>
+        </div>
+    </div>
     <!-- USER -->
-            <h6 class="card-subtitle mb-3 text-muted">User</h6>                            
-            <div class="row g-3" id="fileInfo">
-                <div class="col-lg-2">
-                    <div class="mb-3">
-                        Hey {{ user.username }}! 
-                        <p class="small">BTW, your last login was {{user.last_login|naturaltime}}.</p>
-                    </div>
-                    <button type="button" class="btn btn-secondary" id="logoutButton" 
-                            data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                        Logout
-                    </button>
-                    <button type="button" class="btn btn-secondary" id="refreshAppButton"
-                            onclick="location.reload();">
-                        Refresh app
-                    </button>
-                    <button type="button" class="btn btn-danger" id="refreshAppButton"
-                            onclick="caches.keys().then(cacheNames => {cacheNames.forEach(cacheName => {caches.delete(cacheName);});});
-                                     location.reload();">
-                        Clear cache
-                    </button>
-                    
-                    <!-- LOGOUT MODAL -->
-                    <div id="staticBackdrop" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
-                         tabindex="-1" aria-hidden="true" aria-labelledby="staticBackdropLabel">
-                        <div class="modal-dialog modal-dialog-centered modal-sm">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="staticBackdropLabel">Logout</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Would you like to logout?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" 
-                                            data-bs-dismiss="modal">Cancel</button>
-                                    <button type="button" id="modalLogoutButton" 
-                                            onclick="bootstrap.Modal.getInstance('#staticBackdrop').hide(); 
-                                                     document.getElementById('login-spinner').hidden = false;
-                                                     Unicorn.call('login', 'logout');"
-                                            {% comment %} unicorn:click="logout" {% endcomment %}
-                                            class="btn btn-primary">OK</button>
-                                </div>
-                            </div>
+    <div class="row row-cols-auto g-3 pb-3">
+        <div class="col">
+            <div class="mb-3">
+                Hey {{ user.username }}! 
+                <p class="small">BTW, your last login was {{user.last_login|naturaltime}}.</p>
+            </div>
+            <button type="button" class="btn btn-secondary" id="logoutButton" 
+                    data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                Logout
+            </button>
+            <button type="button" class="btn btn-secondary" id="refreshAppButton"
+                    onclick="location.reload();">
+                Refresh app
+            </button>
+            <button type="button" class="btn btn-danger" id="refreshAppButton"
+                    onclick="caches.keys().then(cacheNames => {cacheNames.forEach(cacheName => {caches.delete(cacheName);});});
+                             location.reload();">
+                Clear cache
+            </button>
+
+            <!-- LOGOUT MODAL -->
+            <div id="staticBackdrop" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
+                 tabindex="-1" aria-hidden="true" aria-labelledby="staticBackdropLabel">
+                <div class="modal-dialog modal-dialog-centered modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Logout</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Would you like to logout?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" 
+                                    data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" id="modalLogoutButton" 
+                                    onclick="bootstrap.Modal.getInstance('#staticBackdrop').hide(); 
+                                             document.getElementById('login-spinner').hidden = false;
+                                             Unicorn.call('login', 'logout');"
+                                    {% comment %} unicorn:click="logout" {% endcomment %}
+                                    class="btn btn-primary">OK</button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
     
     <hr class="my-4"/>
     
     <!-- DATA SOURCE -->
-            <h6 class="card-subtitle mb-3 text-muted">Data Source</h6>                            
-            <div class="row g-3" id="fileInfo">
-                <div class="input-group">
-                    <span class="input-group-text" id="file-name-input">Name</span>
-                    <input type="text" class="form-control" 
-                           unicorn:model.lazy="datasource.name"
-                           unicorn:partial.id="fileInfo" 
-                           id="fileNameText" unicorn:key="fileNameText"
-                           aria-label="File Name">
-                </div>
-                <div class="input-group">
-                    <span class="input-group-text" id="file-description-input">Description</span>    
-                    <input type="text" class="form-control" 
-                           unicorn:model.lazy="datasource.description"
-                           unicorn:partial.id="fileInfo" 
-                           id="fileDescText" unicorn:key="fileDescText"
-                           aria-label="File Description">
-                </div>
-                <div>
-                    <small>Cached {{datasource.last_cached|naturaltime|capfirst}}</small>
-                </div>
-                <div class="col-lg-2">
-                    <button type="button" class="btn btn-secondary" id="settings-datasource-refresh" 
-                        unicorn:click="refreshDatasource()" aria-label="Delete data">
-                            Refresh
-                    </button>
-                    <button type="button" class="btn btn-danger"
-                        id="dataDeleteButton" unicorn:key="dataDeleteButton"
-                        data-bs-toggle="modal" data-bs-target="#deleteDataConfirm"
-                        aria-label="Delete data">
-                            Delete
-                    </button>
-
-                    <!-- VIZ DELETE MODAL -->
-                    <div class="modal fade yvmodal" id="deleteDataConfirm" data-bs-backdrop="static" data-bs-keyboard="false" 
-                         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered modal-sm">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="staticBackdropLabel">Delete Data Source</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Would you like to delete this data source?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" 
-                                            data-bs-dismiss="modal">Cancel</button>
-                                    <button type="button" id="modalLogoutButton" 
-                                            onclick="bootstrap.Modal.getInstance('#deleteDataConfirm').hide(); 
-                                            document.getElementById('app-spinner').hidden = false;
-                                            Unicorn.call('app', 'deleteDatasource', '{{datasource.pk}}');"
-                                            class="btn btn-danger">OK</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="button" class="btn btn-secondary"
-                        id="sourcecontrolOpenButton" unicorn:key="sourcecontrolOpenButton"
-                        data-bs-toggle="modal" data-bs-target="#modalSourcecontrol" aria-controls="modalsourcecontrol">
-                        Change
-                    </button>
-                    {% unicorn 'sourcecontrol' parent=view id='sourcecontrol' %}    
-                    
-                </div>
-            </div>
-    
-    
-            <hr class="my-4"/>
-    
-    <!-- SUPPORT -->
-            <h6 class="card-subtitle mb-3 text-muted">Support</h6>                            
-            <div class="row g-3" id="fileInfo">
-                <div class="col-lg-2">
-                    <button type="button" class="btn btn-secondary" id="settings-visit" 
-                        onclick="window.open('https://github.com/mdawso04/youviz', '_blank').focus();" aria-label="Visit Github">
-                            Visit us on Github
-                    </button>
-                </div>
+    <div class="row row-cols-auto g-3 pb-3">
+        <div class="col">
+            <h6 class="card-subtitle mb-3 text-muted">Data Source</h6>  
+        </div>
+    </div>
+    <div class="row row-cols-1 g-3 pb-3" id="fileInfo">
+        <div class="col">
+            <div class="input-group">
+                <span class="input-group-text" id="file-name-input">Name</span>
+                <input type="text" class="form-control" 
+                       unicorn:model.lazy="datasource.name"
+                       unicorn:partial.id="fileInfo" 
+                       id="fileNameText" unicorn:key="fileNameText"
+                       aria-label="File Name">
             </div>
         </div>
+        <div class="col">
+            <div class="input-group">
+                <span class="input-group-text" id="file-description-input">Description</span>    
+                <input type="text" class="form-control" 
+                       unicorn:model.lazy="datasource.description"
+                       unicorn:partial.id="fileInfo" 
+                       id="fileDescText" unicorn:key="fileDescText"
+                       aria-label="File Description">
+            </div>
+        </div>
+        <div class="col">
+            <small>Cached {{datasource.last_cached|naturaltime|capfirst}}</small>
+        </div>
+    </div>
+    <div class="row row-cols-auto g-3 pb-3">
+        <div class="col">
+            <button type="button" class="btn btn-secondary" id="settings-datasource-refresh" 
+                unicorn:click="refreshDatasource()" aria-label="Delete data">
+                    Refresh
+            </button>
+            <button type="button" class="btn btn-danger"
+                id="dataDeleteButton" unicorn:key="dataDeleteButton"
+                data-bs-toggle="modal" data-bs-target="#deleteDataConfirm"
+                aria-label="Delete data">
+                    Delete
+            </button>
+
+            <!-- VIZ DELETE MODAL -->
+            <div class="modal fade yvmodal" id="deleteDataConfirm" data-bs-backdrop="static" data-bs-keyboard="false" 
+                 tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Delete Data Source</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Would you like to delete this data source?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" 
+                                    data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" id="modalLogoutButton" 
+                                    onclick="bootstrap.Modal.getInstance('#deleteDataConfirm').hide(); 
+                                    document.getElementById('app-spinner').hidden = false;
+                                    Unicorn.call('app', 'deleteDatasource', '{{datasource.pk}}');"
+                                    class="btn btn-danger">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-secondary"
+                id="sourcecontrolOpenButton" unicorn:key="sourcecontrolOpenButton"
+                data-bs-toggle="modal" data-bs-target="#modalSourcecontrol" aria-controls="modalsourcecontrol">
+                Change
+            </button>
+            {% unicorn 'sourcecontrol' parent=view id='sourcecontrol' %}    
+
+        </div>
+    </div>
+    
+    <hr class="my-4"/>
+    
+    <!-- SUPPORT -->
+    <div class="row row-cols-auto g-3 pb-3">
+        <div class="col">
+            <h6 class="card-subtitle mb-3 text-muted">Support</h6>  
+        </div>
+    </div>
+    <div class="row row-cols-auto g-3 pb-3">
+        <div class="col">
+            <button type="button" class="btn btn-secondary" id="settings-visit" 
+                onclick="window.open('https://github.com/mdawso04/youviz', '_blank').focus();" aria-label="Visit Github">
+                    Visit us on Github
+            </button>
+        </div>
+    </div>
+</div>
