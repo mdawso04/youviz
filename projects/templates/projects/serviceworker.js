@@ -29,6 +29,7 @@ const unicornRoute = new workbox.routing.Route(({ request }) => {
 workbox.routing.registerRoute(unicornRoute);
 */
 
+
 workbox.routing.registerRoute(
     ({url}) => url.pathname === '/', 
     new workbox.strategies.NetworkOnly()

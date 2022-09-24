@@ -24,6 +24,9 @@ class BaseModel(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     hash_key = models.CharField(max_length=10, blank=True)
     
+    class Meta:
+        abstract = True
+    
     def __str__(self):
         return self.name
     
@@ -88,7 +91,7 @@ class BaseModel(models.Model):
     
 class Project(BaseModel):
     #parent_class
-    basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_project', on_delete=models.CASCADE)
+    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_project', on_delete=models.CASCADE)
     
     #relations
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -102,7 +105,7 @@ class Project(BaseModel):
     
 class Datasource(BaseModel):
     #parent_class
-    basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_datasource', on_delete=models.CASCADE)
+    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_datasource', on_delete=models.CASCADE)
     
     #relations
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -192,7 +195,7 @@ class Datasource(BaseModel):
     
 class Viz(BaseModel):
     #parent_class
-    basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_viz', on_delete=models.CASCADE)
+    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_viz', on_delete=models.CASCADE)
     
     #relations
     datasource = models.ForeignKey(Datasource, on_delete=models.CASCADE)
@@ -214,7 +217,7 @@ class Viz(BaseModel):
     
 class Report(BaseModel):
     #parent_class
-    basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_report', on_delete=models.CASCADE)
+    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_report', on_delete=models.CASCADE)
     
     #relations
     datasource = models.ForeignKey(Datasource, on_delete=models.CASCADE)
@@ -231,7 +234,7 @@ class Report(BaseModel):
 
 class Item(BaseModel):
     #parent_class
-    basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_item', on_delete=models.CASCADE)
+    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_item', on_delete=models.CASCADE)
     
     #relations
     datasource = models.ForeignKey(Datasource, on_delete=models.CASCADE)
@@ -245,7 +248,7 @@ class Item(BaseModel):
     
 class Answer(BaseModel):
     #parent_class
-    basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_answer', on_delete=models.CASCADE)
+    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_answer', on_delete=models.CASCADE)
     
     #relations
     viz = models.OneToOneField(Viz, on_delete=models.SET_NULL, null=True)
