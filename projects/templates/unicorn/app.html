@@ -1,18 +1,50 @@
 {% load unicorn %} 
 {% load humanize %}
 <!-- APP -->
-<div class="container-fluid p-0" id="appTop">
-    <!-- APP SPINNER -->
-    <div unicorn:loading class="overlay" id="app-spinner">
-        <div class="d-flex justify-content-center">  
-            <div class="spinner-grow text-primary" 
-                 role="status" style="width: 3rem; height: 3rem; z-index: 20;">
-                <span class="sr-only">Loading...</span>
+<div class="container-fluid vh-100 p-0 overflow-hidden" id="appTop">
+
+    <!-- TEST RIGHT PANEL 
+    <div class="bg-light position-fixed" id="test-right">
+        <div class="p-3" style="min-width: 320px; max-width: 320px;">
+             <div class="d-flex offcanvas-header">
+                <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Viz Settings</h5>
+                <button type="button" class="btn-close text-reset" data-bs-toggle="collapse" 
+                    data-bs-target="#rightPanel" onclick="Handler.navigator.toggleEdit();" aria-label="Close"></button>
             </div>
         </div>
-    </div>
+    </div> -->
+
+    <!-- TEST LEFT PANEL -->
+    <div class="bg-light position-fixed" id="test-left">
+        <div class="p-3" style="min-width: 320px; max-width: 320px;">
+            <div class="d-flex offcanvas-header">
+                <h5 class="offcanvas-title me-auto">Navigation</h5>
+                <button type="button" class="btn-close text-reset" data-bs-toggle="collapse" 
+                    data-bs-target="#leftPanel" onclick="Handler.navigator.toggleNav();" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul id="leftNavList" class="list-group"></ul>
+            </div>
+        </div>
+    </div> 
+    
+    <!-- TEST BOTTOM PANEL 
+    <div class="bg-light position-fixed" id="test-edit">
+        <div class="p-3" id="test-edit-inner">
+            <div class="d-flex offcanvas-header">
+                <h5 class="offcanvas-title me-auto">Bottom</h5>
+                <button type="button" class="btn-close text-reset" onclick="Handler.navigator.toggleEdit();" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                Body
+            </div>
+        </div>
+    </div> -->
+    
+    
+    
     <!-- TOP NAVBAR -->
-    <nav class="navbar navbar-dark bg-dark sticky-top">
+    <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid d-flex">
             <a class="navbar-brand me-auto" 
                href="/projects/app">YouViz<span class="text-warning">Alpha</span></a>
@@ -26,30 +58,27 @@
     </nav>
     
     <!-- BOTTOM NAVBAR -->
-    
     <style>
     .dropup .dropdown-toggle::after {
         float: right;
         margin: 6px 0;
     }
     </style>
-    
     <nav class="navbar fixed-bottom bg-light" id=bottom-navbar>
-        <div class="container-xl d-flex d-grid mb-4 gap-2">
-            <div class="btn-toolbar d-flex w-100" role="toolbar" 
-                 aria-label="Toolbar with button groups">
-                <div class="btn-group d-flex flex-grow-1 me-2" role="group" 
+        <div class="container-sm d-flex d-grid mb-4 gap-2 justify-content-center">
+            <div class="btn-toolbar d-flex w-100 justify-content-center" role="toolbar" 
+                 aria-label="Toolbar with button groups" style="max-width: 350px;">
+                <div class="btn-group d-flex flex-grow-1 me-2 d-block" role="group" 
                      aria-label="button group">
-                    <button type="button" class="btn btn-primary" disabled>
-                        <i class="bi bi-caret-left-fill" style="font-size: 1rem;"></i>
+                    
+                    <button type="button" class="btn btn-primary" onclick="Handler.navigator.back();">
+                        <i class="bi bi-caret-left-fill" style="font-size: 1.2rem;"></i>
                     </button>
-                    <div class="btn-group nav dropup d-flex w-100" 
-                         role="group tablist" aria-label="button group">
-                        <button id="btnGroupDrop1" type="button" 
+                    <div class="btn-group nav dropup d-flex w-100" role="group tablist" aria-label="button group">
+                        <button id="btnGroupDrop1" type="button"
                                 class="btn btn-primary dropdown-toggle w-100 text-start" 
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                            Hist <span class="badge rounded-pill bg-warning text-dark">
-                            {{ vizs|length }} vizs</span>
+                                data-bs-toggle="dropdown" aria-expanded="false">VizNameText 
+                            <span class="badge rounded-pill bg-warning text-dark ps-1" id="vizCount"></span>
                         </button>
                             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                 <li><h6 class="dropdown-header">Select viz</h6></li>
@@ -80,22 +109,64 @@
                                        href="#">Copy {{viz.name|title}}</a></li>
                         {% endfor %}
                             </ul>    
-                    </div>    
-                    <button id="showVizOffcanvas" type="button" class="btn btn-primary" onclick="showVizOffcanvas()" disabled>
-                        <i class="bi bi-bar-chart" style="font-size: 1rem;"></i>
+                    </div> 
+                    <!--
+                    <button class="btn btn-primary" type="button" onclick="Handler.navigator.toggleNav();"
+                                aria-expanded="false" aria-controls="collapseExample">
+                        <i class="bi bi-list" style="font-size: 2vw;"></i>
+                    </button>-->
+                    <button id="showVizOffcanvas" class="btn btn-primary" type="button" onclick="Handler.navigator.toggleEdit();"
+                                aria-expanded="false" aria-controls="collapseExample" disabled>
+                        <i class="bi bi-bar-chart" style="font-size: 1.2rem;"></i>
                     </button>
-                    <button type="button" class="btn btn-primary" disabled>
-                        <i class="bi bi-caret-right-fill" style="font-size: 1rem;"></i>
+                    <!--
+                    <button type="button" class="btn btn-primary" onclick="Handler.navigator.add('viz', 3, 'three');">
+                        Test
+                    </button>
+                    <button id="showVizOffcanvas" type="button" class="btn btn-primary" onclick="Handler.navigator.rename(2, 'too');">
+                        Name
+                    </button>-->
+                    <button type="button" class="btn btn-primary" onclick="Handler.navigator.forward();">
+                        <i class="bi bi-caret-right-fill" style="font-size: 1.2rem;"></i>
                     </button>
                 </div>
+                
+                <style>
+                    /*#midPanel.open {transition: .3s ease-in-out; max-width: calc(100vw - 350px); }
+                    #midPanel {transition: .3s ease-in-out; max-width: 100vw; }*/
+                    #test-bottom {top: 100vh; z-index: 1040; transition: .35s; }
+                    #test-bottom.open {min-height: calc(100vh - (100vh - 350px)); top: calc(100vh - 350px); z-index: 1040; transition: .35s;}
+                    #test-right {width: 320px; top: 57px; right: -320px; height: calc(100vh - 56px); z-index: 1040; transition: .35s; }
+                    #test-right.open {width: 320px;top: 57px; right: 0px; height: calc(100vh - 56px); z-index: 1040; transition: .35s;}
+                    #test-left {width: 320px; top: 57px; left: -320px; height: calc(100vh - 56px); z-index: 1040; transition: .35s; }
+                    #test-left.open {width: 320px; top: 57px; left: 0px; height: calc(100vh - 56px); z-index: 1040; transition: .35s;}
+                </style>
+                
+                <style>
+                    .test-edit {width: 100vw; top: 100vh; left: 0px; z-index: 1040; transition: .35s; }
+                    .test-edit.open {
+                        width: 100vw; min-height: calc(100vh - (100vh - 350px)); max-height: calc(100vh - (100vh - 350px));
+                        left: 0px; top: calc(100vh - 350px); z-index: 1040; transition: .35s;}
+                    .test-edit-inner {min-width: 100vw; max-width: 100vw; height: 100%; 
+                        min-height: calc(100vh - (100vh - 350px)); max-height: calc(100vh - (100vh - 350px));}
+                    
+                    @media only screen and (min-width: 993px) {    
+                        .test-edit {width: 320px; top: 57px; left: auto; right: -320px; height: calc(100vh - 56px); z-index: 1040; transition: .35s; }
+                        .test-edit.open {width: 320px; top: 57px; left: auto; right: 0px; height: calc(100vh - 56px); z-index: 1040; transition: .35s;}
+                        .test-edit-inner {min-width: 320px; max-width: 320px; height: 100%;}
+                    }
+                </style>
+
+                
+            
                 <div class="btn-group" role="group" aria-label="button group">
                     <button type="button" class="btn btn-secondary" id="datafileOpenButton" unicorn:key="datafileOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable" disabled>
-                            <i class="bi bi-table" style="font-size: 1rem;"></i>
+                            <i class="bi bi-table" style="font-size: 1.2rem;"></i>
                     </button>
                     <button type="button" class="btn btn-secondary" id="reportOpenButton" unicorn:key="reportOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport" disabled>
-                            <i class="bi bi-file-earmark-check" style="font-size: 1rem;"></i>
+                            <i class="bi bi-file-earmark-check" style="font-size: 1.2rem;"></i>
                     </button>
                 </div>
                 <!-- DATA PAYLOAD -->
@@ -116,38 +187,65 @@
             </div>
         </div>
     </nav>
-    <!-- MAIN CONTAINER -->
-    <div class="container py-4 px-0">
-        <!-- RIGHT OFFCANVAS --> 
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="OFFCANVAS" aria-labelledby="offcanvasExampleLabel">
-            <div class="offcanvas-header">
-                <h3 class="offcanvas-title" id="offcanvasExampleLabel">App Settings</h3>
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body pt-0">  
-            <!-- FILE CONTROL -->
-            {% unicorn 'appsettings' parent=view datasources=datasources datasource=selected_datasource_for_editing id='appsettings' %}
-            </div>
-        </div>
-        <!-- TAB CONTENTS -->
-        <div class="tab-content" id="myTabContent">
-            {% for v in vizs %}
-                {% with vids=v.pk|stringformat:"s" %}
-                {% with vid="viz-"|add:vids %}
-                    <div class="tab-pane yv fade show {% if forloop.first %}active{% endif %}" id="{{vid}}" 
-                         role="tabpanel" aria-labelledby="{{vid}}-tab">
-                        {# {% unicorn 'viz' parent=view viz=v id=vid %} #}
-                        <div class="yv-component viz" id="yv-component-viz-{{ v.pk }}"
-                             data-yv-component="viz"
-                             data-yv-id="{{ v.pk }}"
-                             data-yv-link="{{ v.get_absolute_url }}"
-                             data-yv-button="#showVizOffcanvas"
-                             data-yv-init="vizInit">
-                        </div>
-                {% endwith %}
-                {% endwith %}
+    
+    <!-- MAIN CONTENT -->
+    <div class="row h-100">
+        <div class="col d-flex">
+            
+            <!-- LEFT PANEL -->
+            <div class="d-none d-lg-block bg-light">
+                <div class="collapse collapse-horizontal" id="leftPanel">
+                    <div style="min-width: 320px; max-width: 320px;">
+                        <br/>
                     </div>
-            {% endfor %}
+                </div>
+            </div>
+
+            <!-- MID PANEL -->
+            <div class="container overflow-hidden" id="midPanel">
+                <div class="row">
+                    <!-- RIGHT OFFCANVAS --> 
+                    <div class="offcanvas offcanvas-end" tabindex="-1" id="OFFCANVAS" aria-labelledby="offcanvasExampleLabel">
+                        <div class="offcanvas-header">
+                            <h3 class="offcanvas-title" id="offcanvasExampleLabel">App Settings</h3>
+                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body pt-0">  
+                        <!-- FILE CONTROL -->
+                        {% unicorn 'appsettings' parent=view datasources=datasources datasource=selected_datasource_for_editing id='appsettings' %}
+                        </div>
+                    </div>
+                    <!-- TAB CONTENTS -->
+                    <div class="col tab-content" id="myTabContent">
+                        {% for v in vizs %}
+                            {% with vids=v.pk|stringformat:"s" %}
+                            {% with vid="viz-"|add:vids %}
+                                <div class="tab-pane yv fade show {% if forloop.first %}active{% endif %}" id="{{vid}}" 
+                                     role="tabpanel" aria-labelledby="{{vid}}-tab">
+                                    {# {% unicorn 'viz' parent=view viz=v id=vid %} #}
+                                    <div class="yv-component viz" id="yv-component-viz-{{ v.pk }}"
+                                         data-yv-component="viz"
+                                         data-yv-id="{{ v.pk }}"
+                                         data-yv-link="{{ v.get_absolute_url }}"
+                                         data-yv-button="#showVizOffcanvas"
+                                         data-yv-init="vizInit">
+                                    </div>
+                            {% endwith %}
+                            {% endwith %}
+                                </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div class="d-none d-lg-block bg-light">
+                <div class="collapse collapse-horizontal" id="rightPanel">
+                    <div style="min-width: 320px; max-width: 320px;">
+                        <br/>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

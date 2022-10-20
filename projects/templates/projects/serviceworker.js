@@ -11,8 +11,8 @@ workbox.loadModule('workbox-expiration');
 
 workbox.precaching.precacheAndRoute([
     {url: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css', revision: '1'},
-    {url: 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js', revision: '1'},
-    {url: 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css', revision: '1'},
+    {url: 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js', revision: '1'},
+    {url: 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css', revision: '1'},
     {% for f in staticfile_list %}{url: '/static/{{f}}', revision: null},
     {% endfor %}
 ]);

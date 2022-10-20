@@ -1,3 +1,39 @@
+/*
+
+- simplify js code (element search, element update etc)
+- manage viz navigation
+  - viz name
+  - viz count
+  - back/forward
+  
+
+specifically,
+
+-monitor visible tab/viz
+-detect media change/mode
+  -update classes
+    -viz settings: if small mode offcanvas class, else right panel class
+    -viz navigation: if small mode dropup class, else left panel class
+  -actions
+    -showViz.onclick: if small mode call show offcanvas.show, else call show right panel
+    -navigation.onclick: if small mode call show dropup, else call show left panel
+
+navigation object
+  getSelected()
+  getAll()
+  forward()
+  back()
+  add()
+  remove()
+
+navigation target object
+  selected: boolean
+  name: string
+  onclick()
+
+*/
+
+
 function elementUpdate(u) {
     //update tab name on viz edit
     for (var n = 0; n < u.length; n++) {
@@ -38,6 +74,279 @@ function vizOffcanvasMaximize(c, oc) {
     document.querySelector(oc).classList.toggle('h-100');
 }
 
+class NavTarget {
+    constructor(component, key, name) {
+        this.c = component;
+        this.k = key;
+        this.n = name;
+    }
+    
+    get key() {
+        return this.k;
+    }
+    
+    get component() {
+        return this.c;
+    }
+    
+    get name() {
+        return this.n;
+    }
+    
+    set name(n) {
+        this.n = n;
+    }
+    
+    get id() {
+        return this.c + '_' + this.k;
+    }
+}
+
+class Navigator {
+    constructor() {
+        //this.navigateCallback = callback;
+        this.targets = [];
+        this.selected = -1;
+        this.showNav = false;
+        this.showEdit = false;
+    }
+    
+    _navigationChanged(name, navTar) {
+        const e = new CustomEvent('navigationChanged', {
+            detail: {
+                name: name,
+                navigator: this,
+                active: this.targets[this.selected], 
+                count: this.targets.length,
+                navTar: navTar
+            }
+        });
+        document.dispatchEvent(e);
+    }
+
+    get active() {
+        return this.targets[this.selected];
+    }
+    
+    set active(key) {
+        if(key === "undefined") {
+            this.selected = -1;
+        } else {
+            var i = this.targets.findIndex(t => t.key == key);
+            if(i >= 0) {
+                this.selected = i;
+                this._navigationChanged("active", this.targets[this.selected]);
+            }
+        }
+    }
+    
+    get all() {
+        return this.targets;
+    }
+
+    get count() {
+        return this.targets.length;
+    }
+    
+    add(component, key, name) {
+        this.targets.push(new NavTarget(component, key, name));
+        this._navigationChanged("add", this.targets[this.targets.length - 1]);
+        if(this.targets.length === 1) {
+            this.active = key;
+        }
+    }
+
+    remove(key) {
+        i = this.targets.findIndex(t => t.key == key);
+        if(i){
+            var tar = this.targets.splice(i, 1);
+            this._navigationChanged("remove", tar[0]);
+            if(this.targets.length === 0) {
+                this.active = "undefined";
+            }
+        }
+    }
+        
+    forward() {
+        if(this.selected >= 0) {
+            this.selected = this.selected + 1;
+            if(this.selected >= this.targets.length) {
+                this.selected = 0;
+            }
+            this._navigationChanged("active", this.targets[this.selected]);
+        }
+    }
+
+    back() {
+        if(this.selected >= 0) {
+            this.selected = this.selected - 1;
+            if(this.selected < 0) {
+                this.selected = this.targets.length - 1;
+            }
+            this._navigationChanged("active", this.targets[this.selected]);
+        }
+    }
+    
+    rename(key, name) {
+        var tar = this.targets.find(t => t.key == key);
+        if(tar !== "undefined") {
+            tar.name = name;
+            this._navigationChanged("name", tar);
+        }   
+    }
+    
+    toggleNav() {
+        this.showNav = !this.showNav;
+        this._navToggled();
+    }
+    
+    _navToggled() {
+        const e = new CustomEvent('navToggled', {
+            detail: {
+                name: 'navToggled',
+                navigator: this,
+                showNav: this.showNav
+            }
+        });
+        document.dispatchEvent(e);    
+    }
+    
+    toggleEdit() {
+        this.showEdit = !this.showEdit;
+        this._editToggled();
+    }
+    
+    _editToggled() {
+        const e = new CustomEvent('editToggled', {
+            detail: {
+                name: 'editToggled',
+                navigator: this,
+                showEdit: this.showEdit
+            }
+        });
+        document.dispatchEvent(e);    
+    }
+    
+};
+
+Handler.navigator = new Navigator();
+document.addEventListener('navigationChanged', (e) => {
+    switch(e.detail.name) {
+        case "active": 
+            // navpanel gui update
+            document.getElementById("btnGroupDrop1").childNodes[0].nodeValue = e.detail.navigator.active.name + " ";
+            // change tab
+            //todo
+            // left panel gui update
+            for (const li of document.querySelectorAll("#leftNavList li.active")) {
+                li.classList.remove("active");
+            }
+            document.getElementById(e.detail.navTar.id).classList.add("active");
+            
+            break;
+        case "add":
+            // navpanel gui update
+            document.getElementById("vizCount").innerHTML = e.detail.count + " vizs";
+            
+            // left panel gui update
+            const li = document.createElement('li');
+            li.id = e.detail.navTar.id;
+            li.classList.add("list-group-item");
+            li.textContent = e.detail.navTar.name;
+            document.getElementById("leftNavList").appendChild(li);
+            break;
+        case "remove":
+            // navpanel gui update
+            document.getElementById("vizCount").innerHTML = e.detail.count + " vizs";
+            
+            // left panel gui update
+            document.getElementById(e.detail.navTar.id).remove();
+            break;
+        case "name":
+            // navpanel gui update
+            // left panel gui update
+            document.getElementById(e.detail.navTar.id).innerHTML = e.detail.navTar.name;
+            //document.getElementById("btnGroupDrop1").innerHTML = e.detail.name;
+            break;
+    }
+});
+document.addEventListener('navToggled', (e) => {
+    switch(e.detail.name) {
+        case "navToggled": 
+            //alert("navToggled");
+            bootstrap.Collapse.getOrCreateInstance(document.getElementById("leftPanel")).toggle();
+            document.getElementById("test-left").classList.toggle("open");
+            // is small screen call dropup, else call left panel
+            break;
+    }
+});
+
+document.addEventListener('editToggled', (e) => {
+    switch(e.detail.name) {
+        case "editToggled": 
+            //alert("editToggled");
+            //document.getElementById("test-right").classList.toggle("open");
+            bootstrap.Collapse.getOrCreateInstance(document.getElementById("rightPanel")).toggle(); 
+            document.getElementById("viz-1-edit").classList.toggle("open");
+            // is small screen call dropup, else call left panel
+            break;
+    }
+});
+
+Handler.navigator.add("viz", 1, "one");
+Handler.navigator.add("viz", 2, "two");
+
+// Change DOM on screen size change
+Handler.mediaQuery = function(query, handleYes, handleNo) {
+    // ex: "(max-width: 700px)"
+    var x = window.matchMedia(query);
+    var f = function() {
+        (x.matches) ? handleYes() : handleNo();
+    }
+    // call once immediately then listen
+    f();
+    x.addListener(f);
+}
+
+// Change style on screen size change
+Handler.mediaQueryStyle = function(param) {
+    var {query, elem, attr, yesStyle, noStyle} = param;
+    var e = document.querySelector(elem);
+    Handler.mediaQuery(
+        query, 
+        ()=>{ e.style.setProperty(attr, yesStyle); }, 
+        ()=>{ e.style.setProperty(attr, noStyle); },
+    );
+}
+/*
+Handler.offset = function(el) {
+    box = el.getBoundingClientRect();
+    docElem = document.documentElement;
+    return {
+        top: box.top + window.pageYOffset - docElem.clientTop,
+        left: box.left + window.pageXOffset - docElem.clientLeft
+    };
+}
+
+Handler.fixToViewport = function(el, top, left) {
+    var e = document.querySelector(el);
+    e.css("left", leftOffset - element.offset().left);
+    e.css("top", topOffset - element.offset().top);   
+}*/
+
+// Change DOM on screen size change
+Handler.mediaQuerySwitch = function(param) {
+    var {query, elem, yesParent, noParent} = param;
+    var e = document.querySelector(elem);
+    var y = document.querySelector(yesParent);
+    var n = document.querySelector(noParent);
+    Handler.mediaQuery(
+        query, 
+        ()=>{ /*if (n.contains(e))*/ y.appendChild(e); }, 
+        ()=>{ /*if (y.contains(e))*/ n.appendChild(e); },
+    );
+}
+
 Handler.vizInit = function (node) {
     //get plot div, tab
     var d = node.dataset;
@@ -55,7 +364,10 @@ Handler.vizInit = function (node) {
     var data = json.plot_data;
     var layout = json.plot_layout;
     //var config = {responsive: true};
-    layout.height = 392;
+    //layout.height = 392;
+    layout.width = plot_div_el.clientWidth;
+    layout.height = plot_div_el.clientHeight;
+    
     layout.margin.t = 15;
     layout.margin.b = 68;
     layout.margin.r = 10;
@@ -66,7 +378,9 @@ Handler.vizInit = function (node) {
         y: 1,
         bgcolor: '#00000000',
     };
-    Plotly.react(plot_div, data, layout, {displayModeBar: false, scrollZoom: false});
+    
+    var config = {displayModeBar: false, scrollZoom: false};
+    Plotly.react(plot_div, data, layout, config);
 
     // popover setup
     const list = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
@@ -89,16 +403,29 @@ Handler.vizInit = function (node) {
         body.appendChild(yvmodals[i]); 
     }
 
-    //add resize, tab listeners
-    window.addEventListener("resize", (event) => {
-     if (window.getComputedStyle(plot_div_el).display !== "none") {
-         var update = {
-            width: plot_div_el.clientWidth,
-            height: plot_div_el.clientHeight
-         };
-         Plotly.relayout(plot_div, update);
-     }
+    let observer = new ResizeObserver(entries => {
+        for(let entry of entries) {
+            if (entry.contentBoxSize) {
+                // Firefox implements `contentBoxSize` as a single content rect, rather than an array
+                //const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
+                var update = {
+                    width: plot_div_el.clientWidth,
+                    height: plot_div_el.clientHeight
+                };
+                Plotly.relayout(plot_div, update);
+            } else {
+                var update = {
+                    width: plot_div_el.clientWidth,
+                    height: plot_div_el.clientHeight
+                };
+                Plotly.relayout(plot_div, update);
+            }
+        }
     });
+    
+    let midPanel = document.getElementById('midPanel');
+    observer.observe(midPanel);
+    
     tab_div_el.addEventListener('shown.bs.tab', function (event) {
      if (event.target.id === tab_div) { // newly activated tab
          //event.relatedTarget // previous active tab
@@ -109,6 +436,14 @@ Handler.vizInit = function (node) {
          Plotly.relayout(plot_div, update);
      }
     });
+    
+    /*
+    Handler.mediaQuerySwitch({
+        query: '(max-width: 992px)',
+        elem: '#switch',
+        yesParent: '.offcanvas-bottom',
+        noParent: '#rightPanel div',
+    });*/
 }
 
 Handler.dataframeInit = function (node) {
@@ -172,7 +507,10 @@ Handler.vizreportInit = function (node) {
             var data = json.plot_data;
             var layout = json.plot_layout;
             //var config = {responsive: true};
-            layout.height = 392;
+            //layout.height = 392;
+            var plot_div_outer_el = document.getElementById(rid);
+            layout.width = plot_div_outer_el.clientWidth;
+            layout.height = plot_div_outer_el.clientHeight;
             layout.margin.t = 15;
             layout.margin.b = 68;
             layout.margin.r = 10;
@@ -183,19 +521,42 @@ Handler.vizreportInit = function (node) {
                 y: 1,
                 bgcolor: '#00000000',
             };
-            Plotly.react(plot_div, data, layout, {displayModeBar: false, scrollZoom: false});
+            var config = {displayModeBar: false, scrollZoom: false};
+            Plotly.react(plot_div, data, layout, config);
             
             //add resize listener
-            window.addEventListener("resize", (event) => {
+            /*window.addEventListener("resize", (event) => {
              if (window.getComputedStyle(plot_div_el).display !== "none") {
                  var update = {
                     width: plot_div_el.clientWidth,
                     height: plot_div_el.clientHeight
                  };
-                 Plotly.relayout(plot_div, update);
+                 if(update.width !== 0 && update.height !== 0) Plotly.relayout(plot_div, update);
                  //eval(script.innerHTML);
              }
+            });*/
+            let observer = new ResizeObserver(entries => {
+                for(let entry of entries) {
+                    if (entry.contentBoxSize) {
+                        // Firefox implements `contentBoxSize` as a single content rect, rather than an array
+                        //const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
+                        var update = {
+                            width: plot_div_outer_el.clientWidth,
+                            height: plot_div_outer_el.clientHeight
+                        };
+                        Plotly.relayout(plot_div, update);
+                    } else {
+                        var update = {
+                            width: plot_div_outer_el.clientWidth,
+                            height: plot_div_outer_el.clientHeight
+                        };
+                        Plotly.relayout(plot_div, update);
+                    }
+                }
             });
+
+            //let midPanel = document.getElementById('midPanel');
+            observer.observe(plot_div_el);
             
         }
         
@@ -247,16 +608,16 @@ nodes.forEach(async (node) => {
                 // stop loop
                 clearInterval(timer);
 
-                // init component to setup after download
-                // TODO - make init support async by default?
-                if(Handler[node_data.yvInit] !== undefined){
-                    Handler[node_data.yvInit](node);
-                }
-
                 // init unicorn component for ajax editing
                 var u_script = document.querySelector('#' + node.id + ' script[id^="unicorn:data"]');
                 if(u_script !== undefined) {
                     Unicorn.componentInit(JSON.parse(u_script.textContent)); 
+                }
+
+                // init component to setup after download
+                // TODO - make init support async by default?
+                if(Handler[node_data.yvInit] !== undefined){
+                    Handler[node_data.yvInit](node);
                 }
 
                 // activate button
