@@ -93,6 +93,10 @@ class NavTarget {
         return this.n;
     }
     
+    get editElementID() {
+        return this.c + '-' + this.k + '-edit';
+    }
+    
     set name(n) {
         this.n = n;
     }
@@ -275,7 +279,7 @@ document.addEventListener('navToggled', (e) => {
         case "navToggled": 
             //alert("navToggled");
             bootstrap.Collapse.getOrCreateInstance(document.getElementById("leftPanel")).toggle();
-            document.getElementById("test-left").classList.toggle("open");
+            document.getElementById(e.detail.navigator.active.editElementID).classList.toggle("open");
             // is small screen call dropup, else call left panel
             break;
     }
@@ -287,14 +291,14 @@ document.addEventListener('editToggled', (e) => {
             //alert("editToggled");
             //document.getElementById("test-right").classList.toggle("open");
             bootstrap.Collapse.getOrCreateInstance(document.getElementById("rightPanel")).toggle(); 
-            document.getElementById("viz-1-edit").classList.toggle("open");
+            document.getElementById(e.detail.navigator.active.editElementID).classList.toggle("open");
             // is small screen call dropup, else call left panel
             break;
     }
 });
 
-Handler.navigator.add("viz", 1, "one");
-Handler.navigator.add("viz", 2, "two");
+/*Handler.navigator.add("viz", 1, "one");
+Handler.navigator.add("viz", 2, "two");*/
 
 // Change DOM on screen size change
 Handler.mediaQuery = function(query, handleYes, handleNo) {
@@ -436,6 +440,9 @@ Handler.vizInit = function (node) {
          Plotly.relayout(plot_div, update);
      }
     });
+    
+    // add edit pane to navigation
+    Handler.navigator.add("viz", d.yvId, "one");
     
     /*
     Handler.mediaQuerySwitch({
