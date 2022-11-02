@@ -143,17 +143,88 @@
                 </style>
                 
                 <style>
-                    .test-edit {width: 100vw; top: 100vh; left: 0px; z-index: 1040; transition: .35s; }
-                    .test-edit.open {
-                        width: 100vw; min-height: calc(100vh - (100vh - 350px)); max-height: calc(100vh - (100vh - 350px));
-                        left: 0px; top: calc(100vh - 350px); z-index: 1040; transition: .35s;}
-                    .test-edit-inner {min-width: 100vw; max-width: 100vw; height: 100%; 
-                        min-height: calc(100vh - (100vh - 350px)); max-height: calc(100vh - (100vh - 350px));}
+                    /* var */
+                    :root {
+                        --edit-z-index: 1040;
+                        --edit-transition: .35s;
+                        --t-nav: 56px;
+                        --b-nav: 82px;
+                        --viz-area: 450px;
+                        --t-nav-viz-area: calc(var(--t-nav) + var(--viz-area));
+                        --mid-area: calc(100vh - var(--t-nav) - var(--b-nav));
+                        --e-head: 62px;
+                        /* small */
+                        --small-edit-width: 100vw;
+                        --small-edit-top-open: var(--t-nav-viz-area);
+                        --small-edit-top-closed: 100vh;
+                        --small-edit-left: 0px;
+                        --small-edit-height: calc(100vh - var(--small-edit-top-open));
+                        /* large */
+                        --large-edit-height: var(--mid-area);
+                        --large-edit-body-height: calc(var(--large-edit-height) - var(--e-head));
+                        --large-edit-width: 320px;
+                        --large-edit-top: 57px;
+                        --large-edit-left: auto;
+                        --large-edit-right-open: 0px;
+                        --large-edit-right-closed: -320px;
+                    }
                     
+                    /* Small devices */
+                    .test-edit {
+                        width: var(--small-edit-width); 
+                        top: var(--small-edit-top-closed);  
+                        left: var(--small-edit-left); 
+                        position: fixed;
+                        z-index: var(--edit-z-index); 
+                        transition: var(--edit-transition); 
+                    }
+                    .test-edit.open {
+                        width: var(--small-edit-width); 
+                        min-height: var(--small-edit-height); 
+                        max-height: var(--small-edit-height);
+                        top: var(--small-edit-top-open); 
+                        left: var(--small-edit-left); 
+                        position: fixed;
+                        z-index: var(--edit-z-index); 
+                        transition: var(--edit-transition); 
+                    }
+                    .test-edit-inner {
+                        /*min-width: var(--small-edit-width); 
+                        max-width: var(--small-edit-width);*/ 
+                        /*height: inherit;*/
+                        min-height: calc(var(--small-edit-height) - var(--e-head)); 
+                        max-height: calc(var(--small-edit-height) - var(--e-head)); 
+                    }
+                    
+                    /* large devices */
                     @media only screen and (min-width: 993px) {    
-                        .test-edit {width: 320px; top: 57px; left: auto; right: -320px; height: calc(100vh - 56px); z-index: 1040; transition: .35s; }
-                        .test-edit.open {width: 320px; top: 57px; left: auto; right: 0px; height: calc(100vh - 56px); z-index: 1040; transition: .35s;}
-                        .test-edit-inner {min-width: 320px; max-width: 320px; height: 100%;}
+                        .test-edit {
+                            width: var(--large-edit-width);
+                            height: var(--large-edit-height);
+                            top: var(--large-edit-top);
+                            left: var(--large-edit-left);
+                            right: var(--large-edit-right-closed); 
+                            position: fixed;
+                            z-index: var(--edit-z-index); 
+                            transition: var(--edit-transition); 
+                        }
+                        .test-edit.open {
+                            width: var(--large-edit-width);
+                            height: var(--large-edit-height);
+                            top: var(--large-edit-top);
+                            position: fixed;
+                            left: var(--large-edit-left); 
+                            right: var(--large-edit-right-open); 
+                            z-index: var(--edit-z-index); 
+                            transition: var(--edit-transition); 
+                        }
+                        .test-edit-inner {
+                            /*min-width: var(--large-edit-width);
+                            max-width: var(--large-edit-width);*/
+                            /*height: inherit;*/
+                            min-height: calc(var(--large-edit-height) - var(--e-head)); 
+                            max-height: calc(var(--large-edit-height) - var(--e-head)); 
+                        }
                     }
                 </style>
 

@@ -24,8 +24,7 @@
     <!-- BOTTOM OFFCANVAS -->
    <!--<div class="offcanvas offcanvas-bottom" tabindex="-1" data-bs-backdrop="false" data-bs-scroll="false" 
          id="offcanvasBottom-{{vid}}" aria-labelledby="offcanvasBottomLabel" style="height: calc(100vh - 470px);">-->
-   <div class="bg-light border-top border-start position-fixed test-edit" id="viz-1-edit" aria-labelledby="TBD">
-   <div class="test-edit-inner">
+   <div class="bg-light border-top border-start test-edit" id="viz-1-edit" aria-labelledby="TBD">
        <div class="d-flex offcanvas-header p-3">
             <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Viz Settings</h5>
             <div class="form-check form-switch">
@@ -34,7 +33,7 @@
             </div>
             <button type="button" class="btn-close text-reset" onclick="Handler.navigator.toggleEdit();" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body small container-xl p-3" style="overflow-x: hidden; overflow-y: auto; height: calc(100% - 62px);" id="switch">
+        <div class="offcanvas-body test-edit-inner small p-3" style="overflow-x: hidden;" id="switch">
             <!-- SETTINGS -->
             <div class="row row-cols-auto g-3 pb-3" unicorn:key="setting-row-00-{{vid}}">
                 <div class="col">
@@ -193,7 +192,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
     
     <div class="form-floating mx-2">
