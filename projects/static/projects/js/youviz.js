@@ -368,7 +368,7 @@ Handler.vizInit = function (node) {
     var vid = "viz-" + d.yvId;
     var plot_div = "plotBox-" + vid;
     var plot_div_el = document.getElementById(plot_div);
-    var tab_div = vid;
+    var tab_div = vid + "-tab";
     var tab_div_el = document.getElementById(tab_div);
 
     //get json
@@ -442,14 +442,14 @@ Handler.vizInit = function (node) {
     observer.observe(midPanel);
     
     tab_div_el.addEventListener('shown.bs.tab', function (event) {
-     if (event.target.id === tab_div) { // newly activated tab
-         //event.relatedTarget // previous active tab
-         var update = {
-            width: plot_div_el.clientWidth,
-            height: plot_div_el.clientHeight
-         };
-         Plotly.relayout(plot_div, update);
-     }
+        if (event.target.id === tab_div) { // newly activated tab
+        //event.relatedTarget // previous active tab
+            var update = {
+                width: plot_div_el.clientWidth,
+                height: plot_div_el.clientHeight
+            };
+            Plotly.relayout(plot_div, update);
+        }
     });
     
     // add edit pane to navigation
