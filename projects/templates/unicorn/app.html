@@ -80,7 +80,7 @@
                                 data-bs-toggle="dropdown" aria-expanded="false">VizNameText 
                             <span class="badge rounded-pill bg-warning text-dark ps-1" id="vizCount"></span>
                         </button>
-                            <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                            <ul class="dropdown-menu" id="tabButtons" aria-labelledby="btnGroupDrop1">
                                 <li><h6 class="dropdown-header">Select viz</h6></li>
                             {% for v in vizs %}
                             {% with vids=v.pk|stringformat:"s" %}

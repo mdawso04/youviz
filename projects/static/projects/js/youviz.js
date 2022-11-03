@@ -97,6 +97,10 @@ class NavTarget {
         return this.c + '-' + this.k + '-edit';
     }
     
+    get tabTriggerElementID() {
+        return this.c + '-' + this.k + '-tab';
+    }
+    
     set name(n) {
         this.n = n;
     }
@@ -106,6 +110,7 @@ class NavTarget {
     }
 }
 
+//TODO: Handle component-key combinations
 class Navigator {
     constructor() {
         //this.navigateCallback = callback;
@@ -153,15 +158,18 @@ class Navigator {
     }
     
     add(component, key, name) {
-        this.targets.push(new NavTarget(component, key, name));
-        this._navigationChanged("add", this.targets[this.targets.length - 1]);
-        if(this.targets.length === 1) {
-            this.active = key;
+        var i = this.targets.findIndex(t => t.key == key);
+        if(i < 0){
+            this.targets.push(new NavTarget(component, key, name));
+            this._navigationChanged("add", this.targets[this.targets.length - 1]);
+            if(this.targets.length === 1) {
+                this.active = key;
+            }
         }
     }
 
     remove(key) {
-        i = this.targets.findIndex(t => t.key == key);
+        var i = this.targets.findIndex(t => t.key == key);
         if(i){
             var tar = this.targets.splice(i, 1);
             this._navigationChanged("remove", tar[0]);
@@ -242,10 +250,13 @@ document.addEventListener('navigationChanged', (e) => {
             // change tab
             //todo
             // left panel gui update
-            for (const li of document.querySelectorAll("#leftNavList li.active")) {
+            /*for (const li of document.querySelectorAll("#leftNavList li.active")) {
                 li.classList.remove("active");
-            }
-            document.getElementById(e.detail.navTar.id).classList.add("active");
+            }*/
+            //document.getElementById(e.detail.navigator.active.tabElementID).classList.add("active");
+            //var tabTrigger = document.querySelector('#tabButtons li:first-child a')
+            var t = document.getElementById(e.detail.navigator.active.tabTriggerElementID);
+            bootstrap.Tab.getOrCreateInstance(t).show();
             
             break;
         case "add":
@@ -442,7 +453,7 @@ Handler.vizInit = function (node) {
     });
     
     // add edit pane to navigation
-    Handler.navigator.add("viz", d.yvId, "one");
+    Handler.navigator.add("viz", d.yvId, d.yvId);
     
     /*
     Handler.mediaQuerySwitch({
