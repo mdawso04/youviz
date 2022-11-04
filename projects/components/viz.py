@@ -3,6 +3,7 @@ from django_unicorn.components import UnicornView
 from projects.models import Viz
 from django.shortcuts import render,redirect
 from django.utils.functional import cached_property
+from django.utils.decorators import classonlymethod
 
 # pp
 import pp
@@ -18,6 +19,7 @@ import json
 import pandas as pd
 #import plotly.express as px
 import plotly.io as pio
+import shortuuid
 
 class VizView(UnicornView):
     viz: Viz = None
@@ -236,3 +238,25 @@ class VizView(UnicornView):
         #logger.debug('VizView > parent_rendered start')
         pass
         #logger.debug('VizView > parent_rendered end')
+    
+    #override patch to ensure unique ID when multiple instances of same UnicornView subclass
+    @classonlymethod
+    def as_view(cls, **initkwargs):
+        def view(request, *args, **kwargs):
+            initkwargs["component_id"] = shortuuid.uuid()[:8]
+            
+            module_name = cls.__module__
+            module_parts = module_name.split(".")
+            component_name = module_parts[len(module_parts) - 1]
+            component_name = component_name.replace("_", "-")
+                
+            initkwargs["component_name"] = component_name
+            
+            self = cls(**initkwargs)
+            #logger.debug(self)
+            #logger.debug(initkwargs["component_id"])
+            self.request = request
+            self.args = args
+            self.kwargs = kwargs
+            return self.dispatch(request, *args, **kwargs)
+        return view

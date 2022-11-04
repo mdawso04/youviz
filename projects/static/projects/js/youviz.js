@@ -299,11 +299,16 @@ document.addEventListener('navToggled', (e) => {
 document.addEventListener('editToggled', (e) => {
     switch(e.detail.name) {
         case "editToggled": 
-            //alert("editToggled");
-            //document.getElementById("test-right").classList.toggle("open");
+            // toggle right panel
             bootstrap.Collapse.getOrCreateInstance(document.getElementById("rightPanel")).toggle(); 
-            document.getElementById(e.detail.navigator.active.editElementID).classList.toggle("open");
-            // is small screen call dropup, else call left panel
+            
+            // ...and edit panes
+            const l = document.querySelectorAll(".test-edit");
+            for (let i = 0; i < l.length; i++) {
+                l[i].classList.toggle("open");
+            }
+            
+            //document.getElementById(e.detail.navigator.active.editElementID).classList.toggle("open");
             break;
     }
 });
@@ -420,20 +425,23 @@ Handler.vizInit = function (node) {
 
     let observer = new ResizeObserver(entries => {
         for(let entry of entries) {
-            if (entry.contentBoxSize) {
-                // Firefox implements `contentBoxSize` as a single content rect, rather than an array
-                //const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
-                var update = {
-                    width: plot_div_el.clientWidth,
-                    height: plot_div_el.clientHeight
-                };
-                Plotly.relayout(plot_div, update);
-            } else {
-                var update = {
-                    width: plot_div_el.clientWidth,
-                    height: plot_div_el.clientHeight
-                };
-                Plotly.relayout(plot_div, update);
+            // only respond if displayed to save cpu
+            if (window.getComputedStyle(plot_div_el, null).getPropertyValue("display") != "none") {
+                if (entry.contentBoxSize) {
+                    // Firefox implements `contentBoxSize` as a single content rect, rather than an array
+                    //const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
+                    var update = {
+                        width: plot_div_el.clientWidth,
+                        height: plot_div_el.clientHeight
+                    };
+                    Plotly.relayout(plot_div, update);
+                } else {
+                    var update = {
+                        width: plot_div_el.clientWidth,
+                        height: plot_div_el.clientHeight
+                    };
+                    Plotly.relayout(plot_div, update);
+                }
             }
         }
     });
@@ -629,7 +637,8 @@ nodes.forEach(async (node) => {
                 // init unicorn component for ajax editing
                 var u_script = document.querySelector('#' + node.id + ' script[id^="unicorn:data"]');
                 if(u_script !== undefined) {
-                    Unicorn.componentInit(JSON.parse(u_script.textContent)); 
+                    var u = Unicorn;
+                    u.componentInit(JSON.parse(u_script.textContent)); 
                 }
 
                 // init component to setup after download

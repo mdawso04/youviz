@@ -1,31 +1,23 @@
 <div unicorn:view>
-    <!-- VIZ SPINNER START -->
-    <!--<div unicorn:loading class="overlay">
-        <div class="d-flex justify-content-center">  
-            <div class="spinner-grow text-danger" role="status" style="width: 3rem; height: 3rem; z-index: 20;">
-                <span class="sr-only">Loading...</span>
-            </div>
-        </div>
-    </div>-->
     <!-- PLOT -->
     {% with vids=viz.pk|stringformat:"s" %}
     {% with vid='viz-'|add:vids %}
+    
     <div class="d-none" unicorn:key="viz-no-update{{vid}}"></div>
+    
     <div id="outerOuterPlotBox-{{vid}}" class="sticky-top" style="z-index: 995">
         <div id="outerPlotBox-{{vid}}">
             <script type="application/json" id="youviz:data:{{vid}}">
             {"plot_data":{{plot_data|safe}}, "plot_layout":{{plot_layout|safe}}}
             </script>
-            <div id="plotBox-{{vid}}">
-            </div>
+            <div id="plotBox-{{vid}}"></div>
         </div>
     </div>
     
     <!-- EDIT PANEL -->
-   <!--<div class="offcanvas offcanvas-bottom" tabindex="-1" data-bs-backdrop="false" data-bs-scroll="false" 
-         id="offcanvasBottom-{{vid}}" aria-labelledby="offcanvasBottomLabel" style="height: calc(100vh - 470px);">-->
-   <div class="bg-light border-top border-start test-edit" id="{{vid}}-edit" aria-labelledby="TBD">
-       <div class="d-flex offcanvas-header p-3">
+    <div class="bg-light border-top border-start test-edit" id="{{vid}}-edit" aria-labelledby="TBD">
+        
+        <div class="d-flex offcanvas-header p-3">
             <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Viz Settings</h5>
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" id="maximize"
@@ -33,6 +25,7 @@
             </div>
             <button type="button" class="btn-close text-reset" onclick="Handler.navigator.toggleEdit();" aria-label="Close"></button>
         </div>
+        
         <div class="offcanvas-body test-edit-inner small p-3" style="overflow-x: hidden;" id="switch">
             <!-- SETTINGS -->
             <div class="row row-cols-auto g-3 pb-3" unicorn:key="setting-row-00-{{vid}}">
@@ -40,6 +33,7 @@
                     <h6 class="card-subtitle text-muted">Basic</h6>
                 </div>
             </div>
+            
             <div class="row row-cols-1 g-3 pb-3" unicorn:key="setting-row-01-{{vid}}">
                 <div class="col">
                     <!-- SELECT {{forloop.counter}} -->
@@ -85,19 +79,8 @@
                     </div>
                 </div>
                 {% endfor %}
-
-                <!--
-                <div class="col-lg-2">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault{{vid}}">
-                        <label class="form-check-label" for="flexSwitchCheckDefault{{vid}}">Exclude missing data</label>
-                    </div>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked{{vid}}" checked>
-                        <label class="form-check-label" for="flexSwitchCheckChecked{{vid}}">Show legend</label>
-                    </div>
-                </div>-->
             </div>
+            
             <div class="row row-cols-auto g-3 pb-3" unicorn:key="setting-row-02-{{vid}}">
                 <div class="col">
                     <button type="button" class="btn btn-danger"
@@ -143,6 +126,7 @@
                     <h6 class="card-subtitle text-muted">Annotations</h6>
                 </div>
             </div>
+            
             <div class="row row-cols-1 g-3 pb-3" unicorn:key="filter-row-01-{{vid}}" id="filter-row-01-{{vid}}">
                 {% for d in drawings %}
                 <div class="col">
@@ -183,6 +167,7 @@
                 </div>
                 {% endfor %}
             </div>
+            
             <div class="row row-cols-auto g-3 pb-3" unicorn:key="filter-row-02-{{vid}}">
                 <div class="col">
                     <button type="button" id="addDrawingButton" class="btn btn-secondary" 
@@ -191,8 +176,11 @@
                             unicorn:partial.id="outerPlotBox-{{vid}}">Add</button>
                 </div>
             </div>
+            
         </div>
+        <!-- test edit inner -->
     </div>
+    <!-- test edit -->
     
     <div class="form-floating mx-2">
         <textarea unicorn:model.lazy="viz.description" unicorn:partial="floatingTextarea2{{vid}}" id="floatingTextarea2{{vid}}" 
