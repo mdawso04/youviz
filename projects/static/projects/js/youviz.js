@@ -308,6 +308,8 @@ document.addEventListener('editToggled', (e) => {
                 l[i].classList.toggle("open");
             }
             
+            document.getElementById("bottom-navbar").classList.toggle("dynamic");
+            
             //document.getElementById(e.detail.navigator.active.editElementID).classList.toggle("open");
             break;
     }
