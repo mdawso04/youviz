@@ -42,7 +42,7 @@ function elementUpdate(u) {
         document.getElementById(id).innerHTML = value;
     }
 }
-
+/*
 function tabChange(t) {
     var deactivate = document.querySelector(".dropdown-item.active:not("+t+")");
     deactivate.classList.remove("active");
@@ -60,7 +60,7 @@ function updateButtonGroup() {
     // bootstrap tab change
     // button name
     // button enable/disable
-}
+}*/
 
 function showVizOffcanvas() {
     var element = document.querySelector(".dropdown-item.active");
@@ -106,7 +106,7 @@ class NavTarget {
     }
     
     get id() {
-        return this.c + '_' + this.k;
+        return this.c + '-' + this.k;
     }
 }
 
@@ -126,6 +126,7 @@ class Navigator {
                 name: name,
                 navigator: this,
                 active: this.targets[this.selected], 
+                index: this.selected, 
                 count: this.targets.length,
                 navTar: navTar
             }
@@ -241,6 +242,45 @@ class Navigator {
     
 };
 
+Handler.addTab = function(tabTriggerElementID, id, name, index) {
+    //make tab button
+    const bli = document.createElement('li');
+    const b = document.createElement('button');
+    b.id = tabTriggerElementID; //id="{{vid}}-tab"
+    b.textContent = name;
+    b.classList.add("dropdown-item");
+    b.setAttribute("data-bs-toggle", "tab");
+    b.setAttribute("data-bs-target", "#"+id);
+    b.setAttribute("role", "tab");
+    b.setAttribute("type", "button");
+    //b.setAttribute("aria-controls", "{{vid}}");
+    b.setAttribute("index", index);
+
+    //make copy anchor
+    const ali = document.createElement('li');
+    const a = document.createElement('a');
+    //a.id = id; //id="viz-{{viz.pk}}-tab-copy" 
+    a.textContent = "Copy " + name;
+    a.classList.add("dropdown-item");
+    a.setAttribute("href", "#");
+    a.setAttribute("onclick", "Unicorn.call('app', 'copyViz', '" + id + "');"); //unicorn:click="copyViz({{viz.pk}})
+    b.setAttribute("index", index + 10);
+    
+    //eh
+    //TODO
+    
+    //add
+    const ul = document.getElementById("tabButtons");
+    ul.appendChild(bli);
+    bli.appendChild(b);
+    
+    ul.appendChild(ali);
+    ali.appendChild(a);
+    
+}
+
+
+
 Handler.navigator = new Navigator();
 document.addEventListener('navigationChanged', (e) => {
     switch(e.detail.name) {
@@ -255,7 +295,7 @@ document.addEventListener('navigationChanged', (e) => {
             }*/
             //document.getElementById(e.detail.navigator.active.tabElementID).classList.add("active");
             //var tabTrigger = document.querySelector('#tabButtons li:first-child a')
-            var t = document.getElementById(e.detail.navigator.active.tabTriggerElementID);
+            var t = document.getElementById(e.detail.active.tabTriggerElementID);
             bootstrap.Tab.getOrCreateInstance(t).show();
             
             break;
@@ -264,11 +304,17 @@ document.addEventListener('navigationChanged', (e) => {
             document.getElementById("vizCount").innerHTML = e.detail.count + " vizs";
             
             // left panel gui update
-            const li = document.createElement('li');
-            li.id = e.detail.navTar.id;
-            li.classList.add("list-group-item");
-            li.textContent = e.detail.navTar.name;
-            document.getElementById("leftNavList").appendChild(li);
+            //const li = document.createElement('li');
+            //li.id = e.detail.navTar.id;
+            //li.classList.add("list-group-item");
+            //li.textContent = e.detail.navTar.name;
+            //document.getElementById("leftNavList").appendChild(li);
+            Handler.addTab(
+                e.detail.navTar.tabTriggerElementID, 
+                e.detail.navTar.id,
+                e.detail.navTar.name, 
+                e.detail.index
+            );
             break;
         case "remove":
             // navpanel gui update
@@ -317,6 +363,7 @@ document.addEventListener('editToggled', (e) => {
 
 /*Handler.navigator.add("viz", 1, "one");
 Handler.navigator.add("viz", 2, "two");*/
+//Handler.addTab("test_id", "test_name");
 
 // Change DOM on screen size change
 Handler.mediaQuery = function(query, handleYes, handleNo) {
@@ -376,7 +423,7 @@ Handler.vizInit = function (node) {
     var plot_div = "plotBox-" + vid;
     var plot_div_el = document.getElementById(plot_div);
     var tab_div = vid + "-tab";
-    var tab_div_el = document.getElementById(tab_div);
+    //var tab_div_el = document.getElementById(tab_div);
 
     //get json
     var json_el = document.getElementById("youviz:data:" + vid);
@@ -451,6 +498,11 @@ Handler.vizInit = function (node) {
     let midPanel = document.getElementById('midPanel');
     observer.observe(midPanel);
     
+    // add edit pane to navigation
+    Handler.navigator.add("viz", d.yvId, d.yvId);
+    
+    // add listener to generated dom
+    var tab_div_el = document.getElementById(tab_div);
     tab_div_el.addEventListener('shown.bs.tab', function (event) {
         if (event.target.id === tab_div) { // newly activated tab
         //event.relatedTarget // previous active tab
@@ -461,9 +513,6 @@ Handler.vizInit = function (node) {
             Plotly.relayout(plot_div, update);
         }
     });
-    
-    // add edit pane to navigation
-    Handler.navigator.add("viz", d.yvId, d.yvId);
     
     /*
     Handler.mediaQuerySwitch({
