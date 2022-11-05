@@ -674,6 +674,20 @@ var editing_file = false;
 //    alert(alpha);
 //}
 
+const hammertime = Hammer(document.getElementsByTagName('body')[0]);
+hammertime.on('swipeleft swiperight', (event) => {
+    switch(event.type) {
+        case 'swipeleft': 
+            //alert(event.type);
+            Handler.navigator.forward();
+            break;
+        case 'swiperight':
+            //alert(event.type);
+            Handler.navigator.back();
+            break;
+    }
+});
+
 window.addEventListener("DOMContentLoaded", (event) => {
     Unicorn.addEventListener("updated", (component) =>{
 
