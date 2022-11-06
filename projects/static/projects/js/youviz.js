@@ -33,6 +33,10 @@ navigation target object
 
 */
 
+// ex: viz-5-editpane
+Handler.elID = function(componentName, id, role) {
+    return componentName + '-' + id + '-' + role;
+}
 
 function elementUpdate(u) {
     //update tab name on viz edit
@@ -75,38 +79,22 @@ function vizOffcanvasMaximize(c, oc) {
 }
 
 class NavTarget {
-    constructor(component, key, name) {
-        this.c = component;
-        this.k = key;
-        this.n = name;
+    constructor(component, id, name) {
+        this.component = component;
+        this.id = id;
+        this.name = name;
     }
     
-    get key() {
-        return this.k;
-    }
-    
-    get component() {
-        return this.c;
-    }
-    
-    get name() {
-        return this.n;
+    get compID() {
+        return this.component + '-' + this.id;
     }
     
     get editElementID() {
-        return this.c + '-' + this.k + '-edit';
+        return Handler.elID(this.component, this.id, 'edit');
     }
     
     get tabTriggerElementID() {
-        return this.c + '-' + this.k + '-tab';
-    }
-    
-    set name(n) {
-        this.n = n;
-    }
-    
-    get id() {
-        return this.c + '-' + this.k;
+        return Handler.elID( this.component, this.id, 'tab');
     }
 }
 
@@ -138,11 +126,11 @@ class Navigator {
         return this.targets[this.selected];
     }
     
-    set active(key) {
-        if(key === "undefined") {
+    set active(id) {
+        if(id === "undefined") {
             this.selected = -1;
         } else {
-            var i = this.targets.findIndex(t => t.key == key);
+            var i = this.targets.findIndex(t => t.id == id);
             if(i >= 0) {
                 this.selected = i;
                 this._navigationChanged("active", this.targets[this.selected]);
@@ -158,19 +146,19 @@ class Navigator {
         return this.targets.length;
     }
     
-    add(component, key, name) {
-        var i = this.targets.findIndex(t => t.key == key);
+    add(component, id, name) {
+        var i = this.targets.findIndex(t => t.id == id);
         if(i < 0){
-            this.targets.push(new NavTarget(component, key, name));
+            this.targets.push(new NavTarget(component, id, name));
             this._navigationChanged("add", this.targets[this.targets.length - 1]);
             if(this.targets.length === 1) {
-                this.active = key;
+                this.active = id;
             }
         }
     }
 
-    remove(key) {
-        var i = this.targets.findIndex(t => t.key == key);
+    remove(id) {
+        var i = this.targets.findIndex(t => t.id == id);
         if(i){
             var tar = this.targets.splice(i, 1);
             this._navigationChanged("remove", tar[0]);
@@ -242,18 +230,18 @@ class Navigator {
     
 };
 
-Handler.addTab = function(tabTriggerElementID, id, name, index) {
+Handler.addTab = function(navTar, index) {
     //make tab button
     const bli = document.createElement('li');
     const b = document.createElement('button');
-    b.id = tabTriggerElementID; //id="{{vid}}-tab"
-    b.textContent = name;
+    b.id = navTar.tabTriggerElementID; //id="{{vid}}-tab"
+    b.textContent = navTar.name;
     b.classList.add("dropdown-item");
     b.setAttribute("data-bs-toggle", "tab");
-    b.setAttribute("data-bs-target", "#"+id);
+    b.setAttribute("data-bs-target", "#"+navTar.compID);
     b.setAttribute("role", "tab");
     b.setAttribute("type", "button");
-    //b.setAttribute("aria-controls", "{{vid}}");
+    b.setAttribute("aria-controls", navTar.compID);
     b.setAttribute("index", index);
 
     //make copy anchor
@@ -263,7 +251,7 @@ Handler.addTab = function(tabTriggerElementID, id, name, index) {
     a.textContent = "Copy " + name;
     a.classList.add("dropdown-item");
     a.setAttribute("href", "#");
-    a.setAttribute("onclick", "Unicorn.call('app', 'copyViz', '" + id + "');"); //unicorn:click="copyViz({{viz.pk}})
+    a.setAttribute("onclick", "Unicorn.call('app', 'copyViz', '" + navTar.id + "');"); //unicorn:click="copyViz({{viz.pk}})
     b.setAttribute("index", index + 10);
     
     //eh
@@ -276,10 +264,7 @@ Handler.addTab = function(tabTriggerElementID, id, name, index) {
     
     ul.appendChild(ali);
     ali.appendChild(a);
-    
 }
-
-
 
 Handler.navigator = new Navigator();
 document.addEventListener('navigationChanged', (e) => {
@@ -309,12 +294,13 @@ document.addEventListener('navigationChanged', (e) => {
             //li.classList.add("list-group-item");
             //li.textContent = e.detail.navTar.name;
             //document.getElementById("leftNavList").appendChild(li);
-            Handler.addTab(
+            Handler.addTab(e.detail.navTar, e.detail.index);
+            /*Handler.addTab(
                 e.detail.navTar.tabTriggerElementID, 
                 e.detail.navTar.id,
                 e.detail.navTar.name, 
                 e.detail.index
-            );
+            );*/
             break;
         case "remove":
             // navpanel gui update
