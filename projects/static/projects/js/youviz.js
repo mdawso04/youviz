@@ -248,7 +248,7 @@ Handler.addTab = function(navTar, index) {
     const ali = document.createElement('li');
     const a = document.createElement('a');
     //a.id = id; //id="viz-{{viz.pk}}-tab-copy" 
-    a.textContent = "Copy " + name;
+    a.textContent = "Copy " + navTar.name;
     a.classList.add("dropdown-item");
     a.setAttribute("href", "#");
     a.setAttribute("onclick", "Unicorn.call('app', 'copyViz', '" + navTar.id + "');"); //unicorn:click="copyViz({{viz.pk}})
@@ -259,10 +259,14 @@ Handler.addTab = function(navTar, index) {
     
     //add
     const ul = document.getElementById("tabButtons");
-    ul.appendChild(bli);
+    var navTarCount = Handler.navigator.count;
+    
+    //ul.appendChild(bli);
+    ul.insertBefore(bli, ul.children[navTarCount]);
     bli.appendChild(b);
     
-    ul.appendChild(ali);
+    //ul.appendChild(ali);
+    ul.insertBefore(ali, ul.children[(navTarCount * 2) + 4]);
     ali.appendChild(a);
 }
 
