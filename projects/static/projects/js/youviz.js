@@ -147,7 +147,9 @@ class Navigator {
     }
     
     add(component, id, name) {
-        //var i = this.targets.findIndex(t => t.id == id);
+        //skip if already added to avoid gui errors
+        var indexIfAlreadyAdded = this.targets.findIndex(t => t.id == id);
+        if (indexIfAlreadyAdded >= 0) {return;}
         var i = this.targets.findIndex(t => t.id > Number(id));
         if (i < 0) {
             this.targets.push(new NavTarget(component, id, name));
@@ -161,6 +163,10 @@ class Navigator {
     }
     
     addAndReset(component, id, name) {
+        //skip if already added to avoid gui errors
+        var indexIfAlreadyAdded = this.targets.findIndex(t => t.id == id);
+        alert(indexIfAlreadyAdded);
+        if (indexIfAlreadyAdded >= 0) {return;}
         this.add(component, id, name);
         this.active = this.targets[0].id;
     }
@@ -579,21 +585,21 @@ Handler.vizreportInit = function (node) {
         for (var n = 0; n < arr.length; n++) {
             
             //get plot div, tab
-            var rep = arr[n];
-            var rid = rep.id;
-            var plot_div = "plotBox-report-" + rid;
-            var plot_div_el = document.getElementById(plot_div);
+            const rep = arr[n];
+            const rid = rep.id;
+            const plot_div = "plotBox-report-" + rid;
+            const plot_div_el = document.getElementById(plot_div);
             
             //get json
-            var json_el = document.getElementById("youviz:data:report-" + rid);
-            var json = JSON.parse(json_el.textContent);
+            const json_el = document.getElementById("youviz:data:report-" + rid);
+            const json = JSON.parse(json_el.textContent);
 
             //make plot
-            var data = json.plot_data;
-            var layout = json.plot_layout;
+            const data = json.plot_data;
+            const layout = json.plot_layout;
             //var config = {responsive: true};
             //layout.height = 392;
-            var plot_div_outer_el = document.getElementById(rid);
+            const plot_div_outer_el = document.getElementById(rid);
             layout.width = plot_div_outer_el.clientWidth;
             layout.height = plot_div_outer_el.clientHeight;
             layout.margin.t = 15;
@@ -606,7 +612,7 @@ Handler.vizreportInit = function (node) {
                 y: 1,
                 bgcolor: '#00000000',
             };
-            var config = {displayModeBar: false, scrollZoom: false};
+            const config = {displayModeBar: false, scrollZoom: false};
             Plotly.react(plot_div, data, layout, config);
             
             //add resize listener
@@ -625,13 +631,13 @@ Handler.vizreportInit = function (node) {
                     if (entry.contentBoxSize) {
                         // Firefox implements `contentBoxSize` as a single content rect, rather than an array
                         //const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
-                        var update = {
+                        const update = {
                             width: plot_div_outer_el.clientWidth,
                             height: plot_div_outer_el.clientHeight
                         };
                         Plotly.relayout(plot_div, update);
                     } else {
-                        var update = {
+                        const update = {
                             width: plot_div_outer_el.clientWidth,
                             height: plot_div_outer_el.clientHeight
                         };
@@ -642,6 +648,15 @@ Handler.vizreportInit = function (node) {
 
             //let midPanel = document.getElementById('midPanel');
             observer.observe(plot_div_el);
+            
+            // resize on modal.show
+            mr.addEventListener('show.bs.modal', function (event) {
+                const update = {
+                    width: plot_div_el.clientWidth,
+                    height: plot_div_el.clientHeight
+                };
+                Plotly.relayout(plot_div, update);
+            });
             
         }
         
@@ -746,6 +761,11 @@ hammertime.on('swipeleft swiperight', (event) => {
             break;
     }
 });
+
+/*
+window.setTimeout( () => {
+    Handler.navigator.reset();
+}, 2000);*/
 
 window.addEventListener("DOMContentLoaded", (event) => {
     Unicorn.addEventListener("updated", (component) =>{
