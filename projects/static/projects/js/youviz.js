@@ -165,7 +165,6 @@ class Navigator {
     addAndReset(component, id, name) {
         //skip if already added to avoid gui errors
         var indexIfAlreadyAdded = this.targets.findIndex(t => t.id == id);
-        alert(indexIfAlreadyAdded);
         if (indexIfAlreadyAdded >= 0) {return;}
         this.add(component, id, name);
         this.active = this.targets[0].id;
