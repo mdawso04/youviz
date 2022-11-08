@@ -81,7 +81,7 @@ function vizOffcanvasMaximize(c, oc) {
 class NavTarget {
     constructor(component, id, name) {
         this.component = component;
-        this.id = id;
+        this.id = Number(id);
         this.name = name;
     }
     
@@ -114,7 +114,7 @@ class Navigator {
                 name: name,
                 navigator: this,
                 active: this.targets[this.selected], 
-                index: this.selected, 
+                index: this.targets.findIndex(t => t.id == navTar.id), 
                 count: this.targets.length,
                 navTar: navTar
             }
@@ -128,7 +128,7 @@ class Navigator {
     
     set active(id) {
         if(id === "undefined") {
-            this.selected = -1;
+            return;
         } else {
             var i = this.targets.findIndex(t => t.id == id);
             if(i >= 0) {
@@ -147,14 +147,22 @@ class Navigator {
     }
     
     add(component, id, name) {
-        var i = this.targets.findIndex(t => t.id == id);
-        if(i < 0){
+        //var i = this.targets.findIndex(t => t.id == id);
+        var i = this.targets.findIndex(t => t.id > Number(id));
+        if (i < 0) {
             this.targets.push(new NavTarget(component, id, name));
-            this._navigationChanged("add", this.targets[this.targets.length - 1]);
-            if(this.targets.length === 1) {
-                this.active = id;
-            }
+            i = this.targets.length - 1;
+        } else {
+            this.targets.splice(i, 0, new NavTarget(component, id, name));
         }
+        //this.selected = i;
+        this._navigationChanged("add", this.targets[i]);
+        //this.active = id;
+    }
+    
+    addAndReset(component, id, name) {
+        this.add(component, id, name);
+        this.active = this.targets[0].id;
     }
 
     remove(id) {
@@ -199,6 +207,13 @@ class Navigator {
     toggleNav() {
         this.showNav = !this.showNav;
         this._navToggled();
+    }
+    
+    reset() {
+        alert(this.targets.length > 0);
+        if (this.targets.length > 0) {
+            this.active = this.targets[0].id;
+        }
     }
     
     _navToggled() {
@@ -252,7 +267,7 @@ Handler.addTab = function(navTar, index) {
     a.classList.add("dropdown-item");
     a.setAttribute("href", "#");
     a.setAttribute("onclick", "Unicorn.call('app', 'copyViz', '" + navTar.id + "');"); //unicorn:click="copyViz({{viz.pk}})
-    b.setAttribute("index", index + 10);
+    b.setAttribute("index", index);
     
     //eh
     //TODO
@@ -262,15 +277,18 @@ Handler.addTab = function(navTar, index) {
     var navTarCount = Handler.navigator.count;
     
     //ul.appendChild(bli);
-    ul.insertBefore(bli, ul.children[navTarCount]);
+    const topFixedItemsCount = 1;
+    ul.insertBefore(bli, ul.children[topFixedItemsCount + index]);
     bli.appendChild(b);
     
     //ul.appendChild(ali);
-    ul.insertBefore(ali, ul.children[(navTarCount * 2) + 4]);
+    const midFixedItemsCount = 3;
+    ul.insertBefore(ali, ul.children[topFixedItemsCount + midFixedItemsCount + navTarCount + index]);
     ali.appendChild(a);
 }
 
 Handler.navigator = new Navigator();
+
 document.addEventListener('navigationChanged', (e) => {
     switch(e.detail.name) {
         case "active": 
@@ -489,7 +507,7 @@ Handler.vizInit = function (node) {
     observer.observe(midPanel);
     
     // add edit pane to navigation
-    Handler.navigator.add("viz", d.yvId, d.yvId);
+    Handler.navigator.addAndReset("viz", d.yvId, d.yvId);
     
     // add listener to generated dom
     var tab_div_el = document.getElementById(tab_div);
