@@ -4,61 +4,33 @@
 <!doctype html>
 <html>
     <head>
-        <title>Table</title>
+        <title>YouViz - Free, Simple Data Vizualization for You</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- 5.1.3 -->
+        <script src="{% static 'projects/js/youviz.js' %}" type="module"></script>
         <script>
-            const Handler = {
+            const css_js_patch = {
                 styles: {},
                 scripts: {},
                 func: {},
-                href: {
+                /*href: {
                     bootstrap_table: "{% static 'projects/js/bootstrap-table.min.js' %}",
-                },
+                },*/
             };
         </script>        
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" 
-              integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" 
-              crossorigin="anonymous" onload="Handler.styles[this.href]=true">
-        <!-- 1.8.1 -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
-        <!-- 1.20.2 -->
-        <link rel="stylesheet" href="{% static 'projects/css/bootstrap-table.min.css' %}" onload="Handler.scripts['btc']=true"/>
-        
-        <script src="{% static 'projects/js/jquery-3.5.1.min.js' %}"></script>
-        <script src="{% static 'projects/js/dropzone.min.js' %}"></script>
-        <!-- 5.1.3 -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" 
-                integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"
-                onload="Handler.scripts['bs']=true"></script>
-        <!-- 1.20.2 -->
-        <!--<script src="{% static 'projects/js/bootstrap-table.min.js' %}" onload="Handler.scripts['bts']=true"></script>-->
-        <!-- 2.14.0 -->
-        <script src="{% static 'projects/js/plotly-2.14.0.min.js' %}"></script>
-        <script src="{% static 'projects/js/qrcode.min.js' %}"></script>
-        <script src="{% static 'projects/js/hammer.min.js' %}"></script>
+        <link rel="stylesheet" href="{% static 'projects/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'projects/css/bootstrap-icons.css' %}">
+        <link rel="stylesheet" href="{% static 'projects/css/bootstrap-table.min.css' %}" onload="css_js_patch.scripts['btc']=true"/>
         
         {% progressive_web_app_meta %}
         {% unicorn_scripts %}
         <style>
-          .overlay {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            z-index: 10000;
-            top: 40%;
-            left: 0px;
-        }
-          .dropdown-toggle.no-arrow::after {
-              content: none;
-        }   
+          .dropdown-toggle.no-arrow::after {content: none;}   
         </style>
     </head>
 
     <body id="body">
         {% csrf_token %}
         {% unicorn 'app' id='app01' %}
-        <script src="{% static 'projects/js/youviz.js' %}"></script>
     </body>
 </html>

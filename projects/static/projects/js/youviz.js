@@ -1,69 +1,45 @@
-/*
+// import scripts for side-effects = global variables = only
+// static import
+import './bootstrap.bundle.min.js';
+import './hammer.min.js';
+import './jquery-3.5.1.min.js';
+import './dropzone.min.js';
+import './plotly-2.14.0.min.js';
 
-- simplify js code (element search, element update etc)
-- manage viz navigation
-  - viz name
-  - viz count
-  - back/forward
-  
+// var
+//import './qrcode.min.js';
 
-specifically,
+// the root object
+window.Handler = {};
 
--monitor visible tab/viz
--detect media change/mode
-  -update classes
-    -viz settings: if small mode offcanvas class, else right panel class
-    -viz navigation: if small mode dropup class, else left panel class
-  -actions
-    -showViz.onclick: if small mode call show offcanvas.show, else call show right panel
-    -navigation.onclick: if small mode call show dropup, else call show left panel
+// and module.exports ones
+async function require(path) {
+    let _module = window.module;
+    window.module = {};
+    await import(path);
+    let exports = module.exports;
+    window.module = _module; // restore global
+    return exports;
+}
+(async () => { // top-level await cannot come soon enough…
+    window.BootstrapTable = await require("./bootstrap-table.min.js");
+    //Handler.scripts['bts']=true
+})();
 
-navigation object
-  getSelected()
-  getAll()
-  forward()
-  back()
-  add()
-  remove()
 
-navigation target object
-  selected: boolean
-  name: string
-  onclick()
-
-*/
 
 // ex: viz-5-editpane
 Handler.elID = function(componentName, id, role) {
     return componentName + '-' + id + '-' + role;
 }
 
-function elementUpdate(u) {
+/*function elementUpdate(u) {
     //update tab name on viz edit
     for (var n = 0; n < u.length; n++) {
         var id = u[n][0];
         var value = u[n][1];
         document.getElementById(id).innerHTML = value;
     }
-}
-/*
-function tabChange(t) {
-    var deactivate = document.querySelector(".dropdown-item.active:not("+t+")");
-    deactivate.classList.remove("active");
-
-    //var activate = document.querySelector(t);
-    //var tab = bootstrap.Tab.getOrCreateInstance(triggerEl);
-    //alert(tab);
-    //tab.show();
-    //activate.classList.add("active");
-}
-
-function updateButtonGroup() {
-
-    // update dropdown-item active status
-    // bootstrap tab change
-    // button name
-    // button enable/disable
 }*/
 
 function showVizOffcanvas() {
@@ -209,6 +185,11 @@ class Navigator {
         }   
     }
     
+    // needed to catch single param call from django-unicorn view
+    rename(arry) {
+        this.rename(arry[0], arry[1]);   
+    }
+    
     toggleNav() {
         this.showNav = !this.showNav;
         this._navToggled();
@@ -249,6 +230,8 @@ class Navigator {
     }
     
 };
+
+Handler.navigator = new Navigator();
 
 Handler.addTab = function(navTar, index) {
     //make tab button
@@ -292,7 +275,7 @@ Handler.addTab = function(navTar, index) {
     ali.appendChild(a);
 }
 
-Handler.navigator = new Navigator();
+//Handler.navigator_rename = Handler.navigator.rename;
 
 document.addEventListener('navigationChanged', (e) => {
     switch(e.detail.name) {
@@ -340,7 +323,8 @@ document.addEventListener('navigationChanged', (e) => {
             // navpanel gui update
             // left panel gui update
             document.getElementById(e.detail.navTar.id).innerHTML = e.detail.navTar.name;
-            //document.getElementById("btnGroupDrop1").innerHTML = e.detail.name;
+            alert(document.getElementById("btnGroupDrop1"));
+            document.getElementById("btnGroupDrop1").innerHTML = e.detail.name;
             break;
     }
 });
@@ -539,6 +523,7 @@ Handler.vizInit = function (node) {
 Handler.dataframeInit = function (node) {
     var d = node.dataset;
     const m = document.querySelector("#modalTable");
+    /*
     if (m) {
         bootstrap.Modal.getOrCreateInstance(m).dispose();
         bootstrap.Modal.getOrCreateInstance(m);
@@ -558,15 +543,14 @@ Handler.dataframeInit = function (node) {
               Handler.scripts['bts'] !== undefined &&
               $table.bootstrapTable !== undefined){
                 clearInterval(myVar);
-                /*
-                $(function() {
-                    m.addEventListener('shown.bs.modal',function () {
-                        $table.bootstrapTable('resetView');
-                    });
-                });*/
+                //$(function() {
+                //    m.addEventListener('shown.bs.modal',function () {
+                //        $table.bootstrapTable('resetView');
+                //    });
+                //});
             }
         }, 250);
-    }
+    }*/
 }
 
 Handler.vizreportInit = function (node) {
@@ -691,42 +675,47 @@ Handler.vizreportInit = function (node) {
 }
 
 // LOAD YV-COMPS
-const nodes = document.querySelectorAll(".yv-component");
-nodes.forEach(async (node) => {
-    var node_data = node.dataset;
+window.addEventListener("load", (event) => {
 
-    //fetch("./" + node_data.yvComponent + "/" + node_data.yvId)
-    fetch("." + node_data.yvLink)
-    .then(response => {
-        return response.text() 
-    })
-    .then(data => {
-        node.innerHTML = data;
-        let timer = setInterval(function() {
-            if(window.Unicorn !== undefined){
-                // stop loop
-                clearInterval(timer);
 
-                // init unicorn component for ajax editing
-                var u_script = document.querySelector('#' + node.id + ' script[id^="unicorn:data"]');
-                if(u_script !== undefined) {
-                    var u = Unicorn;
-                    u.componentInit(JSON.parse(u_script.textContent)); 
+    const nodes = document.querySelectorAll(".yv-component");
+    nodes.forEach(async (node) => {
+        var node_data = node.dataset;
+
+        //fetch("./" + node_data.yvComponent + "/" + node_data.yvId)
+        fetch("." + node_data.yvLink)
+        .then(response => {
+            return response.text() 
+        })
+        .then(data => {
+            node.innerHTML = data;
+            let timer = setInterval(function() {
+                if(window.Unicorn !== undefined){
+                    // stop loop
+                    clearInterval(timer);
+
+                    // init unicorn component for ajax editing
+                    var u_script = document.querySelector('#' + node.id + ' script[id^="unicorn:data"]');
+                    if(u_script !== undefined) {
+                        var u = Unicorn;
+                        u.componentInit(JSON.parse(u_script.textContent)); 
+                    }
+
+                    // init component to setup after download
+                    // TODO - make init support async by default?
+                    if(Handler[node_data.yvInit] !== undefined){
+                        Handler[node_data.yvInit](node);
+                    }
+
+                    // activate button
+                    if(document.querySelector(node_data.yvButton) !== undefined){
+                        document.querySelector(node_data.yvButton).disabled = false;
+                    }
                 }
-
-                // init component to setup after download
-                // TODO - make init support async by default?
-                if(Handler[node_data.yvInit] !== undefined){
-                    Handler[node_data.yvInit](node);
-                }
-
-                // activate button
-                if(document.querySelector(node_data.yvButton) !== undefined){
-                    document.querySelector(node_data.yvButton).disabled = false;
-                }
-            }
-        }, 250);
+            }, 250);
+        });
     });
+    
 });
 
 //var yvmodals = document.getElementsByClassName("yvmodal");
@@ -747,18 +736,20 @@ var editing_file = false;
 //    alert(alpha);
 //}
 
-const hammertime = Hammer(document.getElementsByTagName('body')[0]);
-hammertime.on('swipeleft swiperight', (event) => {
-    switch(event.type) {
-        case 'swipeleft': 
-            //alert(event.type);
-            Handler.navigator.forward();
-            break;
-        case 'swiperight':
-            //alert(event.type);
-            Handler.navigator.back();
-            break;
-    }
+window.addEventListener("load", (event) => {
+    const hammertime = Hammer(document.getElementsByTagName('body')[0]);
+    hammertime.on('swipeleft swiperight', (event) => {
+        switch(event.type) {
+            case 'swipeleft': 
+                //alert(event.type);
+                Handler.navigator.forward();
+                break;
+            case 'swiperight':
+                //alert(event.type);
+                Handler.navigator.back();
+                break;
+        }
+    });
 });
 
 /*
@@ -868,6 +859,10 @@ window.addEventListener("DOMContentLoaded", (event) => {
                 for (let i = 0; i < yvmodals.length; i++) {
                     body.appendChild(yvmodals[i]); 
                 }
+                Dropzone.options.drop = { // camelized version of the `id`
+                    paramName: "document", // The name that will be used to transfer the file
+                    maxFilesize: 2, // MB
+                };
                 break;
             case 'report':
                 // datatable modal
