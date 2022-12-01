@@ -80,35 +80,9 @@
                         </button>
                             <ul class="dropdown-menu" id="tabButtons" aria-labelledby="btnGroupDrop1">
                                 <li><h6 class="dropdown-header">Select viz</h6></li>
-                                <!--
-                            {% for v in vizs %}
-                            {% with vids=v.pk|stringformat:"s" %}
-                            {% with vid="viz-"|add:vids %}
-                                <li>
-                                    <button class="dropdown-item {% if forloop.first %}active {% endif %}" id="{{vid}}-tab"
-                                       data-bs-toggle="tab"
-                                       data-bs-target="#{{vid}}"
-                                       offcanvasID="offcanvasBottom-{{vid}}"
-                                       role="tab"
-                                       type="button"
-                                       yv-list-no="{{forloop.counter}}"
-                                       aria-controls="{{vid}}">
-                                       {{v.name|title}}
-                                    </button>
-                                </li>
-                            {% endwith %}
-                            {% endwith %}
-                            {% endfor %}
--->
                                 <li><hr class="dropdown-divider"></li>
                                 <li><h6 class="dropdown-header">Add viz</h6></li>
                                 <li><a class="dropdown-item" onclick="Unicorn.call('app', 'addViz');" href="#">New</a></li>
-                        <!--
-                        {% for viz in vizs %}
-                                <li><a class="dropdown-item" unicorn:click="copyViz({{viz.pk}})" id="viz-{{viz.pk}}-tab-copy" 
-                                       href="#">Copy {{viz.name|title}}</a></li>
-                        {% endfor %}
-                        -->
                             </ul>    
                     </div> 
                     <!--

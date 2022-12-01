@@ -21,41 +21,12 @@ Handler.alert = function(value) {
     Handler.navigator.rename(value[0], value[1]);
 }
 
-/*
-// and module.exports ones
-async function require(path) {
-    let _module = window.module;
-    window.module = {};
-    await import(path);
-    let exports = module.exports;
-    window.module = _module; // restore global
-    return exports;
-}
-(async () => { // top-level await cannot come soon enough…
-    window.BootstrapTable = await require("./bootstrap-table.min.js");
-    //Handler.scripts['bts']=true;
-    if(BootstrapTable !== undefined){
-        Handler.js.bt = true;
-    }
-})();
-*/
-
-
-
 // ex: viz-5-editpane
 Handler.elID = function(componentName, id, role) {
     return componentName + '-' + id + '-' + role;
 }
 
-/*function elementUpdate(u) {
-    //update tab name on viz edit
-    for (var n = 0; n < u.length; n++) {
-        var id = u[n][0];
-        var value = u[n][1];
-        document.getElementById(id).innerHTML = value;
-    }
-}*/
-
+/*
 function showVizOffcanvas() {
     var element = document.querySelector(".dropdown-item.active");
     var offcanvasID =  element.getAttribute("offcanvasID");
@@ -66,7 +37,7 @@ function showVizOffcanvas() {
 
 function vizOffcanvasMaximize(c, oc) {
     document.querySelector(oc).classList.toggle('h-100');
-}
+}*/
 
 class NavTarget {
     constructor(component, id, name) {
@@ -325,8 +296,6 @@ Handler.addTab = function(navTar, index) {
     ali.appendChild(a);
 }
 
-//Handler.navigator_rename = Handler.navigator.rename;
-
 document.addEventListener('navigationChanged', (e) => {
     switch(e.detail.name) {
         case "active": 
@@ -408,10 +377,6 @@ document.addEventListener('editToggled', (e) => {
             break;
     }
 });
-
-/*Handler.navigator.add("viz", 1, "one");
-Handler.navigator.add("viz", 2, "two");*/
-//Handler.addTab("test_id", "test_name");
 
 // Change DOM on screen size change
 Handler.mediaQuery = function(query, handleYes, handleNo) {
@@ -823,11 +788,6 @@ btn.addEventListener('click', async () => {
         console.log(`Error: ${err}`);
     }
 });
-
-/*
-window.setTimeout( () => {
-    Handler.navigator.reset();
-}, 2000);*/
 
 window.addEventListener("DOMContentLoaded", (event) => {
     Unicorn.addEventListener("updated", (component) =>{

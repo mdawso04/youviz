@@ -42,8 +42,9 @@ class VizreportView(UnicornView):
         elif hasattr(self, 'kwargs'):
             pk = self.kwargs['pk']
         self.report = Report.objects.filter(pk=pk).all().prefetch_related('datasource__vizs').last()
-        self.vizs = self.report.datasource.vizs.all()
+        self.vizs = self.report.datasource.vizs.all().order_by('pk')
         
+        self.vizs_html = []
         for v in self.vizs:
             #load csv from db
             copied_json = deepcopy(v.json)
