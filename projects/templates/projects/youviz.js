@@ -780,6 +780,22 @@ window.addEventListener("load", (event) => {
         }
     });
 });
+ 
+// sharing app link
+const shareApp = {
+    //title: '{{report.name}}',
+    text: 'Check out YouViz - cool data vizualization app!',
+    url: 'https://www.youviz.app/'
+}
+const btn = document.querySelector('#settings-button-share');
+btn.addEventListener('click', async () => {
+    try {
+        await navigator.share(shareApp);
+        //resultPara.textContent = 'MDN shared successfully';
+    } catch (err) {
+        console.log(`Error: ${err}`);
+    }
+});
 
 /*
 window.setTimeout( () => {
