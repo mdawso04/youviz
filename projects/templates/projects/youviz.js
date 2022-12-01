@@ -369,8 +369,8 @@ document.addEventListener('navigationChanged', (e) => {
             // navpanel gui update
             // left panel gui update
             document.getElementById(e.detail.navTar.tabTriggerElementID).innerHTML = e.detail.navTar.name;
-            alert(document.getElementById("btnGroupDrop1"));
-            document.getElementById("btnGroupDrop1").innerHTML = e.detail.name;
+            //alert(document.getElementById("btnGroupDrop1"));
+            document.getElementById("btnGroupDrop1").firstChild.data = Handler.text_truncate(e.detail.navTar.name, 3);
             break;
     }
 });
