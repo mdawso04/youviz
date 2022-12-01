@@ -273,7 +273,7 @@ Handler.addTab = function(navTar, index) {
     b.setAttribute("aria-controls", navTar.compID);
     b.setAttribute("index", index);
     b.setAttribute("navTarID", navTar.id);
-    b.setAttribute("onclick", "Handler.navigator.jump(" + navTar.id + "); event.stopPropagation();");
+    b.setAttribute("onclick", "Handler.navigator.jump(" + navTar.id + "); event.preventDefault();");
 
     //make copy anchor
     const ali = document.createElement('li');
