@@ -10,8 +10,12 @@ import './plotly-2.14.0.min.js';
 //import './qrcode.min.js';
 
 // the root object
-window.Handler = {};
+window.Handler = {
+    js:{},
+    css:{}
+};
 
+/*
 // and module.exports ones
 async function require(path) {
     let _module = window.module;
@@ -23,8 +27,12 @@ async function require(path) {
 }
 (async () => { // top-level await cannot come soon enough…
     window.BootstrapTable = await require("./bootstrap-table.min.js");
-    //Handler.scripts['bts']=true
+    //Handler.scripts['bts']=true;
+    if(BootstrapTable !== undefined){
+        Handler.js.bt = true;
+    }
 })();
+*/
 
 
 
@@ -523,25 +531,26 @@ Handler.vizInit = function (node) {
 Handler.dataframeInit = function (node) {
     var d = node.dataset;
     const m = document.querySelector("#modalTable");
-    /*
+    
     if (m) {
         bootstrap.Modal.getOrCreateInstance(m).dispose();
         bootstrap.Modal.getOrCreateInstance(m);
         document.getElementById("body").appendChild(m);
         var $table = $('#table');
 
-        var newScript = document.createElement("script");
-        newScript.src = Handler.href.bootstrap_table;
-        newScript.addEventListener("load", () => {
-            Handler.scripts['bts'] = true;
+        var dfScript = document.createElement("script");
+        dfScript.src = "/static/projects/js/bootstrap-table.min.js";
+        dfScript.addEventListener("load", () => {
+            Handler.js.bt = true;
         });
-        node.appendChild(newScript);
+        node.appendChild(dfScript);
+        
         // JQuery for Bootstrap Table compatibility
         let myVar = setInterval(function() {
-            if(Handler.scripts['bs'] !== undefined &&
-              Handler.scripts['btc'] !== undefined &&
-              Handler.scripts['bts'] !== undefined &&
-              $table.bootstrapTable !== undefined){
+            if(
+                //Handler.scripts['btc'] !== undefined &&
+                Handler.js.bt !== undefined &&
+                $table.bootstrapTable !== undefined){
                 clearInterval(myVar);
                 //$(function() {
                 //    m.addEventListener('shown.bs.modal',function () {
@@ -550,7 +559,7 @@ Handler.dataframeInit = function (node) {
                 //});
             }
         }, 250);
-    }*/
+    }
 }
 
 Handler.vizreportInit = function (node) {

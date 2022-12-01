@@ -8,27 +8,15 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="{% static 'projects/js/youviz.js' %}" type="module"></script>
-        <script>
-            const css_js_patch = {
-                styles: {},
-                scripts: {},
-                func: {},
-                /*href: {
-                    bootstrap_table: "{% static 'projects/js/bootstrap-table.min.js' %}",
-                },*/
-            };
-        </script>        
-        <link rel="stylesheet" href="{% static 'projects/css/bootstrap.min.css' %}">
-        <link rel="stylesheet" href="{% static 'projects/css/bootstrap-icons.css' %}">
-        <link rel="stylesheet" href="{% static 'projects/css/bootstrap-table.min.css' %}" onload="css_js_patch.scripts['btc']=true"/>
-        
+        <link rel="stylesheet" href="{% static 'projects/css/bootstrap.min.css' %}"/>
+        <link rel="stylesheet" href="{% static 'projects/css/bootstrap-icons.css' %}"/>
+        <link rel="stylesheet" href="{% static 'projects/css/bootstrap-table.min.css' %}"/>
         {% progressive_web_app_meta %}
         {% unicorn_scripts %}
         <style>
           .dropdown-toggle.no-arrow::after {content: none;}   
         </style>
     </head>
-
     <body id="body">
         {% csrf_token %}
         {% unicorn 'app' id='app01' %}
