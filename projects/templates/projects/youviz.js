@@ -16,6 +16,10 @@ window.Handler = {
     js:{},
     css:{}
 };
+ 
+Handler.alert = function(value) {
+    Handler.navigator.rename(value[0], value[1]);
+}
 
 /*
 // and module.exports ones
@@ -212,9 +216,9 @@ class Navigator {
     }
     
     // needed to catch single param call from django-unicorn view
-    rename(arry) {
+    /*rename(arry) {
         this.rename(arry[0], arry[1]);   
-    }
+    }*/
     
     toggleNav() {
         this.showNav = !this.showNav;
@@ -364,7 +368,7 @@ document.addEventListener('navigationChanged', (e) => {
         case "name":
             // navpanel gui update
             // left panel gui update
-            document.getElementById(e.detail.navTar.id).innerHTML = e.detail.navTar.name;
+            document.getElementById(e.detail.navTar.tabTriggerElementID).innerHTML = e.detail.navTar.name;
             alert(document.getElementById("btnGroupDrop1"));
             document.getElementById("btnGroupDrop1").innerHTML = e.detail.name;
             break;

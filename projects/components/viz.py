@@ -112,7 +112,7 @@ class VizView(UnicornView):
             value_copy = 'Copy ' + value
             #self.call("elementUpdate", [[id, value], [id_copy, value_copy]])  
             #self.call("Handler.navigator_rename", [[id, value]])
-            self.call("Handler.test", "test")
+            self.call("Handler.alert", [self.viz.pk, value])
         elif name == 'viz_settings.service.saved':
             #todo['service'] = value
             #self.viz.json[1]['service'] = value
