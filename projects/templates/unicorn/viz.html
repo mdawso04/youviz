@@ -110,7 +110,6 @@
                             <button type="button" id="modalLogoutButton" 
                                     {% comment %}unicorn:click="delete()"{% endcomment %}
                                     onclick="bootstrap.Modal.getInstance('#deleteVizConfirm{{vid}}').hide(); 
-                                    document.getElementById('app-spinner').hidden = false;
                                     Unicorn.call('app', 'deleteViz', '{{viz.pk}}');"
                                     class="btn btn-danger">OK</button>
                         </div>
