@@ -98,7 +98,7 @@ class Navigator {
                 name: name,
                 navigator: this,
                 active: this.targets[this.selected], 
-                index: this.targets.findIndex(t => t.id == navTar.id), 
+                index: this.targets.findIndex(t => t.id == navTar.id),
                 count: this.targets.length,
                 navTar: navTar
             }
@@ -185,8 +185,24 @@ class Navigator {
         }
     }
     
+    /*
+    jump(index) {
+        if(index >= 0 && index < this.targets.length) {
+            this.selected = index;
+            this._navigationChanged("active", this.targets[this.selected]);
+        }
+    }*/
+    
+    jump(key) {
+        var tar = this.targets.find(t => t.id == key);
+        if(tar !== "undefined") {
+            this.selected = this.targets.findIndex(t => t.id == tar.id);
+            this._navigationChanged("active", tar);
+        }  
+    }
+    
     rename(key, name) {
-        var tar = this.targets.find(t => t.key == key);
+        var tar = this.targets.find(t => t.id == key);
         if(tar !== "undefined") {
             tar.name = name;
             this._navigationChanged("name", tar);
@@ -254,6 +270,8 @@ Handler.addTab = function(navTar, index) {
     b.setAttribute("type", "button");
     b.setAttribute("aria-controls", navTar.compID);
     b.setAttribute("index", index);
+    b.setAttribute("navTarID", navTar.id);
+    b.setAttribute("onclick", "Handler.navigator.jump(" + navTar.id + "); event.stopPropagation();");
 
     //make copy anchor
     const ali = document.createElement('li');
@@ -263,7 +281,7 @@ Handler.addTab = function(navTar, index) {
     a.classList.add("dropdown-item");
     a.setAttribute("href", "#");
     a.setAttribute("onclick", "Unicorn.call('app', 'copyViz', '" + navTar.id + "');"); //unicorn:click="copyViz({{viz.pk}})
-    b.setAttribute("index", index);
+    a.setAttribute("index", index);
     
     //eh
     //TODO
