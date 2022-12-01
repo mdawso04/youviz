@@ -267,7 +267,7 @@ Handler.text_truncate = function(str, length, ending) {
         ending = '...';
     }
     if (str.length > length) {
-        return str.substring(0, length - ending.length) + ending;
+        return str.substring(0, length - 2) + ending;
     } else {
         return str;
     } 
