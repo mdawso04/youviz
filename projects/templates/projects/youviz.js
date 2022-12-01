@@ -323,7 +323,7 @@ document.addEventListener('navigationChanged', (e) => {
     switch(e.detail.name) {
         case "active": 
             // navpanel gui update
-            document.getElementById("btnGroupDrop1").childNodes[0].nodeValue = Handler.text_truncate(e.detail.navigator.active.name, 5) + " ";
+            document.getElementById("btnGroupDrop1").childNodes[0].nodeValue = Handler.text_truncate(e.detail.navigator.active.name, 4) + " ";
             // change tab
             //todo
             // left panel gui update
