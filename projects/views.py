@@ -35,3 +35,6 @@ def model_form_upload(request):
     return render(request, 'projects/model_form_upload.html', {
         'form': form
     })
+
+def youviz_js(request):
+    return render(request, 'projects/youviz.js', content_type='text/javascript')

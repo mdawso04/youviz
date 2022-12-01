@@ -1,10 +1,12 @@
+{% load static %}
+
 // import scripts for side-effects = global variables = only
 // static import
-import './bootstrap.bundle.min.js';
-import './hammer.min.js';
-import './jquery-3.5.1.min.js';
-import './dropzone.min.js';
-import './plotly-2.14.0.min.js';
+import '{% static "projects/js/bootstrap.bundle.min.js" %}';
+import '{% static "projects/js/hammer.min.js" %}'; 
+import '{% static "projects/js/jquery-3.5.1.min.js" %}';
+import '{% static "projects/js/dropzone.min.js" %}';
+import '{% static "projects/js/plotly-2.14.0.min.js" %}';
 
 // var
 //import './qrcode.min.js';
@@ -557,7 +559,7 @@ Handler.dataframeInit = function (node) {
         var $table = $('#table');
 
         var dfScript = document.createElement("script");
-        dfScript.src = "/static/projects/js/bootstrap-table.min.js";
+        dfScript.src = '{% static "projects/js/bootstrap-table.min.js" %}';
         dfScript.addEventListener("load", () => {
             Handler.js.bt = true;
         });

@@ -10,4 +10,5 @@ urlpatterns = [
     path('datasource/<int:pk>/<hash_k>/', DataframeView.as_view(), name="dataframe"),
     path('report/<int:pk>/<hash_k>/', VizreportView.as_view(), name="vizreport"),
     path("upload/", views.model_form_upload, name="model_form_upload"),
+    path('youviz_js', views.youviz_js, name="youviz_js"),
 ]
