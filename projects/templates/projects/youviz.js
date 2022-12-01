@@ -86,6 +86,10 @@ class NavTarget {
     get tabTriggerElementID() {
         return Handler.elID( this.component, this.id, 'tab');
     }
+    
+    get copyElementID() {
+        return Handler.elID(this.component, this.id, 'copy');
+    }
 }
 
 //TODO: Handle component-key combinations
@@ -296,7 +300,7 @@ Handler.addTab = function(navTar, index) {
     //make copy anchor
     const ali = document.createElement('li');
     const a = document.createElement('a');
-    //a.id = id; //id="viz-{{viz.pk}}-tab-copy" 
+    a.id = navTar.copyElementID; //id="viz-{{viz.pk}}-copy" 
     a.textContent = "Copy " + navTar.name;
     a.classList.add("dropdown-item");
     a.setAttribute("href", "#");
@@ -366,10 +370,11 @@ document.addEventListener('navigationChanged', (e) => {
             document.getElementById(e.detail.navTar.id).remove();
             break;
         case "name":
-            // navpanel gui update
-            // left panel gui update
+            // tab button
             document.getElementById(e.detail.navTar.tabTriggerElementID).innerHTML = e.detail.navTar.name;
-            //alert(document.getElementById("btnGroupDrop1"));
+            //copy button
+            document.getElementById(e.detail.navTar.copyElementID).innerHTML = 'Copy ' + e.detail.navTar.name;
+            //nav
             document.getElementById("btnGroupDrop1").firstChild.data = Handler.text_truncate(e.detail.navTar.name, 3);
             break;
     }
