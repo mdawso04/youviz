@@ -258,6 +258,20 @@ class Navigator {
 };
 
 Handler.navigator = new Navigator();
+ 
+Handler.text_truncate = function(str, length, ending) {
+    if (length == null) {
+        length = 10;
+    }
+    if (ending == null) {
+        ending = '...';
+    }
+    if (str.length > length) {
+        return str.substring(0, length - ending.length) + ending;
+    } else {
+        return str;
+    } 
+}
 
 Handler.addTab = function(navTar, index) {
     //make tab button
@@ -309,7 +323,7 @@ document.addEventListener('navigationChanged', (e) => {
     switch(e.detail.name) {
         case "active": 
             // navpanel gui update
-            document.getElementById("btnGroupDrop1").childNodes[0].nodeValue = e.detail.navigator.active.name + " ";
+            document.getElementById("btnGroupDrop1").childNodes[0].nodeValue = Handler.text_truncate(e.detail.navigator.active.name, 5) + " ";
             // change tab
             //todo
             // left panel gui update
@@ -523,8 +537,8 @@ Handler.vizInit = function (node) {
     let midPanel = document.getElementById('midPanel');
     observer.observe(midPanel);
     
-    // add edit pane to navigation
-    Handler.navigator.addAndReset("viz", d.yvId, d.yvId);
+    // add edit pane to navigation, pick name from u_data
+    Handler.navigator.addAndReset("viz", d.yvId, node.unicorn_data.data.viz.name);
     
     // add listener to generated dom
     var tab_div_el = document.getElementById(tab_div);
@@ -727,7 +741,11 @@ window.addEventListener("load", (event) => {
                     var u_script = document.querySelector('#' + node.id + ' script[id^="unicorn:data"]');
                     if(u_script !== undefined) {
                         var u = Unicorn;
+                        // init u_component
                         u.componentInit(JSON.parse(u_script.textContent)); 
+                        // save u_data for later
+                        node.unicorn_data = JSON.parse(u_script.textContent);
+                        
                     }
 
                     // init component to setup after download
