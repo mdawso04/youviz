@@ -270,7 +270,7 @@
                         {% for v in vizs %}
                             {% with vids=v.pk|stringformat:"s" %}
                             {% with vid="viz-"|add:vids %}
-                                <div class="tab-pane yv fade show {% if forloop.first %}active{% endif %}" id="{{vid}}" 
+                                <div class="tab-pane yv fade" id="{{vid}}" 
                                      role="tabpanel" aria-labelledby="{{vid}}-tab">
                                     <div class="yv-component viz" id="yv-component-viz-{{ v.pk }}"
                                          data-yv-component="viz"

@@ -266,8 +266,8 @@ Handler.addTab = function(navTar, index) {
     b.setAttribute("aria-controls", navTar.compID);
     b.setAttribute("index", index);
     b.setAttribute("navTarID", navTar.id);
-    b.setAttribute("onclick", "Handler.navigator.jump(" + navTar.id + "); event.preventDefault();");
-
+    b.setAttribute("onclick", "event.preventDefault(); Handler.navigator.jump(" + navTar.id + ");");
+    
     //make copy anchor
     const ali = document.createElement('li');
     const a = document.createElement('a');
@@ -701,8 +701,6 @@ window.addEventListener("load", async (event) => {
         }
         Handler.components[c][node.id] = node;
     }));
-    
-    alert("*");
     
     Object.keys(Handler.components).forEach((c) => {
         // process by group
