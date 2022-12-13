@@ -434,6 +434,8 @@ Handler.vizInit = function (node) {
         y: 1,
         bgcolor: '#00000000',
     };
+    layout.clickmode = 'none';
+    layout.dragmode = false;
     
     var config = {displayModeBar: false, scrollZoom: false};
     Plotly.react(plot_div, data, layout, config);
@@ -583,6 +585,8 @@ Handler.vizreportInit = function (node) {
                 y: 1,
                 bgcolor: '#00000000',
             };
+            layout.clickmode = 'none';
+            layout.dragmode = false;
             const config = {displayModeBar: false, scrollZoom: false};
             Plotly.react(plot_div, data, layout, config);
             
