@@ -272,7 +272,6 @@
                             {% with vid="viz-"|add:vids %}
                                 <div class="tab-pane yv fade show {% if forloop.first %}active{% endif %}" id="{{vid}}" 
                                      role="tabpanel" aria-labelledby="{{vid}}-tab">
-                                    {# {% unicorn 'viz' parent=view viz=v id=vid %} #}
                                     <div class="yv-component viz" id="yv-component-viz-{{ v.pk }}"
                                          data-yv-component="viz"
                                          data-yv-id="{{ v.pk }}"
@@ -280,9 +279,9 @@
                                          data-yv-button="#showVizOffcanvas"
                                          data-yv-init="vizInit">
                                     </div>
-                            {% endwith %}
-                            {% endwith %}
                                 </div>
+                            {% endwith %}
+                            {% endwith %}
                         {% endfor %}
                     </div>
                 </div>

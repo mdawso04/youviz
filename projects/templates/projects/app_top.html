@@ -13,9 +13,7 @@
         <link rel="stylesheet" href="{% static 'projects/css/bootstrap-table.min.css' %}"/>
         {% progressive_web_app_meta %}
         {% unicorn_scripts %}
-        <style>
-          .dropdown-toggle.no-arrow::after {content: none;}   
-        </style>
+        <style>.dropdown-toggle.no-arrow::after {content: none;}</style>
     </head>
     <body id="body">
         {% csrf_token %}

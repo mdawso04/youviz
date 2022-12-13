@@ -299,52 +299,26 @@ Handler.addTab = function(navTar, index) {
 document.addEventListener('navigationChanged', (e) => {
     switch(e.detail.name) {
         case "active": 
-            // navpanel gui update
+            // update navpanel text & show active tab 
             document.getElementById("btnGroupDrop1").childNodes[0].nodeValue = Handler.text_truncate(e.detail.navigator.active.name, 3) + " ";
-            // change tab
-            //todo
-            // left panel gui update
-            /*for (const li of document.querySelectorAll("#leftNavList li.active")) {
-                li.classList.remove("active");
-            }*/
-            //document.getElementById(e.detail.navigator.active.tabElementID).classList.add("active");
-            //var tabTrigger = document.querySelector('#tabButtons li:first-child a')
             var t = document.getElementById(e.detail.active.tabTriggerElementID);
             bootstrap.Tab.getOrCreateInstance(t).show();
-            
             break;
         case "add":
-            // navpanel gui update
+            // add Tab & Copy buttons
             document.getElementById("vizCount").innerHTML = e.detail.count + " vizs";
-            
-            // left panel gui update
-            //const li = document.createElement('li');
-            //li.id = e.detail.navTar.id;
-            //li.classList.add("list-group-item");
-            //li.textContent = e.detail.navTar.name;
-            //document.getElementById("leftNavList").appendChild(li);
             Handler.addTab(e.detail.navTar, e.detail.index);
-            /*Handler.addTab(
-                e.detail.navTar.tabTriggerElementID, 
-                e.detail.navTar.id,
-                e.detail.navTar.name, 
-                e.detail.index
-            );*/
             break;
         case "remove":
-            // navpanel gui update
+            // remove Tab & Copy buttons
             document.getElementById("vizCount").innerHTML = e.detail.count + " vizs";
-            
-            // left panel gui update
             document.getElementById(e.detail.navTar.id).remove();
             break;
         case "name":
-            // tab button
-            document.getElementById(e.detail.navTar.tabTriggerElementID).innerHTML = e.detail.navTar.name;
-            //copy button
-            document.getElementById(e.detail.navTar.copyElementID).innerHTML = 'Copy ' + e.detail.navTar.name;
-            //nav
+            // update navpanel, Tab & Copy buttons 
             document.getElementById("btnGroupDrop1").firstChild.data = Handler.text_truncate(e.detail.navTar.name, 3);
+            document.getElementById(e.detail.navTar.tabTriggerElementID).innerHTML = e.detail.navTar.name;
+            document.getElementById(e.detail.navTar.copyElementID).innerHTML = 'Copy ' + e.detail.navTar.name;
             break;
     }
 });
@@ -510,9 +484,6 @@ Handler.vizInit = function (node) {
     
     let midPanel = document.getElementById('midPanel');
     observer.observe(midPanel);
-    
-    // add edit pane to navigation, pick name from u_data
-    Handler.navigator.addAndReset("viz", d.yvId, node.unicorn_data.data.viz.name);
     
     // add listener to generated dom
     var tab_div_el = document.getElementById(tab_div);
@@ -690,13 +661,102 @@ Handler.vizreportInit = function (node) {
         });
     }
 }
+ 
+Handler.componentInit = async function(node_array) {
+    node_array.forEach((node) => {
+        if(Handler[node.dataset.yvInit]){
+            Handler[node.dataset.yvInit](node);
+        }
+
+        // activate button
+        if(document.querySelector(node.dataset.yvButton)){
+            document.querySelector(node.dataset.yvButton).disabled = false;
+        }
+    });
+}
 
 // LOAD YV-COMPS
-window.addEventListener("load", (event) => {
-
-
-    const nodes = document.querySelectorAll(".yv-component");
-    nodes.forEach(async (node) => {
+window.addEventListener("load", async (event) => {
+    const nodeList = document.querySelectorAll(".yv-component");
+    const nodes = Array.from(nodeList);
+    
+    //1.Sort into groups: data-yv-component ...NEW    
+    Handler.components = {};
+    
+    await Promise.all(nodes.map(async (node) => {
+        // get unicorn data, add to node
+        const response = await fetch("." + node.dataset.yvLink);
+        node.innerHTML = await response.text();
+        var selector = '#' + node.id + ' script[id^="unicorn:data"]';
+        var u_script = document.querySelector(selector);
+        if(u_script) {
+            node.unicorn_data = JSON.parse(u_script.textContent);
+        }
+        //unicorn init
+        Unicorn.componentInit(node.unicorn_data);
+        // group components
+        var c = node.dataset['yvComponent'];
+        if(!Handler.components[c]) {
+            Handler.components[c] = {};
+        }
+        Handler.components[c][node.id] = node;
+    }));
+    
+    alert("*");
+    
+    Object.keys(Handler.components).forEach((c) => {
+        // process by group
+        switch(c) {
+            case 'viz': 
+                Object.values(Handler.components[c]).forEach((v)=>{
+                    Handler.navigator.add("viz", v.dataset.yvId, v.unicorn_data.data.viz.name); //node.unicorn_data.data.viz.name
+                });
+                Handler.navigator.active = Handler.navigator.targets[0].id;
+                break;
+            case 'report':
+                break;
+            case 'dataframe':
+                break;
+        }
+        // custom init each item
+        Handler.componentInit(Object.values(Handler.components[c]));
+    });
+        
+        //  await givePrizeToPlayer(player);
+    //}));
+    /*
+    var p = new Promise((resolve, reject) => {
+        nodes.forEach(async (node) => {
+            // get unicorn data, add to node
+            fetch("." + node.dataset.yvLink)
+            .then(response => {
+                return response.text() 
+            })
+            .then(data => {
+                node.innerHTML = data;
+                var selector = '#' + node.id + ' script[id^="unicorn:data"]';
+                var u_script = document.querySelector(selector);
+                if(u_script) {
+                    node.unicorn_data = JSON.parse(u_script.textContent);
+                }
+                //unicorn init
+                Unicorn.componentInit(node.unicorn_data);  
+                return true;
+            })
+            .then(dummy => {
+                // group components
+                var c = node.dataset['yvComponent'];
+                if(!Handler.components[c]) {
+                    Handler.components[c] = {};
+                }
+                Handler.components[c][node.id] = node;
+            });
+        });
+        resolve(true);
+    });*/
+                                            
+    //   2.Init: generic, custom  ...SAME
+/*    nodes.forEach(async (node) => {
         var node_data = node.dataset;
 
         //fetch("./" + node_data.yvComponent + "/" + node_data.yvId)
@@ -735,7 +795,7 @@ window.addEventListener("load", (event) => {
                 }
             }, 250);
         });
-    });
+    });*/
     
 });
 
