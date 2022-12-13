@@ -958,7 +958,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
                     maxFilesize: 2, // MB
                 };
                 break;
-            case 'report':
+            case 'vizreport':
                 // datatable modal
                 // append modals to prevent z-layer issues
                 var yvmodals = document.querySelectorAll('.yvmodal');
