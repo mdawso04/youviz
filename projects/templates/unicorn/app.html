@@ -63,18 +63,38 @@
         float: right;
         margin: 6px 0;
     }
+    .button-toolbar {
+          max-width: 440px;
+    }
+    @media only screen and (max-width: 993px) {
+        .edgy-right-element {
+          border-top-left-radius: 0 !important;
+          border-bottom-left-radius: 0 !important;
+          border-top-right-radius: 4px !important;
+          border-bottom-right-radius: 4px !important;
+        }
+        .edgy-left-element {
+          border-top-left-radius: 4px !important;
+          border-bottom-left-radius: 4px !important;
+          border-top-right-radius: 0px !important;
+          border-bottom-right-radius: 0px !important;
+        }
+        .button-toolbar {
+              max-width: 350px;
+        }
+    }
     </style>
     <nav class="navbar fixed-bottom bg-light border-top border-warning border-2" id=bottom-navbar>
         <div class="container-sm d-flex d-grid mb-4 gap-2 justify-content-center">
-            <div class="btn-toolbar d-flex w-100 justify-content-center" role="toolbar" 
-                 aria-label="Toolbar with button groups" style="max-width: 350px;">
+            <div class="btn-toolbar d-flex w-100 justify-content-center button-toolbar" role="toolbar" 
+                 aria-label="Toolbar with button groups">
                 <div class="btn-group d-flex flex-grow-1 me-2 d-block" role="group" aria-label="button group">
-                    <button type="button" class="btn btn-primary" onclick="Handler.navigator.back();">
+                    <button type="button" class="btn btn-primary d-none d-lg-block" onclick="Handler.navigator.back();">
                         <i class="bi bi-caret-left-fill" style="font-size: 1.2rem;"></i>
                     </button>
                     <div class="btn-group nav dropup d-flex w-100" role="group tablist" aria-label="button group">
                         <button id="btnGroupDrop1" type="button"
-                                class="btn btn-primary dropdown-toggle w-100 text-start" 
+                                class="btn btn-primary dropdown-toggle w-100 text-start edgy-left-element" 
                                 data-bs-toggle="dropdown" aria-expanded="false">Loading... 
                             <span class="badge rounded-pill bg-warning text-dark ps-1" id="vizCount"></span>
                         </button>
@@ -90,7 +110,7 @@
                                 aria-expanded="false" aria-controls="collapseExample">
                         <i class="bi bi-list" style="font-size: 2vw;"></i>
                     </button>-->
-                    <button id="showVizOffcanvas" class="btn btn-primary" type="button" onclick="Handler.navigator.toggleEdit();"
+                    <button id="showVizOffcanvas" class="btn btn-primary edgy-right-element" type="button" onclick="Handler.navigator.toggleEdit();"
                                 aria-expanded="false" aria-controls="collapseExample" disabled>
                         <i class="bi bi-bar-chart" style="font-size: 1.2rem;"></i>
                     </button>
@@ -101,7 +121,7 @@
                     <button id="showVizOffcanvas" type="button" class="btn btn-primary" onclick="Handler.navigator.rename(2, 'too');">
                         Name
                     </button>-->
-                    <button type="button" class="btn btn-primary" onclick="Handler.navigator.forward();">
+                    <button type="button" class="btn btn-primary d-none d-lg-block" onclick="Handler.navigator.forward();">
                         <i class="bi bi-caret-right-fill" style="font-size: 1.2rem;"></i>
                     </button>
                 </div>
