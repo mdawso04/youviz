@@ -966,6 +966,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
                 for (let i = 0; i < yvmodals.length; i++) {
                     body.appendChild(yvmodals[i]); 
                 }
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                 break;
             case 'filecontrol':
                 $('#table').bootstrapTable(); // init via javascript
