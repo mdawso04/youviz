@@ -240,13 +240,13 @@ Handler.navigator = new Navigator();
  
 Handler.text_truncate = function(str, length, ending) {
     if (length == null) {
-        length = 10;
+        length = 8;
     }
     if (ending == null) {
         ending = '...';
     }
     if (str.length > length) {
-        return str.substring(0, length - 2) + ending;
+        return str.substring(0, length - 1) + ending;
     } else {
         return str;
     } 
@@ -300,7 +300,7 @@ document.addEventListener('navigationChanged', (e) => {
     switch(e.detail.name) {
         case "active": 
             // update navpanel text & show active tab 
-            document.getElementById("btnGroupDrop1").childNodes[0].nodeValue = Handler.text_truncate(e.detail.navigator.active.name, 3) + " ";
+            document.getElementById("btnGroupDrop1").childNodes[0].nodeValue = Handler.text_truncate(e.detail.navigator.active.name) + " ";
             var t = document.getElementById(e.detail.active.tabTriggerElementID);
             bootstrap.Tab.getOrCreateInstance(t).show();
             break;
@@ -316,7 +316,7 @@ document.addEventListener('navigationChanged', (e) => {
             break;
         case "name":
             // update navpanel, Tab & Copy buttons 
-            document.getElementById("btnGroupDrop1").firstChild.data = Handler.text_truncate(e.detail.navTar.name, 3);
+            document.getElementById("btnGroupDrop1").firstChild.data = Handler.text_truncate(e.detail.navTar.name);
             document.getElementById(e.detail.navTar.tabTriggerElementID).innerHTML = e.detail.navTar.name;
             document.getElementById(e.detail.navTar.copyElementID).innerHTML = 'Copy ' + e.detail.navTar.name;
             break;

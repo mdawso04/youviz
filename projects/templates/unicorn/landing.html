@@ -21,7 +21,7 @@
     <div id="main">
         {% if get_started_main %}                
         <main class="px-3" id="get-started-main">
-            <h1>Simple. Vizualization. For You.</h1>
+            <h1>Simple. Vizualization. <br/>For You.</h1>
             {% if register_user %}
             <p class="lead">Register an email and password to use for signing in. We won't share your email with anyone.</p>
             <div class="row mb-3 row-cols-2 justify-content-center gx-2">
@@ -52,7 +52,7 @@
             </div>
                 
             {% else %}
-            <p class="lead">YouViz is a Free, Open Source, Simple vizualization app to help you vizualize your data quickly. 
+            <p class="lead">YouViz is a Free, Simple Vizualization App to help you vizualize your data quickly. 
                 Sign in, set your data and viz!</p>
             <p class="lead">
                 <a href="#" unicorn:click="$toggle('register_user')"
