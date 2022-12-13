@@ -17,10 +17,6 @@
                     data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                 Logout
             </button>
-            <button type="button" class="btn btn-secondary" id="refreshAppButton"
-                    onclick="location.reload();">
-                Refresh app
-            </button>
             <button type="button" class="btn btn-danger" id="refreshAppButton"
                     onclick="caches.keys().then(cacheNames => {cacheNames.forEach(cacheName => {caches.delete(cacheName);});});
                              location.reload();">
