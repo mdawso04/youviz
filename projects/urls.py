@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 from projects.components.viz import VizView
 from projects.components.dataframe import DataframeView
@@ -11,4 +11,8 @@ urlpatterns = [
     path('report/<int:pk>/<hash_k>/', VizreportView.as_view(), name="vizreport"),
     path("upload/", views.model_form_upload, name="model_form_upload"),
     path('youviz_js', views.youviz_js, name="youviz_js"),
+    path('accounts/', include('allauth.urls')),
+    #new login code
+    #path('signup/', views.signup, name ='signup'),
+    #path('login/', views.login, name = 'login'),
 ]

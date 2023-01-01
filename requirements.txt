@@ -4,6 +4,9 @@ gunicorn
 django-debug-toolbar
 django-link-shortener
 django-pwa
+django-allauth
 django_heroku
 django_unicorn
+redis
+hiredis
 pandas-plotly==0.2.4
