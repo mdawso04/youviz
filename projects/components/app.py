@@ -4,6 +4,7 @@ from projects.models import Project, Datasource, Viz, Report, Item, Answer
 
 from django.core.files.base import ContentFile
 from django.shortcuts import render, redirect
+from django.contrib.auth import logout
 from project import settings
 #from django.contrib import messages
 
@@ -224,6 +225,10 @@ class AppView(UnicornView):
             .prefetch_related('vizs', 'items__answers')
         )
         #logger.debug('AppView > addRemoteFile end')
+        
+    def logout(self):
+        logout(self.request)
+        return redirect('/')
         
     def called(self, name, args):
         #logger.debug('AppView > called start')
