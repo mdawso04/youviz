@@ -17,6 +17,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <!-- custom css & js -->
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="{% static 'projects/js/hammer.min.js' %}"></script> 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
                 integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <!--<script src="https://accounts.google.com/gsi/client" async defer></script>-->
@@ -70,8 +71,7 @@
                         <main class="px-3" id="get-started-main">
                             <h1>Simple. Vizualization. <br/>For You.</h1>
                             
-                            <p class="lead">YouViz is a Free, Simple App
-                                to help you vizualize your data quickly.</p>
+                            <p class="lead">YouViz is a Free, Simple App<br>to help you vizualize your data quickly.</p>
                             
                             <!--
                             <div id="g_id_onload"
@@ -117,25 +117,26 @@
                             
                             <div class="py-3">--- OR ---</div>
 
-                            <div class="row mb-3 row-cols-2 justify-content-center gx-2">
-                                <div class="form-floating">
-                                    <input type="input" unicorn:model.defer="username" class="form-control bg-dark text-white" 
-                                           id="floatingInputEmail" placeholder="name@example.com">
-                                    <label for="floatingInputEmail">Username</label>
+                            <form action="/accounts/login/" method="post" id="signinForm">
+                                {% csrf_token %}
+                            
+                                <div class="row mb-3 row-cols-2 justify-content-center gx-2">
+                                    <div class="form-floating">
+                                        <input type="input" unicorn:model.defer="username" class="form-control bg-dark text-white" 
+                                               id="floatingInputEmail" placeholder="name@example.com">
+                                        <label for="floatingInputEmail">Username</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row mb-3 row-cols-2 justify-content-center gx-2">
-                                <div class="form-floating">
-                                    <input type="password" unicorn:model.defer="password" class="form-control bg-dark text-white" 
-                                           id="floatingInputPassword" placeholder="Password">
-                                    <label for="floatingInputPassword">Password</label>
+                                <div class="row mb-3 row-cols-2 justify-content-center gx-2">
+                                    <div class="form-floating">
+                                        <input type="password" unicorn:model.defer="password" class="form-control bg-dark text-white" 
+                                               id="floatingInputPassword" placeholder="Password">
+                                        <label for="floatingInputPassword">Password</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row mb-3 row-cols-3 justify-content-center">
-                                <button type="button" id="signinButton" unicorn:click="signin" class="btn btn-light me-3">Signin!</button>
-                                <button type="button" id="cancelSButton" class="btn btn-light" 
-                                        unicorn:click="$reset">Cancel</button>
-                            </div>
+                                <input type="submit" value="Sign in!" class="btn btn-light">
+                                <input type="reset" value="Clear" class="btn btn-light">
+                            </form>
                         </main>
                     </div>
                     
@@ -184,7 +185,7 @@
                 </div>
             </div>
             <footer class="mt-auto text-white-50">
-                <p>Visit YouViz on <a href="https://github.com/mdawso04/youviz" target="_blank" class="text-white">Github</a></p>
+                <p>Visit us on <a href="https://github.com/mdawso04/youviz" target="_blank" class="text-white">Github</a></p>
             </footer>
         </div>
         <!-- LANDING END -->   
@@ -198,7 +199,43 @@
                 tabTrigger.show()
             })
         });    
+            
+        window.addEventListener("load", (event) => {
+            const hammertime = Hammer(document.getElementsByTagName('body')[0]);
+            hammertime.on('swipeleft swiperight', (event) => {
+                const t = document.querySelector('#landingTabs a.active');
+                var triggerEl;
+                switch(event.type) {
+                    case 'swipeleft': 
+                        switch(t.id) {
+                            case 'get-started-tab':
+                                triggerEl = document.querySelector('#signin-tab');
+                                break;
+                            case 'signin-tab':
+                                triggerEl = document.querySelector('#features-tab');
+                                break;
+                            case 'features-tab':
+                                triggerEl = document.querySelector('#get-started-tab');
+                                break;
+                        }
+                        break;
+                    case 'swiperight':
+                        switch(t.id) {
+                            case 'get-started-tab':
+                                triggerEl = document.querySelector('#features-tab');
+                                break;
+                            case 'signin-tab':
+                                triggerEl = document.querySelector('#get-started-tab');
+                                break;
+                            case 'features-tab':
+                                triggerEl = document.querySelector('#signin-tab');
+                                break;
+                        }
+                        break;
+                }
+                bootstrap.Tab.getOrCreateInstance(triggerEl).show()
+            });
+        });
         </script>
-        
     </body>
 </html>
