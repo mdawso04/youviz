@@ -29,7 +29,7 @@
                                 unicorn:click="setDatasource({{d.pk}})">
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">{{d.name}}</h5>
-                                <small>{% if d.pk == datasource.pk %}Selected{% else %}Click to select{% endif %}</small>
+                                <small>{% if d.pk == datasource.pk %}Selected{% else %}Click{% endif %}</small>
                             </div>
                             <p class="mb-1">{{d.description}}</p>
                             <small>Cached {{d.last_cached|naturaltime|capfirst}}</small>
@@ -61,7 +61,7 @@
                                 unicorn:click="getRemoteData('{{d}}')">
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">{{d}}</h5>
-                                <small>Click to cache</small>
+                                <small>Click</small>
                             </div>
                             <p class="mb-1">Remote CSV data</p>
                         </button>
