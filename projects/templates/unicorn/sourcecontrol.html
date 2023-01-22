@@ -20,7 +20,7 @@
                 <div class="col">
                     {% for d in datasources %}
                     {% if forloop.first %}
-                    <div class="list-group">
+                    <div class="list-group list-group-flush">
                     {% endif %}
                         <button type="button" 
                                 class="list-group-item list-group-item-action
@@ -54,10 +54,10 @@
                 <div class="col">
                     {% for d in remote_data %}
                     {% if forloop.first %}
-                    <div class="list-group">
+                    <div class="list-group list-group-flush">
                     {% endif %}
                         <button type="button" 
-                                class="list-group-item list-group-item-action"
+                                class="list-group-item list-group-item-action edgy-change-element"
                                 unicorn:click="getRemoteData('{{d}}')">
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">{{d}}</h5>
