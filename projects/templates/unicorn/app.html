@@ -294,7 +294,7 @@
                     </div>
                     <!-- TAB CONTENTS -->
                     <!-- TODO SWITCH FULL/GALLERY MODE -->
-                    {% if mode %}
+                    {% if not mode %}
                     
                     <div class="col tab-content" id="myTabContent">
                         {% for v in vizs %}
@@ -316,8 +316,7 @@
                     </div>
                     
                     {% else %}
-                    
-                    {{ pk }}
+                    Mode: {{ pk }}
                     
                     {% endif %}
                     
