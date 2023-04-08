@@ -58,6 +58,10 @@
     </nav>
     
     <!-- BOTTOM NAVBAR -->
+    <!-- TODO SWITCH FULL/GALLERY MODE -->
+    
+    {% if mode == "gallery" %}
+    
     <style>
     .dropup .dropdown-toggle::after {
         float: right;
@@ -259,6 +263,8 @@
         </div>
     </nav>
     
+    {% endif %}
+    
     <!-- MAIN CONTENT -->
     <div class="row h-100">
         <div class="col d-flex">
@@ -287,6 +293,9 @@
                         </div>
                     </div>
                     <!-- TAB CONTENTS -->
+                    <!-- TODO SWITCH FULL/GALLERY MODE -->
+                    {% if mode == "gallery" %}
+                    
                     <div class="col tab-content" id="myTabContent">
                         {% for v in vizs %}
                             {% with vids=v.pk|stringformat:"s" %}
@@ -305,6 +314,13 @@
                             {% endwith %}
                         {% endfor %}
                     </div>
+                    
+                    {% else %}
+                    
+                    {{ pk }}
+                    
+                    {% endif %}
+                    
                 </div>
             </div>
 

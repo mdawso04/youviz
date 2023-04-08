@@ -45,36 +45,41 @@ class AppView(UnicornView):
     def load_table(self):
         if self.request:
             if self.request.user.is_authenticated:
-                #logger.debug('AppView > load_table (user authenticated) start')
-                if not self.project:
-                    self.project = Project.objects.filter(user=self.request.user).last()
+                if self.request.mode == 'gallery':
+                    self.report = Report.objects.filter(pk=self.request.pk).last()
+                    if not self.report:
+                        return redirect('/')
+                else:
+                    #logger.debug('AppView > load_table (user authenticated) start')
                     if not self.project:
-                        self.addProject()
-                self.datasources = (
-                    Datasource.objects.filter(project=self.project, learner_mode=self.project.learner_mode)
-                    .all().order_by('-id')
-                    .prefetch_related('vizs', 'reports', 'items__answers')
-                )
-                if not self.datasources:
-                    self.getRemoteData()
-                if not self.datasource:
-                    self.datasource = self.datasources.last()
-                
-                self.vizs = self.datasource.vizs.all()
-                if not self.vizs:
-                    self.addViz(call_redirect=False)
-                    self.vizs = Viz.objects.filter(datasource=self.datasource).all().order_by('-id')
-                '''
-                if not self.selected_viz:
-                    self.selected_viz = self.vizs.last()
-                '''
-                #self.report = Report.objects.filter(file=self.file).last()
-                if hasattr(self.datasource, 'reports'):
-                    self.report = self.datasource.reports.last()
-                if not self.report:
-                    self.addReport()
-                #logger.debug('AppView > load_table (user authenticated) end')
-                #print(self.__dict__)
+                        self.project = Project.objects.filter(user=self.request.user).last()
+                        if not self.project:
+                            self.addProject()
+                    self.datasources = (
+                        Datasource.objects.filter(project=self.project, learner_mode=self.project.learner_mode)
+                        .all().order_by('-id')
+                        .prefetch_related('vizs', 'reports', 'items__answers')
+                    )
+                    if not self.datasources:
+                        self.getRemoteData()
+                    if not self.datasource:
+                        self.datasource = self.datasources.last()
+
+                    self.vizs = self.datasource.vizs.all()
+                    if not self.vizs:
+                        self.addViz(call_redirect=False)
+                        self.vizs = Viz.objects.filter(datasource=self.datasource).all().order_by('-id')
+                    '''
+                    if not self.selected_viz:
+                        self.selected_viz = self.vizs.last()
+                    '''
+                    #self.report = Report.objects.filter(file=self.file).last()
+                    if hasattr(self.datasource, 'reports'):
+                        self.report = self.datasource.reports.last()
+                    if not self.report:
+                        self.addReport()
+                    #logger.debug('AppView > load_table (user authenticated) end')
+                    #print(self.__dict__)
             else:
                 #logger.debug('AppView > load_table (user not authenticated) start')
                 self.datasources = Datasource.objects.none()

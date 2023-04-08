@@ -14,6 +14,12 @@ def app_top(request):
     else:
         return render(request, 'projects/landing_new.html')
     
+def gallery(request, pk):
+    if request.user.is_authenticated:
+        return render(request, 'projects/app_top.html', {'pk': pk, 'mode': 'gallery'})
+    else:
+        return render(request, 'projects/landing_new.html')
+    
 def dataframe(request, pk):
     if request.user.is_authenticated:
         d = Datasource.objects.filter(pk=int(pk)).last()
