@@ -45,7 +45,7 @@ class AppView(UnicornView):
     def load_table(self):
         if self.request:
             if self.request.user.is_authenticated:
-                if self.request.mode == 'gallery':
+                if self.request.mode:
                     self.report = Report.objects.filter(pk=self.request.pk).last()
                     if not self.report:
                         return redirect('/')
