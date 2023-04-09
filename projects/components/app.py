@@ -47,6 +47,7 @@ class AppView(UnicornView):
             if self.request.user.is_authenticated:
                 if hasattr(self.request, 'mode'):
                     self.report = Report.objects.filter(pk=self.request.pk)[0]
+                    print(self.report)
                     if not self.report:
                         return redirect('/')
                 else:
