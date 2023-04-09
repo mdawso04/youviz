@@ -46,10 +46,9 @@ class AppView(UnicornView):
         if self.request:
             if self.request.user.is_authenticated:
                 if hasattr(self.request, 'mode'):
-                    try:
-                        self.report = Report.objects.get(pk=self.request.pk)
-                    except:
-                        return redirect('http://google.com')
+                    self.report = Report.objects.filter(pk=self.request.pk)[0]
+                    if not self.report:
+                        return redirect('/')
                 else:
                     #logger.debug('AppView > load_table (user authenticated) start')
                     if not self.project:
