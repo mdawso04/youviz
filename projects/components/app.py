@@ -49,7 +49,7 @@ class AppView(UnicornView):
                     try:
                         self.report = Report.objects.get(pk=self.request.pk)
                     except:
-                        return redirect('/')
+                        return redirect('http://google.com')
                 else:
                     #logger.debug('AppView > load_table (user authenticated) start')
                     if not self.project:
