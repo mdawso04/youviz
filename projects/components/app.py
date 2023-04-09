@@ -45,7 +45,7 @@ class AppView(UnicornView):
     def load_table(self):
         if self.request:
             if self.request.user.is_authenticated:
-                if hasattr(self.request, 'mode'):
+                if hasattr(self.request, 'gallery_mode'):
                     try:
                         self.report = Report.objects.get(pk=99)
                     except:

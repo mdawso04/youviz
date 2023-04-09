@@ -60,7 +60,7 @@
     <!-- BOTTOM NAVBAR -->
     <!-- TODO SWITCH FULL/GALLERY MODE -->
     
-    {% if not mode %}
+    {% if not gallery_mode %}
     
     <style>
     .dropup .dropdown-toggle::after {
@@ -294,7 +294,7 @@
                     </div>
                     <!-- TAB CONTENTS -->
                     <!-- TODO SWITCH FULL/GALLERY MODE -->
-                    {% if not mode %}
+                    {% if not gallery_mode %}
                     
                     <div class="col tab-content" id="myTabContent">
                         {% for v in vizs %}
@@ -316,7 +316,8 @@
                     </div>
                     
                     {% else %}
-                    Mode: {{ pk }}
+                    gallery_mode: {{ gallery_mode }}
+                    pk: {{ pk }}
                     
                     {% endif %}
                     

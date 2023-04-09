@@ -16,7 +16,7 @@ def app_top(request):
     
 def gallery(request, pk):
     if request.user.is_authenticated:
-        return render(request, 'projects/app_top.html', {'pk': pk, 'mode': 'gallery'})
+        return render(request, 'projects/app_top.html', {'pk': pk, 'gallery_mode':True})
     else:
         return render(request, 'projects/landing_new.html')
     
