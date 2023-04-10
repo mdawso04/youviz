@@ -76,7 +76,11 @@ INSTALLED_APPS = [
 ]
 
 #SOCIALACCOUNT_AUTO_SIGNUP = False
-SITE_ID = 1
+
+if DEBUG:
+    SITE_ID = 3
+else:
+    SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
