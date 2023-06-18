@@ -10,8 +10,8 @@
     <div class="row row-cols-auto g-3 pb-3">
         <div class="col">
             <div class="mb-3">
-                Hey {{ user.username }}! 
-                <p class="small">BTW, your last login was {{user.last_login|naturaltime}}.</p>
+                Hey {{ user.username | title }}! 
+                <p class="small">Last login was {{user.last_login|naturaltime}}.</p>
             </div>
             <button type="button" class="btn btn-secondary" id="logoutButton" 
                     data-bs-toggle="modal" data-bs-target="#staticBackdrop">
