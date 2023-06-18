@@ -7,7 +7,7 @@ import '{% static "projects/js/hammer.min.js" %}';
 import '{% static "projects/js/jquery-3.5.1.min.js" %}';
 import '{% static "projects/js/dropzone.min.js" %}';
 import '{% static "projects/js/plotly-2.14.0.min.js" %}';
-import '{% static "projects/js/dayjs.min.js" %}';
+import '{% static "projects/js/dayjs-with-plugins.min.js" %}';
 
 // var
 //import './qrcode.min.js';
@@ -28,8 +28,8 @@ Handler.elID = function(componentName, id, role) {
 }
  
 Handler.timeRefresh = function(tstamp, tar) {
-    var relativeTime = require('dayjs/plugin/relativeTime');
-    dayjs.extend(relativeTime);
+    //var relativeTime = require('dayjs/plugin/relativeTime');
+    //dayjs.extend(relativeTime);
     alert("Setting timer");
     setInterval(function() {
         tar.innerHTML = dayjs(tstamp).fromNow();
