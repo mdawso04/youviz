@@ -34,7 +34,7 @@ Handler.timeRefresh = function(tstamp, tar) {
     setInterval(function() {
         tar.innerHTML = dayjs(tstamp).fromNow();
         alert("Called funct");
-    }, 1000);
+    }, 60000);
 }
 
 /*
