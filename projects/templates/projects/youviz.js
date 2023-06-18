@@ -34,7 +34,7 @@ Handler.timeRefresh = function(tstamp, tar) {
     setInterval(function() {
         tar.innerHTML = dayjs(tstamp).fromNow();
         alert("Called funct");
-    }, 60000);
+    }, 30000);
 }
 
 /*
@@ -846,9 +846,9 @@ window.addEventListener("load", (event) => {
     });
     
     //time refresh
-    const tstamps = document.querySelectorAll('.tstamp');
-    for (let i = 0; i < tstamps.length; i++) {
-        Handler.timeRefresh(tstamps[i].innerHTML, tstamps[i]); 
+    const trefreshes = document.querySelectorAll('.trefresh');
+    for (let i = 0; i < trefreshes.length; i++) {
+        Handler.timeRefresh(trefreshes[i].lastElementChild.innerHTML, trefreshes[i].firstElementChild); 
     }
 });
  
