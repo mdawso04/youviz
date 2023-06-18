@@ -11,7 +11,8 @@
         <div class="col">
             <div class="mb-3">
                 Hey {{ user.username | title }}! 
-                <p class="small">Last login was {{user.last_login|naturaltime}}.</p>
+                <p class="small">Last login was <span class="tstamp">{{user.last_login}}</span></p>
+                <p>{{user.last_login|naturaltime}}</p>
             </div>
             <button type="button" class="btn btn-secondary" id="logoutButton" 
                     data-bs-toggle="modal" data-bs-target="#staticBackdrop">

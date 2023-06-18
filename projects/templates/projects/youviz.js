@@ -7,6 +7,7 @@ import '{% static "projects/js/hammer.min.js" %}';
 import '{% static "projects/js/jquery-3.5.1.min.js" %}';
 import '{% static "projects/js/dropzone.min.js" %}';
 import '{% static "projects/js/plotly-2.14.0.min.js" %}';
+import '{% static "projects/js/dayjs.min.js" %}';
 
 // var
 //import './qrcode.min.js';
@@ -834,6 +835,14 @@ window.addEventListener("load", (event) => {
         }
     });
 });
+
+Handler.timeRefresh() = function(tstamp, tar) {
+    var relativeTime = require('dayjs/plugin/relativeTime');
+    dayjs.extend(relativeTime)
+    setInterval(function() {
+        document.getElementById(tar).innerHTML = dayjs(tstamp).fromNow();
+    }, 1000);
+}
  
 // sharing app link
 const shareApp = {
@@ -979,6 +988,10 @@ window.addEventListener("DOMContentLoaded", (event) => {
                 }
                 break;
             default:
+                var tstamps = document.querySelectorAll('.tstamp');
+                for (let i = 0; i < tstamps.length; i++) {
+                    Handler.timeRefresh() = function(i.innerHTML, i); 
+                }
                 break;
         }
 
