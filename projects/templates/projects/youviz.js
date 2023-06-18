@@ -26,6 +26,14 @@ Handler.alert = function(value) {
 Handler.elID = function(componentName, id, role) {
     return componentName + '-' + id + '-' + role;
 }
+ 
+Handler.timeRefresh = function(tstamp, tar) {
+    var relativeTime = require('dayjs/plugin/relativeTime');
+    dayjs.extend(relativeTime);
+    setInterval(function() {
+        document.getElementById(tar).innerHTML = dayjs(tstamp).fromNow();
+    }, 1000);
+}
 
 /*
 function showVizOffcanvas() {
@@ -835,14 +843,6 @@ window.addEventListener("load", (event) => {
         }
     });
 });
-
-Handler.timeRefresh() = function(tstamp, tar) {
-    var relativeTime = require('dayjs/plugin/relativeTime');
-    dayjs.extend(relativeTime)
-    setInterval(function() {
-        document.getElementById(tar).innerHTML = dayjs(tstamp).fromNow();
-    }, 1000);
-}
  
 // sharing app link
 const shareApp = {
