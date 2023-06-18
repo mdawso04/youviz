@@ -844,6 +844,12 @@ window.addEventListener("load", (event) => {
                 break;
         }
     });
+    
+    //time refresh
+    const tstamps = document.querySelectorAll('.tstamp');
+    for (let i = 0; i < tstamps.length; i++) {
+        Handler.timeRefresh(tstamps[i].innerHTML, tstamps[i]); 
+    }
 });
  
 // sharing app link
@@ -909,11 +915,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
                     body.appendChild(yvmodals[i]); 
                 }
                 
-                //time refresh
-                var tstamps = document.querySelectorAll('.tstamp');
-                for (let i = 0; i < tstamps.length; i++) {
-                    Handler.timeRefresh(tstamps[i].innerHTML, tstamps[i]); 
-                }
+                
                 break;
             case 'login':
                 // append modals to prevent z-layer issues
