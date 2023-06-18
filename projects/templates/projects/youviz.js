@@ -31,7 +31,7 @@ Handler.timeRefresh = function(tstamp, tar) {
     var relativeTime = require('dayjs/plugin/relativeTime');
     dayjs.extend(relativeTime);
     setInterval(function() {
-        document.getElementById(tar).innerHTML = dayjs(tstamp).fromNow();
+        tar.innerHTML = dayjs(tstamp).fromNow();
     }, 1000);
 }
 
