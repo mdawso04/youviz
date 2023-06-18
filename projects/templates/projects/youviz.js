@@ -906,6 +906,12 @@ window.addEventListener("DOMContentLoaded", (event) => {
                 for (let i = 0; i < yvmodals.length; i++) {
                     body.appendChild(yvmodals[i]); 
                 }
+                
+                //time refresh
+                var tstamps = document.querySelectorAll('.tstamp');
+                for (let i = 0; i < tstamps.length; i++) {
+                    Handler.timeRefresh(tstamps[i].innerHTML, tstamps[i]); 
+                }
                 break;
             case 'login':
                 // append modals to prevent z-layer issues
@@ -988,10 +994,6 @@ window.addEventListener("DOMContentLoaded", (event) => {
                 }
                 break;
             default:
-                var tstamps = document.querySelectorAll('.tstamp');
-                for (let i = 0; i < tstamps.length; i++) {
-                    Handler.timeRefresh(tstamps[i].innerHTML, tstamps[i]); 
-                }
                 break;
         }
 
