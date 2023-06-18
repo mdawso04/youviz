@@ -990,7 +990,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
             default:
                 var tstamps = document.querySelectorAll('.tstamp');
                 for (let i = 0; i < tstamps.length; i++) {
-                    Handler.timeRefresh() = function(i.innerHTML, i); 
+                    Handler.timeRefresh(tstamps[i].innerHTML, tstamps[i]); 
                 }
                 break;
         }
