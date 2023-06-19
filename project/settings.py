@@ -214,13 +214,15 @@ PWA_APP_START_URL = '/'
 PWA_APP_STATUS_BAR_COLOR = 'default'
 PWA_APP_ICONS = [
     {
-        'src': '/static/images/icons/icon-144x144.png',
+        #'src': '/static/images/icons/icon-144x144.png',
+        'src': '/static/images/icons/yvlogo.png',
         'sizes': '144x144'
     }
 ]
 PWA_APP_ICONS_APPLE = [
     {
-        'src': '/static/images/icons/icon-144x144.png',
+        #'src': '/static/images/icons/icon-144x144.png',
+        'src': '/static/images/icons/yvlogo.png',
         'sizes': '144x144'
     }
 ]
