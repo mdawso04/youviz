@@ -11,7 +11,7 @@
         <div class="col">
             <div class="mb-3">
                 Hey {{ user.username | title }}! 
-                <p class="small trefresh">Last login was <span class="thuman">{{user.last_login|date}}</span>
+                <p class="small trefresh">Last login was <span class="thuman">{{user.last_login|date:"c"}}</span>
                     <span class="tstamp d-none">{{user.last_login}}</span></p>
             </div>
             <button type="button" class="btn btn-secondary" id="logoutButton" 
