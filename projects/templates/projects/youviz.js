@@ -30,9 +30,10 @@ Handler.elID = function(componentName, id, role) {
 Handler.timeRefresh = function(tstamp, tar) {
     //var relativeTime = require('dayjs/plugin/relativeTime');
     //dayjs.extend(relativeTime);
+    tar.innerHTML = dayjs(tstamp).fromNow();
     setInterval(function() {
         tar.innerHTML = dayjs(tstamp).fromNow();
-    }, 30000);
+    }, 60000);
 }
 
 /*
