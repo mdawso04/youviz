@@ -72,6 +72,10 @@ class AppsettingsView(UnicornView):
     def refreshDatasource(self):
         self.parent.refreshDatasource()
         return redirect('/')
+    
+    def deleteDatasource(self, pk):
+        self.parent.deleteDatasource()
+        return redirect('/')
         
     '''
     def switch_learner_mode(self):

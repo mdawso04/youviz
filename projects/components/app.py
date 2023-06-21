@@ -70,7 +70,16 @@ class AppView(UnicornView):
                     if not self.datasources:
                         self.getRemoteData()
                     if not self.datasource:
-                        self.datasource = self.datasources.get(pk=self.project.selected_datasource)
+                        try:
+                            self.datasource = self.datasources.get(pk=self.project.selected_datasource)
+                        except:
+                            self.datasource = self.datasources.first()
+                        
+                        
+                        #if not self.project.selected_datasource:
+                        #    self.datasource = self.datasources.last()
+                        #else:
+                        #    self.datasource = self.datasources.get(pk=self.project.selected_datasource)
 
                     self.vizs = self.datasource.vizs.all()
                     if not self.vizs:
