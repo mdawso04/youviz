@@ -31,8 +31,14 @@ class AppView(UnicornView):
     #selected_viz: Viz = None
     report: Report = None
     
+    #gui: int = None
+    
     class Meta:
         javascript_exclude = ('project', 'datasources', 'datasource.document', 'vizs', 'report') 
+        
+    #def __init__(self, *args, **kwargs):
+    #    super().__init__(**kwargs)  # calling super is required
+    #    self.gui = kwargs.get('gui')
     
 #LOAD/UPDATE
     
@@ -45,9 +51,9 @@ class AppView(UnicornView):
     def load_table(self):
         if self.request:
             if self.request.user.is_authenticated:
-                if hasattr(self.request, 'gallery_mode'):
+                if hasattr(self, 'gui'):
                     try:
-                        self.report = Report.objects.get(pk=99)
+                        self.report = Report.objects.get(pk=int(self.gui))
                     except:
                         return redirect('/')
                 else:
@@ -64,7 +70,7 @@ class AppView(UnicornView):
                     if not self.datasources:
                         self.getRemoteData()
                     if not self.datasource:
-                        self.datasource = self.datasources.last()
+                        self.datasource = self.datasources.get(pk=self.project.selected_datasource)
 
                     self.vizs = self.datasource.vizs.all()
                     if not self.vizs:
