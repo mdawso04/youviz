@@ -42,7 +42,7 @@
                                    unicorn:model="show_in_gallery"
                                    unicorn:click="$toggle('show_in_gallery')"
                                    unicorn:partial.id="vizreport-share-panel">
-                            <label class="form-check-label" for="vizreport-share">Allow YouViz users to access report link</label>
+                            <label class="form-check-label" for="vizreport-share">Allow YouViz users access</label>
                         </div>
                         <div id="vizreport-share-panel" class="{% if not show_in_gallery %}d-none{% endif %}">
                             <div class="form-check form-switch pb-1">
@@ -50,20 +50,20 @@
                                        unicorn:model="public_access"
                                        unicorn:click="$toggle('public_access')"
                                        unicorn:partial.id="vizreport-share-panel">
-                                <label class="form-check-label" for="vizreport-share">Allow everyone else to access report link</label>
+                                <label class="form-check-label" for="vizreport-share">Allow everyone else access</label>
                             </div>
                             {% if public_access %}
                             <div class="alert alert-danger d-flex align-items-center" role="alert">
                                 <i class="bi bi-exclamation-triangle-fill pe-2" style="font-size: 1.2rem;"></i>
                                 <div>
-                                Anyone with the link can see this report
+                                Anyone can open this report link
                                 </div>
                             </div>
                             {% else %}
                             <div class="alert alert-warning d-flex align-items-center" role="alert">
                                 <i class="bi bi-exclamation-triangle-fill pe-2" style="font-size: 1.2rem;"></i>
                                 <div>
-                                Any YouViz user with the link can see this report 
+                                YouViz users can open this report link
                                 </div>
                             </div>
                             {% endif %}    
