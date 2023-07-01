@@ -11,14 +11,14 @@
         <div class="col">
             <div class="mb-3">
                 Hey {{ user.username | title }}! 
-                <p class="small trefresh">Last login was <span class="thuman">...</span>
+                <p class="small trefresh">Last login <span class="thuman">...</span>
                     <span class="tstamp d-none">{{user.last_login|date:"c"}}</span></p>
             </div>
             <button type="button" class="btn btn-secondary" id="logoutButton" 
                     data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                 Logout
             </button>
-            <button type="button" class="btn btn-danger" id="refreshAppButton"
+            <button type="button" class="btn btn-secondary" id="refreshAppButton"
                     onclick="caches.keys().then(cacheNames => {cacheNames.forEach(cacheName => {caches.delete(cacheName);});});
                              location.reload();">
                 Refresh app
@@ -144,12 +144,12 @@
     </div>
     <div class="row row-cols-auto g-3 pb-3">
         <div class="col">
-            <button type="button" class="btn btn-secondary" id="settings-button-share" aria-label="Tell a Friend">
+            <button type="button" class="btn btn-primary" id="settings-button-share" aria-label="Tell a Friend">
                     Share YouViz!
             </button>
-            <button type="button" class="btn btn-secondary" id="settings-visit" 
+            <button type="button" class="btn btn-sm btn-secondary" id="settings-visit" 
                 onclick="window.open('https://github.com/mdawso04/youviz', '_blank').focus();" aria-label="Visit Github">
-                    Visit us on Github
+                    Developers
             </button>
         </div>
     </div>

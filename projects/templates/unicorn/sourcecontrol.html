@@ -13,7 +13,7 @@
         <div class="modal-body pt-0">
             <div class="row g-3">
                 <div class="col">
-                    <h6 class="card-subtitle mb-3 text-muted">Cached Sources</h6>
+                    <h6 class="card-subtitle mb-3 text-muted">Your Sources</h6>
                 </div>
             </div>
             <div class="row g-3">
@@ -32,13 +32,13 @@
                                 <small>{% if d.pk == datasource.pk %}Selected{% else %}Click{% endif %}</small>
                             </div>
                             <p class="mb-1">{{d.description}}</p>
-                            <small>Cached {{d.last_cached|naturaltime|capfirst}}</small>
+                            <small>Last refreshed {{d.last_cached|naturaltime|capfirst}}</small>
                         </button>
                     {% if forloop.last %}
                     </div>
                     {% endif %}
                     {% empty %}
-                    No cached data sources
+                    No data sources
                     {% endfor %}
                 </div>
             </div>  
