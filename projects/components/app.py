@@ -24,14 +24,9 @@ from datetime import datetime
 class AppView(UnicornView):
     project: Project = None
     datasources: QuerySetType[Datasource] = None
-    #files = File.objects.none()
     datasource: Datasource = None
     vizs: QuerySetType[Viz] = None
-    #vizs = Viz.objects.none()
-    #selected_viz: Viz = None
     report: Report = None
-    
-    #gui: int = None
     
     class Meta:
         javascript_exclude = ('project', 'datasources', 'datasource.document', 'vizs', 'report') 
@@ -43,10 +38,7 @@ class AppView(UnicornView):
 #LOAD/UPDATE
     
     def mount(self):
-        #logger.debug('AppView > mount start')
         self.load_table()
-        #logger.debug(f'AppView mount. Children: {self.children}')
-        #logger.debug('AppView > mount end')
         
     def load_table(self):
         if self.request:
@@ -59,36 +51,17 @@ class AppView(UnicornView):
                 else:
                     #logger.debug('AppView > load_table (user authenticated) start')
                     if not self.project:
-                        self.project = Project.objects.filter(user=self.request.user).last()
-                        if not self.project:
-                            self.addProject()
-                    self.datasources = (
-                        Datasource.objects.filter(project=self.project, learner_mode=self.project.learner_mode)
-                        .all().order_by('-id')
-                        .prefetch_related('vizs', 'reports', 'items__answers')
-                    )
-                    if not self.datasources:
-                        self.getRemoteData()
+                        self.project, created = Project.objects.get_or_create(user=self.request.user)
+                    self.datasources = Datasource.datasources(self.project)
                     if not self.datasource:
                         try:
                             self.datasource = self.datasources.get(pk=self.project.selected_datasource)
                         except:
                             self.datasource = self.datasources.first()
-                        
-                        
-                        #if not self.project.selected_datasource:
-                        #    self.datasource = self.datasources.last()
-                        #else:
-                        #    self.datasource = self.datasources.get(pk=self.project.selected_datasource)
-
                     self.vizs = self.datasource.vizs.all()
                     if not self.vizs:
                         self.addViz(call_redirect=False)
                         self.vizs = Viz.objects.filter(datasource=self.datasource).all().order_by('-id')
-                    '''
-                    if not self.selected_viz:
-                        self.selected_viz = self.vizs.last()
-                    '''
                     #self.report = Report.objects.filter(file=self.file).last()
                     if hasattr(self.datasource, 'reports'):
                         self.report = self.datasource.reports.last()
@@ -125,14 +98,6 @@ class AppView(UnicornView):
         pass
         #logger.debug('AppView > calling end')
 
-    def addProject(self, name='NewProject', description='NewProject'):
-        #logger.debug('AppView > addViz start')
-        #df = self.df()
-        p = Project(name=name, description=description, user=self.request.user)
-        self.project = p
-        p.save()
-        #logger.debug('AppView > addViz end')
-        
     def setDatasource(self, f):
         self.datasource = self.datasources.get(pk=f)
         self.project.selected_datasource = f
@@ -225,7 +190,8 @@ class AppView(UnicornView):
         
     def getRemoteData(self, service='READ_DATA_ATTRITION', name='no_name'):
         #logger.debug('AppView > addRemoteFile start')
-        a = pp.App()
+        Datasource.getRemoteData(self.project)
+    '''    a = pp.App()
         a.add(service)
         df = a.call()
         content = df.to_csv(index=False)
@@ -246,6 +212,7 @@ class AppView(UnicornView):
             .prefetch_related('vizs', 'items__answers')
         )
         #logger.debug('AppView > addRemoteFile end')
+    '''
         
     def logout(self):
         logout(self.request)

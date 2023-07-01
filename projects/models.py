@@ -16,10 +16,11 @@ import hashlib
 #non-standard libraries
 import pandas as pd
 import shortener
+from datetime import datetime
 
 class BaseModel(models.Model):
-    name = models.CharField(max_length=100, blank=True)
-    description = models.CharField(max_length=255, blank=True)
+    name = models.CharField(max_length=100, blank=True, default='New item')
+    description = models.CharField(max_length=255, blank=True, default='New item')
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     hash_key = models.CharField(max_length=10, blank=True)
@@ -58,6 +59,7 @@ class BaseModel(models.Model):
     def save(self, *args, **kwargs):
         self.hash_key = self._createHash()
         super(BaseModel, self).save(*args, **kwargs)
+        
     
     '''
     def refresh_from_db(self, *args, **kwargs):
@@ -125,6 +127,29 @@ class Datasource(BaseModel):
     
     class Meta:
         default_related_name = 'datasources'
+    
+    @classmethod
+    def datasources(cls, project):
+        ds = cls.objects.filter(project=project).all().order_by('-id').prefetch_related('vizs', 'reports', 'items__answers')
+        if not ds:
+            cls.getRemoteData(project)
+            ds = cls.objects.filter(project=project).all().order_by('-id').prefetch_related('vizs', 'reports', 'items__answers')
+        return ds
+            
+    @classmethod
+    def getRemoteData(cls, project, service='READ_DATA_ATTRITION', name='no_name'):
+        #logger.debug('AppView > addRemoteFile start')
+        a = pp.App()
+        a.add(service)
+        df = a.call()
+        content = df.to_csv(index=False)
+        json = a.todos
+        # no files on disk so delete
+        #temp_file = ContentFile(content.encode('utf-8'))
+        f = cls(name=name, description=service, project=project, 
+                       json=json, document=content, last_cached = datetime.utcnow())
+        #f.document.save(f'{service}.csv', temp_file)
+        f.save()
     
     @cached_property
     def datatable(self):
