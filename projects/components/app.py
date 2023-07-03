@@ -5,6 +5,7 @@ from projects.models import Project, Datasource, Viz, Report, Item, Answer
 from django.core.files.base import ContentFile
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout
+from django.urls import reverse
 from project import settings
 #from django.contrib import messages
 
@@ -30,10 +31,10 @@ class AppView(UnicornView):
     
     class Meta:
         javascript_exclude = ('project', 'datasources', 'datasource.document', 'vizs', 'report') 
-        
-    #def __init__(self, *args, **kwargs):
-    #    super().__init__(**kwargs)  # calling super is required
-    #    self.gui = kwargs.get('gui')
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(**kwargs)  # calling super is required
+        self.mode = kwargs.get('mode')
     
 #LOAD/UPDATE
     
@@ -49,7 +50,6 @@ class AppView(UnicornView):
                     except:
                         return redirect('/')
                 else:
-                    #logger.debug('AppView > load_table (user authenticated) start')
                     if not self.project:
                         self.project, created = Project.objects.get_or_create(user=self.request.user)
                     self.datasources = Datasource.datasources(self.project)
@@ -62,19 +62,14 @@ class AppView(UnicornView):
                     if not self.vizs:
                         self.addViz(call_redirect=False)
                         self.vizs = Viz.objects.filter(datasource=self.datasource).all().order_by('-id')
-                    #self.report = Report.objects.filter(file=self.file).last()
                     if hasattr(self.datasource, 'reports'):
                         self.report = self.datasource.reports.last()
                     if not self.report:
                         self.addReport()
-                    #logger.debug('AppView > load_table (user authenticated) end')
-                    #print(self.__dict__)
             else:
-                #logger.debug('AppView > load_table (user not authenticated) start')
                 self.datasources = Datasource.objects.none()
                 self.datasource = None
                 self.vizs = Viz.objects.none()
-                #logger.debug('AppView > load_table (user not authenticated) end')
     
     def hydrate(self):
         #logger.debug('AppView > hydrate start')
@@ -119,7 +114,7 @@ class AppView(UnicornView):
                 child.is_editing = False
         '''
         self.load_table()
-        return redirect('/')
+        return redirect(reverse('app'))
     
     def addViz(self, viz_type='NewViz', call_redirect=True):
         #logger.debug('AppView > addViz start')
@@ -135,7 +130,7 @@ class AppView(UnicornView):
         v.save()
         #self.load_table()
         if call_redirect:
-            return redirect('/')
+            return redirect(reverse('app'))
         #logger.debug('AppView > addViz end')
         
     def copyViz(self, pk):
@@ -143,14 +138,14 @@ class AppView(UnicornView):
         v.pk = None
         v.save()
         self.load_table()
-        return redirect('/')
+        return redirect(reverse('app'))
         
     def deleteViz(self, pk):
         #Viz.objects.filter(pk=pk).delete()
         v = Viz.objects.get(pk=pk)
         v.delete()
         self.load_table()
-        return redirect('/')
+        return redirect(reverse('app'))
     
     '''
     def selectViz(self, pk):
@@ -216,7 +211,7 @@ class AppView(UnicornView):
         
     def logout(self):
         logout(self.request)
-        return redirect('/')
+        return redirect(reverse('app'))
         
     def called(self, name, args):
         #logger.debug('AppView > called start')

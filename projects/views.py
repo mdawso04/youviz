@@ -8,18 +8,26 @@ from .forms import DatasourceForm
 from project import settings
 import os
 
-def app_top(request):
+def app(request):
     if request.user.is_authenticated:
-        return render(request, 'projects/app_top.html')
+        context = {'mode': 'app'}
+        return render(request, 'projects/app_top.html', context)
     else:
         return render(request, 'projects/landing_new.html')
-    
+
+def share(request):
+    if True: #id is valid && share is on
+        context = {'mode': 'share'}
+        return render(request, 'projects/app_top.html', context)
+    else:
+        return render(request, 'projects/landing_new.html')
+
 def gallery(request, pk):
     if request.user.is_authenticated:
         return render(request, 'projects/app_top.html', {'pk': pk, 'gallery_mode':True})
     else:
         return render(request, 'projects/landing_new.html')
-    
+
 def dataframe(request, pk):
     if request.user.is_authenticated:
         d = Datasource.objects.filter(pk=int(pk)).last()

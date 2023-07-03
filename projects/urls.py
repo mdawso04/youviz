@@ -5,7 +5,8 @@ from projects.components.dataframe import DataframeView
 from projects.components.vizreport import VizreportView
 
 urlpatterns = [
-    path('', views.app_top, name="app_top"),
+    path('', views.app, name="app"),
+    path('share/<int:pk>/', views.share, name="share"),
     path('gallery/<int:pk>/', views.gallery, name="gallery"),
     path('viz/<int:pk>/<hash_k>/', VizView.as_view()),
     path('datasource/<int:pk>/<hash_k>/', DataframeView.as_view(), name="dataframe"),
