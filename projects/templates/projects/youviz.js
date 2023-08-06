@@ -35,6 +35,29 @@ Handler.timeRefresh = function(tstamp, tar) {
         tar.innerHTML = dayjs(tstamp).fromNow();
     }, 60000);
 }
+ 
+ // share button
+Handler.shareListener = function(btnSelector, resSelector, title, text, url) {
+    const shareData = {
+        title: title,
+        text: text,
+        url: url
+    }
+    const btn = document.querySelector(btnSelector);
+    const resultPara = document.querySelector(resSelector);
+    
+    if(!btn) return; 
+    
+    // Share must be triggered by "user activation"
+    btn.addEventListener('click', async () => {
+        try {
+            await navigator.share(shareData);
+            //resultPara.textContent = 'MDN shared successfully';
+        } catch (err) {
+            console.log(`Error: ${err}`);
+        }
+    });
+}
 
 /*
 function showVizOffcanvas() {
@@ -657,6 +680,7 @@ Handler.vizreportInit = function (node) {
         });*/
         
         // share button
+        /*
         const shareData = {
             title: '{{report.name}}',
             text: 'Check out this data vizualization on YouViz!',
@@ -673,6 +697,8 @@ Handler.vizreportInit = function (node) {
                 console.log(`Error: ${err}`);
             }
         });
+        */
+        Handler.shareListener('#report-button-share', 'null', 'Report', 'Check out this data vizualization on YouViz!', 'https://youviz.app');
     }
 }
  
@@ -852,6 +878,7 @@ window.addEventListener("load", (event) => {
 });
  
 // sharing app link
+/*
 const shareApp = {
     //title: '{{report.name}}',
     text: 'Check out YouViz - cool data vizualization app!',
@@ -866,6 +893,10 @@ btn.addEventListener('click', async () => {
         console.log(`Error: ${err}`);
     }
 });
+*/
+
+Handler.shareListener('#settings-button-share', 'null', 'YouViz', 'Check out this free data vizualization app!', 'https://youviz.app');
+Handler.shareListener('#share-button-share', 'null', 'Report', 'Check out this data vizualization on YouViz!', 'https://youviz.app');
 
 window.addEventListener("DOMContentLoaded", (event) => {
     Unicorn.addEventListener("updated", (component) =>{

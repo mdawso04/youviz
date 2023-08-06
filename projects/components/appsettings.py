@@ -18,6 +18,10 @@ class AppsettingsView(UnicornView):
     
     class Meta:
         javascript_exclude = ('datasources', 'datasource.document') 
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(**kwargs)  # calling super is required
+        self.mode = kwargs.get('mode')
         
 #LOAD/UPDATE
 

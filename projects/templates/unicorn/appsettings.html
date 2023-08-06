@@ -9,6 +9,7 @@
     <!-- USER -->
     <div class="row row-cols-auto g-3 pb-3">
         <div class="col">
+            {% if user.is_authenticated %}
             <div class="mb-3">
                 Hey {{ user.username | title }}! 
                 <p class="small trefresh">Last login <span class="thuman">...</span>
@@ -18,6 +19,11 @@
                     data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                 Logout
             </button>
+            {% else %}
+            <button type="button" class="btn btn-primary" id="loginButton" onclick="window.location.href = '/'">
+                Login
+            </button>
+            {% endif %}
             <button type="button" class="btn btn-secondary" id="refreshAppButton"
                     onclick="caches.keys().then(cacheNames => {cacheNames.forEach(cacheName => {caches.delete(cacheName);});});
                              location.reload();">
@@ -51,8 +57,8 @@
         </div>
     </div>
     
-    {% if mode %}
-    
+    {% if mode == "app" %}
+                        
     <hr class="my-4"/>
     
     <!-- DATA SOURCE -->
