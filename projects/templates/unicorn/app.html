@@ -10,10 +10,10 @@
                 <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
                 <span class="d-none d-lg-block">You<span class="text-warning">Viz</span></span></a>
             <form class="d-flex" action="/">
-                <div class="input-group">
-                    <input class="form-control bg-dark text-white" type="search" name="query" 
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-secondary text-white border-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
+                    <input class="form-control bg-secondary text-white border-0" type="search" name="query" 
                            placeholder={% if not context.query %}"Search"{% else %}"{{ context.query }}"{% endif %} aria-label="Search">
-                    <button class="btn btn-outline-light text-white" type="submit"><i class="bi bi-search" style="font-size: 1.2rem;"></i></button>
                 </div>
             </form>
             <button id="off-canvas-button" 
