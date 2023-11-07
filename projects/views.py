@@ -8,14 +8,27 @@ from .forms import DatasourceForm
 from project import settings
 import os
 
-def app(request):
+def app(request, pk=None):
     if request.user.is_authenticated:
-        context = {'mode': 'app'}
-        return render(request, 'projects/app_top.html', context)
+        c = {'context': {'mode': 'app', 'pk': pk}}
+        return render(request, 'projects/app_top.html', c)
     else:
         return render(request, 'projects/landing_new.html')
 
-def share(request):
+def list(request):
+    query = request.GET.get('query', '')
+    page = request.GET.get('page', 1)
+    c = {'context': {'mode': 'list', 'query': query, 'page': page}}
+    return render(request, 'projects/app_top.html', c)
+
+def view(request, pk):
+    if True: #id is valid && share is on
+        c = {'context': {'mode': 'view', 'pk': pk}}
+        return render(request, 'projects/app_top.html', c)
+    else:
+        return list(request)
+
+def share(request, pk):
     if True: #id is valid && share is on
         context = {'mode': 'share'}
         return render(request, 'projects/app_top.html', context)

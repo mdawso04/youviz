@@ -29,12 +29,15 @@ class AppView(UnicornView):
     vizs: QuerySetType[Viz] = None
     report: Report = None
     
+    list_datasources: QuerySetType[Datasource] = None
+    
     class Meta:
         javascript_exclude = ('project', 'datasources', 'datasource.document', 'vizs', 'report') 
     
-    def __init__(self, *args, **kwargs):
-        super().__init__(**kwargs)  # calling super is required
-        self.mode = kwargs.get('mode')
+    #def __init__(self, *args, **kwargs):
+    #    super().__init__(**kwargs)  # calling super is required
+    #    self.mode = kwargs.get('mode')
+    #    self.pk = kwargs.get('pk')
     
 #LOAD/UPDATE
     
@@ -42,11 +45,32 @@ class AppView(UnicornView):
         self.load_table()
         
     def load_table(self):
+        
+        #not logged in
+        #  appmode->landing
+        #  listmode->show list
+        #  viewmode->show viz
+        #logged in
+        #  appmode->app
+        #  listmode->show list
+        #  viewmode->show viz
+        
+        self.context = self.component_kwargs['context']
+        
         if self.request:
-            if self.mode == 'app':
+            if self.context['mode'] == 'list':
+                self.list_datasources = Datasource.objects.filter(name__icontains=self.context['query']).all().order_by('-id')
+                return #do nothing
+            elif self.context['mode'] == 'app':
                 if not self.project:
                     self.project, created = Project.objects.get_or_create(user=self.request.user)
                 self.datasources = Datasource.datasources(self.project)
+                if self.context['pk']:
+                    self.project.selected_datasource = self.context['pk']
+                    self.project.save()
+                elif not self.project.selected_datasource:
+                    self.project.selected_datasource = self.datasources.first().pk
+                    self.project.save()
                 if not self.datasource:
                     try:
                         self.datasource = self.datasources.get(pk=self.project.selected_datasource)
@@ -60,11 +84,16 @@ class AppView(UnicornView):
                     self.report = self.datasource.reports.last()
                 if not self.report:
                     self.addReport()
+            elif self.context['mode'] == 'view':
+                self.datasource = Datasource.objects.get(pk=self.context['pk'])
+                self.vizs = self.datasource.vizs.all()
+                if hasattr(self.datasource, 'reports'):
+                    self.report = self.datasource.reports.last()
             else:
                 self.datasources = Datasource.objects.none()
                 self.datasource = None
                 self.vizs = Viz.objects.none()
-    
+                
     def hydrate(self):
         #logger.debug('AppView > hydrate start')
         pass
@@ -124,7 +153,7 @@ class AppView(UnicornView):
         v.save()
         #self.load_table()
         if call_redirect:
-            return redirect(reverse('app'))
+            return redirect(reverse('app_all'))
         #logger.debug('AppView > addViz end')
         
     def copyViz(self, pk):
@@ -132,14 +161,15 @@ class AppView(UnicornView):
         v.pk = None
         v.save()
         self.load_table()
-        return redirect(reverse('app'))
+        return redirect(reverse('app_all'))
         
     def deleteViz(self, pk):
         #Viz.objects.filter(pk=pk).delete()
         v = Viz.objects.get(pk=pk)
+        print(pk)
         v.delete()
         self.load_table()
-        return redirect(reverse('app'))
+        return redirect(reverse('app_all'))
     
     '''
     def selectViz(self, pk):
@@ -205,7 +235,7 @@ class AppView(UnicornView):
         
     def logout(self):
         logout(self.request)
-        return redirect(reverse('app'))
+        return redirect(reverse('list'))
         
     def called(self, name, args):
         #logger.debug('AppView > called start')

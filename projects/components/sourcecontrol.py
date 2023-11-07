@@ -3,6 +3,7 @@ from django_unicorn.components import UnicornView
 from projects.models import Datasource, Item
 from project import settings
 from django.shortcuts import render, redirect
+from django.urls import reverse
 
 # pp
 import pp
@@ -53,7 +54,7 @@ class SourcecontrolView(UnicornView):
     
     def setDatasource(self, f):
         self.parent.setDatasource(f)
-        return redirect('/')
+        return redirect(reverse('app', args=[f]))
     
     def called(self, name, args):
         #logger.debug('DataframeView > called start')

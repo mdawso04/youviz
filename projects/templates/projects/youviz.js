@@ -725,7 +725,7 @@ window.addEventListener("load", async (event) => {
     
     await Promise.all(nodes.map(async (node) => {
         // get unicorn data, add to node
-        const response = await fetch("." + node.dataset.yvLink);
+        const response = await fetch(node.dataset.yvLink);
         node.innerHTML = await response.text();
         var selector = '#' + node.id + ' script[id^="unicorn:data"]';
         var u_script = document.querySelector(selector);

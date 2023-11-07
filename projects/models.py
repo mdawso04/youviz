@@ -39,6 +39,12 @@ class BaseModel(models.Model):
             hash_k = self.hash_key
         )
     
+    def get_absolute_url_viewmode(self):
+        #return '/report/%i/' % self.id
+        return '{absolute_url}/viewmode/'.format(
+            absolute_url = self.get_absolute_url()
+        )
+    
     def _getHashPayload(self):
         return [self.__class__.__name__, self.id, self.last_updated]
     

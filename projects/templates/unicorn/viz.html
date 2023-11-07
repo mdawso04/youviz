@@ -185,11 +185,16 @@
     </div>
     <!-- test edit -->
     
+    <h6 class="card-subtitle mb-2 text-muted">{{viz.name}}</h6>
+    {% if context.mode == 'app' %}
     <div class="form-floating mx-2">
         <textarea unicorn:model.lazy="viz.description" unicorn:partial="floatingTextarea2{{vid}}" id="floatingTextarea2{{vid}}" 
                   class="form-control" placeholder="Leave a memo here" style="height: 120px"></textarea>
         <label for="floatingTextarea2{{vid}}">Memo</label>
     </div>
+    {% else %}
+    <div>{{viz.description}}</div>
+    {% endif %}
     {% endwith %}
     {% endwith %}
 </div>

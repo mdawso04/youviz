@@ -260,5 +260,19 @@ class VizView(UnicornView):
             self.request = request
             self.args = args
             self.kwargs = kwargs
-            return self.dispatch(request, *args, **kwargs)
+            
+            # patch to feed context for template when viz fetched by GET from outside app
+            self.mount()
+            self.hydrate()
+
+            self._cache_component(**kwargs)
+            self.extra_context = kwargs
+            return self.render_to_response(
+                context=self.get_context_data(),
+                component=self,
+                init_js=True,
+            )
+            #endpatch
+            
+            #return self.dispatch(request, *args, **kwargs)
         return view

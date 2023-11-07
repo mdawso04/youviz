@@ -4,11 +4,15 @@
 <div class="container-fluid vh-100 p-0 overflow-hidden" id="appTop">
     
     <!-- TOP NAVBAR -->
-    <nav class="navbar navbar-dark bg-dark">
-        <div class="container-fluid d-flex">
+    <nav class="navbar sticky-top navbar-dark bg-dark">
+        <div class="container-fluid d-flex justify-content-between">
             <a class="navbar-brand me-auto" href="/">
                 <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
                 You<span class="text-warning">Viz</span></a>
+            <form class="d-flex" action="/">
+                <input class="form-control me-2" type="search" name="query" placeholder={% if not context.query %}"Search"{% else %}"{{ context.query }}"{% endif %} aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
             <button id="off-canvas-button" 
                     class="btn btn-dark border-0 text-white text-opacity-75" 
                     type="button" data-bs-toggle="offcanvas" 
@@ -27,9 +31,28 @@
         </div>
         <div class="offcanvas-body pt-0">  
         <!-- FILE CONTROL -->
-        {% unicorn 'appsettings' parent=view datasources=datasources datasource=selected_datasource_for_editing id='appsettings' mode=mode %}
+        {% unicorn 'appsettings' parent=view datasources=datasources datasource=selected_datasource_for_editing id='appsettings' context=context %}
         </div>
     </div>
+    
+    {% if context.mode == "list" %}
+    <div class="container-fluid">
+        <div class="row row-cols-1 row-cols-md-4 g-4 pt-4">
+            {% for l in list_datasources %}
+            <div class="col">
+                <div class="card">
+                    {# <img src="..." class="card-img-top" alt="..."> #}
+                    <div class="card-body">
+                        <a href="{% url 'view' pk=l.pk %}"><h5 class="card-title">{{ l.name }}</h5></a>
+                        <p class="card-text">{{ l.description }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    {% endif %}
     
     <!-- BOTTOM NAVBAR -->
     
@@ -62,10 +85,18 @@
     
     <nav class="navbar fixed-bottom bg-light border-top border-warning border-2" id=bottom-navbar>
         <div class="container-sm d-flex d-grid mb-4 gap-2 justify-content-center">
+            
             <div class="btn-toolbar d-flex w-100 justify-content-center button-toolbar" role="toolbar" 
                  aria-label="Toolbar with button groups">
+                {% if context.mode == "view" or context.mode == "app" %}
                 
-                {% if mode == "app" %}
+                {% if context.mode == "view" %}
+                <div class="btn-group me-2" role="group" aria-label="button group">
+                    <a type="button" class="btn btn-danger" href="{% url 'list' %}" id="dataEditButton">
+                            <i class="bi bi-search" style="font-size: 1.2rem;"></i>
+                    </a>
+                </div>
+                {% endif %}
                 
                 <div class="btn-group d-flex flex-grow-1 me-2 d-block" role="group" aria-label="button group">
                     <button type="button" class="btn btn-primary d-none d-lg-block" onclick="Handler.navigator.back();">
@@ -89,10 +120,12 @@
                                 aria-expanded="false" aria-controls="collapseExample">
                         <i class="bi bi-list" style="font-size: 2vw;"></i>
                     </button>-->
+                    {% if context.mode == "app" %}
                     <button id="showVizOffcanvas" class="btn btn-primary edgy-right-element" type="button" onclick="Handler.navigator.toggleEdit();"
                                 aria-expanded="false" aria-controls="collapseExample" disabled>
                         <i class="bi bi-bar-chart" style="font-size: 1.2rem;"></i>
                     </button>
+                    {% endif %}
                     <!--
                     <button type="button" class="btn btn-primary" onclick="Handler.navigator.add('viz', 3, 'three');">
                         Test
@@ -105,22 +138,36 @@
                     </button>    
                 </div>
                 
-                <div class="btn-group" role="group" aria-label="button group">
+                <div class="btn-group me-2" role="group" aria-label="button group">
+                    {% if context.mode == "app" %}
                     <button type="button" class="btn btn-secondary" id="datafileOpenButton" unicorn:key="datafileOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable" disabled>
                             <i class="bi bi-table" style="font-size: 1.2rem;"></i>
                     </button>
+                    {% endif %}
                     <button type="button" class="btn btn-secondary" id="reportOpenButton" unicorn:key="reportOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport" disabled>
                             <i class="bi bi-file-earmark-check" style="font-size: 1.2rem;"></i>
                     </button>
                 </div>
+                {% endif %}
                 
-                
-                {% elif mode == "share" %}
-
-                <button type="button" class="btn btn-primary" id="share-button-share">Share Report</button>
-
+                {% if user.is_authenticated %}
+                <div class="btn-group" role="group" aria-label="button group">
+                {% if context.mode == "list" %}
+                    <a type="button" class="btn btn-danger" href="{% url 'app_all' %}" id="dataEditButton">
+                        Switch to app mode
+                    </a>
+                {% elif context.mode == "view" %}
+                    <a type="button" class="btn btn-danger" href="{% url 'app' pk=context.pk %}" id="dataEditButton">
+                            <i class="bi bi-pen" style="font-size: 1.2rem;"></i>
+                    </a>
+                {% elif context.mode == "app" %}
+                    <a type="button" class="btn btn-danger" href="{% url 'view' pk=project.selected_datasource %}" id="dataEditButton">
+                            <i class="bi bi-book" style="font-size: 1.2rem;"></i>
+                    </a>
+                {% endif %}
+                </div>
                 {% endif %}
 
                 <style>
@@ -214,6 +261,7 @@
                 </style>  
                 
                 <!-- DATA PAYLOAD -->
+                {% if context.mode == "app" %}
                 <div class="yv-component dataframe d-none" id="yv-component-dataframe-{{ datasource.pk }}"
                      data-yv-component="dataframe"
                      data-yv-id="{{ datasource.pk }}"
@@ -221,6 +269,8 @@
                      data-yv-button="#datafileOpenButton"
                      data-yv-init="dataframeInit">
                 </div>
+                {% endif %}
+                {% if context.mode == "view" or context.mode == "app" %}
                 <div class="yv-component vizreport d-none" id="yv-component-vizreport-{{ report.pk }}"
                      data-yv-component="report"
                      data-yv-id="{{ report.pk }}"
@@ -228,14 +278,14 @@
                      data-yv-button="#reportOpenButton"
                      data-yv-init="vizreportInit">
                 </div>
+                {% endif %}
             </div>
         </div>
     </nav>
     
     <!-- MAIN CONTENT -->
     
-    {% if mode == "app" %}
-    
+    {% if context.mode != "list" %}
     <div class="row h-100">
         <div class="col d-flex">
             
@@ -263,7 +313,7 @@
                                     <div class="yv-component viz" id="yv-component-viz-{{ v.pk }}"
                                          data-yv-component="viz"
                                          data-yv-id="{{ v.pk }}"
-                                         data-yv-link="{{ v.get_absolute_url }}"
+                                         data-yv-link="{% if context.mode == 'view' %}{{ v.get_absolute_url_viewmode }}{% else %}{{ v.get_absolute_url }}{% endif %}"
                                          data-yv-button="#showVizOffcanvas"
                                          data-yv-init="vizInit">
                                     </div>
@@ -286,18 +336,6 @@
         </div>
     </div>
     
-    {% elif mode == "share" %}
-
-    <div class="row h-100 overflow-scroll">
-        <div class="col d-flex">
-            <div class="container" id="midPanel2">
-                <div class="p-3" style="height: 1500px; background-color: #eee;">
-                    Load report here
-                </div>
-            </div>
-        </div>
-    </div>
-
     {% endif %}
     
 </div>

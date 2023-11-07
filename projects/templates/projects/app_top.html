@@ -18,6 +18,6 @@
     </head>
     <body id="body">
         {% csrf_token %}
-        {% unicorn 'app' id='app01' mode=mode%}
+        {% unicorn 'app' id='app01' context=context%}
     </body>
 </html>
