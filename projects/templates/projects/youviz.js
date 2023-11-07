@@ -318,38 +318,44 @@ Handler.addTab = function(navTar, index) {
     const ul = document.getElementById("tabButtons");
     var navTarCount = Handler.navigator.count;
     
-    //ul.appendChild(bli);
-    const topFixedItemsCount = 1;
-    ul.insertBefore(bli, ul.children[topFixedItemsCount + index]);
-    bli.appendChild(b);
-    
-    //ul.appendChild(ali);
-    const midFixedItemsCount = 3;
-    ul.insertBefore(ali, ul.children[topFixedItemsCount + midFixedItemsCount + navTarCount + index]);
-    ali.appendChild(a);
+    if (ul != null) {
+        //ul.appendChild(bli);
+        const topFixedItemsCount = 1;
+        ul.insertBefore(bli, ul.children[topFixedItemsCount + index]);
+        bli.appendChild(b);
+
+        //ul.appendChild(ali);
+        const midFixedItemsCount = 3;
+        ul.insertBefore(ali, ul.children[topFixedItemsCount + midFixedItemsCount + navTarCount + index]);
+        ali.appendChild(a);
+    }
 }
 
 document.addEventListener('navigationChanged', (e) => {
     switch(e.detail.name) {
         case "active": 
             // update navpanel text & show active tab 
-            document.getElementById("btnGroupDrop1").childNodes[0].nodeValue = Handler.text_truncate(e.detail.navigator.active.name) + " ";
+            var element = document.getElementById("btnGroupDrop1");
+            element.childNodes[0].nodeValue = Handler.text_truncate(e.detail.navigator.active.name) + " ";
             var t = document.getElementById(e.detail.active.tabTriggerElementID);
             bootstrap.Tab.getOrCreateInstance(t).show();
             break;
         case "add":
             // add Tab & Copy buttons
-            document.getElementById("vizCount").innerHTML = e.detail.count + " vizs";
+            var element = document.getElementById("vizCount");
+            element.innerHTML = e.detail.count + " vizs";
             Handler.addTab(e.detail.navTar, e.detail.index);
             break;
         case "remove":
             // remove Tab & Copy buttons
-            document.getElementById("vizCount").innerHTML = e.detail.count + " vizs";
+            var element = document.getElementById("vizCount");
+            element.innerHTML = e.detail.count + " vizs";
             document.getElementById(e.detail.navTar.id).remove();
             break;
         case "name":
             // update navpanel, Tab & Copy buttons 
-            document.getElementById("btnGroupDrop1").firstChild.data = Handler.text_truncate(e.detail.navTar.name);
+            var element = document.getElementById("btnGroupDrop1");
+            element.firstChild.data = Handler.text_truncate(e.detail.navTar.name);
             document.getElementById(e.detail.navTar.tabTriggerElementID).innerHTML = e.detail.navTar.name;
             document.getElementById(e.detail.navTar.copyElementID).innerHTML = 'Copy ' + e.detail.navTar.name;
             break;

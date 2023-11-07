@@ -7,12 +7,12 @@
     <nav class="navbar sticky-top">
         <div class="container-fluid d-flex justify-content-between">
             <a class="navbar-brand" href="/">
-                <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
+                <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="40" height="40" class="d-inline-block align-text-top">
                 <span class="d-none d-lg-block">You<span class="text-warning">Viz</span></span></a>
             <form class="d-flex" action="/">
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-secondary text-white border-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
-                    <input class="form-control bg-secondary text-white border-0" type="search" name="query" 
+                    <span class="input-group-text bg-light text-secondary border-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
+                    <input class="form-control bg-light text-white border-0" type="search" name="query" 
                            placeholder={% if not context.query %}"Search"{% else %}"{{ context.query }}"{% endif %} aria-label="Search">
                 </div>
             </form>
@@ -20,7 +20,7 @@
                     class="btn border-0 text-secondary" 
                     type="button" data-bs-toggle="offcanvas" 
                     data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
-                <i class="bi bi-gear-fill" style="font-size: 1.2rem;"></i>
+                <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
             </button>
         </div>
     </nav>
@@ -89,19 +89,19 @@
     <nav class="navbar fixed-bottom bg-light border-top border-warning border-2" id=bottom-navbar>
         <div class="container-sm d-flex d-grid mb-4 gap-2 justify-content-center">
             
-            <div class="btn-toolbar d-flex w-100 justify-content-center button-toolbar" role="toolbar" 
+            <div class="btn-toolbar d-flex w-100 {% if context.mode == "view" %}justify-content-evenly{% else %}justify-content-center{% endif %} button-toolbar" role="toolbar" 
                  aria-label="Toolbar with button groups">
                 {% if context.mode == "view" or context.mode == "app" %}
                 
                 {% if context.mode == "view" %}
                 <div class="btn-group me-2" role="group" aria-label="button group">
-                    <a type="button" class="btn btn-danger" href="{% url 'list' %}" id="dataEditButton">
-                            <i class="bi bi-search" style="font-size: 1.2rem;"></i>
+                    <a type="button" class="btn btn-light text-secondary border-0" href="{% url 'list' %}" id="dataEditButton">
+                            <i class="bi bi-search" style="font-size: 1.5rem;"></i>
                     </a>
                 </div>
                 {% endif %}
                 
-                <div class="btn-group d-flex flex-grow-1 me-2 d-block" role="group" aria-label="button group">
+                <div class="btn-group d-flex flex-grow-1 me-2 d-block {% if context.mode == "view" %}d-none{% endif %}" role="group" aria-label="button group">
                     <button type="button" class="btn btn-primary d-none d-lg-block" onclick="Handler.navigator.back();">
                         <i class="bi bi-caret-left-fill" style="font-size: 1.2rem;"></i>
                     </button>
@@ -123,12 +123,10 @@
                                 aria-expanded="false" aria-controls="collapseExample">
                         <i class="bi bi-list" style="font-size: 2vw;"></i>
                     </button>-->
-                    {% if context.mode == "app" %}
                     <button id="showVizOffcanvas" class="btn btn-primary edgy-right-element" type="button" onclick="Handler.navigator.toggleEdit();"
                                 aria-expanded="false" aria-controls="collapseExample" disabled>
                         <i class="bi bi-bar-chart" style="font-size: 1.2rem;"></i>
                     </button>
-                    {% endif %}
                     <!--
                     <button type="button" class="btn btn-primary" onclick="Handler.navigator.add('viz', 3, 'three');">
                         Test
@@ -148,9 +146,9 @@
                             <i class="bi bi-table" style="font-size: 1.2rem;"></i>
                     </button>
                     {% endif %}
-                    <button type="button" class="btn btn-secondary" id="reportOpenButton" unicorn:key="reportOpenButton"
+                    <button type="button" class="btn btn-light text-secondary border-0" id="reportOpenButton" unicorn:key="reportOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport" disabled>
-                            <i class="bi bi-file-earmark-check" style="font-size: 1.2rem;"></i>
+                            <i class="bi bi-file-earmark-check" style="font-size: 1.5rem;"></i>
                     </button>
                 </div>
                 {% endif %}
@@ -162,8 +160,8 @@
                         Switch to app mode
                     </a>
                 {% elif context.mode == "view" %}
-                    <a type="button" class="btn btn-danger" href="{% url 'app' pk=context.pk %}" id="dataEditButton">
-                            <i class="bi bi-pen" style="font-size: 1.2rem;"></i>
+                    <a type="button" class="btn btn-light text-secondary border-0" href="{% url 'app' pk=context.pk %}" id="dataEditButton">
+                            <i class="bi bi-pen" style="font-size: 1.5rem;"></i>
                     </a>
                 {% elif context.mode == "app" %}
                     <a type="button" class="btn btn-danger" href="{% url 'view' pk=project.selected_datasource %}" id="dataEditButton">
