@@ -150,12 +150,22 @@
                             <i class="bi bi-file-earmark-check" style="font-size: 1.5rem;"></i>
                     </button>
                 </div>
+                
+                {% if context.mode == "view" %}
+                <div class="btn-group me-2" role="group" aria-label="button group">
+                    <a type="button" class="btn btn-light text-secondary border-0" href="/" id="chatButton">
+                            <i class="bi bi-chat-text" style="font-size: 1.5rem;"></i>
+                    </a>
+                </div>
+                {% endif %}
+                
+                
                 {% endif %}
                 
                 {% if user.is_authenticated %}
                 <div class="btn-group" role="group" aria-label="button group">
                 {% if context.mode == "list" or context.mode == "view" %}
-                    <a type="button" class="btn btn-light text-secondary border-0" href="{% url 'app' pk=context.pk %}" id="dataEditButton">
+                    <a type="button" class="btn btn-light text-secondary border-0" href="{% url 'app_all' %}" id="dataEditButton">
                             <i class="bi bi-pen" style="font-size: 1.5rem;"></i>
                     </a>
                 {% elif context.mode == "app" %}
