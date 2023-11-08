@@ -1,6 +1,7 @@
 {#{% extends "base.html" %}#}
 {% load unicorn %} 
 {% load humanize %}
+{% load socialaccount %}
 <div class="container-fluid vh-100 p-0 overflow-hidden" id="appTop">
     
     <!-- TOP NAVBAR -->
@@ -89,17 +90,15 @@
     <nav class="navbar fixed-bottom bg-light border-top border-warning border-2" id=bottom-navbar>
         <div class="container-sm d-flex d-grid mb-4 gap-2 justify-content-center">
             
-            <div class="btn-toolbar d-flex w-100 {% if context.mode == "view" %}justify-content-evenly{% else %}justify-content-center{% endif %} button-toolbar" role="toolbar" 
+            <div class="btn-toolbar d-flex w-100 {% if context.mode == "app" %}justify-content-center{% else %}justify-content-evenly{% endif %} button-toolbar" role="toolbar" 
                  aria-label="Toolbar with button groups">
-                {% if context.mode == "view" or context.mode == "app" %}
-                
-                {% if context.mode == "view" %}
                 <div class="btn-group me-2" role="group" aria-label="button group">
-                    <a type="button" class="btn btn-light text-secondary border-0" href="{% url 'list' %}" id="dataEditButton">
-                            <i class="bi bi-search" style="font-size: 1.5rem;"></i>
+                    <a type="button" class="btn btn-light text-secondary border-0" href="{% url 'list' %}" id="dataEditButton" {% if context.mode == "list" %}disabled{% endif %}>
+                            <i class="bi bi-house" style="font-size: 1.5rem;"></i>
                     </a>
                 </div>
-                {% endif %}
+                
+                {% if context.mode == "view" or context.mode == "app" %}
                 
                 <div class="btn-group d-flex flex-grow-1 me-2 d-block {% if context.mode == "view" %}d-none{% endif %}" role="group" aria-label="button group">
                     <button type="button" class="btn btn-primary d-none d-lg-block" onclick="Handler.navigator.back();">
@@ -155,20 +154,25 @@
                 
                 {% if user.is_authenticated %}
                 <div class="btn-group" role="group" aria-label="button group">
-                {% if context.mode == "list" %}
-                    <a type="button" class="btn btn-danger" href="{% url 'app_all' %}" id="dataEditButton">
-                        Switch to app mode
-                    </a>
-                {% elif context.mode == "view" %}
+                {% if context.mode == "list" or context.mode == "view" %}
                     <a type="button" class="btn btn-light text-secondary border-0" href="{% url 'app' pk=context.pk %}" id="dataEditButton">
                             <i class="bi bi-pen" style="font-size: 1.5rem;"></i>
                     </a>
                 {% elif context.mode == "app" %}
-                    <a type="button" class="btn btn-danger" href="{% url 'view' pk=project.selected_datasource %}" id="dataEditButton">
-                            <i class="bi bi-book" style="font-size: 1.2rem;"></i>
+                    <a type="button" class="btn btn-light text-secondary border-0" href="{% url 'view' pk=project.selected_datasource %}" id="dataEditButton">
+                            <i class="bi bi-book" style="font-size: 1.5rem;"></i>
                     </a>
                 {% endif %}
                 </div>
+                {% else %}
+                    <!-- Allauth button starts here -->
+                    <form class="d-inline" action="{% provider_login_url 'google' %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-light text-secondary border-0" type="submit">
+                            <i class="bi bi-google" style="font-size: 1.5rem;"></i>
+                        </button>
+                    </form>
+                    <!-- Allauth button ends here -->
                 {% endif %}
 
                 <style>
