@@ -94,7 +94,7 @@
                  aria-label="Toolbar with button groups">
                 <div class="btn-group me-2" role="group" aria-label="button group">
                     <a type="button" class="btn btn-light text-secondary border-0" href="{% url 'list' %}" id="dataEditButton" {% if context.mode == "list" %}disabled{% endif %}>
-                            <i class="bi bi-house" style="font-size: 1.5rem;"></i>
+                            <i class="bi bi-house" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Home</span></i>
                     </a>
                 </div>
                 
@@ -147,14 +147,14 @@
                     {% endif %}
                     <button type="button" class="btn btn-light text-secondary border-0" id="reportOpenButton" unicorn:key="reportOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport" disabled>
-                            <i class="bi bi-file-earmark-check" style="font-size: 1.5rem;"></i>
+                            <i class="bi bi-file-earmark-check" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Report</span></i>
                     </button>
                 </div>
                 
                 {% if context.mode == "view" %}
                 <div class="btn-group me-2" role="group" aria-label="button group">
                     <a type="button" class="btn btn-light text-secondary border-0" href="/" id="chatButton">
-                            <i class="bi bi-chat-text" style="font-size: 1.5rem;"></i>
+                            <i class="bi bi-chat-text" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Comments</span></i>
                     </a>
                 </div>
                 {% endif %}
@@ -166,7 +166,7 @@
                 <div class="btn-group" role="group" aria-label="button group">
                 {% if context.mode == "list" or context.mode == "view" %}
                     <a type="button" class="btn btn-light text-secondary border-0" href="{% url 'app_all' %}" id="dataEditButton">
-                            <i class="bi bi-pen" style="font-size: 1.5rem;"></i>
+                            <i class="bi bi-pen" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Edit</span></i>
                     </a>
                 {% elif context.mode == "app" %}
                     <a type="button" class="btn btn-light text-secondary border-0" href="{% url 'view' pk=project.selected_datasource %}" id="dataEditButton">
@@ -179,7 +179,7 @@
                     <form class="d-inline" action="{% provider_login_url 'google' %}" method="post">
                         {% csrf_token %}
                         <button class="btn btn-light text-secondary border-0" type="submit">
-                            <i class="bi bi-google" style="font-size: 1.5rem;"></i>
+                            <i class="bi bi-google" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Signin</span></i>
                         </button>
                     </form>
                     <!-- Allauth button ends here -->
