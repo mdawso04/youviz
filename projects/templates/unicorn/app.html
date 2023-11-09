@@ -5,13 +5,13 @@
 <div class="container-fluid vh-100 p-0 {% if context.mode == 'view' or context.mode == 'app' %}overflow-hidden{% endif %}" id="appTop">
     
     <!-- TOP NAVBAR -->
-    <nav class="navbar sticky-top bg-white">
+    <nav class="navbar fixed-top bg-white">
         <div class="container-fluid d-flex justify-content-between">
             <a class="navbar-brand" href="/">
                 <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
                 <span class="d-none d-lg-block">You<span class="text-warning">Viz</span></span></a>
             <form class="d-flex" action="/">
-                <div class="input-group">
+                <div class="input-group input-group-sm">
                     <span class="input-group-text bg-light text-secondary border-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
                     <input class="form-control bg-light border-0" type="search" name="query" 
                            placeholder={% if not context.query %}"Search"{% else %}"{{ context.query }}"{% endif %} aria-label="Search">
@@ -41,12 +41,12 @@
     
     {% if context.mode == "list" %}
     <div class="container-fluid">
-        <div class="row row-cols-1 row-cols-md-4 g-4 pt-4">
+        <div class="row row-cols-1 row-cols-md-4 g-4 pt-5 mt-2">
             {% for l in list_datasources %}
             <div class="col">
                 <div class="card">
                     <img src="https://chartio.com/assets/2f72e3/tutorials/charts/histograms/ecdd9abe8b3ce55e531ed30b299239fc1142252d17a68f9572fdc51e2ecdbc8d/histogram-example-1.png" 
-                         class="card-img-top w-25">
+                         class="card-img-top w-100">
                     <div class="card-body">
                         <a href="{% url 'view' pk=l.pk %}"><h5 class="card-title">{{ l.name }}</h5></a>
                         <p class="card-text">{{ l.description }}</p>
