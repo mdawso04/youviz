@@ -2,18 +2,18 @@
 {% load unicorn %} 
 {% load humanize %}
 {% load socialaccount %}
-<div class="container-fluid vh-100 p-0 overflow-hidden" id="appTop">
+<div class="container-fluid vh-100 p-0 {% if context.mode == 'view' or context.mode == 'app' %}overflow-hidden{% endif %}" id="appTop">
     
     <!-- TOP NAVBAR -->
-    <nav class="navbar sticky-top">
+    <nav class="navbar sticky-top bg-white">
         <div class="container-fluid d-flex justify-content-between">
             <a class="navbar-brand" href="/">
-                <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="40" height="40" class="d-inline-block align-text-top">
+                <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
                 <span class="d-none d-lg-block">You<span class="text-warning">Viz</span></span></a>
             <form class="d-flex" action="/">
-                <div class="input-group input-group-sm">
+                <div class="input-group">
                     <span class="input-group-text bg-light text-secondary border-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
-                    <input class="form-control bg-light text-white border-0" type="search" name="query" 
+                    <input class="form-control bg-light border-0" type="search" name="query" 
                            placeholder={% if not context.query %}"Search"{% else %}"{{ context.query }}"{% endif %} aria-label="Search">
                 </div>
             </form>
@@ -45,7 +45,8 @@
             {% for l in list_datasources %}
             <div class="col">
                 <div class="card">
-                    {# <img src="..." class="card-img-top" alt="..."> #}
+                    <img src="https://chartio.com/assets/2f72e3/tutorials/charts/histograms/ecdd9abe8b3ce55e531ed30b299239fc1142252d17a68f9572fdc51e2ecdbc8d/histogram-example-1.png" 
+                         class="card-img-top w-25">
                     <div class="card-body">
                         <a href="{% url 'view' pk=l.pk %}"><h5 class="card-title">{{ l.name }}</h5></a>
                         <p class="card-text">{{ l.description }}</p>
@@ -88,7 +89,7 @@
     </style>
     
     <nav class="navbar fixed-bottom bg-light border-top border-warning border-2" id=bottom-navbar>
-        <div class="container-sm d-flex d-grid mb-4 gap-2 justify-content-center">
+        <div class="container-sm d-flex d-grid mb-2 gap-2 justify-content-center">
             
             <div class="btn-toolbar d-flex w-100 {% if context.mode == "app" %}justify-content-center{% else %}justify-content-evenly{% endif %} button-toolbar" role="toolbar" 
                  aria-label="Toolbar with button groups">
@@ -100,7 +101,7 @@
                 
                 {% if context.mode == "view" or context.mode == "app" %}
                 
-                <div class="btn-group d-flex flex-grow-1 me-2 d-block {% if context.mode == "view" %}d-none{% endif %}" role="group" aria-label="button group">
+                <div class="btn-group d-flex flex-grow-1 me-2 d-none" role="group" aria-label="button group">
                     <button type="button" class="btn btn-primary d-none d-lg-block" onclick="Handler.navigator.back();">
                         <i class="bi bi-caret-left-fill" style="font-size: 1.2rem;"></i>
                     </button>
@@ -122,10 +123,12 @@
                                 aria-expanded="false" aria-controls="collapseExample">
                         <i class="bi bi-list" style="font-size: 2vw;"></i>
                     </button>-->
+                    <!--
                     <button id="showVizOffcanvas" class="btn btn-primary edgy-right-element" type="button" onclick="Handler.navigator.toggleEdit();"
                                 aria-expanded="false" aria-controls="collapseExample" disabled>
                         <i class="bi bi-bar-chart" style="font-size: 1.2rem;"></i>
                     </button>
+                    -->
                     <!--
                     <button type="button" class="btn btn-primary" onclick="Handler.navigator.add('viz', 3, 'three');">
                         Test
@@ -140,10 +143,12 @@
                 
                 <div class="btn-group me-2" role="group" aria-label="button group">
                     {% if context.mode == "app" %}
+                    <!--
                     <button type="button" class="btn btn-secondary" id="datafileOpenButton" unicorn:key="datafileOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable" disabled>
                             <i class="bi bi-table" style="font-size: 1.2rem;"></i>
                     </button>
+                    -->
                     {% endif %}
                     <button type="button" class="btn btn-light text-secondary border-0" id="reportOpenButton" unicorn:key="reportOpenButton"
                         data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport" disabled>
@@ -159,6 +164,22 @@
                 </div>
                 {% endif %}
                 
+                {% if context.mode == "app" %}
+                <div class="btn-group me-2" role="group" aria-label="button group">
+                    <button id="showVizOffcanvas" class="btn btn-light text-secondary border-0" type="button" onclick="Handler.navigator.toggleEdit();"
+                                aria-expanded="false" aria-controls="collapseExample" disabled>
+                        <i class="bi bi-bar-chart" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Settings</span></i>
+                    </button>
+                </div>
+                
+                <div class="btn-group me-2" role="group" aria-label="button group">
+                    <button type="button" class="btn btn-light text-secondary border-0" id="datafileOpenButton" unicorn:key="datafileOpenButton"
+                        data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable" disabled>
+                            <i class="bi bi-table" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Data</span></i>
+                    </button>
+                </div>
+                {% endif %}
+                
                 
                 {% endif %}
                 
@@ -170,7 +191,7 @@
                     </a>
                 {% elif context.mode == "app" %}
                     <a type="button" class="btn btn-light text-secondary border-0" href="{% url 'view' pk=project.selected_datasource %}" id="dataEditButton">
-                            <i class="bi bi-book" style="font-size: 1.5rem;"></i>
+                            <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">View</span></i>
                     </a>
                 {% endif %}
                 </div>
