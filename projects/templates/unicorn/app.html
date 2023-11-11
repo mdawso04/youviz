@@ -5,7 +5,7 @@
 <div class="container-fluid vh-100 p-0 {% if context.mode == 'view' or context.mode == 'app' %}overflow-hidden{% else %}bg-light{% endif %}" id="appTop">
     
     <!-- TOP NAVBAR -->
-    <nav class="navbar fixed-top bg-white p-0">
+    <nav class="navbar fixed-top bg-white p-y-2">
         <div class="container-fluid d-flex justify-content-between p-0">
             <!--
             <a class="navbar-brand" href="/">
@@ -36,9 +36,11 @@
                 <button class="btn py-0" type="button" onclick="window.location.href='/'">
                     <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
                 </button>
-                <span class="input-group-text bg-light text-secondary border-0 py-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
-                    <input class="form-control bg-light border-0" type="search" name="query" 
-                           placeholder="{% if not context.query %}Search{% else %}{{ context.query }}{% endif %}" aria-label="Search">
+                <span class="input-group-text bg-light text-secondary border-0 py-0 pe-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
+                <form class="d-flex" action="/">
+                    <input class="form-control bg-light border-0 pe-0" type="search" name="query" 
+                       placeholder="{% if not context.query %}Search{% else %}{{ context.query }}{% endif %}" aria-label="Search">
+                </form>
                 {% if context.mode == "view" or context.mode == "app" %}
                 <button id="off-canvas-button" class="btn border-0 text-secondary py-0" type="button">
                     <i class="bi bi-box-arrow-up" style="font-size: 1.5rem;"></i>
