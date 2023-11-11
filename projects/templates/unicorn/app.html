@@ -5,8 +5,9 @@
 <div class="container-fluid vh-100 p-0 {% if context.mode == 'view' or context.mode == 'app' %}overflow-hidden{% else %}bg-light{% endif %}" id="appTop">
     
     <!-- TOP NAVBAR -->
-    <nav class="navbar fixed-top bg-white">
-        <div class="container-fluid d-flex justify-content-between">
+    <nav class="navbar fixed-top bg-white p-0">
+        <div class="container-fluid d-flex justify-content-between p-0">
+            <!--
             <a class="navbar-brand" href="/">
                 <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
                 <span class="d-none d-lg-block">You<span class="text-warning">Viz</span></span></a>
@@ -30,6 +31,26 @@
                     <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
                 </button>
             </div>
+        -->
+            <div class="input-group">
+                <button class="btn py-0" type="button" onclick="window.location.href='/'">
+                    <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
+                </button>
+                <span class="input-group-text bg-light text-secondary border-0 py-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
+                    <input class="form-control bg-light border-0" type="search" name="query" 
+                           placeholder="{% if not context.query %}Search{% else %}{{ context.query }}{% endif %}" aria-label="Search">
+                {% if context.mode == "view" or context.mode == "app" %}
+                <button id="off-canvas-button" class="btn border-0 text-secondary py-0" type="button">
+                    <i class="bi bi-box-arrow-up" style="font-size: 1.5rem;"></i>
+                </button>
+                {% endif %}
+                <button id="off-canvas-button" 
+                        class="btn border-0 text-secondary py-0" 
+                        type="button" data-bs-toggle="offcanvas" 
+                        data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
+                    <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
+                </button>
+            </div>
         </div>
     </nav>
     
@@ -48,7 +69,7 @@
     
     {% if context.mode == "list" %}
     <div class="container-fluid">
-        <div class="row"><div class="col" style="height: 88px;"></div></div>
+        <div class="row"><div class="col" style="height: 70px;"></div></div>
         <div class="row row-cols-1 row-cols-md-4 g-2">
             {% for l in list_datasources %}
             <div class="col">
