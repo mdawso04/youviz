@@ -44,7 +44,7 @@ Handler.shareListener = function(btnSelector, resSelector, title, text, url) {
         url: url
     }
     const btn = document.querySelector(btnSelector);
-    const resultPara = document.querySelector(resSelector);
+    //const resultPara = document.querySelector(resSelector);
     
     if(!btn) return; 
     
@@ -903,6 +903,8 @@ btn.addEventListener('click', async () => {
 
 Handler.shareListener('#settings-button-share', 'null', 'YouViz', 'Check out this free data vizualization app!', 'https://youviz.app');
 Handler.shareListener('#share-button-share', 'null', 'Report', 'Check out this data vizualization on YouViz!', 'https://youviz.app');
+Handler.shareListener('#navbar-button-share', 'null', 'Report', 'Check out this data vizualization on YouViz!', 'https://youviz.app');
+
 
 window.addEventListener("DOMContentLoaded", (event) => {
     Unicorn.addEventListener("updated", (component) =>{

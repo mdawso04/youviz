@@ -32,17 +32,16 @@
                 </button>
             </div>
         -->
-            <div class="input-group">
+            <form class="d-flex w-100" action="/">
+                <div class="input-group">
                 <button class="btn py-0" type="button" onclick="window.location.href='/'">
                     <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
                 </button>
                 <span class="input-group-text bg-light text-secondary border-0 py-0 pe-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
-                <form class="d-flex" action="/">
                     <input class="form-control bg-light border-0 pe-0" type="search" name="query" 
                        placeholder="{% if not context.query %}Search{% else %}{{ context.query }}{% endif %}" aria-label="Search">
-                </form>
                 {% if context.mode == "view" or context.mode == "app" %}
-                <button id="off-canvas-button" class="btn border-0 text-secondary py-0" type="button">
+                <button id="navbar-button-share" class="btn border-0 text-secondary py-0" type="button">
                     <i class="bi bi-box-arrow-up" style="font-size: 1.5rem;"></i>
                 </button>
                 {% endif %}
@@ -53,6 +52,8 @@
                     <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
                 </button>
             </div>
+                </form>
+                
         </div>
     </nav>
     
@@ -145,7 +146,7 @@
     }
     </style>
     
-    <nav class="navbar fixed-bottom bg-light border-top border-warning border-2" id=bottom-navbar>
+    <nav class="navbar fixed-bottom bg-light border-top border-warning border-2 pt-0" id=bottom-navbar>
         <div class="container-sm d-flex d-grid mb-2 gap-2 justify-content-center">
             
             <div class="btn-toolbar d-flex w-100 justify-content-evenly button-toolbar" role="toolbar" 
