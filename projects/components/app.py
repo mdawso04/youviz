@@ -32,7 +32,7 @@ class AppView(UnicornView):
     list_datasources: QuerySetType[Datasource] = None
     
     class Meta:
-        javascript_exclude = ('project', 'datasources', 'datasource.document', 'vizs', 'report') 
+        javascript_exclude = ('project', 'datasources', 'datasource.document', 'vizs', 'report', 'list_datasources') 
     
     #def __init__(self, *args, **kwargs):
     #    super().__init__(**kwargs)  # calling super is required
@@ -59,7 +59,7 @@ class AppView(UnicornView):
         
         if self.request:
             if self.context['mode'] == 'list':
-                self.list_datasources = Datasource.objects.filter(name__icontains=self.context['query']).all().order_by('-id')
+                self.list_datasources = Datasource.list_datasources(self.context['query'])
                 return #do nothing
             elif self.context['mode'] == 'app':
                 if not self.project:

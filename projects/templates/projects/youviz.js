@@ -507,17 +507,21 @@ Handler.vizInit = function (node) {
                 if (entry.contentBoxSize) {
                     // Firefox implements `contentBoxSize` as a single content rect, rather than an array
                     //const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
-                    var update = {
-                        width: plot_div_el.clientWidth,
-                        height: plot_div_el.clientHeight
-                    };
-                    Plotly.relayout(plot_div, update);
+                    if (plot_div_el.clientWidth >= 10 || plot_div_el.clientHeight >= 10) {
+                        var update = {
+                            width: plot_div_el.clientWidth,
+                            height: plot_div_el.clientHeight
+                        };
+                        Plotly.relayout(plot_div, update);
+                    }
                 } else {
-                    var update = {
-                        width: plot_div_el.clientWidth,
-                        height: plot_div_el.clientHeight
-                    };
-                    Plotly.relayout(plot_div, update);
+                    if (plot_div_el.clientWidth >= 10 || plot_div_el.clientHeight >= 10) {
+                        var update = {
+                            width: plot_div_el.clientWidth,
+                            height: plot_div_el.clientHeight
+                        };
+                        Plotly.relayout(plot_div, update);
+                    }
                 }
             }
         }
@@ -531,11 +535,13 @@ Handler.vizInit = function (node) {
     tab_div_el.addEventListener('shown.bs.tab', function (event) {
         if (event.target.id === tab_div) { // newly activated tab
         //event.relatedTarget // previous active tab
-            var update = {
-                width: plot_div_el.clientWidth,
-                height: plot_div_el.clientHeight
-            };
-            Plotly.relayout(plot_div, update);
+            if (plot_div_el.clientWidth >= 10 || plot_div_el.clientHeight >= 10) {
+                var update = {
+                    width: plot_div_el.clientWidth,
+                    height: plot_div_el.clientHeight
+                };
+                Plotly.relayout(plot_div, update);
+            }
         }
     });
     
@@ -645,17 +651,21 @@ Handler.vizreportInit = function (node) {
                     if (entry.contentBoxSize) {
                         // Firefox implements `contentBoxSize` as a single content rect, rather than an array
                         //const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
-                        const update = {
-                            width: plot_div_outer_el.clientWidth,
-                            height: plot_div_outer_el.clientHeight
-                        };
-                        Plotly.relayout(plot_div, update);
+                        if (plot_div_outer_el.clientWidth >= 10 || plot_div_outer_el.clientHeight >= 10) {
+                            const update = {
+                                width: plot_div_outer_el.clientWidth,
+                                height: plot_div_outer_el.clientHeight
+                            };
+                            Plotly.relayout(plot_div, update);
+                        }
                     } else {
-                        const update = {
-                            width: plot_div_outer_el.clientWidth,
-                            height: plot_div_outer_el.clientHeight
-                        };
-                        Plotly.relayout(plot_div, update);
+                        if (plot_div_outer_el.clientWidth >= 10 || plot_div_outer_el.clientHeight >= 10) {
+                            const update = {
+                                width: plot_div_outer_el.clientWidth,
+                                height: plot_div_outer_el.clientHeight
+                            };
+                            Plotly.relayout(plot_div, update);
+                        }
                     }
                 }
             });
@@ -665,13 +675,14 @@ Handler.vizreportInit = function (node) {
             
             // resize on modal.show
             mr.addEventListener('show.bs.modal', function (event) {
-                const update = {
-                    width: plot_div_el.clientWidth,
-                    height: plot_div_el.clientHeight
-                };
-                Plotly.relayout(plot_div, update);
+                if (plot_div_outer_el.clientWidth >= 10 || plot_div_outer_el.clientHeight >= 10) {
+                    const update = {
+                        width: plot_div_el.clientWidth,
+                        height: plot_div_el.clientHeight
+                    };
+                    Plotly.relayout(plot_div, update);
+                }
             });
-            
         }
         
         //qr code
@@ -707,6 +718,99 @@ Handler.vizreportInit = function (node) {
         Handler.shareListener('#report-button-share', 'null', 'Report', 'Check out this data vizualization on YouViz!', 'https://youviz.app');
     }
 }
+
+Handler.dsThumbInit = function (node) {
+    var d = node.dataset;
+    // init vizs
+    //var arr = document.querySelectorAll(".yv-vizreport div script");
+    var s = "#carousel-".concat(d.yvId, " .yv-dsthumb");
+    var arr = document.querySelectorAll(s);
+    for (var n = 0; n < arr.length; n++) {
+
+        //get plot div, tab
+        const thumb = arr[n];
+        const thumbid = thumb.id;
+        const plot_div = "plotBox-dsthumb-" + thumbid;
+        const plot_div_el = document.getElementById(plot_div);
+
+        //get json
+        const json_el = document.getElementById("youviz:data:dsthumb-" + thumbid);
+        const json = JSON.parse(json_el.textContent);
+
+        //make plot
+        const data = json.plot_data;
+        const layout = json.plot_layout;
+        //var config = {responsive: true};
+        //const plot_div_outer_el = document.getElementById(thumbid);
+        const plot_div_outer_el = thumb.parentElement;
+        layout.width = plot_div_outer_el.clientWidth;
+        //layout.height = plot_div_outer_el.clientHeight;
+        layout.height = 250;
+        layout.margin.t = 15;
+        layout.margin.b = 68;
+        layout.margin.r = 10;
+        layout.showlegend = true;
+        layout.legend = {
+            x: 1,
+            xanchor: 'right',
+            y: 1,
+            bgcolor: '#00000000',
+        };
+        layout.clickmode = 'none';
+        layout.dragmode = false;
+        const config = {displayModeBar: false, scrollZoom: false};
+        Plotly.react(plot_div, data, layout, config);
+
+        //add resize listener
+        /*window.addEventListener("resize", (event) => {
+         if (window.getComputedStyle(plot_div_el).display !== "none") {
+             var update = {
+                width: plot_div_el.clientWidth,
+                height: plot_div_el.clientHeight
+             };
+             if(update.width !== 0 && update.height !== 0) Plotly.relayout(plot_div, update);
+             //eval(script.innerHTML);
+         }
+        });*/
+        let observer = new ResizeObserver(entries => {
+            for(let entry of entries) {
+                if (entry.contentBoxSize) {
+                    // Firefox implements `contentBoxSize` as a single content rect, rather than an array
+                    //const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
+                    if (plot_div_outer_el.clientWidth >= 10 || plot_div_outer_el.clientHeight >= 10) {
+                        const update = {
+                            width: plot_div_outer_el.clientWidth,
+                            height: plot_div_outer_el.clientHeight
+                        };
+                        Plotly.relayout(plot_div, update);
+                    }
+                } else {
+                    if (plot_div_outer_el.clientWidth >= 10 || plot_div_outer_el.clientHeight >= 10) {
+                        const update = {
+                            width: plot_div_outer_el.clientWidth,
+                            height: plot_div_outer_el.clientHeight
+                        };
+                        Plotly.relayout(plot_div, update);
+                    }
+                }
+            }
+        });
+
+        //let midPanel = document.getElementById('midPanel');
+        observer.observe(plot_div_el);
+
+        // resize on modal.show
+        /*
+        mr.addEventListener('show.bs.modal', function (event) {
+            const update = {
+                width: plot_div_el.clientWidth,
+                height: plot_div_el.clientHeight
+            };
+            Plotly.relayout(plot_div, update);
+        });*/
+
+    }
+}
  
 Handler.componentInit = async function(node_array) {
     node_array.forEach((node) => {
@@ -715,8 +819,10 @@ Handler.componentInit = async function(node_array) {
         }
 
         // activate button
-        if(document.querySelector(node.dataset.yvButton)){
-            document.querySelector(node.dataset.yvButton).disabled = false;
+        if(node.dataset.yvButton != ""){
+            if(document.querySelector(node.dataset.yvButton)){
+                document.querySelector(node.dataset.yvButton).disabled = false;
+            }
         }
     });
 }

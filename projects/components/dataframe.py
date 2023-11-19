@@ -3,6 +3,8 @@ from django_unicorn.components import UnicornView
 from projects.models import Datasource
 from project import settings
 from django.shortcuts import render, redirect
+from django.utils.decorators import classonlymethod
+
 
 # pp
 import pp
@@ -10,9 +12,11 @@ from pp.log import logger
 
 #python standard libraries
 import os
+import json
 
 #non-standard libraries
 import pandas as pd
+import shortuuid
 
 class DataframeView(UnicornView):
     datasource: Datasource = None
@@ -35,7 +39,8 @@ class DataframeView(UnicornView):
             pk = b['data']['dataframe']['pk']
         elif hasattr(self, 'kwargs'):
             pk = self.kwargs['pk']
-        self.datasource = Datasource.objects.filter(pk=pk).last()
+        #self.datasource = Datasource.objects.filter(pk=pk).last()
+        self.datasource = Datasource.datasource(pk)
         #logger.debug('df pk:' + str(pk))
     
     def hydrate(self):
@@ -86,3 +91,41 @@ class DataframeView(UnicornView):
         pass
         #logger.debug('DataframeView > parent_rendered start')
         #logger.debug('DataframeView > parent_rendered end')
+        
+    #override patch to ensure unique ID when multiple instances of same UnicornView subclass
+    
+    @classonlymethod
+    def as_view(cls, **initkwargs):
+        def view(request, *args, **kwargs):
+            initkwargs["component_id"] = shortuuid.uuid()[:8]
+            
+            module_name = cls.__module__
+            module_parts = module_name.split(".")
+            component_name = module_parts[len(module_parts) - 1]
+            component_name = component_name.replace("_", "-")
+                
+            initkwargs["component_name"] = component_name
+            
+            self = cls(**initkwargs)
+            #logger.debug(self)
+            #logger.debug(initkwargs["component_id"])
+            self.request = request
+            self.args = args
+            self.kwargs = kwargs
+            
+            # patch to feed context for template when viz fetched by GET from outside app
+            self.mount()
+            self.hydrate()
+
+            self._cache_component(**kwargs)
+            self.extra_context = kwargs
+            return self.render_to_response(
+                context=self.get_context_data(),
+                component=self,
+                init_js=True,
+            )
+            #endpatch
+            
+            #return self.dispatch(request, *args, **kwargs)
+        return view
+        

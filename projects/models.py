@@ -12,9 +12,12 @@ from pp.log import logger
 import os
 from io import StringIO
 import hashlib
+from copy import *
+import json
 
 #non-standard libraries
 import pandas as pd
+import plotly.io as pio
 import shortener
 from datetime import datetime
 
@@ -141,6 +144,14 @@ class Datasource(BaseModel):
             cls.getRemoteData(project)
             ds = cls.objects.filter(project=project).all().order_by('-id').prefetch_related('vizs', 'reports', 'items__answers')
         return ds
+    
+    @classmethod
+    def list_datasources(cls, query=None, order='-id'):
+        return cls.objects.filter(name__icontains=query).all().order_by(order).prefetch_related('vizs', 'reports', 'items__answers')
+    
+    @classmethod
+    def datasource(cls, pk):
+        return cls.objects.filter(pk=pk).all().order_by('-id').prefetch_related('vizs', 'reports', 'items__answers').last()
             
     @classmethod
     def getRemoteData(cls, project, service='READ_DATA_ATTRITION', name='no_name'):
@@ -241,6 +252,37 @@ class Viz(BaseModel):
     
     class Meta:
         default_related_name = 'vizs'
+        
+    def viz_html(self):
+        #load csv from db
+        copied_json = deepcopy(self.json)
+        #copied_json[0]['options']['src'] = self.parent.datasource.databuffer
+        copied_json[0]['options']['src'] = self.datasource.databuffer
+        a = pp.App(copied_json)
+        fig = a.call(return_df=False)[0]
+        fig.update_layout(
+            width=350, 
+            height=250,
+            autosize=True, 
+            margin={
+                'l': 0,
+                't': 15,
+                'b': 68,
+                'r': 10,
+            },
+            showlegend=True,
+            legend = {
+                'x': 1,
+                'xanchor': 'right',
+                'y': 1,
+                'bgcolor': '#000000',
+            }
+        )
+        j = json.loads(pio.to_json(fig=fig, engine='json'))
+        return {
+            'plot_data': json.dumps(j['data']),
+            'plot_layout': json.dumps(j['layout']),
+        }
     
     #same hash for same viz settings (json)
     def _getHashPayload(self):

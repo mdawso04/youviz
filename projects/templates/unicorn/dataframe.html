@@ -1,3 +1,7 @@
+{% if context.mode == 'app' %}
+
+
+
 <!-- TODO: DATAFRAME SPINNER -->
 <div unicorn:view id="modalTable" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
          tabindex="-1" aria-hidden="true">
@@ -11,7 +15,8 @@
         min-width: 40%
     }
     </style>
-    
+
+
 <!-- DATAFRAME START -->
     <div class="modal-dialog modal-xl modal-fullscreen-xl-down" role="document">
         <div class="modal-content">
@@ -53,3 +58,37 @@
     </div>
   </div>
 </div>
+
+{% else %}
+
+<div unicorn:view id="carousel-{{datasource.pk}}" class="carousel carousel-dark slide" data-bs-ride="false" data-bs-interval="false">
+  <div class="carousel-inner">
+    {% for v in datasource.vizs.all %}       
+    <div class="carousel-item{% if forloop.first %} active{% endif %}">
+        <div class="card-img-top d-block w-100" style="height: 230px;">
+            <div id="outerOuterPlotBox-dsthumb-{{v.pk}}" class="yv-dsthumb">
+                <div id="outerPlotBox-list-{{v.pk}}">
+                    <script type="application/json" id="youviz:data:dsthumb-outerOuterPlotBox-dsthumb-{{v.pk}}">
+                    {"plot_data":{{v.viz_html.plot_data|safe}}, "plot_layout":{{v.viz_html.plot_layout|safe}}}
+                    </script>
+                    <div id="plotBox-dsthumb-outerOuterPlotBox-dsthumb-{{v.pk}}">
+                    </div>
+                </div>
+            </div>
+        </div>                        
+    </div>
+    {% endfor %}
+  </div>
+    {% if datasource.vizs.count > 1 %} 
+  <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{datasource.pk}}" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{datasource.pk}}" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+    {% endif %}
+</div>
+
+{% endif %}

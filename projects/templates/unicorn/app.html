@@ -77,26 +77,17 @@
             {% for l in list_datasources %}
             <div class="col">
                 <div class="card">
-                    <div id="carousel-{{l.pk}}" class="carousel carousel-dark slide" data-bs-ride="false" data-bs-interval="false">
-                      <div class="carousel-inner">
-                        <div class="carousel-item active">
-                          <img src="https://chartio.com/assets/2f72e3/tutorials/charts/histograms/ecdd9abe8b3ce55e531ed30b299239fc1142252d17a68f9572fdc51e2ecdbc8d/histogram-example-1.png" 
-                         class="card-img-top d-block w-100">                        
-                        </div>
-                        <div class="carousel-item">
-                          <img src="https://chartio.com/assets/2f72e3/tutorials/charts/histograms/ecdd9abe8b3ce55e531ed30b299239fc1142252d17a68f9572fdc51e2ecdbc8d/histogram-example-1.png" 
-                         class="card-img-top d-block w-100">                        
-                        </div>
-                      </div>
-                      <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{l.pk}}" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                      </button>
-                      <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{l.pk}}" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                      </button>
+                    
+                    <div class="yv-component dsthumb" id="yv-component-dsthumb-{{ l.pk }}"
+                         data-yv-component="dsthumb"
+                         data-yv-id="{{ l.pk }}"
+                         data-yv-link="{{ l.get_absolute_url_viewmode }}"
+                         data-yv-button=""
+                         data-yv-init="dsThumbInit">
                     </div>
+                    
+                    
+                    
                     
                     <a href="{% url 'view' pk=l.pk %}" class="text-decoration-none">
                     <div class="card-body ">
@@ -113,6 +104,7 @@
             </div>
             {% endfor %}
         </div>
+        <div class="row"><div class="col" style="height: 90px;"></div></div>
     </div>
     
     {% endif %}
