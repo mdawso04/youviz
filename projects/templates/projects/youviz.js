@@ -1009,8 +1009,12 @@ btn.addEventListener('click', async () => {
 
 Handler.shareListener('#settings-button-share', 'null', 'YouViz', 'Check out this free data vizualization app!', 'https://youviz.app');
 Handler.shareListener('#share-button-share', 'null', 'Report', 'Check out this data vizualization on YouViz!', 'https://youviz.app');
-Handler.shareListener('#navbar-button-share', 'null', 'Report', 'Check out this data vizualization on YouViz!', 'https://youviz.app');
-
+ 
+ // navbar share
+var shareData = document.querySelector("#navbar-button-share")
+if(shareData){
+    Handler.shareListener('#navbar-button-share', 'null', shareData.dataset.text,  shareData.dataset.text,  shareData.dataset.url);
+}
 
 window.addEventListener("DOMContentLoaded", (event) => {
     Unicorn.addEventListener("updated", (component) =>{
@@ -1059,6 +1063,9 @@ window.addEventListener("DOMContentLoaded", (event) => {
                     body.appendChild(yvmodals[i]); 
                 }
                 
+                // navbar share
+                var shareData = document.querySelector("#navbar-button-share").dataset;
+                Handler.shareListener('#navbar-button-share', 'null', shareData.text,  shareData.text,  shareData.url);
                 
                 break;
             case 'login':
