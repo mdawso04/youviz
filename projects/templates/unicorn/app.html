@@ -5,7 +5,7 @@
 <div class="container-fluid vh-100 p-0 {% if context.mode == 'view' or context.mode == 'app' %}overflow-hidden{% else %}bg-light{% endif %}" id="appTop">
     
     <!-- TOP NAVBAR -->
-    <nav class="navbar fixed-top bg-white p-2">
+    <nav class="navbar fixed-top bg-white p-2 w-100">
         <div class="container-fluid d-flex justify-content-between p-0">
             <!--
             <a class="navbar-brand" href="/">
@@ -34,7 +34,7 @@
         -->
             <form class="d-flex w-100" action="/">
                 <div class="input-group">
-                <button class="btn border-0 py-0" type="button" onclick="window.location.href='/'">
+                <button class="btn border-0 px-0" type="button" onclick="window.location.href='/'">
                     <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
                 </button>
                 <span class="input-group-text bg-light text-secondary border-0 py-0 pe-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
@@ -46,7 +46,7 @@
                 </button>
                 {% endif %}
                 <button id="off-canvas-button" 
-                        class="btn border-0 text-secondary py-0 pe-2" 
+                        class="btn border-0 text-secondary pe-2" 
                         type="button" data-bs-toggle="offcanvas" 
                         data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
                     <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
@@ -72,7 +72,7 @@
     
     {% if context.mode == "list" %}
     <div class="container-fluid px-0">
-        <div class="row"><div class="col" style="height: 70px;"></div></div>
+        <div class="row"><div class="col" style="height: 80px;"></div></div>
         <div class="row row-cols-1 row-cols-md-4 g-2">
             {% for l in list_datasources %}
             <div class="col">
@@ -92,9 +92,9 @@
                     <a href="{% url 'view' pk=l.pk %}" class="text-decoration-none">
                     <div class="card-body p-2">
                         <div class="d-flex align-items-start">
-                            <button class="bg-info border-0 rounded-circle p-2 me-2" style="font-size: 0.9rem;" height="40px;" width="40px;">MD</button>
+                            <button class="bg-info border-0 rounded-circle p-2 me-2 mt-1" style="font-size: 0.9rem;" height="40px;" width="40px;">MD</button>
                             <div>
-                                <p class="text-secondary text-decoration-none" style="font-size: 1.2rem;">{{ l.name }}</p>
+                                <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">{{ l.name }}</p>
                                 <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ l.description }}</p>
                             </div>
                         </div>
