@@ -5,7 +5,7 @@
 <div class="container-fluid vh-100 p-0 {% if context.mode == 'view' or context.mode == 'app' %}overflow-hidden{% else %}bg-light{% endif %}" id="appTop">
     
     <!-- TOP NAVBAR -->
-    <nav class="navbar fixed-top bg-white p-2 w-100">
+    <nav class="navbar fixed-top bg-white">
         <div class="container-fluid d-flex justify-content-between p-0">
             <!--
             <a class="navbar-brand" href="/">
@@ -95,7 +95,7 @@
                             <button class="bg-info border-0 rounded-circle p-2 me-2 mt-1" style="font-size: 0.9rem;" height="40px;" width="40px;">MD</button>
                             <div>
                                 <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">{{ l.name }}</p>
-                                <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ l.description }}</p>
+                                <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ user.get_username }}・{{ l.vizs.count }} vizs・{{ l.last_cached|naturaltime|capfirst }}</p>
                             </div>
                         </div>
                     </div>
