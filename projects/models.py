@@ -129,11 +129,6 @@ class Datasource(BaseModel):
     selected_viz = models.IntegerField(null=True, blank=True)
     learner_mode = models.BooleanField(default=False)
     
-    #name = models.CharField(max_length=100, blank=True)
-    #description = models.CharField(max_length=255, blank=True)
-    #created_at = models.DateTimeField(auto_now_add=True)
-    #last_updated = models.DateTimeField(auto_now=True)
-    
     class Meta:
         default_related_name = 'datasources'
     
@@ -146,7 +141,7 @@ class Datasource(BaseModel):
         return ds
     
     @classmethod
-    def list_datasources(cls, query=None, order='-id'):
+    def list_datasources(cls, query=None, user=None, order='-id'):
         return cls.objects.filter(name__icontains=query).all().order_by(order).prefetch_related('vizs', 'reports', 'items__answers')
     
     @classmethod

@@ -18,7 +18,8 @@ def app(request, pk=None):
 def list(request):
     query = request.GET.get('query', '')
     page = request.GET.get('page', 1)
-    c = {'context': {'mode': 'list', 'query': query, 'page': page}}
+    user = request.GET.get('user', '')
+    c = {'context': {'mode': 'list', 'query': query, 'page': page, 'user': user}}
     return render(request, 'projects/app_top.html', c)
 
 def view(request, pk):

@@ -17,6 +17,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.sitemaps.views import sitemap
+
+from .sitemaps import DatasourceSitemap
 
 urlpatterns = [
     path('', include("projects.urls")),
@@ -29,6 +32,7 @@ urlpatterns = [
     path('', include('pwa1.urls')),
     path('debug/', include('debug_toolbar.urls')),
     path("unicorn/", include("django_unicorn.urls")),
+    path("sitemap.xml", sitemap, {"sitemaps": {"datasources": DatasourceSitemap}},),
 ] 
 
 if settings.DEBUG:
