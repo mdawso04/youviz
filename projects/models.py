@@ -20,6 +20,8 @@ import pandas as pd
 import plotly.io as pio
 import shortener
 from datetime import datetime
+from auditlog.registry import auditlog
+from auditlog.models import AuditlogHistoryField
 
 class BaseModel(models.Model):
     name = models.CharField(max_length=100, blank=True, default='New item')
@@ -27,6 +29,7 @@ class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     hash_key = models.CharField(max_length=10, blank=True)
+    history = AuditlogHistoryField()
     
     class Meta:
         abstract = True
@@ -331,3 +334,16 @@ class Answer(BaseModel):
     
     class Meta:
         default_related_name = 'answers'
+        
+auditlog.register(Project)
+auditlog.register(Datasource, exclude_fields=['document'])
+auditlog.register(Viz)
+auditlog.register(Report)
+#auditlog.register(MyModel, exclude_fields=['last_updated'])
+#auditlog.register(MyModel, mask_fields=['address'])
+#auditlog.register(MyModel, m2m_fields={"tags", "contacts"})
+#auditlog.register(
+#    MyModel,
+#    serialize_data=True,
+#    serialize_kwargs={"fields": ["foo", "bar", "biz", "baz"]}
+#)

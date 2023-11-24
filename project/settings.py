@@ -67,12 +67,11 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    
     'pwa',
+    'auditlog',
     #'debug_toolbar',
     'django_unicorn',
     'projects',
-    'shortener',
 ]
 
 #SOCIALACCOUNT_AUTO_SIGNUP = False
@@ -83,6 +82,7 @@ else:
     SITE_ID = 1
 
 MIDDLEWARE = [
+    # Request altering middleware
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'allauth.account.middleware.AccountMiddleware',
@@ -92,6 +92,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'auditlog.middleware.AuditlogMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
