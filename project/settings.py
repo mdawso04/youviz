@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'pwa',
     'auditlog',
+    'analytical',
     #'debug_toolbar',
     'django_unicorn',
     'projects',
@@ -370,4 +371,6 @@ PWA_APP_SPLASH_SCREEN = [
 PWA_APP_DIR = 'ltr'
 PWA_APP_LANG = 'en-US'
 PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'projects', 'templates', 'projects', 'serviceworker.js')
+
+GOOGLE_ANALYTICS_GTAG_PROPERTY_ID = 'G-LDHFFBL5TS'
 

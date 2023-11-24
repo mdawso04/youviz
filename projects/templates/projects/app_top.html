@@ -1,9 +1,11 @@
 {% load unicorn %} 
 {% load pwa %}
 {% load static %}
+{% load analytical %}
 <!doctype html>
 <html>
     <head>
+        {% analytical_head_top %}
         <title>YouViz - Free, Simple Data Vizualization for You</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -15,9 +17,12 @@
         {% progressive_web_app_meta %}
         {% unicorn_scripts %}
         <style>.dropdown-toggle.no-arrow::after {content: none;}</style>
+        {% analytical_head_bottom %}
     </head>
     <body id="body">
+        {% analytical_body_top %}
         {% csrf_token %}
         {% unicorn 'app' id='app01' context=context%}
+        {% analytical_body_bottom %}
     </body>
 </html>
