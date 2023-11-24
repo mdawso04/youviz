@@ -18,7 +18,6 @@ import json
 #non-standard libraries
 import pandas as pd
 import plotly.io as pio
-import shortener
 from datetime import datetime
 from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
