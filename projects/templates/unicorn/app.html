@@ -2,11 +2,11 @@
 {% load unicorn %} 
 {% load humanize %}
 {% load socialaccount %}
-<div class="container-fluid vh-100 p-0 {% if context.mode == 'view' or context.mode == 'app' %}overflow-hidden{% else %}bg-light{% endif %}" id="appTop">
+<div class="container-fluid vh-100 p-0 overflow-hidden" id="appTop">
     
     <!-- TOP NAVBAR -->
     <nav class="navbar fixed-top bg-white">
-        <div class="container-fluid d-flex justify-content-between p-0">
+        <form class="container-fluid" action="/">
             <!--
             <a class="navbar-brand" href="/">
                 <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
@@ -32,29 +32,26 @@
                 </button>
             </div>
         -->
-            <form class="d-flex w-100" action="/">
-                <div class="input-group">
-                <button class="btn border-0 px-0" type="button" onclick="window.location.href='/'">
+            <div class="input-group">
+                <button class="btn border-0 ps-0" type="button" onclick="window.location.href='/'">
                     <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
                 </button>
-                <span class="input-group-text bg-light text-secondary border-0 py-0 pe-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
-                    <input class="form-control bg-light border-0 pe-0" type="search" name="query" 
-                       placeholder="{% if not context.query %}Search{% else %}{{ context.query }}{% endif %}" aria-label="Search">
+                <span class="input-group-text bg-light text-secondary border-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
+                <input class="form-control bg-light border-0" type="search" name="query" 
+                   placeholder="{% if not context.query %}Search{% else %}{{ context.query }}{% endif %}" aria-label="Search">
                 {% if context.mode == "view" or context.mode == "app" %}
-                <button id="navbar-button-share" class="btn border-0 text-secondary py-0" type="button" data-url="{% url 'view' pk=datasource.pk %}" data-text="{{ datasource.name }}">
+                <button id="navbar-button-share" class="btn border-0 text-secondary" type="button" data-url="{% url 'view' pk=datasource.pk %}" data-text="{{ datasource.name }}">
                     <i class="bi bi-box-arrow-up" style="font-size: 1.5rem;"></i>
                 </button>
                 {% endif %}
                 <button id="off-canvas-button" 
-                        class="btn border-0 text-secondary pe-2" 
+                        class="btn border-0 text-secondary" 
                         type="button" data-bs-toggle="offcanvas" 
                         data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
                     <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
                 </button>
-            </div>
-                </form>
-                
-        </div>
+            </div>        
+        </form>
     </nav>
     
     <!-- OFFCANVAS --> 
@@ -71,8 +68,7 @@
     </div>
     
     {% if context.mode == "list" %}
-    <div class="container-fluid px-0">
-        <div class="row"><div class="col" style="height: 80px;"></div></div>
+    <div class="container-fluid px-0 h-100 bg-light overflow-scroll" style="margin-top: 80px; padding-bottom: 160px;">
         <div class="row row-cols-1 row-cols-md-4 g-2">
             {% for l in list_datasources %}
             <div class="col">
@@ -85,10 +81,6 @@
                          data-yv-button=""
                          data-yv-init="dsThumbInit">
                     </div>
-                    
-                    
-                    
-                    
                     <a href="{% url 'view' pk=l.pk %}" class="text-decoration-none">
                     <div class="card-body p-2">
                         <div class="d-flex align-items-start">
@@ -104,7 +96,6 @@
             </div>
             {% endfor %}
         </div>
-        <div class="row"><div class="col" style="height: 90px;"></div></div>
     </div>
     
     {% endif %}
@@ -139,99 +130,82 @@
     </style>
     
     <nav class="navbar fixed-bottom bg-light border-top border-warning border-2 pt-0" id=bottom-navbar>
-        <div class="container-sm d-flex d-grid mb-2 gap-2 justify-content-center">
+        <div class="container-fluid d-flex justify-content-around">
             
-            <div class="btn-toolbar d-flex w-100 justify-content-evenly button-toolbar" role="toolbar" 
-                 aria-label="Toolbar with button groups">
-                <div class="btn-group me-2" role="group" aria-label="button group">
-                    {% if context.mode == "list" %}
-                    <button type="button" class="btn btn-light text-primary border-0" onclick=""; id="dataEditButton" disabled>
-                            <i class="bi bi-house" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Home</span></i>
-                    </button>
-                    {% else %}
-                    <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'list' %}';" id="dataEditButton">
-                            <i class="bi bi-house" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Home</span></i>
-                    </button>
-                    {% endif %}
-                </div>
-                
-                <div class="btn-group me-2" role="group" aria-label="button group">
-                    {% if context.mode == "app" %}
-                    <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'view' pk=project.selected_datasource %}';" id="dataEditButton">
-                            <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">View</span></i>
-                    </button>
-                    {% elif context.mode == "view" %}
-                    <button type="button" class="btn btn-light text-primary border-0" onclick="" id="dataEditButton" disabled>
-                            <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">View</span></i>
-                    </button>
-                    {% else %}
-                    <button type="button" class="btn btn-light text-secondary border-0" onclick="" id="dataEditButton" disabled>
-                            <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">View</span></i>
-                    </button>
-                    {% endif %}
-                </div>
-                
-                <div class="btn-group" role="group" aria-label="button group">
-                {% if user.is_authenticated %}
-                    {% if context.mode == "list" or context.mode == "view" %}
-                    <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'app_all' %}';" id="dataEditButton">
-                            <i class="bi bi-pen" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Edit</span></i>
-                    </button>
-                    {% else %}
-                    <button type="button" class="btn btn-light text-primary border-0" onclick="" id="dataEditButton" disabled>
-                            <i class="bi bi-pen" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;" disabled>Edit</span></i>
-                    </button>
-                    {% endif %}
+            {% if context.mode == "list" %}
+            <button type="button" class="btn btn-light text-primary border-0" onclick=""; id="dataEditButton" disabled>
+                    <i class="bi bi-house" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Home</span></i>
+            </button>
+            {% else %}
+            <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'list' %}';" id="dataEditButton">
+                    <i class="bi bi-house" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Home</span></i>
+            </button>
+            {% endif %}
+            
+            {% if context.mode == "app" %}
+            <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'view' pk=project.selected_datasource %}';" id="dataEditButton">
+                    <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">View</span></i>
+            </button>
+            {% elif context.mode == "view" %}
+            <button type="button" class="btn btn-light text-primary border-0" onclick="" id="dataEditButton" disabled>
+                    <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">View</span></i>
+            </button>
+            {% else %}
+            <button type="button" class="btn btn-light text-secondary border-0" onclick="" id="dataEditButton" disabled>
+                    <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">View</span></i>
+            </button>
+            {% endif %}
+            
+            {% if user.is_authenticated %}
+                {% if context.mode == "list" or context.mode == "view" %}
+                <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'app_all' %}';" id="dataEditButton">
+                        <i class="bi bi-pen" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Edit</span></i>
+                </button>
                 {% else %}
-                    <!-- Allauth button starts here -->
-                    <form class="d-inline" action="{% provider_login_url 'google' %}" method="post">
-                        {% csrf_token %}
-                        <button class="btn btn-light text-secondary border-0" type="submit">
-                            <i class="bi bi-google" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Signin</span></i>
-                        </button>
-                    </form>
-                    <!-- Allauth button ends here -->
+                <button type="button" class="btn btn-light text-primary border-0" onclick="" id="dataEditButton" disabled>
+                        <i class="bi bi-pen" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;" disabled>Edit</span></i>
+                </button>
                 {% endif %}
-                </div>
-                
-                {% if context.mode == "view" or context.mode == "app" %}
-                <div class="btn-group me-2" role="group" aria-label="button group">
-                    {% if context.mode == "view" %}
-                    <button id="showVizOffcanvas" class="btn btn-light text-secondary border-0" type="button" onclick="Handler.navigator.toggleEdit();"
-                                aria-expanded="false" aria-controls="collapseExample">
-                        <i class="bi-chat-text" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Comments</span></i>
+            {% else %}
+                <!-- Allauth button starts here -->
+                <form class="d-inline" action="{% provider_login_url 'google' %}" method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-light text-secondary border-0" type="submit">
+                        <i class="bi bi-google" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Signin</span></i>
                     </button>
-                    {% else %}
-                    <button id="showVizOffcanvas" class="btn btn-light text-secondary border-0" type="button" onclick="Handler.navigator.toggleEdit();"
-                                aria-expanded="false" aria-controls="collapseExample">
-                        <i class="bi-bar-chart" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Settings</span></i>
-                    </button>
-                    {% endif %}
-                </div>
+                </form>
+                <!-- Allauth button ends here -->
+            {% endif %}
+            
+            {% if context.mode == "view" or context.mode == "app" %}
+                {% if context.mode == "view" %}
+                <button id="showVizOffcanvas" class="btn btn-light text-secondary border-0" type="button" onclick="Handler.navigator.toggleEdit();"
+                            aria-expanded="false" aria-controls="collapseExample">
+                    <i class="bi-chat-text" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Comments</span></i>
+                </button>
+                {% else %}
+                <button id="showVizOffcanvas" class="btn btn-light text-secondary border-0" type="button" onclick="Handler.navigator.toggleEdit();"
+                            aria-expanded="false" aria-controls="collapseExample">
+                    <i class="bi-bar-chart" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Settings</span></i>
+                </button>
                 {% endif %}
-                
-                {% if context.mode == "app" %}
-                <div class="btn-group me-2" role="group" aria-label="button group">
-                    <button type="button" class="btn btn-light text-secondary border-0" id="datafileOpenButton" unicorn:key="datafileOpenButton"
-                        data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable" disabled>
-                            <i class="bi bi-table" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Data</span></i>
-                    </button>
-                </div>
-                {% endif %}
-                
-                <!--
-                <div class="btn-group me-2" role="group" aria-label="button group">
-                    <button type="button" class="btn btn-light text-secondary border-0" id="reportOpenButton" unicorn:key="reportOpenButton"
-                        data-bs-toggle="modal" data-bs-target="#modalReport" aria-controls="modalReport" disabled>
-                            <i class="bi bi-file-earmark-check" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Report</span></i>
-                    </button>
-                </div>
-                -->
-                
-                
-                
-                {% if context.mode == "view" or context.mode == "app" %}
-                
+            {% endif %}
+
+            {% if context.mode == "app" %}
+                <button type="button" class="btn btn-light text-secondary border-0" id="datafileOpenButton" unicorn:key="datafileOpenButton"
+                    data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable" disabled>
+                        <i class="bi bi-table" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Data</span></i>
+                </button>
+            {% endif %}
+            
+            
+            
+            
+            
+            
+            
+            <div class="btn-toolbar d-flex d-none w-100 justify-content-evenly button-toolbar" role="toolbar" 
+                 aria-label="Toolbar with button groups">
                 <div class="btn-group d-flex flex-grow-1 me-2 d-none" role="group" aria-label="button group">
                     <button type="button" class="btn btn-primary d-none d-lg-block" onclick="Handler.navigator.back();">
                         <i class="bi bi-caret-left-fill" style="font-size: 1.2rem;"></i>
@@ -271,10 +245,7 @@
                         <i class="bi bi-caret-right-fill" style="font-size: 1.2rem;"></i>
                     </button>    
                 </div>
-                
-                
-                {% endif %}
-                
+            </div>
                 
 
                 <style>
@@ -386,7 +357,6 @@
                      data-yv-init="vizreportInit">
                 </div>
                 {% endif %}
-            </div>
         </div>
     </nav>
     
