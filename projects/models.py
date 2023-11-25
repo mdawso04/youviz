@@ -116,6 +116,17 @@ class Project(BaseModel):
     #selected_file = models.OneToOneField(File, on_delete=models.SET_NULL, null=True)
     #description = models.CharField(max_length=255, blank=True)
     
+class Source(BaseModel):
+    #parent_class
+    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_project', on_delete=models.CASCADE)
+    
+    #relations
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    url = models.URLField()
+    
+    #selected_file = models.OneToOneField(File, on_delete=models.SET_NULL, null=True)
+    #description = models.CharField(max_length=255, blank=True)
+    
 class Datasource(BaseModel):
     #parent_class
     #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_datasource', on_delete=models.CASCADE)
