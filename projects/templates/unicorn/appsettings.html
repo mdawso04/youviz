@@ -11,11 +11,19 @@
     <div class="row row-cols-auto g-3 pb-3">
         <div class="col">
             {% if user.is_authenticated %}
-            <div class="mb-3">
-                Hey {{ user.username | title }}! 
-                <p class="small trefresh">Last login <span class="thuman">...</span>
-                    <span class="tstamp d-none">{{user.last_login|date:"c"}}</span></p>
+            <div class="card-body mb-1">
+                <div class="d-flex align-items-start">
+                    <button class="bg-info border-0 rounded-circle p-2 me-2 mt-1" style="font-size: 0.9rem;" height="40px;" width="40px;">MD</button>
+                    <div>
+                        <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">Hey {{ user.username | title }}!</p>
+                        <p class="small trefresh">Last login <span class="thuman">...</span>
+                        <span class="tstamp d-none">{{user.last_login|date:"c"}}</span></p>
+                    </div>
+                </div>
             </div>
+            
+            
+            
             <button type="button" class="btn btn-secondary" id="logoutButton" 
                     data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                 Logout
