@@ -4,55 +4,96 @@
 {% load socialaccount %}
 <div class="container-fluid vh-100 p-0 overflow-hidden" id="appTop">
     
-    <!-- TOP NAVBAR -->
-    <nav class="navbar fixed-top bg-white">
-        <form class="container-fluid" action="/">
-            <!--
-            <a class="navbar-brand" href="/">
-                <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
-                <span class="d-none d-lg-block">You<span class="text-warning">Viz</span></span></a>
-            <form class="d-flex" action="/">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light text-secondary border-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
-                    <input class="form-control bg-light border-0" type="search" name="query" 
-                           placeholder={% if not context.query %}"Search"{% else %}"{{ context.query }}"{% endif %} aria-label="Search">
-                </div>
-            </form>
-            <div class="btn-group" role="group" aria-label="button group">
-                {% if context.mode == "view" or context.mode == "app" %}
-                <button id="off-canvas-button" class="btn border-0 text-secondary" type="button">
-                    <i class="bi bi-box-arrow-up" style="font-size: 1.5rem;"></i>
-                </button>
-                {% endif %}
-                <button id="off-canvas-button" 
-                        class="btn border-0 text-secondary" 
-                        type="button" data-bs-toggle="offcanvas" 
-                        data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
-                    <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
-                </button>
-            </div>
-        -->
-            <div class="input-group">
-                <button class="btn border-0 ps-0" type="button" onclick="window.location.href='/'">
-                    <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
-                </button>
-                <span class="input-group-text bg-light text-secondary border-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
-                <input class="form-control bg-light border-0" type="search" name="query" 
-                   placeholder="{% if not context.query %}Search{% else %}{{ context.query }}{% endif %}" aria-label="Search">
-                {% if context.mode == "view" or context.mode == "app" %}
-                <button id="navbar-button-share" class="btn border-0 text-secondary" type="button" data-url="{% url 'view' pk=datasource.pk %}" data-text="{{ datasource.name }}">
-                    <i class="bi bi-box-arrow-up" style="font-size: 1.5rem;"></i>
-                </button>
-                {% endif %}
-                <button id="off-canvas-button" 
-                        class="btn border-0 text-secondary" 
-                        type="button" data-bs-toggle="offcanvas" 
-                        data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
-                    <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
-                </button>
-            </div>        
-        </form>
-    </nav>
+    <!-- SIDEBAR STYLE -->
+    <style>
+                    /* var */
+                    :root {
+                        --edit-z-index: 1040;
+                        --edit-transition: .35s;
+                        --t-nav: 56px;
+                        --b-nav: 87px;
+                        --viz-area: 450px;
+                        --t-nav-viz-area: calc(var(--t-nav) + var(--viz-area));
+                        --mid-area: calc(100vh - var(--t-nav) - var(--b-nav));
+                        --e-head: 62px;
+                        /* small */
+                        --small-edit-width: 100vw;
+                        --small-edit-top-open: var(--t-nav-viz-area);
+                        --small-edit-top-closed: 100vh;
+                        --small-edit-left: 0px;
+                        --small-edit-height: calc(100vh - var(--small-edit-top-open));
+                        /* large */
+                        --large-edit-height: var(--mid-area);
+                        --large-edit-body-height: calc(var(--large-edit-height) - var(--e-head));
+                        --large-edit-width: 320px;
+                        --large-edit-top: 57px;
+                        --large-edit-left: auto;
+                        --large-edit-right-open: 0px;
+                        --large-edit-right-closed: -320px;
+                    }
+                    
+                    /* Small devices */
+                    .test-edit {
+                        width: var(--small-edit-width); 
+                        top: var(--small-edit-top-closed);  
+                        left: var(--small-edit-left); 
+                        position: fixed;
+                        z-index: var(--edit-z-index); 
+                        transition: var(--edit-transition); 
+                    }
+                    .test-edit.open {
+                        width: var(--small-edit-width); 
+                        min-height: var(--small-edit-height); 
+                        /*max-height: var(--small-edit-height);*/
+                        top: var(--small-edit-top-open); 
+                        left: var(--small-edit-left); 
+                        position: fixed;
+                        z-index: var(--edit-z-index); 
+                        transition: var(--edit-transition); 
+                    }
+                    .test-edit-inner {
+                        /*min-width: var(--small-edit-width); 
+                        max-width: var(--small-edit-width);*/ 
+                        /*height: inherit;*/
+                        min-height: calc(var(--small-edit-height) - var(--e-head)); 
+                        max-height: calc(var(--small-edit-height) - var(--e-head)); 
+                    }
+                    
+                    #bottom-navbar.dynamic {display: none;}
+                    
+                    /* large devices */
+                    @media only screen and (min-width: 993px) {    
+                        .test-edit {
+                            width: var(--large-edit-width);
+                            height: var(--large-edit-height);
+                            top: var(--large-edit-top);
+                            left: var(--large-edit-left);
+                            right: var(--large-edit-right-closed); 
+                            position: fixed;
+                            z-index: var(--edit-z-index); 
+                            transition: var(--edit-transition); 
+                        }
+                        .test-edit.open {
+                            width: var(--large-edit-width);
+                            height: var(--large-edit-height);
+                            top: var(--large-edit-top);
+                            position: fixed;
+                            left: var(--large-edit-left); 
+                            right: var(--large-edit-right-open); 
+                            z-index: var(--edit-z-index); 
+                            transition: var(--edit-transition); 
+                        }
+                        .test-edit-inner {
+                            /*min-width: var(--large-edit-width);
+                            max-width: var(--large-edit-width);*/
+                            /*height: inherit;*/
+                            min-height: calc(var(--large-edit-height) - var(--e-head)); 
+                            max-height: calc(var(--large-edit-height) - var(--e-head)); 
+                        }
+                        
+                        #bottom-navbar.dynamic {display: flex;}
+                    }
+                </style>  
     
     <!-- OFFCANVAS --> 
     <div class="offcanvas offcanvas-end" tabindex="-1" id="OFFCANVAS" aria-labelledby="offcanvasExampleLabel" 
@@ -67,38 +108,38 @@
         </div>
     </div>
     
-    {% if context.mode == "list" %}
-    <div class="container-fluid px-1 h-100 bg-light overflow-auto" style="margin-top: 86px; padding-bottom: 160px;">
-        <div class="row row-cols-1 row-cols-md-4 g-2">
-            {% for l in list_datasources %}
-            <div class="col">
-                <div class="card">
-                    
-                    <div class="yv-component dsthumb" id="yv-component-dsthumb-{{ l.pk }}"
-                         data-yv-component="dsthumb"
-                         data-yv-id="{{ l.pk }}"
-                         data-yv-link="{{ l.get_absolute_url_viewmode }}"
-                         data-yv-button=""
-                         data-yv-init="dsThumbInit">
-                    </div>
-                    <a href="{% url 'view' pk=l.pk %}" class="text-decoration-none">
-                    <div class="card-body p-2">
-                        <div class="d-flex align-items-start">
-                            <button class="bg-info border-0 rounded-circle p-2 me-2 mt-1" style="font-size: 0.9rem;" height="40px;" width="40px;">MD</button>
-                            <div>
-                                <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">{{ l.name }}</p>
-                                <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ user.get_username }}・{{ l.vizs.count }} vizs・{{ l.last_cached|naturaltime|capfirst }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    </a>
-                </div>
+    <!-- TOP NAVBAR -->
+    <nav class="navbar fixed-top bg-white">
+        <form class="container-fluid" action="/">
+            <div class="input-group">
+                <button class="btn border-0 ps-0" type="button" onclick="window.location.href='/'">
+                    <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
+                </button>
+                <span class="input-group-text bg-light text-secondary border-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
+                <input class="form-control bg-light border-0" type="search" name="query" 
+                   placeholder="{% if not context.query %}Search{% else %}{{ context.query }}{% endif %}" 
+                       value="{% if not context.query %}{% else %}{{ context.query }}{% endif %}" aria-label="Search">
+                <input type="hidden" name="multiple" id="viz_count" value="any" />
+                {% if context.mode == "view" or context.mode == "app" %}
+                <button id="navbar-button-share" class="btn border-0 text-secondary" type="button" data-url="{% url 'view' pk=datasource.pk %}" data-text="{{ datasource.name }}">
+                    <i class="bi bi-box-arrow-up" style="font-size: 1.5rem;"></i>
+                </button>
+                {% endif %}
+                <button id="off-canvas-button" 
+                        class="btn border-0 text-secondary" 
+                        type="button" data-bs-toggle="offcanvas" 
+                        data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
+                    <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
+                </button>
+            </div>       
+            {% if context.mode == "list" %}
+            <div class="input-group pt-2">
+                <input type="submit" class="btn bg-light border-0 text-secondary me-2" value="Any Vizs" onclick="document.getElementById('viz_count').value = 'any';">
+                <input type="submit" class="btn bg-light border-0 text-secondary me-2" value="Multiple Vizs" onclick="document.getElementById('viz_count').value = 'multiple';">
             </div>
-            {% endfor %}
-        </div>
-    </div>
-    
-    {% endif %}
+            {% endif %}
+        </form>
+    </nav>
     
     <!-- BOTTOM NAVBAR -->
     
@@ -249,123 +290,61 @@
                     </button>    
                 </div>
             </div>
-                
-
-                <style>
-                    /* var */
-                    :root {
-                        --edit-z-index: 1040;
-                        --edit-transition: .35s;
-                        --t-nav: 56px;
-                        --b-nav: 87px;
-                        --viz-area: 450px;
-                        --t-nav-viz-area: calc(var(--t-nav) + var(--viz-area));
-                        --mid-area: calc(100vh - var(--t-nav) - var(--b-nav));
-                        --e-head: 62px;
-                        /* small */
-                        --small-edit-width: 100vw;
-                        --small-edit-top-open: var(--t-nav-viz-area);
-                        --small-edit-top-closed: 100vh;
-                        --small-edit-left: 0px;
-                        --small-edit-height: calc(100vh - var(--small-edit-top-open));
-                        /* large */
-                        --large-edit-height: var(--mid-area);
-                        --large-edit-body-height: calc(var(--large-edit-height) - var(--e-head));
-                        --large-edit-width: 320px;
-                        --large-edit-top: 57px;
-                        --large-edit-left: auto;
-                        --large-edit-right-open: 0px;
-                        --large-edit-right-closed: -320px;
-                    }
-                    
-                    /* Small devices */
-                    .test-edit {
-                        width: var(--small-edit-width); 
-                        top: var(--small-edit-top-closed);  
-                        left: var(--small-edit-left); 
-                        position: fixed;
-                        z-index: var(--edit-z-index); 
-                        transition: var(--edit-transition); 
-                    }
-                    .test-edit.open {
-                        width: var(--small-edit-width); 
-                        min-height: var(--small-edit-height); 
-                        /*max-height: var(--small-edit-height);*/
-                        top: var(--small-edit-top-open); 
-                        left: var(--small-edit-left); 
-                        position: fixed;
-                        z-index: var(--edit-z-index); 
-                        transition: var(--edit-transition); 
-                    }
-                    .test-edit-inner {
-                        /*min-width: var(--small-edit-width); 
-                        max-width: var(--small-edit-width);*/ 
-                        /*height: inherit;*/
-                        min-height: calc(var(--small-edit-height) - var(--e-head)); 
-                        max-height: calc(var(--small-edit-height) - var(--e-head)); 
-                    }
-                    
-                    #bottom-navbar.dynamic {display: none;}
-                    
-                    /* large devices */
-                    @media only screen and (min-width: 993px) {    
-                        .test-edit {
-                            width: var(--large-edit-width);
-                            height: var(--large-edit-height);
-                            top: var(--large-edit-top);
-                            left: var(--large-edit-left);
-                            right: var(--large-edit-right-closed); 
-                            position: fixed;
-                            z-index: var(--edit-z-index); 
-                            transition: var(--edit-transition); 
-                        }
-                        .test-edit.open {
-                            width: var(--large-edit-width);
-                            height: var(--large-edit-height);
-                            top: var(--large-edit-top);
-                            position: fixed;
-                            left: var(--large-edit-left); 
-                            right: var(--large-edit-right-open); 
-                            z-index: var(--edit-z-index); 
-                            transition: var(--edit-transition); 
-                        }
-                        .test-edit-inner {
-                            /*min-width: var(--large-edit-width);
-                            max-width: var(--large-edit-width);*/
-                            /*height: inherit;*/
-                            min-height: calc(var(--large-edit-height) - var(--e-head)); 
-                            max-height: calc(var(--large-edit-height) - var(--e-head)); 
-                        }
-                        
-                        #bottom-navbar.dynamic {display: flex;}
-                    }
-                </style>  
-                
-                <!-- DATA PAYLOAD -->
-                {% if context.mode == "app" %}
-                <div class="yv-component dataframe d-none" id="yv-component-dataframe-{{ datasource.pk }}"
-                     data-yv-component="dataframe"
-                     data-yv-id="{{ datasource.pk }}"
-                     data-yv-link="{{ datasource.get_absolute_url }}"
-                     data-yv-button="#datafileOpenButton"
-                     data-yv-init="dataframeInit">
-                </div>
-                {% endif %}
-                {% if context.mode == "view" or context.mode == "app" %}
-                <div class="yv-component vizreport d-none" id="yv-component-vizreport-{{ report.pk }}"
-                     data-yv-component="report"
-                     data-yv-id="{{ report.pk }}"
-                     data-yv-link="{{ report.get_absolute_url }}"
-                     data-yv-button="#reportOpenButton"
-                     data-yv-init="vizreportInit">
-                </div>
-                {% endif %}
+ 
         </div>
     </nav>
     
-    <!-- MAIN CONTENT -->
+    <!-- CONTENT - LIST -->
+    {% if context.mode == "list" %}
+    <div class="container-fluid px-1 h-100 bg-light overflow-auto" style="margin-top: 126px; padding-bottom: 160px;">
+        <div class="row row-cols-1 row-cols-md-4 g-2">
+            {% for l in list_datasources %}
+            <div class="col">
+                <div class="card">
+                    
+                    <div class="yv-component dsthumb" id="yv-component-dsthumb-{{ l.pk }}"
+                         data-yv-component="dsthumb"
+                         data-yv-id="{{ l.pk }}"
+                         data-yv-link="{{ l.get_absolute_url_viewmode }}"
+                         data-yv-button=""
+                         data-yv-init="dsThumbInit">
+                    </div>
+                    <a href="{% url 'view' pk=l.pk %}" class="text-decoration-none">
+                        <div class="card-body p-2">
+                            <div class="d-flex align-items-start">
+                                <button class="bg-info border-0 rounded-circle p-2 me-2 mt-1" style="font-size: 0.9rem;" height="40px;" width="40px;">MD</button>
+                                <div>
+                                    <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">{{ l.name }}</p>
+                                    <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ user.get_username }}・{{ l.vizs.count }} vizs・{{ l.last_cached|naturaltime|capfirst }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    {% endif %}
+    
+    
+    
+    <!-- CONTENT - NOT LIST -->
     
     {% if context.mode != "list" %}
+    
+    <!-- DATASOURCE INFO -->
+    <div class="card-body p-2 bg-light vw-100" style="position: fixed; bottom: 70px; left: 0px;">
+        <div class="d-flex align-items-start">
+            <button class="bg-info border-0 rounded-circle p-2 me-2 mt-1" style="font-size: 0.9rem;" height="40px;" width="40px;">MD</button>
+            <div>
+                <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">{{ datasource.name }}</p>
+                <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ user.get_username }}・{{ datasource.vizs.count }} vizs・{{ datasource.last_cached|naturaltime|capfirst }}</p>
+            </div>
+        </div>
+    </div>
+    
     <div class="row h-100 pt-5 mt-2">
         <div class="col d-flex">
             
@@ -416,6 +395,28 @@
         </div>
     </div>
     
+    {% endif %}
+    
+    <!-- PAYLOAD -->
+    
+     <!-- DATA PAYLOAD -->
+    {% if context.mode == "app" %}
+    <div class="yv-component dataframe d-none" id="yv-component-dataframe-{{ datasource.pk }}"
+         data-yv-component="dataframe"
+         data-yv-id="{{ datasource.pk }}"
+         data-yv-link="{{ datasource.get_absolute_url }}"
+         data-yv-button="#datafileOpenButton"
+         data-yv-init="dataframeInit">
+    </div>
+    {% endif %}
+    {% if context.mode == "view" or context.mode == "app" %}
+    <div class="yv-component vizreport d-none" id="yv-component-vizreport-{{ report.pk }}"
+         data-yv-component="report"
+         data-yv-id="{{ report.pk }}"
+         data-yv-link="{{ report.get_absolute_url }}"
+         data-yv-button="#reportOpenButton"
+         data-yv-init="vizreportInit">
+    </div>
     {% endif %}
     
 </div>
