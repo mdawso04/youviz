@@ -119,7 +119,7 @@
                 <input class="form-control bg-light border-0" type="search" name="query" 
                    placeholder="{% if not context.query %}Search{% else %}{{ context.query }}{% endif %}" 
                        value="{% if not context.query %}{% else %}{{ context.query }}{% endif %}" aria-label="Search">
-                <input type="hidden" name="multiple" id="viz_count" value="any" />
+                <input type="hidden" name="multiple" id="viz_count" value="" />
                 {% if context.mode == "view" or context.mode == "app" %}
                 <button id="navbar-button-share" class="btn border-0 text-secondary" type="button" data-url="{% url 'view' pk=datasource.pk %}" data-text="{{ datasource.name }}">
                     <i class="bi bi-box-arrow-up" style="font-size: 1.5rem;"></i>
@@ -133,9 +133,13 @@
                 </button>
             </div>       
             {% if context.mode == "list" %}
-            <div class="input-group pt-2">
-                <input type="submit" class="btn bg-light border-0 text-secondary me-2" value="Any Vizs" onclick="document.getElementById('viz_count').value = 'any';">
-                <input type="submit" class="btn bg-light border-0 text-secondary me-2" value="Multiple Vizs" onclick="document.getElementById('viz_count').value = 'multiple';">
+            <div class="pt-2">
+                <input type="submit" class="btn border-0 me-1 {% if request.GET.multiple == 'any' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
+                       value="Any Vizs" 
+                       onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'any';">
+                <input type="submit" class="btn border-0 text-secondary me-1 {% if request.GET.multiple == 'multiple' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
+                       value="Multiple Vizs" 
+                       onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'multiple';">
             </div>
             {% endif %}
         </form>
