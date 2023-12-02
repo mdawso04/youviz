@@ -125,12 +125,23 @@
                     <i class="bi bi-box-arrow-up" style="font-size: 1.5rem;"></i>
                 </button>
                 {% endif %}
+                {% if user.is_authenticated %}
+                <div class="d-flex align-items-center">
+                    <button id="off-canvas-button" 
+                            type="button" data-bs-toggle="offcanvas" 
+                            data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample"
+                            class="bg-info border-0 rounded-circle p-2 ms-2" style="font-size: 0.9rem; max-height: 40px; max-width: 40px;" height="40px;" width="40px;">
+                        MD
+                    </button>
+                </div>
+                {% else %}
                 <button id="off-canvas-button" 
-                        class="btn border-0 text-secondary" 
                         type="button" data-bs-toggle="offcanvas" 
-                        data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample">
+                        data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample"
+                        class="btn border-0 text-secondary">
                     <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
                 </button>
+                {% endif %}
             </div>       
             {% if context.mode == "list" %}
             <div class="pt-2">
