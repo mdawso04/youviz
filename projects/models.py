@@ -116,23 +116,32 @@ class Project(BaseModel):
     #selected_file = models.OneToOneField(File, on_delete=models.SET_NULL, null=True)
     #description = models.CharField(max_length=255, blank=True)
     
-class Source(BaseModel):
+class Datastream(BaseModel):
     #parent_class
-    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_project', on_delete=models.CASCADE)
+    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_datasource', on_delete=models.CASCADE)
     
     #relations
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    url = models.URLField()
+    #project = models.ForeignKey(Project, on_delete=models.CASCADE)
     
-    #selected_file = models.OneToOneField(File, on_delete=models.SET_NULL, null=True)
-    #description = models.CharField(max_length=255, blank=True)
+    #attrs
+    url = models.URLField()
+    json = models.JSONField(blank=True, null=True)
+   
+    class Meta:
+        default_related_name = 'datastreams'
+    
+    @classmethod
+    def datastreams(cls):
+        ds = cls.objects.all().order_by('-id')
+        return ds
     
 class Datasource(BaseModel):
     #parent_class
     #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_datasource', on_delete=models.CASCADE)
     
     #relations
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
+    datastream = models.ForeignKey(Datastream, on_delete=models.CASCADE)
     
     #attrs
     document = models.TextField()
@@ -160,6 +169,20 @@ class Datasource(BaseModel):
     @classmethod
     def datasource(cls, pk):
         return cls.objects.filter(pk=pk).all().order_by('-id').prefetch_related('vizs', 'reports', 'items__answers').last()
+    
+    @classmethod
+    def from_datastream(cls, pk):
+        d=Datastream.objects.filter(pk=pk).last()
+        a = pp.App(d.json)
+        df = a.call()
+        content = df.to_csv(index=False)
+        #json = a.todos
+        # no files on disk so delete
+        #temp_file = ContentFile(content.encode('utf-8'))
+        ds = cls(name=d.name, description=d.description, datastream=d, document=content, last_cached = datetime.utcnow())
+        #f.document.save(f'{service}.csv', temp_file)
+        ds.save()
+        return ds
             
     @classmethod
     def getRemoteData(cls, project, service='READ_DATA_ATTRITION', name='no_name'):
@@ -206,8 +229,16 @@ class Datasource(BaseModel):
     def records(self):
         return self.datatable['data'] if self.datatable else None
     
+    def refresh(self):
+        a = pp.App(self.datastream.json)
+        df = a.call()
+        content = df.to_csv(index=False)
+        self.document = content
+        self.last_cached = datetime.utcnow()
+        self.save()
+    
     @classmethod
-    def remote_data(self):
+    def remote_data(cls):
         #logger.debug('AppView > addViz start')
         s = pp.App().services()['read']
         return [i for i in s if i.startswith('READ_DATA')]

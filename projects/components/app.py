@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
-from projects.models import Project, Datasource, Viz, Report, Item, Answer
+from projects.models import Project, Datastream, Datasource, Viz, Report, Item, Answer
 
 from django.core.files.base import ContentFile
 from django.shortcuts import render, redirect
@@ -31,8 +31,10 @@ class AppView(UnicornView):
     
     list_datasources: QuerySetType[Datasource] = None
     
+    datastreams: QuerySetType[Datastream] = None
+    
     class Meta:
-        javascript_exclude = ('project', 'datasources', 'datasource.document', 'vizs', 'report', 'list_datasources') 
+        javascript_exclude = ('project', 'datastreams', 'datasources', 'datasource.document', 'vizs', 'report', 'list_datasources') 
     
     #def __init__(self, *args, **kwargs):
     #    super().__init__(**kwargs)  # calling super is required
@@ -89,6 +91,13 @@ class AppView(UnicornView):
                 self.vizs = self.datasource.vizs.all()
                 if hasattr(self.datasource, 'reports'):
                     self.report = self.datasource.reports.last()
+            elif self.context['mode'] == 'new_viz_list':
+                self.datastreams = Datastream.datastreams()
+            elif self.context['mode'] == 'new_viz':
+                self.datasource = Datasource.from_datastream(self.context['pk'])
+                self.addViz(call_redirect=False)
+                self.vizs = Viz.objects.filter(datasource=self.datasource).all().order_by('-id')
+                self.addReport()
             else:
                 self.datasources = Datasource.objects.none()
                 self.datasource = None
@@ -198,12 +207,15 @@ class AppView(UnicornView):
         
     def refreshDatasource(self):
         #logger.debug('AppView > addViz start')
+        self.datasource.refresh()
+        '''
         a = pp.App(self.datasource.json)
         df = a.call()
         content = df.to_csv(index=False)
         self.datasource.document = content
         self.datasource.last_cached = datetime.utcnow()
         self.datasource.save()
+        '''
         #self.load_table()
         #logger.debug('AppView > addViz end')
         

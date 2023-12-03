@@ -214,28 +214,6 @@
             {% endif %}
             
             
-            {% if user.is_authenticated %}
-                {% if context.mode == "list" or context.mode == "view" %}
-                <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'app_all' %}';" id="dataEditButton">
-                        <i class="bi bi-pen" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Edit</span></i>
-                </button>
-                {% else %}
-                <button type="button" class="btn btn-light text-primary border-0" onclick="" id="dataEditButton" disabled>
-                        <i class="bi bi-pen" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;" disabled>Edit</span></i>
-                </button>
-                {% endif %}
-            {% else %}
-                <!-- Allauth button starts here -->
-                <form class="d-inline" action="{% provider_login_url 'google' %}" method="post">
-                    {% csrf_token %}
-                    <button class="btn btn-light text-secondary border-0" type="submit">
-                        <i class="bi bi-google" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Signin</span></i>
-                    </button>
-                </form>
-                <!-- Allauth button ends here -->
-            {% endif %}
-            
-            
             {% if context.mode == "view" or context.mode == "app" %}
                 {% if context.mode == "view" %}
                 <button id="showVizOffcanvas" class="btn btn-light text-secondary border-0" type="button" onclick="Handler.navigator.toggleEdit();"
@@ -255,6 +233,24 @@
                     data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable" disabled>
                         <i class="bi bi-table" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Data</span></i>
                 </button>
+            {% endif %}
+            
+            
+            {% if user.is_authenticated %}
+                {% if context.mode == "list" or context.mode == "view" %}
+                <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'new_viz_list' %}';" id="newVizListButton">
+                        <i class="bi bi-plus-circle" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">New</span></i>
+                </button>
+                {% endif %}
+            {% else %}
+                <!-- Allauth button starts here -->
+                <form class="d-inline" action="{% provider_login_url 'google' %}" method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-light text-secondary border-0" type="submit">
+                        <i class="bi bi-google" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Signin</span></i>
+                    </button>
+                </form>
+                <!-- Allauth button ends here -->
             {% endif %}
             
             
@@ -325,7 +321,7 @@
                          data-yv-init="dsThumbInit">
                     </div>
                     <a href="{% url 'view' pk=l.pk %}" class="text-decoration-none">
-                        <div class="card-body p-2">
+                        <div class="card-body p-2 pt-0">
                             <div class="d-flex align-items-start">
                                 <button class="bg-info border-0 rounded-circle p-2 me-2 mt-1" style="font-size: 0.9rem;" height="40px;" width="40px;">MD</button>
                                 <div>
@@ -343,11 +339,38 @@
     
     {% endif %}
     
+    <!-- NEW DATASTREAM - LIST -->
+    {% if context.mode == "new_viz_list" %}
+    <div class="container-fluid px-1 h-100 bg-light overflow-auto" style="margin-top: 126px; padding-bottom: 160px;">
+        <div class="row row-cols-1 row-cols-md-4 g-2">
+            {% for l in datastreams %}
+            <div class="col">
+                <div class="card">
+                    
+                    <a href="{% url 'new_viz' pk=l.pk %}" class="text-decoration-none">
+                        <div class="card-body p-2 pt-0">
+                            <div class="d-flex align-items-start">
+                                <button class="bg-info border-0 rounded-circle p-2 me-2 mt-1" style="font-size: 0.9rem;" height="40px;" width="40px;">MD</button>
+                                <div>
+                                    <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">{{ l.name }}</p>
+                                    <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ user.get_username }}・{{ l.created_at|naturaltime|capfirst }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    {% endif %}
+    
     
     
     <!-- CONTENT - NOT LIST -->
     
-    {% if context.mode != "list" %}
+    {% if context.mode != "list" and context.mode != "new_viz_list" %}
     
     <!-- DATASOURCE INFO -->
     <div class="card-body p-2 bg-light vw-100" style="position: fixed; bottom: 70px; left: 0px;">
@@ -360,7 +383,7 @@
         </div>
     </div>
     
-    <div class="row h-100 pt-5 mt-2">
+    <div class="row h-100 pt-5 mt-4">
         <div class="col d-flex">
             
             <!-- LEFT PANEL -->

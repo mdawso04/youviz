@@ -29,7 +29,22 @@ def view(request, pk):
     else:
         return list(request)
 
-def share(request, pk):
+def new_viz_list(request):
+    if request.user.is_authenticated:
+        c = {'context': {'mode': 'new_viz_list'}}
+        return render(request, 'projects/app_top.html', c)
+    else:
+        return render(request, 'projects/landing_new.html')
+
+def new_viz(request, pk):
+    if request.user.is_authenticated:
+        c = {'context': {'mode': 'new_viz', 'pk': pk}}
+        return render(request, 'projects/app_top.html', c)
+    else:
+        return render(request, 'projects/landing_new.html')
+
+'''
+    def share(request, pk):
     if True: #id is valid && share is on
         context = {'mode': 'share'}
         return render(request, 'projects/app_top.html', context)
@@ -41,6 +56,7 @@ def gallery(request, pk):
         return render(request, 'projects/app_top.html', {'pk': pk, 'gallery_mode':True})
     else:
         return render(request, 'projects/landing_new.html')
+'''
 
 def dataframe(request, pk):
     if request.user.is_authenticated:
