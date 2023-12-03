@@ -141,7 +141,7 @@ class Datasource(BaseModel):
     
     #relations
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
-    datastream = models.ForeignKey(Datastream, on_delete=models.CASCADE)
+    datastream = models.ForeignKey(Datastream, default=1, on_delete=models.CASCADE)
     
     #attrs
     document = models.TextField()
