@@ -79,10 +79,10 @@ INSTALLED_APPS = [
 
 if DEBUG:
     #http://localhost:8000
-    SITE_ID = 2
+    SITE_ID = 3
 else:
     #https://youviz.app
-    SITE_ID = 1
+    SITE_ID = 2
 
 MIDDLEWARE = [
     # Request altering middleware
