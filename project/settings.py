@@ -78,8 +78,10 @@ INSTALLED_APPS = [
 #SOCIALACCOUNT_AUTO_SIGNUP = False
 
 if DEBUG:
-    SITE_ID = 3
+    #http://localhost:8000
+    SITE_ID = 2
 else:
+    #https://youviz.app
     SITE_ID = 1
 
 MIDDLEWARE = [
