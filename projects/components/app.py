@@ -87,10 +87,33 @@ class AppView(UnicornView):
                 if not self.report:
                     self.addReport()
             elif self.context['mode'] == 'view':
-                self.datasource = Datasource.objects.get(pk=self.context['pk'])
+            #    self.datasource = Datasource.objects.get(pk=self.context['pk'])
+            #    self.vizs = self.datasource.vizs.all()
+            #    if hasattr(self.datasource, 'reports'):
+            #        self.report = self.datasource.reports.last()
+                if not self.project:
+                    self.project, created = Project.objects.get_or_create(user=self.request.user)
+                self.datasources = Datasource.datasources(self.project)
+                if self.context['pk']:
+                    self.project.selected_datasource = self.context['pk']
+                    self.project.save()
+                elif not self.project.selected_datasource:
+                    self.project.selected_datasource = self.datasources.first().pk
+                    self.project.save()
+                if not self.datasource:
+                    try:
+                        self.datasource = self.datasources.get(pk=self.project.selected_datasource)
+                    except:
+                        self.datasource = self.datasources.first()
                 self.vizs = self.datasource.vizs.all()
+                if not self.vizs:
+                    self.addViz(call_redirect=False)
+                    self.vizs = Viz.objects.filter(datasource=self.datasource).all().order_by('-id')
                 if hasattr(self.datasource, 'reports'):
                     self.report = self.datasource.reports.last()
+                if not self.report:
+                    self.addReport()
+            
             elif self.context['mode'] == 'new_viz_list':
                 self.datastreams = Datastream.datastreams()
             elif self.context['mode'] == 'new_viz':

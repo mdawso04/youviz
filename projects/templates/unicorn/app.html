@@ -215,26 +215,22 @@
             
             
             {% if context.mode == "view" or context.mode == "app" %}
-                {% if context.mode == "view" %}
-                <button id="showVizOffcanvas" class="btn btn-light text-secondary border-0" type="button" onclick="Handler.navigator.toggleEdit();"
-                            aria-expanded="false" aria-controls="collapseExample">
-                    <i class="bi-chat-text" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Comments</span></i>
-                </button>
+                {% if user.is_authenticated %}
+                    <button id="showVizOffcanvas" class="btn btn-light text-secondary border-0" type="button" onclick="Handler.navigator.toggleEdit();"
+                                aria-expanded="false" aria-controls="collapseExample">
+                        <i class="bi-bar-chart" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Settings</span></i>
+                    </button>
+                    <button type="button" class="btn btn-light text-secondary border-0" id="datafileOpenButton" unicorn:key="datafileOpenButton"
+                        data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable" disabled>
+                            <i class="bi bi-table" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Data</span></i>
+                    </button>
                 {% else %}
-                <button id="showVizOffcanvas" class="btn btn-light text-secondary border-0" type="button" onclick="Handler.navigator.toggleEdit();"
-                            aria-expanded="false" aria-controls="collapseExample">
-                    <i class="bi-bar-chart" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Settings</span></i>
-                </button>
+                    <button id="showVizOffcanvas" class="btn btn-light text-secondary border-0" type="button" onclick="Handler.navigator.toggleEdit();"
+                                aria-expanded="false" aria-controls="collapseExample">
+                        <i class="bi-chat-text" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Comments</span></i>
+                    </button>
                 {% endif %}
             {% endif %}
-
-            {% if context.mode == "app" %}
-                <button type="button" class="btn btn-light text-secondary border-0" id="datafileOpenButton" unicorn:key="datafileOpenButton"
-                    data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable" disabled>
-                        <i class="bi bi-table" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Data</span></i>
-                </button>
-            {% endif %}
-            
             
             {% if user.is_authenticated %}
                 {% if context.mode == "list" or context.mode == "view" %}
@@ -438,7 +434,7 @@
     <!-- PAYLOAD -->
     
      <!-- DATA PAYLOAD -->
-    {% if context.mode == "app" %}
+    {% if context.mode == "view" or context.mode == "app" %}
     <div class="yv-component dataframe d-none" id="yv-component-dataframe-{{ datasource.pk }}"
          data-yv-component="dataframe"
          data-yv-id="{{ datasource.pk }}"
