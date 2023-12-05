@@ -116,7 +116,7 @@
                     <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
                 </button>
                 <span class="input-group-text bg-light text-secondary border-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
-                <input class="form-control bg-light border-0" type="search" name="query" 
+                <input class="form-control bg-light border-0 py-0" type="search" name="query" 
                    placeholder="{% if not context.query %}Search{% else %}{{ context.query }}{% endif %}" 
                        value="{% if not context.query %}{% else %}{{ context.query }}{% endif %}" aria-label="Search">
                 <input type="hidden" name="multiple" id="viz_count" value="" />
@@ -150,6 +150,15 @@
                        onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'any';">
                 <input type="submit" class="btn border-0 text-secondary me-1 {% if request.GET.multiple == 'multiple' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
                        value="Multiple Vizs" 
+                       onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'multiple';">
+            </div>
+            {% elif context.mode == "new_viz_list" %}
+            <div class="pt-2">
+                <input type="submit" class="btn border-0 me-1 {% if request.GET.multiple == 'any' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
+                       value="Popular" 
+                       onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'any';">
+                <input type="submit" class="btn border-0 text-secondary me-1 {% if request.GET.multiple == 'multiple' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
+                       value="New" 
                        onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'multiple';">
             </div>
             {% endif %}
@@ -236,6 +245,10 @@
                 {% if context.mode == "list" or context.mode == "view" %}
                 <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'new_viz_list' %}';" id="newVizListButton">
                         <i class="bi bi-plus-circle" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">New</span></i>
+                </button>
+                {% elif context.mode == "new_viz_list" %}
+                <button type="button" class="btn btn-light text-secondary border-0" onclick="history.back()" id="newVizListButton">
+                        <i class="bi bi-x-circle" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Cancel</span></i>
                 </button>
                 {% endif %}
             {% else %}
