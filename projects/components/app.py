@@ -57,9 +57,10 @@ class AppView(UnicornView):
         #  listmode->show list
         #  viewmode->show viz
         
-        self.context = self.component_kwargs['context']
         
         if self.request:
+            self.context = self.component_kwargs['context']
+            
             if self.context['mode'] == 'list':
                 self.list_datasources = Datasource.list_datasources(self.context['query'])
                 return #do nothing
