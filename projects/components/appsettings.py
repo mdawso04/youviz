@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import UnicornView
-from projects.models import Datasource, Item
+from projects.models import Datasource
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages

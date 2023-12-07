@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.urls import reverse
 
 # Create your views here.
 from .models import Datasource
@@ -8,13 +9,7 @@ from .forms import DatasourceForm
 from project import settings
 import os
 
-def app(request, pk=None):
-    if request.user.is_authenticated:
-        c = {'context': {'mode': 'app', 'pk': pk}}
-        return render(request, 'projects/app_top.html', c)
-    else:
-        return render(request, 'projects/landing_new.html')
-
+#view all vizs
 def list(request):
     query = request.GET.get('query', '')
     page = request.GET.get('page', 1)
@@ -22,12 +17,39 @@ def list(request):
     c = {'context': {'mode': 'list', 'query': query, 'page': page, 'user': user}}
     return render(request, 'projects/app_top.html', c)
 
+#view all vizs from 1 user
+def user(request):
+    query = request.GET.get('query', '')
+    page = request.GET.get('page', 1)
+    user = request.GET.get('user', '')
+    c = {'context': {'mode': 'user', 'query': query, 'page': page, 'user': user}}
+    return render(request, 'projects/app_top.html', c)
+
+#view one
 def view(request, pk):
     if True: #id is valid && share is on
         c = {'context': {'mode': 'view', 'pk': pk}}
         return render(request, 'projects/app_top.html', c)
     else:
         return list(request)
+    
+#view options to add new: datastream template or datastream, viz
+def new(request):
+    if request.user.is_authenticated:
+        ds_template = request.GET.get('ds_template', '')
+        datastream = request.GET.get('datastream', '')
+        datasource = request.GET.get('datasource', '')
+        c = {'context': {'mode': 'new', 'ds_template': ds_template, 'datastream': datastream, 'datasource': datasource}}
+        return render(request, 'projects/app_top.html', c)
+    else:
+        return redirect(reverse('list'))
+
+def app(request, pk=None):
+    if request.user.is_authenticated:
+        c = {'context': {'mode': 'app', 'pk': pk}}
+        return render(request, 'projects/app_top.html', c)
+    else:
+        return render(request, 'projects/landing_new.html')
 
 def new_viz_list(request):
     if request.user.is_authenticated:
@@ -42,21 +64,6 @@ def new_viz(request, pk):
         return render(request, 'projects/app_top.html', c)
     else:
         return render(request, 'projects/landing_new.html')
-
-'''
-    def share(request, pk):
-    if True: #id is valid && share is on
-        context = {'mode': 'share'}
-        return render(request, 'projects/app_top.html', context)
-    else:
-        return render(request, 'projects/landing_new.html')
-
-def gallery(request, pk):
-    if request.user.is_authenticated:
-        return render(request, 'projects/app_top.html', {'pk': pk, 'gallery_mode':True})
-    else:
-        return render(request, 'projects/landing_new.html')
-'''
 
 def dataframe(request, pk):
     if request.user.is_authenticated:

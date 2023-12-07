@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
-from projects.models import Project, Datastream, Datasource, Viz, Report, Item, Answer
+from projects.models import Datastream, Datasource, Viz, Report
 
 from django.core.files.base import ContentFile
 from django.shortcuts import render, redirect
@@ -23,7 +23,6 @@ from datetime import datetime
 #none
 
 class AppView(UnicornView):
-    project: Project = None
     datasources: QuerySetType[Datasource] = None
     datasource: Datasource = None
     vizs: QuerySetType[Viz] = None
@@ -33,8 +32,10 @@ class AppView(UnicornView):
     
     datastreams: QuerySetType[Datastream] = None
     
+    services: list = None
+    
     class Meta:
-        javascript_exclude = ('project', 'datastreams', 'datasources', 'datasource.document', 'vizs', 'report', 'list_datasources') 
+        javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'report', 'list_datasources') 
     
     #def __init__(self, *args, **kwargs):
     #    super().__init__(**kwargs)  # calling super is required
@@ -60,33 +61,31 @@ class AppView(UnicornView):
         
         if self.request:
             self.context = self.component_kwargs['context']
-            
             if self.context['mode'] == 'list':
-                self.list_datasources = Datasource.list_datasources(self.context['query'])
+                self.list_datasources = Datasource.list(self.context['query'])
                 return #do nothing
-            elif self.context['mode'] == 'app':
-                if not self.project:
-                    self.project, created = Project.objects.get_or_create(user=self.request.user)
-                self.datasources = Datasource.datasources(self.project)
+            elif self.context['mode'] == 'view':
                 if self.context['pk']:
-                    self.project.selected_datasource = self.context['pk']
-                    self.project.save()
-                elif not self.project.selected_datasource:
-                    self.project.selected_datasource = self.datasources.first().pk
-                    self.project.save()
-                if not self.datasource:
-                    try:
-                        self.datasource = self.datasources.get(pk=self.project.selected_datasource)
-                    except:
-                        self.datasource = self.datasources.first()
-                self.vizs = self.datasource.vizs.all()
-                if not self.vizs:
-                    self.addViz(call_redirect=False)
-                    self.vizs = Viz.objects.filter(datasource=self.datasource).all().order_by('-id')
+                    if not self.datasource:
+                        self.datasource = Datasource.item(pk)
                 if hasattr(self.datasource, 'reports'):
                     self.report = self.datasource.reports.last()
                 if not self.report:
                     self.addReport()
+            elif self.context['mode'] == 'new':
+                if self.request.GET['datasource'] >= 1:
+                    self.datasource = Datasource.from_datastream(self.request.GET['datastream'])
+                    self.addViz(call_redirect=False)
+                elif self.request.GET['datastream'] >= 1:
+                    self.datasource = Datasource.from_datastream(self.request.GET['datastream'])
+                else:
+                    self.services = Datastream.services()
+                    self.datastreams = Datastream.list()
+            else:
+                self.datasources = Datasource.objects.none()
+                self.datasource = None
+                self.vizs = Viz.objects.none()
+            '''
             elif self.context['mode'] == 'view':
             #    self.datasource = Datasource.objects.get(pk=self.context['pk'])
             #    self.vizs = self.datasource.vizs.all()
@@ -114,19 +113,16 @@ class AppView(UnicornView):
                     self.report = self.datasource.reports.last()
                 if not self.report:
                     self.addReport()
-            
-            elif self.context['mode'] == 'new_viz_list':
-                self.datastreams = Datastream.datastreams()
+            '''
+            '''
             elif self.context['mode'] == 'new_viz':
                 self.datasource = Datasource.from_datastream(self.context['pk'])
                 self.addViz(call_redirect=False)
                 self.vizs = Viz.objects.filter(datasource=self.datasource).all().order_by('-id')
                 self.addReport()
-            else:
-                self.datasources = Datasource.objects.none()
-                self.datasource = None
-                self.vizs = Viz.objects.none()
-                
+            '''
+            
+            
     def hydrate(self):
         #logger.debug('AppView > hydrate start')
         pass
@@ -172,35 +168,19 @@ class AppView(UnicornView):
         self.load_table()
         return redirect(reverse('app'))
     
-    def addViz(self, viz_type='NewViz', call_redirect=True):
-        #logger.debug('AppView > addViz start')
-        #df = self.df()
-        #read from db so patch this
-        #filepath= os.path.join(str(settings.MEDIA_ROOT), str(self.file.document))
-        a = pp.App()
-        #a.add('READ_CSV', {'src': filepath})
-        a.add('READ_CSV', {'src': self.datasource.pk})
-        a.add('VIZ_HIST', {'x': 'Age'})
-        json = a.todos
-        v = Viz(datasource=self.datasource, name=viz_type, json=json)
-        v.save()
-        #self.load_table()
+    def addViz(self, call_redirect=True):
+        Viz.add(self.datasource.pk)
         if call_redirect:
             return redirect(reverse('app_all'))
         #logger.debug('AppView > addViz end')
         
     def copyViz(self, pk):
-        v = Viz.objects.get(pk=pk)
-        v.pk = None
-        v.save()
+        Viz.copy(pk)
         self.load_table()
         return redirect(reverse('app_all'))
         
     def deleteViz(self, pk):
-        #Viz.objects.filter(pk=pk).delete()
-        v = Viz.objects.get(pk=pk)
-        print(pk)
-        v.delete()
+        Viz.delete(pk)
         self.load_table()
         return redirect(reverse('app_all'))
     

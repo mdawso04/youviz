@@ -29,6 +29,12 @@ class BaseModel(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     hash_key = models.CharField(max_length=10, blank=True)
     history = AuditlogHistoryField()
+    properties = models.JSONField(blank=True, null=True)
+   
+    #foreign keys
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    prefetch = ()
     
     class Meta:
         abstract = True
@@ -71,6 +77,15 @@ class BaseModel(models.Model):
         self.hash_key = self._createHash()
         super(BaseModel, self).save(*args, **kwargs)
         
+    @classmethod
+    def list(cls, *args, **kwargs):
+        return cls.objects.filter(name__icontains='').all().order_by('-id').prefetch_related(*cls.prefetch)
+    
+    @classmethod
+    def item(cls, pk):
+        return cls.objects.filter(pk=pk).last().prefetch_related(*prefetch)
+    
+    
     
     '''
     def refresh_from_db(self, *args, **kwargs):
@@ -101,7 +116,7 @@ class BaseModel(models.Model):
         # Add baz back since it doesn't exist in the pickle
         #self.baz = 0
     '''
-    
+'''    
 class Project(BaseModel):
     #parent_class
     #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_project', on_delete=models.CASCADE)
@@ -115,14 +130,9 @@ class Project(BaseModel):
     
     #selected_file = models.OneToOneField(File, on_delete=models.SET_NULL, null=True)
     #description = models.CharField(max_length=255, blank=True)
-    
+'''
+
 class Datastream(BaseModel):
-    #parent_class
-    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_datasource', on_delete=models.CASCADE)
-    
-    #relations
-    #project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    
     #attrs
     url = models.URLField()
     json = models.JSONField(blank=True, null=True)
@@ -130,45 +140,68 @@ class Datastream(BaseModel):
     class Meta:
         default_related_name = 'datastreams'
     
+    def save(self, *args, **kwargs):
+        self.json = pp.App().add('READ_CSV', {'src': self.url}).todos
+        super(BaseModel, self).save(*args, **kwargs)
+    
     @classmethod
-    def datastreams(cls):
-        ds = cls.objects.all().order_by('-id')
-        return ds
+    def services(cls):
+        s = pp.App().services()['read']
+        return [i for i in s if i.startswith('READ_CSV')]
     
 class Datasource(BaseModel):
-    #parent_class
-    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_datasource', on_delete=models.CASCADE)
-    
-    #relations
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
-    datastream = models.ForeignKey(Datastream, on_delete=models.CASCADE, null=True)
-    
     #attrs
-    document = models.TextField()
-    #document = models.FileField(upload_to='files/')
-    json = models.JSONField(blank=True, null=True)
+    data = models.TextField()
     last_cached = models.DateTimeField(auto_now_add=False, auto_now=False, null=True, blank=True)
     selected_viz = models.IntegerField(null=True, blank=True)
-    learner_mode = models.BooleanField(default=False)
+    #document = models.FileField(upload_to='files/')
+    
+    #relations
+    datastream = models.ForeignKey(Datastream, on_delete=models.CASCADE, null=True)
+    
+    #prefetch
+    prefetch = ('vizs', 'reports', 'items__answers')
     
     class Meta:
         default_related_name = 'datasources'
     
-    @classmethod
-    def datasources(cls, project):
-        ds = cls.objects.filter(project=project).all().order_by('-id').prefetch_related('vizs', 'reports', 'items__answers')
-        if not ds:
-            cls.getRemoteData(project)
-            ds = cls.objects.filter(project=project).all().order_by('-id').prefetch_related('vizs', 'reports', 'items__answers')
-        return ds
+    def refresh(self):
+        a = pp.App(self.datastream.json)
+        df = a.call()
+        content = df.to_csv(index=False)
+        self.data = content
+        self.last_cached = datetime.utcnow()
+        self.save()
     
-    @classmethod
-    def list_datasources(cls, query=None, user=None, order='-id'):
-        return cls.objects.filter(name__icontains=query).all().order_by(order).prefetch_related('vizs', 'reports', 'items__answers')
+    @cached_property
+    def datatable(self):
+        if self.data:
+            #filepath = os.path.join(str(settings.MEDIA_ROOT), str(self.document))
+            #a = pp.App()
+            #a.add('READ_CSV', {'src': filepath})
+            #df = a.call(return_df=True)
+            # store csv in db, so no need to read from disk
+            io = StringIO(self.data)
+            df = pd.read_csv(io)
+            return df[:200].to_dict(orient='tight')
+        
+    @cached_property
+    def databuffer(self):
+        if self.data:
+            #filepath = os.path.join(str(settings.MEDIA_ROOT), str(self.document))
+            #a = pp.App()
+            #a.add('READ_CSV', {'src': filepath})
+            #df = a.call(return_df=True)
+            # store csv in db, so no need to read from disk
+            return StringIO(self.data)
     
-    @classmethod
-    def datasource(cls, pk):
-        return cls.objects.filter(pk=pk).all().order_by('-id').prefetch_related('vizs', 'reports', 'items__answers').last()
+    @cached_property
+    def columns(self):
+        return self.datatable['columns'] if self.datatable else None
+    
+    @cached_property
+    def records(self):
+        return self.datatable['data'] if self.datatable else None
     
     @classmethod
     def from_datastream(cls, pk):
@@ -179,11 +212,32 @@ class Datasource(BaseModel):
         #json = a.todos
         # no files on disk so delete
         #temp_file = ContentFile(content.encode('utf-8'))
-        ds = cls(name=d.name, description=d.description, datastream=d, document=content, last_cached = datetime.utcnow())
+        ds = cls(name=d.name, description=d.description, datastream=d, data=content, last_cached = datetime.utcnow())
         #f.document.save(f'{service}.csv', temp_file)
         ds.save()
         return ds
-            
+    
+    
+    
+    #@classmethod
+    #def datasources(cls, project):
+    #    ds = cls.objects.filter(project=project).all().order_by('-id').prefetch_related('vizs', 'reports', 'items__answers')
+    #    if not ds:
+    #        cls.getRemoteData(project)
+    #        ds = cls.objects.filter(project=project).all().order_by('-id').prefetch_related('vizs', 'reports', 'items__answers')
+    #    return ds
+    
+    
+    #@classmethod
+    #def list_datasources(cls, query=None, user=None, order='-id'):
+    #    return cls.objects.filter(name__icontains=query).all().order_by(order).prefetch_related('vizs', 'reports', 'items__answers')
+    
+    #@classmethod
+    #def datasource(cls, pk):
+    #    return cls.objects.filter(pk=pk).all().order_by('-id').prefetch_related('vizs', 'reports', 'items__answers').last()
+    
+    
+    '''
     @classmethod
     def getRemoteData(cls, project, service='READ_DATA_ATTRITION', name='no_name'):
         #logger.debug('AppView > addRemoteFile start')
@@ -198,51 +252,17 @@ class Datasource(BaseModel):
                        json=json, document=content, last_cached = datetime.utcnow())
         #f.document.save(f'{service}.csv', temp_file)
         f.save()
+    '''
     
-    @cached_property
-    def datatable(self):
-        if self.document:
-            #filepath = os.path.join(str(settings.MEDIA_ROOT), str(self.document))
-            #a = pp.App()
-            #a.add('READ_CSV', {'src': filepath})
-            #df = a.call(return_df=True)
-            # store csv in db, so no need to read from disk
-            io = StringIO(self.document)
-            df = pd.read_csv(io)
-            return df[:200].to_dict(orient='tight')
-        
-    @cached_property
-    def databuffer(self):
-        if self.document:
-            #filepath = os.path.join(str(settings.MEDIA_ROOT), str(self.document))
-            #a = pp.App()
-            #a.add('READ_CSV', {'src': filepath})
-            #df = a.call(return_df=True)
-            # store csv in db, so no need to read from disk
-            return StringIO(self.document)
     
-    @cached_property
-    def columns(self):
-        return self.datatable['columns'] if self.datatable else None
-    
-    @cached_property
-    def records(self):
-        return self.datatable['data'] if self.datatable else None
-    
-    def refresh(self):
-        a = pp.App(self.datastream.json)
-        df = a.call()
-        content = df.to_csv(index=False)
-        self.document = content
-        self.last_cached = datetime.utcnow()
-        self.save()
-    
+    '''
     @classmethod
     def remote_data(cls):
         #logger.debug('AppView > addViz start')
         s = pp.App().services()['read']
         return [i for i in s if i.startswith('READ_DATA')]
         #logger.debug('AppView > addViz end')
+    '''
     
     '''
     def refresh_from_db(self, *args, **kwargs):
@@ -275,19 +295,11 @@ class Datasource(BaseModel):
     '''
     
 class Viz(BaseModel):
-    #parent_class
-    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_viz', on_delete=models.CASCADE)
-    
     #relations
     datasource = models.ForeignKey(Datasource, on_delete=models.CASCADE)
     
     #attrs
     json = models.JSONField(blank=True, null=True)
-    
-    #name = models.CharField(max_length=100, blank=True)
-    #comment = models.CharField(max_length=255, blank=True)
-    #created_at = models.DateTimeField(auto_now_add=True)
-    #last_updated = models.DateTimeField(auto_now=True)
     
     class Meta:
         default_related_name = 'vizs'
@@ -323,14 +335,31 @@ class Viz(BaseModel):
             'plot_layout': json.dumps(j['layout']),
         }
     
+    @classmethod
+    def add(self, pk):
+        a = pp.App()
+        a.add('READ_CSV', {'src': pk})
+        a.add('VIZ_HIST', {'x': 'Age'})
+        json = a.todos
+        v = Viz(datasource=self.datasource, name=viz_type, json=json)
+        v.save()
+        
+    @classmethod
+    def copy(self, pk):
+        v = Viz.objects.get(pk=pk)
+        v.pk = None
+        v.save()
+        
+    @classmethod
+    def delete(self, pk):
+        v = Viz.objects.get(pk=pk)
+        v.delete()
+    
     #same hash for same viz settings (json)
     def _getHashPayload(self):
         return [self.__class__.__name__, self.id, self.json]
     
 class Report(BaseModel):
-    #parent_class
-    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_report', on_delete=models.CASCADE)
-    
     #relations
     datasource = models.ForeignKey(Datasource, on_delete=models.CASCADE)
     
@@ -343,41 +372,9 @@ class Report(BaseModel):
     
     class Meta:
         default_related_name = 'reports'
-
-class Item(BaseModel):
-    #parent_class
-    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_item', on_delete=models.CASCADE)
-    
-    #relations
-    datasource = models.ForeignKey(Datasource, on_delete=models.CASCADE)
-    
-    #name = models.CharField(max_length=100, blank=True)
-    #description = models.CharField(max_length=255, blank=True)
-    #created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        default_related_name = 'items'
-    
-class Answer(BaseModel):
-    #parent_class
-    #basemodel = models.OneToOneField(BaseModel, parent_link=True, related_name='child_answer', on_delete=models.CASCADE)
-    
-    #relations
-    viz = models.OneToOneField(Viz, on_delete=models.SET_NULL, null=True)
-    
-    #attrs
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    
-    #name = models.CharField(max_length=100, blank=True)
-    #description = models.CharField(max_length=255, blank=True)
-    #created_at = models.DateTimeField(auto_now_add=True)
-    #updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        default_related_name = 'answers'
         
-auditlog.register(Project)
-auditlog.register(Datasource, exclude_fields=['document'])
+auditlog.register(Datastream)
+auditlog.register(Datasource, exclude_fields=['data'])
 auditlog.register(Viz)
 auditlog.register(Report)
 #auditlog.register(MyModel, exclude_fields=['last_updated'])
