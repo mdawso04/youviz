@@ -40,7 +40,7 @@ class DataframeView(UnicornView):
         elif hasattr(self, 'kwargs'):
             pk = self.kwargs['pk']
         #self.datasource = Datasource.objects.filter(pk=pk).last()
-        self.datasource = Datasource.datasource(pk)
+        self.datasource = Datasource.item(pk)
         #logger.debug('df pk:' + str(pk))
     
     def hydrate(self):

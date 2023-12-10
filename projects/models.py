@@ -21,8 +21,9 @@ import plotly.io as pio
 from datetime import datetime
 from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
+from meta.models import ModelMeta
 
-class BaseModel(models.Model):
+class BaseModel(ModelMeta, models.Model):
     name = models.CharField(max_length=100, blank=True, default='New item')
     description = models.CharField(max_length=255, blank=True, default='New item')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -34,13 +35,22 @@ class BaseModel(models.Model):
     #foreign keys
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    prefetch = ()
-    
     class Meta:
         abstract = True
+        
+    prefetch = None
     
     def __str__(self):
         return self.name
+    
+    _metadata = {
+        'title': 'name',
+        'description': 'description',
+    }
+    
+    #def get_meta_image(self):
+    #    if self.image:
+    #        return self.image.url
     
     def get_absolute_url(self):
         #return '/report/%i/' % self.id
@@ -78,14 +88,55 @@ class BaseModel(models.Model):
         super(BaseModel, self).save(*args, **kwargs)
         
     @classmethod
+    def get_prefetch(cls):
+        return cls.prefetch
+    
+    @classmethod
     def list(cls, *args, **kwargs):
-        return cls.objects.filter(name__icontains='').all().order_by('-id').prefetch_related(*cls.prefetch)
+        p = cls.get_prefetch()
+        query = kwargs['query'] if 'query' in kwargs else ''
+        if p:
+            return cls.objects.filter(name__icontains=query).all().order_by('-id').prefetch_related(*p)
+        else:
+            return cls.objects.filter(name__icontains=query).all().order_by('-id')
     
     @classmethod
     def item(cls, pk):
-        return cls.objects.filter(pk=pk).last().prefetch_related(*prefetch)
+        p = cls.get_prefetch()
+        if p:
+            return cls.objects.filter(pk=pk).prefetch_related(*p).last()
+        else:
+            return cls.objects.filter(pk=pk).last()
+        
+    @classmethod
+    def extra_kwargs(cls, *args, **kwargs):
+        return {}
     
+    @classmethod
+    def add(cls, *args, **kwargs):
+        kwargs.update(cls.extra_kwargs(**kwargs))
+        o = cls(**kwargs)
+        o.save()
+        return o
     
+    @classmethod
+    def copy(cls, *args, **kwargs):
+        if 'instance' in kwargs:
+            instance = kwargs['instance']
+        else:
+            instance = cls.item(int(kwargs['pk']))
+        instance.pk = None
+        instance.save()
+        return instance
+    
+    @classmethod
+    def delete(cls, *args, **kwargs):
+        if 'instance' in kwargs:
+            instance = kwargs['instance']
+        else:
+            instance = cls.item(int(kwargs['pk']))
+        
+        instance.delete()
     
     '''
     def refresh_from_db(self, *args, **kwargs):
@@ -139,10 +190,12 @@ class Datastream(BaseModel):
    
     class Meta:
         default_related_name = 'datastreams'
-    
+        
     def save(self, *args, **kwargs):
-        self.json = pp.App().add('READ_CSV', {'src': self.url}).todos
-        super(BaseModel, self).save(*args, **kwargs)
+        a = pp.App()
+        a.add('READ_CSV', {'src': self.url})
+        self.json = a.todos
+        super(Datastream, self).save(*args, **kwargs)
     
     @classmethod
     def services(cls):
@@ -159,52 +212,47 @@ class Datasource(BaseModel):
     #relations
     datastream = models.ForeignKey(Datastream, on_delete=models.CASCADE, null=True)
     
-    #prefetch
-    prefetch = ('vizs', 'reports', 'items__answers')
-    
     class Meta:
         default_related_name = 'datasources'
     
-    def refresh(self):
-        a = pp.App(self.datastream.json)
-        df = a.call()
-        content = df.to_csv(index=False)
-        self.data = content
-        self.last_cached = datetime.utcnow()
-        self.save()
+    prefetch = ('vizs',)
     
-    @cached_property
-    def datatable(self):
-        if self.data:
-            #filepath = os.path.join(str(settings.MEDIA_ROOT), str(self.document))
-            #a = pp.App()
-            #a.add('READ_CSV', {'src': filepath})
-            #df = a.call(return_df=True)
-            # store csv in db, so no need to read from disk
-            io = StringIO(self.data)
-            df = pd.read_csv(io)
-            return df[:200].to_dict(orient='tight')
+    @classmethod
+    def _fetch(cls, *args, **kwargs):
+        a = pp.App(kwargs['datastream'].json)
+        df = a.call()
+        return df.to_csv(index=False)
+    
+    @classmethod
+    def extra_kwargs(cls, *args, **kwargs):
+        return {'data': cls._fetch(*args, **kwargs)}
+    
+    def refresh(self, *args, **kwargs):
+        self.data = self._fetch(datastream=self.datastream)
+        self.last_cached = datetime.utcnow()
+        self.save()    
         
     @cached_property
+    def datatable(self):
+        io = StringIO(self.data)
+        df = pd.read_csv(io)
+        return df[:200].to_dict(orient='tight')
+
+    @cached_property
     def databuffer(self):
-        if self.data:
-            #filepath = os.path.join(str(settings.MEDIA_ROOT), str(self.document))
-            #a = pp.App()
-            #a.add('READ_CSV', {'src': filepath})
-            #df = a.call(return_df=True)
-            # store csv in db, so no need to read from disk
-            return StringIO(self.data)
+        return StringIO(self.data)
     
     @cached_property
     def columns(self):
-        return self.datatable['columns'] if self.datatable else None
+        return self.datatable['columns']
     
     @cached_property
     def records(self):
-        return self.datatable['data'] if self.datatable else None
+        return self.datatable['data']
     
+    '''
     @classmethod
-    def from_datastream(cls, pk):
+    def from_datastream(cls, owner, pk):
         d=Datastream.objects.filter(pk=pk).last()
         a = pp.App(d.json)
         df = a.call()
@@ -212,11 +260,11 @@ class Datasource(BaseModel):
         #json = a.todos
         # no files on disk so delete
         #temp_file = ContentFile(content.encode('utf-8'))
-        ds = cls(name=d.name, description=d.description, datastream=d, data=content, last_cached = datetime.utcnow())
+        ds = cls(name=d.name, owner=user, description=d.description, datastream=d, data=content, last_cached = datetime.utcnow())
         #f.document.save(f'{service}.csv', temp_file)
         ds.save()
         return ds
-    
+    '''
     
     
     #@classmethod
@@ -336,14 +384,24 @@ class Viz(BaseModel):
         }
     
     @classmethod
-    def add(self, pk):
+    def extra_kwargs(cls, **kwargs):
         a = pp.App()
-        a.add('READ_CSV', {'src': pk})
+        a.add('READ_CSV', {'src': kwargs['datasource'].pk})
         a.add('VIZ_HIST', {'x': 'Age'})
         json = a.todos
-        v = Viz(datasource=self.datasource, name=viz_type, json=json)
-        v.save()
+        return {'json': json}
         
+    '''
+    @classmethod
+    def add(self, owner, datasource):
+        a = pp.App()
+        a.add('READ_CSV', {'src': datasource.pk})
+        a.add('VIZ_HIST', {'x': 'Age'})
+        json = a.todos
+        v = Viz(owner=owner, datasource=datasource, json=json)
+        v.save()
+    '''
+    '''
     @classmethod
     def copy(self, pk):
         v = Viz.objects.get(pk=pk)
@@ -354,10 +412,13 @@ class Viz(BaseModel):
     def delete(self, pk):
         v = Viz.objects.get(pk=pk)
         v.delete()
+    '''
     
     #same hash for same viz settings (json)
     def _getHashPayload(self):
         return [self.__class__.__name__, self.id, self.json]
+    
+    '''
     
 class Report(BaseModel):
     #relations
@@ -367,16 +428,14 @@ class Report(BaseModel):
     report = models.TextField()
     share = models.BooleanField(default=False)
     
-    #name = models.CharField(max_length=100, blank=True)
-    #created_at = models.DateTimeField(auto_now_add=True)
-    
     class Meta:
         default_related_name = 'reports'
-        
+    '''
+       
 auditlog.register(Datastream)
 auditlog.register(Datasource, exclude_fields=['data'])
 auditlog.register(Viz)
-auditlog.register(Report)
+#auditlog.register(Report)
 #auditlog.register(MyModel, exclude_fields=['last_updated'])
 #auditlog.register(MyModel, mask_fields=['address'])
 #auditlog.register(MyModel, m2m_fields={"tags", "contacts"})

@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
-from projects.models import Datastream, Datasource, Viz, Report
+from projects.models import BaseModel, Datastream, Datasource, Viz
 
 from django.core.files.base import ContentFile
 from django.shortcuts import render, redirect
@@ -26,7 +26,7 @@ class AppView(UnicornView):
     datasources: QuerySetType[Datasource] = None
     datasource: Datasource = None
     vizs: QuerySetType[Viz] = None
-    report: Report = None
+    #report: Report = None
     
     list_datasources: QuerySetType[Datasource] = None
     
@@ -34,8 +34,17 @@ class AppView(UnicornView):
     
     services: list = None
     
+    meta_object: BaseModel = None
+    
     class Meta:
-        javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'report', 'list_datasources') 
+        javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'list_datasources') 
+    
+    #overload to feed meta tag
+    def get_context_data(self, **kwargs):
+        context = super(AppView, self).get_context_data(**kwargs)
+        if self.meta_object:
+            context['meta'] = self.meta_object.as_meta(self.request)
+        return context
     
     #def __init__(self, *args, **kwargs):
     #    super().__init__(**kwargs)  # calling super is required
@@ -45,7 +54,8 @@ class AppView(UnicornView):
 #LOAD/UPDATE
     
     def mount(self):
-        self.load_table()
+        r = self.load_table()
+        print(r)
         
     def load_table(self):
         
@@ -62,22 +72,30 @@ class AppView(UnicornView):
         if self.request:
             self.context = self.component_kwargs['context']
             if self.context['mode'] == 'list':
-                self.list_datasources = Datasource.list(self.context['query'])
+                self.list_datasources = Datasource.list(query=self.context['query'])
                 return #do nothing
             elif self.context['mode'] == 'view':
                 if self.context['pk']:
-                    if not self.datasource:
-                        self.datasource = Datasource.item(pk)
-                if hasattr(self.datasource, 'reports'):
-                    self.report = self.datasource.reports.last()
-                if not self.report:
-                    self.addReport()
+                    self.datasource = Datasource.item(self.context['pk'])
+                    self.meta_object = self.datasource
+                #if hasattr(self.datasource, 'reports'):
+                #    self.report = self.datasource.reports.last()
+                #if not self.report:
+                #    self.addReport()
             elif self.context['mode'] == 'new':
-                if self.request.GET['datasource'] >= 1:
-                    self.datasource = Datasource.from_datastream(self.request.GET['datastream'])
+                if 'datasource' in self.request.GET and int(self.request.GET['datasource']) >= 1:
+                    self.datasource = Datasource.item(int(self.request.GET['datasource']))
                     self.addViz(call_redirect=False)
-                elif self.request.GET['datastream'] >= 1:
-                    self.datasource = Datasource.from_datastream(self.request.GET['datastream'])
+                elif 'datastream' in self.request.GET and int(self.request.GET['datastream']) >= 1:
+                    self.datasource = self.add(
+                        cls=Datasource,
+                        datastream=Datastream.item(int(self.request.GET['datastream']))
+                    )
+                    self.add(
+                        cls=Viz,
+                        datasource=self.datasource,
+                        #call_redirect='list'
+                    )
                 else:
                     self.services = Datastream.services()
                     self.datastreams = Datastream.list()
@@ -140,10 +158,104 @@ class AppView(UnicornView):
         
 #ACTIONS
 
+    def add(self, *args, **kwargs):
+        '''
+        Adds a new object to the database and optionally redirects the browser after adding.
+
+                Parameters:
+                        cls (Class): Optional. The class to create an instance for
+                        cls_name (str): Optional. The name of the class to create an instance for
+                        call_redirect (str): Optional. The url name to redirect to, or False (default) to return the new instance
+                        Other kwargs to pass when creating new instance. owner (User) is required for all objects.
+
+                Returns:
+                        object (object): The new instance if no redirect is requested
+        '''
+        params = {k: v for k, v in kwargs.items() if k not in ('cls', 'cls_name', 'call_redirect')}
+        
+        if 'cls' in kwargs:
+            cls = kwargs['cls']
+        else:
+            cls = vars()[kwargs['cls_name']]
+        
+        o = cls.add(
+            owner=self.request.user, 
+            **params
+        )
+        
+        if 'call_redirect' in kwargs:
+            if kwargs['call_redirect']:
+                return redirect(reverse(kwargs['call_redirect']))
+        
+        return o
+    
+    def copy(self, *args, **kwargs):
+        '''
+        Adds a new object to the database and optionally redirects the browser after adding.
+
+                Parameters:
+                        cls (Class): Optional. The class to create an instance for
+                        cls_name (str): Optional. The name of the class to create an instance for
+                        call_redirect (str): Optional. The url name to redirect to, or False (default) to return the new instance
+                        Other kwargs to pass when creating new instance. owner (User) is required for all objects.
+
+                Returns:
+                        object (object): The new instance if no redirect is requested
+        '''
+        params = {k: v for k, v in kwargs.items() if k not in ('cls', 'cls_name', 'call_redirect')}
+        
+        if 'cls' in kwargs:
+            cls = kwargs['cls']
+        else:
+            cls = vars()[kwargs['cls_name']]
+        
+        o = cls.copy(**params)
+        
+        if 'call_redirect' in kwargs:
+            if kwargs['call_redirect'] is not False:
+                return redirect(reverse(kwargs['call_redirect']))
+        
+        return o
+    
+    def delete(self, *args, **kwargs):
+        '''
+        Delete an object from the database and optionally redirects the browser after deleting.
+
+                Parameters:
+                        cls (Class): Optional. The class to create an instance for
+                        cls_name (str): Optional. The name of the class to create an instance for
+                        call_redirect (str): Optional. The url name to redirect to, or False (default) to return the new instance
+                        Other kwargs to pass when creating new instance. instance (Class) or pk (int) is required.
+
+                Returns:
+                        None
+        '''
+        params = {k: v for k, v in kwargs.items() if k not in ('cls', 'cls_name', 'call_redirect')}
+        
+        if 'cls' in kwargs:
+            cls = kwargs['cls']
+        else:
+            cls = vars()[kwargs['cls_name']]
+        
+        cls.delete(**params)
+        
+        if 'call_redirect' in kwargs:
+            if kwargs['call_redirect'] is not False:
+                return redirect(reverse(kwargs['call_redirect']))
+        
+
     def calling(self, name, args):
         #logger.debug('AppView > calling start')
         pass
         #logger.debug('AppView > calling end')
+        
+    '''
+    def addDatasource(self, datastream_pk, call_redirect=False):
+        d = Datasource.new(
+                owner=self.request.user, 
+                datastream=Datastream.item(datastream_pk)
+            )
+    '''
 
     def setDatasource(self, f):
         self.datasource = self.datasources.get(pk=f)
@@ -152,6 +264,7 @@ class AppView(UnicornView):
         self.load_table()
         #return redirect('/projects/app')
                     
+    '''
     def deleteDatasource(self, pk):
         # no files on disk so delete this
         #self.file.document.delete()
@@ -160,19 +273,17 @@ class AppView(UnicornView):
         self.datasource = None
         self.vizs = Viz.objects.none()
         #Viz.objects.filter(file=self.file).all().delete()
-        '''
-        for child in self.children:
-            if hasattr(child, "is_editing"):
-                child.is_editing = False
-        '''
         self.load_table()
         return redirect(reverse('app'))
+    '''
     
+    '''
     def addViz(self, call_redirect=True):
-        Viz.add(self.datasource.pk)
+        Viz.add(self.datasource)
         if call_redirect:
             return redirect(reverse('app_all'))
         #logger.debug('AppView > addViz end')
+    '''
         
     def copyViz(self, pk):
         Viz.copy(pk)

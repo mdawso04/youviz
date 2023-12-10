@@ -17,7 +17,7 @@ class AppsettingsView(UnicornView):
     #items = Item.objects.none()
     
     class Meta:
-        javascript_exclude = ('datasources', 'datasource.document') 
+        javascript_exclude = ('datasources', 'datasource.data') 
     
     def __init__(self, *args, **kwargs):
         super().__init__(**kwargs)  # calling super is required

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 
 # Register your models here.
-from .models import Datastream, Datasource, Viz, Report 
+from .models import Datastream, Datasource, Viz
 
 class DatastreamAdmin(admin.ModelAdmin):
     readonly_fields = ('pk', 'created_at', 'last_updated', 'hash_key')
@@ -21,4 +21,4 @@ class ReportAdmin(admin.ModelAdmin):
 admin.site.register(Datastream, DatastreamAdmin)
 admin.site.register(Datasource, DatasourceAdmin)
 admin.site.register(Viz, VizAdmin)
-admin.site.register(Report, VizAdmin)
+#admin.site.register(Report, VizAdmin)
