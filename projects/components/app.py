@@ -68,7 +68,6 @@ class AppView(UnicornView):
         #  listmode->show list
         #  viewmode->show viz
         
-        
         if self.request:
             self.context = self.component_kwargs['context']
             if self.context['mode'] == 'list':
