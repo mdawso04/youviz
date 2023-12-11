@@ -73,7 +73,6 @@ INSTALLED_APPS = [
     #'debug_toolbar',
     'django_unicorn',
     'projects',
-    'meta',
 ]
 
 #SOCIALACCOUNT_AUTO_SIGNUP = False

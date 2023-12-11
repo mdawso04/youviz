@@ -39,13 +39,6 @@ class AppView(UnicornView):
     class Meta:
         javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'list_datasources') 
     
-    #overload to feed meta tag
-    def get_context_data(self, **kwargs):
-        context = super(AppView, self).get_context_data(**kwargs)
-        if self.meta_object:
-            context['meta'] = self.meta_object.as_meta(self.request)
-        return context
-    
     #def __init__(self, *args, **kwargs):
     #    super().__init__(**kwargs)  # calling super is required
     #    self.mode = kwargs.get('mode')
@@ -55,7 +48,8 @@ class AppView(UnicornView):
     
     def mount(self):
         r = self.load_table()
-        print(r)
+        if r:
+            print(reverse('list'))
         
     def load_table(self):
         
@@ -90,7 +84,7 @@ class AppView(UnicornView):
                         cls=Datasource,
                         datastream=Datastream.item(int(self.request.GET['datastream']))
                     )
-                    self.add(
+                    return self.add(
                         cls=Viz,
                         datasource=self.datasource,
                         #call_redirect='list'

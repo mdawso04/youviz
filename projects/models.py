@@ -21,9 +21,8 @@ import plotly.io as pio
 from datetime import datetime
 from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
-from meta.models import ModelMeta
 
-class BaseModel(ModelMeta, models.Model):
+class BaseModel(models.Model):
     name = models.CharField(max_length=100, blank=True, default='New item')
     description = models.CharField(max_length=255, blank=True, default='New item')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -43,10 +42,13 @@ class BaseModel(ModelMeta, models.Model):
     def __str__(self):
         return self.name
     
-    _metadata = {
-        'title': 'name',
-        'description': 'description',
-    }
+    @cached_property
+    def seo(self):
+        return {
+            'title': self.name,
+            'description': self.description, 
+            'h1': self.name,
+        }
     
     #def get_meta_image(self):
     #    if self.image:
@@ -205,7 +207,7 @@ class Datastream(BaseModel):
 class Datasource(BaseModel):
     #attrs
     data = models.TextField()
-    last_cached = models.DateTimeField(auto_now_add=False, auto_now=False, null=True, blank=True)
+    last_cached = models.DateTimeField(auto_now_add=True, auto_now=False, null=True, blank=True)
     selected_viz = models.IntegerField(null=True, blank=True)
     #document = models.FileField(upload_to='files/')
     
