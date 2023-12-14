@@ -378,6 +378,56 @@
     
     {% endif %}
     
+    <!-- NAVPANEL -->
+    
+    
+    <div class="bg-light border-top border-start test-nav" id="navbar" aria-labelledby="TBD">
+        <div class="d-flex offcanvas-header p-3">
+            <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Datasource Settings</h5>
+            <button type="button" class="btn-close text-reset" onclick="Handler.navigator.toggleNav();" aria-label="Close"></button>
+        </div>
+        
+        <div class="offcanvas-body test-edit-inner small p-3" style="overflow-x: hidden;" id="switch">
+            <div class="row row-cols-1 g-3 pb-3" id="fileInfo">
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text" id="file-name-input">Name</span>
+                        <input type="text" class="form-control" 
+                               unicorn:model.lazy="datasource.name"
+                               unicorn:partial.id="fileInfo" 
+                               id="fileNameText" unicorn:key="fileNameText"
+                               aria-label="File Name">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text" id="file-description-input">Description</span>    
+                        <input type="text" class="form-control" 
+                               unicorn:model.lazy="datasource.description"
+                               unicorn:partial.id="fileInfo" 
+                               id="fileDescText" unicorn:key="fileDescText"
+                               aria-label="File Description">
+                    </div>
+                    <p class="pt-2 small trefresh">Last refreshed <span class="thuman">...</span>
+                        <span class="tstamp d-none">{{datasource.last_cached|date:"c"}}</span></p>
+
+
+                    <button type="button" class="btn btn-secondary" id="settings-datasource-refresh" 
+                        unicorn:click="refreshDatasource()" aria-label="Delete data">
+                            Refresh
+                    </button>
+                    <button type="button" class="btn btn-danger"
+                        id="dataDeleteButton" unicorn:key="dataDeleteButton"
+                        data-bs-toggle="modal" data-bs-target="#deleteDataConfirm"
+                        aria-label="Delete data">
+                            Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
     <!-- PAYLOAD -->
     
      <!-- DATA PAYLOAD -->
