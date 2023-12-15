@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.functional import cached_property
+from django.contrib.contenttypes.fields import GenericRelation
 
 from project import settings
 
@@ -21,6 +22,7 @@ import plotly.io as pio
 from datetime import datetime
 from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
+from comment.models import Comment
 
 class BaseModel(models.Model):
     name = models.CharField(max_length=100, blank=True, default='New item')
@@ -30,6 +32,7 @@ class BaseModel(models.Model):
     hash_key = models.CharField(max_length=10, blank=True)
     history = AuditlogHistoryField()
     properties = models.JSONField(blank=True, null=True)
+    comments = GenericRelation(Comment)
    
     #foreign keys
     owner = models.ForeignKey(User, on_delete=models.CASCADE)

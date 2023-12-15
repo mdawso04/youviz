@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'pwa',
     'auditlog',
     'analytical',
+    'comment',
     #'debug_toolbar',
     'django_unicorn',
     'projects',

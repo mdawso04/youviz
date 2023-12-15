@@ -38,9 +38,9 @@
                 <div class="col">
                     <!-- SELECT {{forloop.counter}} -->
                     <div class="input-group">
-                        <span class="input-group-text" id="viz-name-input">Name</span>
-                        <input type="text" class="form-control" 
-                               unicorn:model.lazy="viz.name"
+                        <span class="input-group-text" id="viz-name-input">Memo</span>
+                        <textarea class="form-control" 
+                               unicorn:model.lazy="viz.description"
                                id="vizNameText{{vid}}" unicorn:key="vizNameText{{vid}}"
                                unicorn:partial.key="viz-no-update{{vid}}"
                                aria-label="Viz Name">
@@ -185,7 +185,7 @@
     </div>
     <!-- test edit -->
     
-    <h6 class="card-subtitle mb-2 text-muted">{{viz.name}}</h6>
+    {#<h6 class="card-subtitle mb-2 text-muted">{{viz.name}}</h6>#}
     {% if context.mode == 'app' %}
     <div class="form-floating mx-2">
         <textarea unicorn:model.lazy="viz.description" unicorn:partial="floatingTextarea2{{vid}}" id="floatingTextarea2{{vid}}" 
@@ -193,7 +193,7 @@
         <label for="floatingTextarea2{{vid}}">Memo</label>
     </div>
     {% else %}
-    <div>{{viz.description}}</div>
+    <div onclick="Handler.navigator.toggleEdit();">{{viz.description}}</div>
     {% endif %}
     {% endwith %}
     {% endwith %}

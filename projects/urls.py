@@ -28,6 +28,7 @@ urlpatterns = [
     path("upload/", views.model_form_upload, name="model_form_upload"),
     path('youviz_js', views.youviz_js, name="youviz_js"),
     path('accounts/', include('allauth.urls')),
+    path('comment/', include('comment.urls')),
     #new login code
     #path('signup/', views.signup, name ='signup'),
     #path('login/', views.login, name = 'login'),

@@ -366,7 +366,10 @@ document.addEventListener('navToggled', (e) => {
         case "navToggled": 
             //alert("navToggled");
             bootstrap.Collapse.getOrCreateInstance(document.getElementById("leftPanel")).toggle();
-            document.getElementById(e.detail.navigator.active.navElementID).classList.toggle("open");
+            
+            // adn nav pane
+            document.getElementById("navbar").classList.toggle("open");
+            //document.getElementById(e.detail.navigator.active.navElementID).classList.toggle("open");
             // is small screen call dropup, else call left panel
             break;
     }
