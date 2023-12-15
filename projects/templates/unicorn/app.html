@@ -2,7 +2,7 @@
 {% load unicorn %} 
 {% load humanize %}
 {% load socialaccount %}
-{% block title %}{{meta_object.seo.title}}{% endblock %}
+{% block title %}{% if meta_object %}{{meta_object.seo.title}} - {% endif %}{{ block.super }}{% endblock %}
 {% load comment_tags %}
 
 {% block content %}
@@ -137,24 +137,6 @@
             {% endif %}
             
             
-            {% if context.mode == "view" or context.mode == "app" %}
-                {% if user.is_authenticated %}
-                    <button id="showVizOffcanvas" class="btn btn-light text-secondary border-0" type="button" onclick="Handler.navigator.toggleEdit();"
-                                aria-expanded="false" aria-controls="collapseExample">
-                        <i class="bi-bar-chart" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Settings</span></i>
-                    </button>
-                    <button type="button" class="btn btn-light text-secondary border-0" id="datafileOpenButton" unicorn:key="datafileOpenButton"
-                        data-bs-toggle="modal" data-bs-target="#modalTable" aria-controls="modaltable" disabled>
-                            <i class="bi bi-table" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Data</span></i>
-                    </button>
-                {% else %}
-                    <button id="showVizOffcanvas" class="btn btn-light text-secondary border-0" type="button" onclick="Handler.navigator.toggleEdit();"
-                                aria-expanded="false" aria-controls="collapseExample">
-                        <i class="bi-chat-text" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Comments</span></i>
-                    </button>
-                {% endif %}
-            {% endif %}
-            
             {% if user.is_authenticated %}
                 {% if context.mode == "list" or context.mode == "view" %}
                 <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'new' %}';" id="newVizListButton">
@@ -268,9 +250,9 @@
     <!-- NEW DATASTREAM - LIST -->
     {% if context.mode == "new" %}
     <div class="container-fluid px-1 h-100 bg-light overflow-auto" style="margin-top: 126px; padding-bottom: 160px;">
-        <div class="row g-2">
+        <div class="row row-cols-1 row-cols-md-4 g-2">
         {% for s in services %}
-            <div class="col col-1 col-md-3">
+            <div class="col">
                 <div class="card">
                     <a href="/" class="text-decoration-none">
                         <div class="card-body p-2 pt-0">
@@ -287,7 +269,7 @@
             </div>
         {% endfor %}    
         {% for l in datastreams %}
-            <div class="col col-1 col-md-3">
+            <div class="col">
                 <div class="card">
                     <a href="{% url 'new' %}?datastream={{l.pk}}" class="text-decoration-none">
                         <div class="card-body p-2 pt-0">
@@ -303,7 +285,7 @@
                 </div>
             </div>
             {% empty %}
-            <div class="alert alert-primary col col-12" role="alert">No datasources available. Why not make one?</div>
+            <div class="alert alert-primary col" role="alert">No datasources available. Why not make one?</div>
         {% endfor %}
         </div>
     </div>
