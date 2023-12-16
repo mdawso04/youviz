@@ -1,0 +1,51 @@
+{% load humanize %}
+<!-- NEW DATASTREAM - LIST -->
+    <div class="container-fluid px-1 h-100 bg-light overflow-auto" style="margin-top: 126px; padding-bottom: 160px;">
+        <div class="row row-cols-1 row-cols-md-4 g-2">
+            {% if message %}
+            <div class="col-6">
+                <div class="card">
+                    <div class="alert {{message.class}} pt-2">
+                        {{message.content}}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% for s in services %}
+            <div class="col">
+                <div class="card">
+                    <a href="/" class="text-decoration-none">
+                        <div class="card-body p-2 pt-0">
+                            <div class="d-flex align-items-start">
+                                <button class="bg-info border-0 rounded-circle p-2 me-2 mt-1" style="font-size: 0.9rem;" height="40px;" width="40px;">MD</button>
+                                <div>
+                                    <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">{{ s.name }}</p>
+                                    <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ user.get_username }}・{{ s.created_at|naturaltime|capfirst }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}    
+        {% for l in datastreams %}
+            <div class="col">
+                <div class="card">
+                    <a href="{% url 'new' %}?datastream={{l.pk}}" class="text-decoration-none">
+                        <div class="card-body p-2 pt-0">
+                            <div class="d-flex align-items-start">
+                                <button class="bg-info border-0 rounded-circle p-2 me-2 mt-1" style="font-size: 0.9rem;" height="40px;" width="40px;">MD</button>
+                                <div>
+                                    <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">{{ l.name }}</p>
+                                    <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ user.get_username }}・{{ l.created_at|naturaltime|capfirst }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="alert alert-primary col" role="alert">No datasources available. Why not make one?</div>
+        {% endfor %}
+        </div>
+    </div>

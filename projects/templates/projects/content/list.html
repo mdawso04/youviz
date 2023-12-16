@@ -1,0 +1,34 @@
+{% load humanize %}
+<!-- CONTENT - LIST -->
+    <div class="container-fluid px-1 h-100 bg-light overflow-auto" style="margin-top: 126px; padding-bottom: 160px;">
+        <div class="row row-cols-1 row-cols-md-4 g-2">
+            {% for l in list_datasources %}
+            <div class="col">
+                <div class="card">
+                    
+                    <div class="yv-component dsthumb" id="yv-component-dsthumb-{{ l.pk }}"
+                         data-yv-component="dsthumb"
+                         data-yv-id="{{ l.pk }}"
+                         data-yv-link="{{ l.get_absolute_url_viewmode }}"
+                         data-yv-button=""
+                         data-yv-init="dsThumbInit">
+                    </div>
+                    <a href="{% url 'view' pk=l.pk %}" class="text-decoration-none">
+                        <div class="card-body p-2 pt-0">
+                            <div class="d-flex align-items-start">
+                                <button class="bg-info border-0 rounded-circle p-2 me-2 mt-1" style="font-size: 0.9rem;" height="40px;" width="40px;"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Vizualized by {{ l.owner.get_username }}">MD</button>
+                                <div>
+                                    <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">{{ l.name }}</p>
+                                    <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ l.vizs.count }} vizs from {{ l.datastream.name }}・{{ l.last_cached|naturaltime|capfirst }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+            <div style="height: 40px;"></div>
+            
+        </div>
+    </div>
