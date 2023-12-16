@@ -38,6 +38,8 @@ class AppView(UnicornView):
     
     message: dict = None
     
+    page: str = None
+    
     class Meta:
         javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'list_datasources') 
     
@@ -49,9 +51,7 @@ class AppView(UnicornView):
 #LOAD/UPDATE
     
     def mount(self):
-        r = self.load_table()
-        if r:
-            print(reverse('list'))
+        self.load_table()
         
     def load_table(self):
         
@@ -77,31 +77,65 @@ class AppView(UnicornView):
                 #    self.report = self.datasource.reports.last()
                 #if not self.report:
                 #    self.addReport()
+            
             elif self.context['mode'] == 'new':
-                if 'datasource' in self.request.GET and int(self.request.GET['datasource']) >= 1:
-                    self.datasource = Datasource.item(int(self.request.GET['datasource']))
-                    self.add(
-                        cls=Viz,
-                        datasource=self.datasource,
-                        #call_redirect=False
-                    )
-                elif 'datastream' in self.request.GET and int(self.request.GET['datastream']) >= 1:
-                    self.datasource = self.add(
-                        cls=Datasource,
-                        datastream=Datastream.item(int(self.request.GET['datastream']))
-                    )
-                    return self.add(
-                        cls=Viz,
-                        datasource=self.datasource,
-                        #call_redirect='list'
-                    )
-                else:
+                
+                if self.request.GET['o'] == 'datamenu':
+                    self.services = Datastream.services()
+                    self.datastreams = Datastream.list()
+                    self.page = 'new.datamenu'
                     self.message = {
                         'class': 'alert-info',
                         'content': 'Select below to add a new item'
                     }
-                    self.services = Datastream.services()
-                    self.datastreams = Datastream.list()
+                    
+                elif self.request.GET['o'] == 'vizmenu':
+                    self.services = Viz.services()
+                    self.page = 'new.vizmenu'
+                    self.message = {
+                        'class': 'alert-info',
+                        'content': 'Select below to add a new item'
+                    }
+                
+                elif self.request.GET['o'] == 'datastream':
+                    kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('url',)}
+                    if kwargs.len() == 1:
+                        self.add(
+                            cls=Datastream,
+                            **kwargs
+                            #call_redirect='list'
+                        )
+                    self.page = 'new.datastream.complete'
+                    self.message = {
+                        'class': 'alert-info',
+                        'content': 'Datastream added!'
+                    } 
+                
+                elif self.request.GET['o'] == 'datasource':
+                    kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('datastream',)}
+                    if kwargs.len() == 1:
+                        self.datasource = self.add(
+                            cls=Datasource,
+                            datastream=Datastream.item(kwargs['datastream'])
+                            #call_redirect='list'
+                        )
+                        self.add(
+                            cls=Viz,
+                            datasource=self.datasource,
+                            #call_redirect='list'
+                        )
+                    self.page = 'new.datasource.complete'
+                    self.message = {
+                        'class': 'alert-info',
+                        'content': 'Datasource added!'
+                    }
+                else:
+                    self.page = 'new.error'
+                    self.message = {
+                        'class': 'alert-danger',
+                        'content': 'Oops! Something went wrong!'
+                    }
+                    
             else:
                 self.datasources = Datasource.objects.none()
                 self.datasource = None

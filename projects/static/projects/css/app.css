@@ -4,7 +4,7 @@
     --edit-z-index: 1040;
     --edit-transition: .35s;
     --t-nav: 56px;
-    --b-nav: 87px;
+    --b-nav: 181px;
     --viz-area: 450px;
     --t-nav-viz-area: calc(var(--t-nav) + var(--viz-area));
     --mid-area: calc(100vh - var(--t-nav) - var(--b-nav));
@@ -28,7 +28,7 @@
     --large-edit-height: var(--mid-area);
     --large-edit-body-height: calc(var(--large-edit-height) - var(--e-head));
     --large-edit-width: 320px;
-    --large-edit-top: 76px; /* 57 */
+    --large-edit-top: 78px; /* 57 */
     --large-edit-left: auto;
     --large-edit-right-open: 0px;
     --large-edit-right-closed: -320px;
@@ -37,7 +37,7 @@
     --large-nav-height: var(--mid-area);
     --large-nav-body-height: calc(var(--large-nav-height) - var(--e-head));
     --large-nav-width: 320px;
-    --large-nav-top: 76px; /* 57 */
+    --large-nav-top: 78px; /* 57 */
     --large-nav-right: auto; /* was left */
     --large-nav-left-open: 0px; /* was right */
     --large-nav-left-closed: -320px; /* was right */

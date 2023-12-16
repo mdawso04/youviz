@@ -36,10 +36,7 @@ def view(request, pk):
 #view options to add new: datastream template or datastream, viz
 def new(request):
     if request.user.is_authenticated:
-        ds_template = request.GET.get('ds_template', '')
-        datastream = request.GET.get('datastream', '')
-        datasource = request.GET.get('datasource', '')
-        c = {'context': {'mode': 'new', 'ds_template': ds_template, 'datastream': datastream, 'datasource': datasource}}
+        c = {'context': {'mode': 'new'}}
         return render(request, 'projects/app_top.html', c)
     else:
         return redirect(reverse('list'))

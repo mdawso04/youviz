@@ -395,6 +395,10 @@ class Viz(BaseModel):
         a.add('VIZ_HIST', {'x': 'Age'})
         json = a.todos
         return {'json': json}
+    
+    @classmethod
+    def services(cls):
+        return ['VIZ_HIST', 'VIZ_BOX']
         
     '''
     @classmethod
