@@ -36,6 +36,8 @@ class AppView(UnicornView):
     
     meta_object: BaseModel = None
     
+    message: dict = None
+    
     class Meta:
         javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'list_datasources') 
     
@@ -78,7 +80,11 @@ class AppView(UnicornView):
             elif self.context['mode'] == 'new':
                 if 'datasource' in self.request.GET and int(self.request.GET['datasource']) >= 1:
                     self.datasource = Datasource.item(int(self.request.GET['datasource']))
-                    self.addViz(call_redirect=False)
+                    self.add(
+                        cls=Viz,
+                        datasource=self.datasource,
+                        #call_redirect=False
+                    )
                 elif 'datastream' in self.request.GET and int(self.request.GET['datastream']) >= 1:
                     self.datasource = self.add(
                         cls=Datasource,
@@ -90,6 +96,10 @@ class AppView(UnicornView):
                         #call_redirect='list'
                     )
                 else:
+                    self.message = {
+                        'class': 'alert-info',
+                        'content': 'Select below to add a new item'
+                    }
                     self.services = Datastream.services()
                     self.datastreams = Datastream.list()
             else:

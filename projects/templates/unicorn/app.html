@@ -66,7 +66,7 @@
                        value="Multiple Vizs" 
                        onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'multiple';">
             </div>
-            {% elif context.mode == "new_viz_list" %}
+            {% elif context.mode == "new" %}
             <div class="pt-2">
                 <input type="submit" class="btn border-0 me-1 {% if request.GET.multiple == 'any' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
                        value="Popular" 
@@ -138,11 +138,15 @@
             
             
             {% if user.is_authenticated %}
-                {% if context.mode == "list" or context.mode == "view" %}
+                {% if context.mode == "list" %}
                 <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'new' %}';" id="newVizListButton">
                         <i class="bi bi-plus-circle" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">New</span></i>
                 </button>
-                {% elif context.mode == "new_viz_list" %}
+                {% elif context.mode == "view" %}
+                <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'new' %}?datasource={{datasource.pk}}';" id="newVizButton">
+                        <i class="bi bi-plus-circle" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">New</span></i>
+                </button>
+                {% elif context.mode == "new" %}
                 <button type="button" class="btn btn-light text-secondary border-0" onclick="history.back()" id="newVizListButton">
                         <i class="bi bi-x-circle" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Cancel</span></i>
                 </button>
@@ -251,6 +255,15 @@
     {% if context.mode == "new" %}
     <div class="container-fluid px-1 h-100 bg-light overflow-auto" style="margin-top: 126px; padding-bottom: 160px;">
         <div class="row row-cols-1 row-cols-md-4 g-2">
+            {% if message %}
+            <div class="col-6">
+                <div class="card">
+                    <div class="alert {{message.class}} pt-2">
+                        {{message.content}}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         {% for s in services %}
             <div class="col">
                 <div class="card">
