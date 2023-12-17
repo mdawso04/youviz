@@ -4,7 +4,7 @@
         <div class="row row-cols-1 row-cols-md-4 g-2">
             {% if message %}
             <div class="col col-md-12">
-                <div class="card">
+                <div class="card rounded-3 p-1">
                     <div class="alert {{message.class}} pt-2">
                         {{message.content}} <a href="{% url 'new' o='datamenu' %}">Add a datasource for this datastream</a>
                 </div>
