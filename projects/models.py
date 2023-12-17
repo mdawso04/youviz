@@ -119,8 +119,9 @@ class BaseModel(models.Model):
     
     @classmethod
     def add(cls, *args, **kwargs):
-        kwargs.update(cls.extra_kwargs(**kwargs))
-        o = cls(**kwargs)
+        k = cls.extra_kwargs(*args, **kwargs)
+        k.update(**kwargs)
+        o = cls(**k)
         o.save()
         return o
     

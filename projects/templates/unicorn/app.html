@@ -6,6 +6,12 @@
     {% if context.mode == "new" %}
         {% if page == 'new.datamenu' %}
             {% include 'projects/content/new_datamenu.html' %} 
+        {% elif page == 'new.vizmenu' %}
+            {% include 'projects/content/new_vizmenu.html' %}
+        % elif page == 'new.datasource.complete' %}
+            {% include 'projects/content/new_datasource_complete.html' %}
+        {% elif page == 'new.viz.complete' %}
+            {% include 'projects/content/new_viz_complete.html' %}
         {% endif %}
     {% endif %}
     {% if context.mode == "view" %} 

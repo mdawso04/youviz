@@ -31,7 +31,7 @@
         {% for l in datastreams %}
             <div class="col">
                 <div class="card">
-                    <a href="{% url 'new' %}?datastream={{l.pk}}" class="text-decoration-none">
+                    <a href="{% url 'new' %}?o=datasource&datastream={{l.pk}}" class="text-decoration-none">
                         <div class="card-body p-2 pt-0">
                             <div class="d-flex align-items-start">
                                 <button class="bg-info border-0 rounded-circle p-2 me-2 mt-1" style="font-size: 0.9rem;" height="40px;" width="40px;">MD</button>

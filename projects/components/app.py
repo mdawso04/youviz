@@ -91,6 +91,7 @@ class AppView(UnicornView):
                     
                 elif self.request.GET['o'] == 'vizmenu':
                     self.services = Viz.services()
+                    self.datasource = Datasource.item(self.request.GET['datasource'])
                     self.page = 'new.vizmenu'
                     self.message = {
                         'class': 'alert-info',
@@ -99,7 +100,7 @@ class AppView(UnicornView):
                 
                 elif self.request.GET['o'] == 'datastream':
                     kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('url',)}
-                    if kwargs.len() == 1:
+                    if len(kwargs) == 1:
                         self.add(
                             cls=Datastream,
                             **kwargs
@@ -113,7 +114,7 @@ class AppView(UnicornView):
                 
                 elif self.request.GET['o'] == 'datasource':
                     kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('datastream',)}
-                    if kwargs.len() == 1:
+                    if len(kwargs) == 1:
                         self.datasource = self.add(
                             cls=Datasource,
                             datastream=Datastream.item(kwargs['datastream'])
@@ -129,6 +130,22 @@ class AppView(UnicornView):
                         'class': 'alert-info',
                         'content': 'Datasource added!'
                     }
+                
+                elif self.request.GET['o'] == 'viz':
+                    kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('datasource',)}
+                    if len(kwargs) == 1:
+                        self.datasource = Datasource.item(kwargs['datasource'])
+                        self.add(
+                            cls=Viz,
+                            datasource=self.datasource,
+                            #call_redirect='list'
+                        )
+                    self.page = 'new.viz.complete'
+                    self.message = {
+                        'class': 'alert-info',
+                        'content': 'Viz added!'
+                    }
+                
                 else:
                     self.page = 'new.error'
                     self.message = {
