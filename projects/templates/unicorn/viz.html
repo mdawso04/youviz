@@ -38,12 +38,12 @@
                 <div class="col">
                     <!-- SELECT {{forloop.counter}} -->
                     <div class="input-group">
-                        <span class="input-group-text" id="viz-name-input">Memo</span>
+                        <span class="input-group-text" id="viz-name-input">About</span>
                         <textarea class="form-control" 
                                unicorn:model.lazy="viz.description"
                                id="vizNameText{{vid}}" unicorn:key="vizNameText{{vid}}"
                                unicorn:partial.key="viz-no-update{{vid}}"
-                               aria-label="Viz Name">
+                               aria-label="Viz Name"/>
                     </div>
                 </div>
                 <div class="col">
@@ -188,12 +188,23 @@
     {#<h6 class="card-subtitle mb-2 text-muted">{{viz.name}}</h6>#}
     {% if context.mode == 'app' %}
     <div class="form-floating mx-2">
-        <textarea unicorn:model.lazy="viz.description" unicorn:partial="floatingTextarea2{{vid}}" id="floatingTextarea2{{vid}}" 
-                  class="form-control" placeholder="Leave a memo here" style="height: 120px"></textarea>
+        <textarea unicorn:model.lazy="viz.description" 
+                  unicorn:partial="floatingTextarea2{{vid}}" 
+                  id="floatingTextarea2{{vid}}" 
+                  class="form-control" 
+                  placeholder="Leave a memo here" 
+                  style="min-height: 120px; max-height: 120px;">
+        </textarea>
         <label for="floatingTextarea2{{vid}}">Memo</label>
     </div>
     {% else %}
-    <div onclick="Handler.navigator.toggleEdit();">{{viz.description}}</div>
+    <div class="position-relative" style="min-height: 120px; max-height: 120px;" onclick="Handler.navigator.toggleEdit();">
+        {{viz.description |linebreaksbr}}
+        <span class="position-absolute top-0 end-0 badge">
+            <i class="bi bi-arrow-up-right-square text-black-50 border-0" style="font-size: 1.2rem;"></i>
+            <span class="visually-hidden">Viz Setting</span>
+        </span>
+        </div>
     {% endif %}
     {% endwith %}
     {% endwith %}

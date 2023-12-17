@@ -50,7 +50,9 @@ class BaseModel(models.Model):
         return {
             'title': self.name,
             'description': self.description, 
-            'h1': self.name,
+            #'keywords': None, 
+            'author': self.owner.username, 
+            #'h1': self.name,
         }
     
     #def get_meta_image(self):

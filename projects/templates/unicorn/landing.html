@@ -19,6 +19,22 @@
     </header>
     
     <div id="main">
+        
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
+        <div id="g_id_onload"
+            data-client_id="207347957236-vhqinq5j8h8al0a18hsb4vm11v75lu92.apps.googleusercontent.com"
+            data-login_uri="http://localhost/your_login_endpoin-t"
+            data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+            data-type="standard"
+            data-size="large"
+            data-theme="outline"
+            data-text="sign_in_with"
+            data-shape="rectangular"
+            data-logo_alignment="left">
+        </div>
+        
         {% if get_started_main %}                
         <main class="px-3" id="get-started-main">
             <h1>Simple. Vizualization. <br/>For You.</h1>
@@ -63,6 +79,7 @@
         {% elif signin_main %} 
         <main class="px-3" id="signin-main">
             <h1>Welcome back!</h1>
+            
             <div class="row mb-3 row-cols-2 justify-content-center gx-2">
                 <div class="form-floating">
                     <input type="input" unicorn:model.defer="username" class="form-control bg-dark text-white" 

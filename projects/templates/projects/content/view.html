@@ -9,6 +9,10 @@
                 <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ user.get_username }}・{{ datasource.vizs.count }} vizs・{{ datasource.last_cached|naturaltime|capfirst }}</p>
             </div>
         </div>
+        <span class="position-absolute top-0 end-0 badge">
+            <i class="bi bi-arrow-up-right-square text-black-50 border-0" style="font-size: 1.2rem;"></i>
+            <span class="visually-hidden">Datasource Settings</span>
+        </span>
     </div>
     
     <div class="row h-100 pt-5 mt-4">
