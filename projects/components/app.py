@@ -65,14 +65,41 @@ class AppView(UnicornView):
         #  viewmode->show viz
         
         if self.request:
+            # collect various params
             self.context = self.component_kwargs['context']
+            
+            '''
+            if hasattr(self.request, '_body'):
+                b = json.loads(self.request._body)
+                pk = b['data']['viz']['pk']
+                #logger.debug('PK FROM BODY: ' + str(pk))
+            
+            elif hasattr(self, 'kwargs'):
+                pk = self.kwargs['pk']
+                #logger.debug('PK FROM KWARGS: ' + str(pk))
+            
+            '''
+            
+            
+            
             if self.context['mode'] == 'list':
                 self.list_datasources = Datasource.list(query=self.context['query'])
                 return #do nothing
+            
             elif self.context['mode'] == 'view':
+                
                 if self.context['pk']:
                     self.datasource = Datasource.item(self.context['pk'])
                     self.meta_object = self.datasource
+                
+                if self.context['pk']:
+                    self.datasource = Datasource.item(self.context['pk'])
+                    self.meta_object = self.datasource
+                
+                
+                
+                
+                
                 #if hasattr(self.datasource, 'reports'):
                 #    self.report = self.datasource.reports.last()
                 #if not self.report:
@@ -296,6 +323,11 @@ class AppView(UnicornView):
         if 'call_redirect' in kwargs:
             if kwargs['call_redirect'] is not False:
                 return redirect(reverse(kwargs['call_redirect']))
+            
+        return redirect(reverse('list'))
+    
+    def delete_datasource(self, pk):
+        return self.delete(cls=Datasource, pk=pk, call_redirect='list')
         
 
     def calling(self, name, args):
@@ -374,18 +406,11 @@ class AppView(UnicornView):
         #self.load_table()
         #logger.debug('AppView > addViz end')
         
-    def refreshDatasource(self):
+    def refreshDatasource(self, pk):
         #logger.debug('AppView > addViz start')
-        self.datasource.refresh()
-        '''
-        a = pp.App(self.datasource.json)
-        df = a.call()
-        content = df.to_csv(index=False)
-        self.datasource.document = content
-        self.datasource.last_cached = datetime.utcnow()
-        self.datasource.save()
-        '''
-        #self.load_table()
+        d = Datasource.item(pk)
+        d.refresh()
+        return redirect(reverse('view', args=[pk]))
         #logger.debug('AppView > addViz end')
         
     def getRemoteData(self, service='READ_DATA_ATTRITION', name='no_name'):

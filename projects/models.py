@@ -142,7 +142,7 @@ class BaseModel(models.Model):
         else:
             instance = cls.item(int(kwargs['pk']))
         
-        instance.delete()
+        super(BaseModel, instance).delete()
     
     '''
     def refresh_from_db(self, *args, **kwargs):
