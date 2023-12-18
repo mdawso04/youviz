@@ -24,6 +24,7 @@ from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
 from comment.models import Comment
 
+
 class BaseModel(models.Model):
     name = models.CharField(max_length=100, blank=True, default='New item')
     description = models.CharField(max_length=255, blank=True, default='New item')
@@ -190,6 +191,13 @@ class Project(BaseModel):
     #selected_file = models.OneToOneField(File, on_delete=models.SET_NULL, null=True)
     #description = models.CharField(max_length=255, blank=True)
 '''
+
+class Profile(BaseModel):
+    user = models.OneToOneField(User, related_name='user', on_delete=models.CASCADE)
+    #image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+
+    def __str__(self):
+        return f'{self.user.username} Profile'
 
 class Datastream(BaseModel):
     #attrs
