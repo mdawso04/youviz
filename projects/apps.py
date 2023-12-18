@@ -6,4 +6,4 @@ class ProjectsConfig(AppConfig):
     name = 'projects'
     
     def ready(self):
-        import projects.signals
+        from . import signals
