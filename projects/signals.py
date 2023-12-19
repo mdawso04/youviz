@@ -10,4 +10,5 @@ def create_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):
-    instance.profile.save()
+    # use 'profileS' here to remove ambiguity resulting from 2 User attributes in Profile model
+    instance.profiles.save()

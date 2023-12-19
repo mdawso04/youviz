@@ -57,7 +57,8 @@ class AppsettingsView(UnicornView):
     def updated(self, name, value):
         #logger.debug('LoginView > updated start')
         if name:
-            self.datasource.save()
+            #self.datasource.save()
+            self.request.user.profiles.save()
         #logger.debug('LoginView > updated end')
         
 #ACTIONS    

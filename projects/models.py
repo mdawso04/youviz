@@ -193,7 +193,7 @@ class Project(BaseModel):
 '''
 
 class Profile(BaseModel):
-    user = models.OneToOneField(User, related_name='user', on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name='profiles', on_delete=models.CASCADE)
     #image = models.ImageField(default='default.jpg', upload_to='profile_pics')
 
     def __str__(self):
