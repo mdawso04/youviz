@@ -1,4 +1,6 @@
 from django.urls import path, include
+from django.contrib.sitemaps.views import sitemap
+from project.sitemaps import DatasourceSitemap
 from . import views
 from projects.components.viz import VizView
 from projects.components.dataframe import DataframeView
@@ -32,4 +34,5 @@ urlpatterns = [
     #new login code
     #path('signup/', views.signup, name ='signup'),
     #path('login/', views.login, name = 'login'),
+    path("sitemap.xml", sitemap, {"sitemaps": {'viz': DatasourceSitemap}}, name="django.contrib.sitemaps.views.sitemap")
 ]
