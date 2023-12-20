@@ -234,7 +234,8 @@ class AppView(UnicornView):
     
     def updated(self, name, value):
         #logger.debug('AppView > updated start')
-        pass
+        if 'user.profiles' in name:
+            self.request.user.profiles.save()
         #logger.debug('AppView > updated end')
         
 #ACTIONS

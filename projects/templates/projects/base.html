@@ -52,8 +52,10 @@
                             <button id="off-canvas-button" 
                                     type="button" data-bs-toggle="offcanvas" 
                                     data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample"
-                                    class="bg-info border-0 rounded-circle p-2 ms-2" style="font-size: 0.9rem; max-height: 40px; max-width: 40px;" height="40px;" width="40px;">
-                                MD
+                                    class="border-0 rounded-circle p-2 ms-2" 
+                                    style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
+                                               background-color: {{request.user.profiles.properties.profile_color|default:'#0dcaf0'}} !important">
+                                {{ request.user.get_username | first | upper}}
                             </button>
                         </div>
                         {% else %}
@@ -99,7 +101,9 @@
                 </div>
                 <div class="offcanvas-body pt-0">  
                 <!-- FILE CONTROL -->
-                {% unicorn 'appsettings' parent=view datasources=datasources datasource=selected_datasource_for_editing id='appsettings' context=context %}
+                {% block app_settings %}
+                    {% include './content/app_settings.html' %}
+                {% endblock %}
                 </div>
             </div>
             {% endblock %}

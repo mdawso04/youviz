@@ -4,26 +4,20 @@
 <div class="container-xl p-0">
     <div class="row row-cols-auto g-3 pb-3">
         <div class="col">
-            <h6 class="card-subtitle text-muted">User</h6>
-        </div>
-    </div>
-    <!-- USER -->
-    <div class="row row-cols-auto g-3 pb-3">
-        <div class="col">
             {% if user.is_authenticated %}
             <div class="card-body mb-1">
                 <div class="d-flex align-items-start">
-                    <button class="bg-info border-0 rounded-circle p-2 me-2 mt-1" style="font-size: 0.9rem;" height="40px;" width="40px;">MD</button>
+                    <button class="border-0 rounded-circle p-2 me-2 mt-1" 
+                            style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
+                                   background-color: {{request.user.profiles.properties.profile_color|default:'#0dcaf0'}} !important">
+                        {{ request.user.get_username | first | upper}}
+                    </button>
                     <div>
                         <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">Hey {{ user.username | title }}!</p>
                         <p class="small trefresh">Last login <span class="thuman">...</span>
                         <span class="tstamp d-none">{{user.last_login|date:"c"}}</span></p>
                     </div>
                 </div>
-                <input style="min-width: 30px;" type='color' 
-                           unicorn:key="user-profile-color" 
-                           value="{{ request.user.profiles.properties.profile_color }}"
-                           unicorn:model.lazy="request.user.profiles.properties.profile_color" />
             </div>
             
             
@@ -76,6 +70,28 @@
 
         </div>
     </div>
+    
+    {% if user.is_authenticated %}
+    <hr class="my-4"/>
+    
+    <!-- SUPPORT -->
+    <div class="row row-cols-auto g-3 pb-3">
+        <div class="col">
+            <h6 class="card-subtitle mb-3 text-muted">Preferences</h6>  
+        </div>
+    </div>
+    <div class="row row-cols-auto g-3 pb-3">
+        <div class="col">
+            <label for="exampleColorInput" class="form-label">Profile color</label>
+            <input type="color" class="form-control form-control-color" id="exampleColorInput" title="Choose your color"
+                   unicorn:key="user-profile-color"
+                   unicorn:partial.key="user-profile-color"
+                   value="{{ request.user.profiles.properties.profile_color }}"
+                   unicorn:model.lazy="request.user.profiles.properties.profile_color" />
+        </div>
+    </div>
+    {% endif %}
+    
     
     <hr class="my-4"/>
     
