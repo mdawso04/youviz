@@ -118,7 +118,7 @@ class BaseModel(models.Model):
         
     @classmethod
     def extra_kwargs(cls, *args, **kwargs):
-        return {}
+        return {'properties': '[]'}
     
     @classmethod
     def add(cls, *args, **kwargs):
@@ -198,6 +198,12 @@ class Profile(BaseModel):
 
     def __str__(self):
         return f'{self.user.username} Profile'
+    
+    @classmethod
+    def extra_kwargs(cls, *args, **kwargs):
+        k = super(Profile, cls).extra_kwargs(*args, **kwargs)
+        k.update({'properties': '["profile_color": "#ffffff"]'})
+        return k
 
 class Datastream(BaseModel):
     #attrs
