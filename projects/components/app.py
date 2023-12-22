@@ -236,6 +236,8 @@ class AppView(UnicornView):
         #logger.debug('AppView > updated start')
         if 'user.profiles' in name:
             self.request.user.profiles.save()
+        elif 'datasource.' in name:
+            self.datasource.save()
         #logger.debug('AppView > updated end')
         
 #ACTIONS
