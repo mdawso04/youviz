@@ -14,7 +14,7 @@ urlpatterns = [
     #view options to add new: datastream template or datastream, viz
     path('new/', views.new, name="new"),
     #view all vizs from 1 user
-    path('user/', views.user, name="user"),
+    path('user/<str:username>/', views.user, name="user"),
     
     
     #path('app/', views.app, name="app_all"),

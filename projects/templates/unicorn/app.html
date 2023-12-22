@@ -6,6 +6,7 @@
 
 {% block content %}
     {% if context.mode == "list" %} {% include 'projects/content/list.html' %}
+    {% elif context.mode == "user" %} {% include 'projects/content/user.html' %}
     {% elif context.mode == "new" %}
         {% if page == 'new.datamenu' %} {% include 'projects/content/new_datamenu.html' %} 
         {% elif page == 'new.vizmenu' %} {% include 'projects/content/new_vizmenu.html' %}

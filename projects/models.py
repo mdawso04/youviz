@@ -106,10 +106,11 @@ class BaseModel(models.Model):
     def list(cls, *args, **kwargs):
         p = cls.get_prefetch()
         query = kwargs['query'] if 'query' in kwargs else ''
+        kwargs = {k: v for k, v in kwargs.items() if k not in ('query',)}
         if p:
-            return cls.objects.filter(name__icontains=query).all().order_by('-id').prefetch_related(*p)
+            return cls.objects.filter(name__icontains=query, **kwargs).all().order_by('-id').prefetch_related(*p)
         else:
-            return cls.objects.filter(name__icontains=query).all().order_by('-id')
+            return cls.objects.filter(name__icontains=query, **kwargs).all().order_by('-id')
     
     @classmethod
     def item(cls, pk):

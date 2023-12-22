@@ -1,6 +1,7 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
 from projects.models import BaseModel, Datastream, Datasource, Viz
+from django.contrib.auth.models import User
 
 from django.core.files.base import ContentFile
 from django.shortcuts import render, redirect
@@ -85,6 +86,12 @@ class AppView(UnicornView):
             if self.context['mode'] == 'list':
                 self.list_datasources = Datasource.list(query=self.context['query'])
                 return #do nothing
+            
+            elif self.context['mode'] == 'user':
+                user = User.objects.get(username=self.context['username'])
+                self.list_datasources = Datasource.list(owner=user.pk)
+                return #do nothing
+            
             
             elif self.context['mode'] == 'view':
                 
