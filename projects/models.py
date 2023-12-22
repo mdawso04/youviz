@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.functional import cached_property
 from django.contrib.contenttypes.fields import GenericRelation
+from django.utils.text import slugify
 
 from project import settings
 
@@ -34,6 +35,7 @@ class BaseModel(models.Model):
     history = AuditlogHistoryField()
     properties = models.JSONField(blank=True, null=True)
     comments = GenericRelation(Comment)
+    slug = models.SlugField(max_length=255)
    
     #foreign keys
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -93,6 +95,7 @@ class BaseModel(models.Model):
     
     def save(self, *args, **kwargs):
         self.hash_key = self._createHash()
+        self.slug = slugify(self.name)
         super(BaseModel, self).save(*args, **kwargs)
         
     @classmethod

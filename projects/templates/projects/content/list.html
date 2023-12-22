@@ -11,7 +11,8 @@
                          data-yv-id="{{ l.pk }}"
                          data-yv-link="{{ l.get_absolute_url_viewmode }}"
                          data-yv-button=""
-                         data-yv-init="dsThumbInit">
+                         data-yv-init="dsThumbInit"
+                         style="min-height: 230px;">
                     </div>
                     <a href="{% url 'view' pk=l.pk %}" class="text-decoration-none">
                         <div class="card-body p-2 pt-0">

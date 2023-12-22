@@ -5,19 +5,19 @@ from django.contrib.auth.models import User
 from .models import Profile, Datastream, Datasource, Viz
 
 class DatastreamAdmin(admin.ModelAdmin):
-    readonly_fields = ('pk', 'created_at', 'last_updated', 'hash_key')
+    readonly_fields = ('pk', 'created_at', 'last_updated', 'hash_key', 'slug')
 
 class DatasourceAdmin(admin.ModelAdmin):
-    readonly_fields = ('pk', 'created_at', 'last_updated', 'last_cached', 'hash_key')
+    readonly_fields = ('pk', 'created_at', 'last_updated', 'last_cached', 'hash_key', 'slug')
     
 class VizAdmin(admin.ModelAdmin):
-    readonly_fields = ('pk', 'created_at', 'last_updated', 'hash_key')
+    readonly_fields = ('pk', 'created_at', 'last_updated', 'hash_key', 'slug')
 
 class ReportAdmin(admin.ModelAdmin):
-    readonly_fields = ('pk', 'created_at', 'last_updated', 'hash_key')
+    readonly_fields = ('pk', 'created_at', 'last_updated', 'hash_key', 'slug')
 
 class ProfileAdmin(admin.ModelAdmin):
-    readonly_fields = ('pk',)
+    readonly_fields = ('pk', 'slug')
     
 # Unregister default before register custom version
 #admin.site.unregister(User)
