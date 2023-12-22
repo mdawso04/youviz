@@ -2,17 +2,17 @@
 <!-- CONTENT - VIEW -->
     <!-- DATASOURCE INFO -->
     <div class="card-body p-2 bg-light vw-100" style="position: fixed; bottom: 86px; left: 0px;" onclick="Handler.navigator.toggleNav();">
+        <button class="bg-transparent border-0 w-100 mt-2 position-absolute top-0 start-50 translate-middle">
+            <i class="bi bi-grip-horizontal text-black-50" style="font-size: 1.2rem;"></i>
+        </button>
         <div class="d-flex align-items-start">
             <button class="bg-info border-0 rounded-circle p-2 me-2 mt-1" style="font-size: 0.9rem;" height="40px;" width="40px;">MD</button>
             <div>
                 <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">{{ datasource.name }}</p>
-                <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ user.get_username }}・{{ datasource.vizs.count }} vizs・{{ datasource.last_cached|naturaltime|capfirst }}</p>
+                <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
+                    {{ user.get_username }}・{{ datasource.vizs.count }} vizs・{{ datasource.last_cached|naturaltime|capfirst }}</p>
             </div>
         </div>
-        <span class="position-absolute top-0 end-0 badge">
-            <i class="bi bi-arrow-up-right-square text-black-50 border-0" style="font-size: 1.2rem;"></i>
-            <span class="visually-hidden">Datasource Settings</span>
-        </span>
     </div>
     
     <div class="row h-100 pt-5 mt-4">
