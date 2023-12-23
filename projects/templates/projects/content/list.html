@@ -6,10 +6,10 @@
         <div class="row row-cols-1 row-cols-md-4 g-2">
             {% for l in list_datasources %}
             <div class="col">
-                <div class="card rounded-3 p-1" 
-                     style="border-color: rgb(0, 0, 0, 0.07); opacity: 0; animation: fadeIn 1s ease-in both; animation-delay: {{ forloop.counter|divide:2 }}s;">
-                    
-                    <div class="yv-component dsthumb" id="yv-component-dsthumb-{{ l.pk }}"
+                <div class="card rounded-3 p-1 position-relative" 
+                     style="border-color: rgb(0, 0, 0, 0.07); opacity: 0; animation: fadeIn 1s ease-in both; animation-delay: {{ forloop.counter|divide:3 }}s;">
+                    <div class="yv-component dsthumb" 
+                         id="yv-component-dsthumb-{{ l.pk }}"
                          data-yv-component="dsthumb"
                          data-yv-id="{{ l.pk }}"
                          data-yv-link="{{ l.get_absolute_url_viewmode }}"
@@ -17,30 +17,36 @@
                          data-yv-init="dsThumbInit"
                          style="min-height: 230px;">
                     </div>
-                    <a href="{% url 'view' pk=l.pk %}" class="text-decoration-none">
+                    <a href="{% url 'view' pk=l.pk %}" 
+                       class="text-decoration-none">
                         <div class="card-body p-2 pt-0">
-                            <div class="d-flex align-items-start">
-                                <a href="{% url 'user' l.owner.get_username %}" class="btn border-0 rounded-circle p-2 me-2 mt-1" 
-                                        style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
-                                               background-color: {{l.owner.profiles.properties.profile_color|default:'#0dcaf0'}} !important"
-                                        data-bs-toggle="tooltip" 
-                                        data-bs-placement="top" 
-                                        title="Vizualized by {{ l.owner.get_username }}">
-                                    {{ l.owner.get_username | first | upper}}
-                                </a>
+                            <div class="d-flex align-items-start" style="min-height: 79px;">
+                                <div class="border-0 p-2 me-2 mt-1" 
+                                     style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px;"></div>
                                 <div>
-                                    <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">
+                                    <p class="text-body text-decoration-none mb-0" 
+                                       style="font-size: 1.0rem;">
                                         {{ l.name }}</p>
-                                    <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
-                                        {{ l.vizs.count }} vizs from {{ l.datastream.name }}・{{ l.last_cached|naturaltime|capfirst }}</p>
+                                    <p class="text-secondary text-decoration-none" 
+                                       style="font-size: 0.8rem;">
+                                        {{ l.vizs.count }} vizs・{{ l.last_cached|naturaltime|capfirst }}</p>
                                 </div>
                             </div>
                         </div>
+                    </a>
+                    <a href="{% url 'user' l.owner.get_username %}" 
+                       class="btn border-0 rounded-circle p-2 me-2 mt-1" 
+                       style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; max-width: 40px; 
+                              background-color: {{l.owner.profiles.properties.profile_color|default:'#0dcaf0'}} !important; position: relative; top: -88px; left: 8px;
+                              margin-bottom: -40px;"
+                            data-bs-toggle="tooltip" 
+                            data-bs-placement="top" 
+                            title="Vizualized by {{ l.owner.get_username }}">
+                        {{ l.owner.get_username | first | upper}}
                     </a>
                 </div>
             </div>
             {% endfor %}
             <div style="height: 40px;"></div>
-            
         </div>
     </div>
