@@ -245,7 +245,7 @@ class Datasource(BaseModel):
     
     @property
     def views_count(self):
-        return ItemViews.objects.filter(item=self).count()
+        return ItemView.objects.filter(item=self).count()
 
     @classmethod
     def _fetch(cls, *args, **kwargs):
@@ -465,7 +465,7 @@ class Report(BaseModel):
     class Meta:
         default_related_name = 'reports'
     '''
-class ItemViews(models.Model):
+class ItemView(models.Model):
     IPAddress = models.GenericIPAddressField(default='45.243.82.169')
     item = models.ForeignKey(Datasource, on_delete=models.CASCADE)
        

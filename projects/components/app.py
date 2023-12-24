@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
-from projects.models import BaseModel, Datastream, Datasource, Viz, ItemViews
+from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView
 from django.contrib.auth.models import User
 
 from django.core.files.base import ContentFile
@@ -108,7 +108,7 @@ class AppView(UnicornView):
                         ip = request.META.get('REMOTE_ADDR')
                     return ip
                 
-                ItemViews.objects.get_or_create(IPAddress=get_client_ip(self.request), item=self.datasource)
+                ItemView.objects.get_or_create(IPAddress=get_client_ip(self.request), item=self.datasource)
                 
                 
                 #if hasattr(self.datasource, 'reports'):
