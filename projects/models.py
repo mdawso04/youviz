@@ -39,7 +39,7 @@ class BaseModel(models.Model):
    
     #foreign keys
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-
+    
     class Meta:
         abstract = True
         
@@ -243,6 +243,10 @@ class Datasource(BaseModel):
     
     prefetch = ('vizs',)
     
+    @property
+    def views_count(self):
+        return ItemViews.objects.filter(item=self).count()
+
     @classmethod
     def _fetch(cls, *args, **kwargs):
         a = pp.App(kwargs['datastream'].json)
@@ -461,6 +465,9 @@ class Report(BaseModel):
     class Meta:
         default_related_name = 'reports'
     '''
+class ItemViews(models.Model):
+    IPAddress = models.GenericIPAddressField(default='45.243.82.169')
+    item = models.ForeignKey(Datasource, on_delete=models.CASCADE)
        
 auditlog.register(Datastream)
 auditlog.register(Datasource, exclude_fields=['data'])
