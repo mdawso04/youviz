@@ -5,17 +5,7 @@
         <button class="bg-transparent border-0 w-100 mt-2 position-absolute top-0 start-50 translate-middle">
             <i class="bi bi-dash-lg text-black-50" style="font-size: 2rem;"></i>
         </button>
-        <div class="d-flex align-items-start pt-1">
-            <button class="border-0 rounded-circle p-2 me-2 mt-1" 
-                    style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
-                           background-color: {{datasource.owner.profiles.properties.profile_color|default:'#0dcaf0'}} !important"
-                    data-bs-toggle="tooltip" data-bs-placement="top" title="Vizualized by {{ datasource.owner.get_username }}">{{ datasource.owner.get_username | first | upper}}</button>
-            <div>
-                <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">{{ datasource.name }}</p>
-                <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
-                    {{ datasource.vizs.count }} vizs from {{ datasource.datastream.name }}・{{ datasource.last_cached|naturaltime|capfirst }}</p>
-            </div>
-        </div>
+        {% include 'projects/content/datasource_info_small.html' with datasource=datasource %}
     </div>
     
     <div class="row h-100 pt-5 mt-4">

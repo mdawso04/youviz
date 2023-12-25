@@ -4,7 +4,7 @@
     --edit-z-index: 1040;
     --edit-transition: .35s;
     --t-nav: 56px;
-    --b-nav: 181px;
+    --b-nav: 200px;
     --viz-area: 450px;
     --t-nav-viz-area: calc(var(--t-nav) + var(--viz-area));
     --mid-area: calc(100vh - var(--t-nav) - var(--b-nav));

@@ -66,7 +66,8 @@
                             <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
                         </button>
                         {% endif %}
-                    </div>       
+                    </div>
+                    {% block notification_area %}
                     {% if context.mode == "list" %}
                     <div class="pt-2">
                         <input type="submit" class="btn border-0 me-1 {% if request.GET.multiple == 'any' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
@@ -86,6 +87,8 @@
                                onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'multiple';">
                     </div>
                     {% endif %}
+                    {% endblock %}    
+                    
                 </form>
             </nav>
             {% endblock %}
@@ -251,76 +254,91 @@
             {% block navpanel %}
             <!-- NAVPANEL -->
             <div class="bg-light border-none test-nav" id="navbar" aria-labelledby="TBD">
-                <div class="d-none d-lg-flex offcanvas-header p-3">
-                    <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Datasource Settings</h5>
-                    <button type="button" class="btn-close text-reset" onclick="Handler.navigator.toggleNav();" aria-label="Close"></button>
-                </div>
-                
-                <div class="d-flex d-lg-none offcanvas-header p-3">
+                <div class="position-relative">
+                    <button type="button" class="btn-close text-reset p-3 position-absolute top-0 end-0" 
+                            style="z-index: 900;"
+                            onclick="Handler.navigator.toggleNav();" aria-label="Close"></button>
                     
-                    <div class="d-flex align-items-start">
-                        <button class="border-0 rounded-circle p-2 me-2 mt-1" 
-                                style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
-                                       background-color: {{datasource.owner.profiles.properties.profile_color|default:'#0dcaf0'}} !important"
-                                data-bs-toggle="tooltip" 
-                                data-bs-placement="top" 
-                                title="Vizualized by {{ datasource.owner.get_username }}">{{ datasource.owner.get_username | first | upper}}
-                        </button>
-                        <div>
-                            <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">{{ datasource.name }}</p>
-                            <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
-                                {{ datasource.vizs.count }} vizs from {{ datasource.datastream.name }}・{{ datasource.last_cached|naturaltime|capfirst }}</p>
-                        </div>
+                    <div class="pt-1 {% if not user.is_authenticated %}d-none{% endif %}">
+                        <!-- <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Datasource Settings</h5> -->
+                        <ul class="nav nav-tabs" id="pills-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="navpane-pills-activity-tab" data-bs-toggle="pill" 
+                                        data-bs-target="#navpane-pills-activity" type="button" role="tab" aria-controls="navpane-pills-activity" aria-selected="true">Activity</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="navpane-pills-settings-tab" data-bs-toggle="pill" 
+                                        data-bs-target="#navpane-pills-settings" type="button" role="tab" aria-controls="navpane-pills-settings" aria-selected="false">Settings</button>
+                            </li>
+                        </ul>
                     </div>
-                    <button type="button" class="btn-close text-reset" onclick="Handler.navigator.toggleNav();" aria-label="Close"></button>
-                </div>
                 
-                <div class="offcanvas-body test-edit-inner small p-3" style="overflow-x: hidden;" id="switch">
-                    <div class="row row-cols-1 g-3 pb-3" id="fileInfo">
-                        <div class="col">
-                            <div class="input-group">
-                                <span class="input-group-text" id="file-name-input">Name</span>
-                                <input type="text" class="form-control" 
-                                       unicorn:model.lazy="datasource.name"
-                                       unicorn:partial.id="fileInfo" 
-                                       id="fileNameText" unicorn:key="fileNameText"
-                                       aria-label="File Name">
-                            </div>
+                
+                    <div class="tab-content" id="navpane-pills-tabContent">
+                        <div class="tab-pane fade show active position-relative" id="navpane-pills-activity" role="tabpanel" aria-labelledby="navpane-pills-activity">
+
+                            {% include 'projects/content/datasource_info_large.html' with datasource=datasource %}
+
+                            {% if datasource %}
+                            {% render_comments datasource request %}
+                            {% else %}No datasource {% endif %}
+
                         </div>
-                        <div class="col">
-                            <div class="input-group">
-                                <span class="input-group-text" id="file-description-input">About</span>    
-                                <textarea type="text" class="form-control" 
-                                       unicorn:model.lazy="datasource.description"
-                                       unicorn:partial.id="fileInfo" 
-                                       id="fileDescText" unicorn:key="fileDescText"
-                                       aria-label="File Description"/>
-                            </div>
-                            <p class="pt-2 small trefresh">Last refreshed <span class="thuman">...</span>
-                                <span class="tstamp d-none">{{datasource.last_cached|date:"c"}}</span></p>
+                        
+                        {% if user.is_authenticated %}
+                        <div class="tab-pane fade" id="navpane-pills-settings" role="tabpanel" aria-labelledby="navpane-pills-settings">
+                            <div class="offcanvas-body test-edit-inner small p-3" style="overflow-x: hidden;" id="switch">
+                                <div class="row row-cols-1 g-3 pb-3" id="fileInfo">
+                                    <div class="col">
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="file-name-input">Name</span>
+                                            <input type="text" class="form-control" 
+                                                   unicorn:model.lazy="datasource.name"
+                                                   unicorn:partial.id="fileInfo" 
+                                                   id="fileNameText" unicorn:key="fileNameText"
+                                                   aria-label="File Name">
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="input-group">
+                                            <span class="input-group-text" id="file-description-input">About</span>    
+                                            <textarea type="text" class="form-control" 
+                                                   unicorn:model.lazy="datasource.description"
+                                                   unicorn:partial.id="fileInfo" 
+                                                   id="fileDescText" unicorn:key="fileDescText"
+                                                   aria-label="File Description"/>
+                                        </div>
+                                        <p class="pt-2 small trefresh">Last refreshed <span class="thuman">...</span>
+                                            <span class="tstamp d-none">{{datasource.last_cached|date:"c"}}</span></p>
 
 
-                            <button type="button" 
-                                    class="btn btn-secondary" 
-                                    id="settings-datasource-refresh" 
-                                    unicorn:click="refreshDatasource( {{ datasource.pk }} )" 
-                                    aria-label="Refresh data">
-                                    Refresh
-                            </button>
-                            
-                            <button type="button" 
-                                    class="btn btn-danger"
-                                    id="settings-datasource-delete" 
-                                    unicorn:key="dataDeleteButton"
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#deleteDataConfirm"
-                                    aria-label="Delete data">
-                                    Delete
-                            </button>
+                                        <button type="button" 
+                                                class="btn btn-secondary" 
+                                                id="settings-datasource-refresh" 
+                                                unicorn:click="refreshDatasource( {{ datasource.pk }} )" 
+                                                aria-label="Refresh data">
+                                                Refresh
+                                        </button>
+
+                                        <button type="button" 
+                                                class="btn btn-danger"
+                                                id="settings-datasource-delete" 
+                                                unicorn:key="dataDeleteButton"
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteDataConfirm"
+                                                aria-label="Delete data">
+                                                Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
+
+                
             
             <!-- DELETE DATASOURCE MODAL -->
             <div class="modal fade yvmodal" id="deleteDataConfirm" data-bs-backdrop="static" data-bs-keyboard="false" 
