@@ -110,7 +110,7 @@ class AppView(UnicornView):
                         ip = request.META.get('REMOTE_ADDR')
                     return ip
                 
-                ItemView.objects.get_or_create(IPAddress=get_client_ip(self.request), item=self.datasource)
+                ItemView.objects.get_or_create(IPAddress=get_client_ip(self.request), datasource=self.datasource)
                 
                 
                 #if hasattr(self.datasource, 'reports'):

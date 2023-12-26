@@ -23,7 +23,6 @@ import plotly.io as pio
 from datetime import datetime
 from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
-from comment.models import Comment
 
 
 class BaseModel(models.Model):
@@ -34,7 +33,6 @@ class BaseModel(models.Model):
     hash_key = models.CharField(max_length=10, blank=True)
     history = AuditlogHistoryField()
     properties = models.JSONField(blank=True, null=True)
-    comments = GenericRelation(Comment)
     slug = models.SlugField(max_length=255)
    
     #foreign keys
@@ -208,6 +206,13 @@ class Profile(BaseModel):
         k = super(Profile, cls).extra_kwargs(*args, **kwargs)
         k.update({'properties': '["profile_color": "#ffffff"]'})
         return k
+    
+    def save(self, *args, **kwargs):
+        if 'user' in kwargs:
+            kwargs['owner'] = kwargs['user']
+        if 'user_id' in kwargs:
+            kwargs['owner_id'] = kwargs['user_id']
+        super(Profile, self).save(*args, **kwargs)
 
 class Datastream(BaseModel):
     #attrs
@@ -241,12 +246,8 @@ class Datasource(BaseModel):
     class Meta:
         default_related_name = 'datasources'
     
-    prefetch = ('vizs',)
+    prefetch = ('vizs', 'comments', 'activities', 'itemviews', )
     
-    @property
-    def views_count(self):
-        return ItemView.objects.filter(item=self).count()
-
     @classmethod
     def _fetch(cls, *args, **kwargs):
         a = pp.App(kwargs['datastream'].json)
@@ -465,9 +466,50 @@ class Report(BaseModel):
     class Meta:
         default_related_name = 'reports'
     '''
+
+class Comment(BaseModel):
+    parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
+    datasource = models.ForeignKey(Datasource, null=True, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, null=True, on_delete=models.CASCADE)
+    
+    class Meta:
+        default_related_name = 'comments'
+    
+    prefetch = ('user',)
+    
+    
 class ItemView(models.Model):
     IPAddress = models.GenericIPAddressField(default='45.243.82.169')
-    item = models.ForeignKey(Datasource, on_delete=models.CASCADE)
+    datasource = models.ForeignKey(Datasource, null=True, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, null=True, on_delete=models.CASCADE)
+    
+    class Meta:
+        default_related_name = 'itemviews'
+    
+    #prefetch = ('profile',)
+    
+class Activity(models.Model):
+    FAVORITE = 'F'
+    LIKE = 'L'
+    UP_VOTE = 'U'
+    DOWN_VOTE = 'D'
+    ACTIVITY_TYPES = (
+        (FAVORITE, 'Favorite'),
+        (LIKE, 'Like'),
+        (UP_VOTE, 'Up Vote'),
+        (DOWN_VOTE, 'Down Vote'),
+    )
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    activity_type = models.CharField(max_length=1, choices=ACTIVITY_TYPES)
+    date = models.DateTimeField(auto_now_add=True)
+    datasource = models.ForeignKey(Datasource, null=True, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, null=True, on_delete=models.CASCADE)
+    
+    class Meta:
+        default_related_name = 'activities'
+    
+    #prefetch = ('user',)
        
 auditlog.register(Datastream)
 auditlog.register(Datasource, exclude_fields=['data'])

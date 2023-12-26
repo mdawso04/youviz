@@ -4,7 +4,6 @@
 {% load analytical %}
 {% load humanize %}
 {% load socialaccount %}
-{% load comment_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -280,7 +279,6 @@
                             {% include 'projects/content/datasource_info_large.html' with datasource=datasource %}
 
                             {% if datasource %}
-                            {% render_comments datasource request %}
                             {% else %}No datasource {% endif %}
 
                         </div>

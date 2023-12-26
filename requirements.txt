@@ -8,7 +8,6 @@ django_heroku
 django-unicorn
 django-auditlog
 django-analytical
-django-comments-dab
 redis
 hiredis
 pandas-plotly==0.2.4

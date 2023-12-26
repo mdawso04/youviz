@@ -9,7 +9,7 @@
     <div>
         <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">{{ datasource.name }}</p>
         <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
-            {{ datasource.vizs.count }} vizs・{{ datasource.last_cached|naturaltime|capfirst }}・{{ datasource.views_count }} views</p>
+            {{ datasource.vizs.count }} vizs・{{ datasource.last_cached|naturaltime|capfirst }}・{{ datasource.itemviews.count }} views</p>
     </div>
     {% if stretch_link %}
     <a href="{% url 'view' pk=stretch_link.pk %}" class="stretched-link"/>
