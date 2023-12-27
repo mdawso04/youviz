@@ -11,7 +11,7 @@ import '{% static "projects/js/dayjs-with-plugins.min.js" %}';
 
 // var
 //import './qrcode.min.js';
-
+ 
 // the root object
 window.Handler = {
     js:{},
@@ -1001,19 +1001,27 @@ window.addEventListener("load", (event) => {
                 if (entry.contentBoxSize) {
                     // Firefox implements `contentBoxSize` as a single content rect, rather than an array
                     //const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
-                    var height = document.getElementById("top_nav").offsetHeight;
+                    if(Handler.top_nav_init) {
+                        var height = document.getElementById("top_nav").offsetHeight;
                     
-                    var r = document.querySelector(':root');
-                    //var rs = getComputedStyle(r);
-                    //rs.getPropertyValue('--t-nav'));
-                    r.style.setProperty('--t-nav', height + 'px');
+                        var r = document.querySelector(':root');
+                        //var rs = getComputedStyle(r);
+                        //rs.getPropertyValue('--t-nav'));
+                        r.style.setProperty('--t-nav', height + 'px');
+                    } else {
+                        Handler.top_nav_init = true;
+                    }
                 } else {
-                    var height = document.getElementById("top_nav").offsetHeight;
-                    
-                    var r = document.querySelector(':root');
-                    //var rs = getComputedStyle(r);
-                    //rs.getPropertyValue('--t-nav'));
-                    r.style.setProperty('--t-nav', height + 'px');
+                    if(Handler.top_nav_init) {
+                       var height = document.getElementById("top_nav").offsetHeight;
+
+                        var r = document.querySelector(':root');
+                        //var rs = getComputedStyle(r);
+                        //rs.getPropertyValue('--t-nav'));
+                        r.style.setProperty('--t-nav', height + 'px');
+                    } else {
+                        Handler.top_nav_init = true;
+                    }
                 }
             }
         });

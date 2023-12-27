@@ -3,6 +3,7 @@
 
 <!-- CONTENT - LIST -->
     <div class="container-fluid px-1 h-100 bg-light overflow-auto content-container" style="transition: 0.35s; padding-bottom: 160px;">
+        <script>document.querySelector(':root').style.setProperty('--t-nav', document.getElementById("top_nav").offsetHeight + 'px');</script>
         <div class="row row-cols-1 row-cols-md-4 g-2">
             {% for l in list_datasources %}
             <div class="col">
