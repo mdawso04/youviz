@@ -992,6 +992,34 @@ window.addEventListener("load", (event) => {
     }
 });
  
+
+window.addEventListener("load", (event) => {
+    var top_nav = document.getElementById("top_nav");
+    
+    let observer = new ResizeObserver(entries => {
+            for(let entry of entries) {
+                if (entry.contentBoxSize) {
+                    // Firefox implements `contentBoxSize` as a single content rect, rather than an array
+                    //const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
+                    var height = document.getElementById("top_nav").offsetHeight;
+                    
+                    var r = document.querySelector(':root');
+                    //var rs = getComputedStyle(r);
+                    //rs.getPropertyValue('--t-nav'));
+                    r.style.setProperty('--t-nav', height + 'px');
+                } else {
+                    var height = document.getElementById("top_nav").offsetHeight;
+                    
+                    var r = document.querySelector(':root');
+                    //var rs = getComputedStyle(r);
+                    //rs.getPropertyValue('--t-nav'));
+                    r.style.setProperty('--t-nav', height + 'px');
+                }
+            }
+        });
+    observer.observe(top_nav);
+});
+ 
 // sharing app link
 /*
 const shareApp = {

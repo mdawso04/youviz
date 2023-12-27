@@ -4,7 +4,12 @@
 {% block keywords %}{% if meta_object %}{{meta_object.seo.title}}{% else %}{{ block.super }}{% endif %}{% endblock %}
 {% block author %}{% if meta_object %}{{meta_object.seo.author}}{% else %}{{ block.super }}{% endif %}{% endblock %}
 
-{% block notification_area %}{% if context.mode == "user" %} {% include 'projects/content/notification_area_user.html' %}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block notification_area %}
+    {% if context.mode == "list" %} {% include 'projects/content/notification_area_list.html' %}
+    {% elif context.mode == "user" %} {% include 'projects/content/notification_area_user.html' %}
+    {% else %}{{ block.super }}
+    {% endif %}
+{% endblock %}
 
 {% block content %}
     {% if context.mode == "list" %} {% include 'projects/content/list.html' %}

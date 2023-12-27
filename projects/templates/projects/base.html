@@ -36,57 +36,59 @@
         
             {% block top_navbar %}
             <!-- TOP NAVBAR -->
-            <nav class="navbar fixed-top bg-white">
+            <nav class="navbar fixed-top bg-white border-0" id="top_nav">
                 <form class="container-fluid" action="/">
-                    <div class="input-group">
-                        <button class="btn border-0 ps-0" type="button" onclick="window.location.href='/'">
-                            <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
-                        </button>
-                        <span class="input-group-text bg-light text-secondary border-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
-                        {% block search_field %}
-                            {% include './search/base_search_field.html' %}
-                        {% endblock %}
-                        {% if user.is_authenticated %}
-                        <div class="d-flex align-items-center">
+                    <div class="row g-2 w-100 row-cols-1">
+                        <div class="col input-group">
+                            <button class="btn border-0 ps-0" type="button" onclick="window.location.href='/'">
+                                <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
+                            </button>
+                            <span class="input-group-text bg-light text-secondary border-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
+                            {% block search_field %}
+                                {% include './search/base_search_field.html' %}
+                            {% endblock %}
+                            {% if user.is_authenticated %}
+                            <div class="d-flex align-items-center">
+                                <button id="off-canvas-button" 
+                                        type="button" data-bs-toggle="offcanvas" 
+                                        data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample"
+                                        class="border-0 rounded-circle p-2 ms-2" 
+                                        style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
+                                                   background-color: {{request.user.profiles.properties.profile_color|default:'#0dcaf0'}} !important">
+                                    {{ request.user.get_username | first | upper}}
+                                </button>
+                            </div>
+                            {% else %}
                             <button id="off-canvas-button" 
                                     type="button" data-bs-toggle="offcanvas" 
                                     data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample"
-                                    class="border-0 rounded-circle p-2 ms-2" 
-                                    style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
-                                               background-color: {{request.user.profiles.properties.profile_color|default:'#0dcaf0'}} !important">
-                                {{ request.user.get_username | first | upper}}
+                                    class="btn border-0 text-secondary">
+                                <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
                             </button>
+                            {% endif %}
                         </div>
-                        {% else %}
-                        <button id="off-canvas-button" 
-                                type="button" data-bs-toggle="offcanvas" 
-                                data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample"
-                                class="btn border-0 text-secondary">
-                            <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
-                        </button>
+                        {% block notification_area %}
+                        {% if context.mode == "list" %}
+                        <div class="pt-2">
+                            <input type="submit" class="btn border-0 me-1 {% if request.GET.multiple == 'any' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
+                                   value="Any Vizs" 
+                                   onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'any';">
+                            <input type="submit" class="btn border-0 text-secondary me-1 {% if request.GET.multiple == 'multiple' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
+                                   value="Multiple Vizs" 
+                                   onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'multiple';">
+                        </div>
+                        {% elif context.mode == "new" %}
+                        <div class="pt-2">
+                            <input type="submit" class="btn border-0 me-1 {% if request.GET.multiple == 'any' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
+                                   value="Popular" 
+                                   onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'any';">
+                            <input type="submit" class="btn border-0 text-secondary me-1 {% if request.GET.multiple == 'multiple' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
+                                   value="New" 
+                                   onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'multiple';">
+                        </div>
                         {% endif %}
+                        {% endblock %}
                     </div>
-                    {% block notification_area %}
-                    {% if context.mode == "list" %}
-                    <div class="pt-2">
-                        <input type="submit" class="btn border-0 me-1 {% if request.GET.multiple == 'any' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
-                               value="Any Vizs" 
-                               onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'any';">
-                        <input type="submit" class="btn border-0 text-secondary me-1 {% if request.GET.multiple == 'multiple' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
-                               value="Multiple Vizs" 
-                               onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'multiple';">
-                    </div>
-                    {% elif context.mode == "new" %}
-                    <div class="pt-2">
-                        <input type="submit" class="btn border-0 me-1 {% if request.GET.multiple == 'any' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
-                               value="Popular" 
-                               onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'any';">
-                        <input type="submit" class="btn border-0 text-secondary me-1 {% if request.GET.multiple == 'multiple' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
-                               value="New" 
-                               onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'multiple';">
-                    </div>
-                    {% endif %}
-                    {% endblock %}    
                     
                 </form>
             </nav>
@@ -101,8 +103,7 @@
                     <h3 class="offcanvas-title" id="offcanvasExampleLabel">App Settings</h3>
                     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
-                <div class="offcanvas-body pt-0">  
-                    {{ request.user }}
+                <div class="offcanvas-body pt-0"> 
                 <!-- FILE CONTROL -->
                 {% block app_settings %}
                     {% include './content/app_settings.html' %}

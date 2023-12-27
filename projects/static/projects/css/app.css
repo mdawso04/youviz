@@ -160,6 +160,10 @@
     #bottom-navbar.dynamic {display: flex;}
 }
 
+.content-container {
+    margin-top: calc(var(--t-nav));
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
