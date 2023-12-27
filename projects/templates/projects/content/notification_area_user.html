@@ -2,11 +2,8 @@
     <button class="border-0 rounded-circle p-2 me-2 mt-1" 
             style="font-size: 0.8rem; min-height: 34px; max-height: 34px; min-width: 34px; min-width: 34px; 
                    background-color: {{user.profiles.properties.profile_color|default:'#0dcaf0'}} !important"
-            data-bs-toggle="tooltip" data-bs-placement="top" title="{{ user.get_username }}">{{ user.get_username | first | upper}}</button>
+            data-bs-toggle="tooltip" data-bs-placement="top" title="{{ user.get_username }}">{{ siteuser.get_username | first | upper}}</button>
     <div>
-        <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 1.2rem;">{{ user.username }}</p>
-        {% if user %}
-        <a href="{% url 'user' username=user.get_username %}" class="stretched-link"/>
-        {% endif %}
+        <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 1.2rem;">{{ siteuser.username }}</p>
     </div>
 </div>

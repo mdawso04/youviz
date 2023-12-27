@@ -36,7 +36,7 @@ class BaseModel(models.Model):
     slug = models.SlugField(max_length=255)
    
     #foreign keys
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     
     class Meta:
         abstract = True

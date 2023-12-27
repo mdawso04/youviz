@@ -41,7 +41,7 @@ class AppView(UnicornView):
     
     page: str = None
     
-    user: User = None
+    siteuser: User = None
     
     class Meta:
         javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'list_datasources') 
@@ -90,8 +90,8 @@ class AppView(UnicornView):
                 return #do nothing
             
             elif self.context['mode'] == 'user':
-                self.user = User.objects.get(username=self.context['username'])
-                self.list_datasources = Datasource.list(owner=self.user.pk)
+                self.siteuser = User.objects.get(username=self.context['username'])
+                self.list_datasources = Datasource.list(owner=self.siteuser.pk)
                 return #do nothing
             
             
