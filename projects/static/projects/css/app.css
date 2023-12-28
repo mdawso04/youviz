@@ -162,6 +162,7 @@
 
 .content-container {
     margin-top: calc(var(--t-nav));
+    transform: translateZ(0);
 }
 
 @keyframes fadeIn {
