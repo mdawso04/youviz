@@ -1,3 +1,4 @@
+{% load customfilters %}
 <div unicorn:view>
     <!-- PLOT -->
     {% with vids=viz.pk|stringformat:"s" %}
@@ -10,7 +11,7 @@
             <script type="application/json" id="youviz:data:{{vid}}">
             {"plot_data":{{plot_data|safe}}, "plot_layout":{{plot_layout|safe}}}
             </script>
-            <div id="plotBox-{{vid}}"></div>
+            <div id="plotBox-{{vid}}" class="viz-container"></div>
         </div>
     </div>
     
@@ -198,11 +199,10 @@
         <label for="floatingTextarea2{{vid}}">Memo</label>
     </div>
     {% else %}
-    <div class="position-relative pt-1" style="min-height: 120px; max-height: 120px;" onclick="Handler.navigator.toggleEdit();">
-        <button class="bg-transparent border-0 w-100 mt-2 position-absolute top-0 start-50 translate-middle">
-            <i class="bi bi-dash-lg text-black-50" style="font-size: 2rem;"></i>
-        </button>
-        {{viz.description |linebreaksbr}}
+        {% is_owner request.user viz as current_user_is_owner %} 
+        <div class="position-relative pt-1" style="min-height: 120px; max-height: 120px;" {% if current_user_is_owner %}onclick="Handler.navigator.toggleEdit();"{% endif %}>
+            {% if current_user_is_owner %}Click to edit this page. {% endif %}
+            {% if viz.description %}{{viz.description}}{% else %}No descriptoion.{% endif %}
         </div>
     {% endif %}
     {% endwith %}

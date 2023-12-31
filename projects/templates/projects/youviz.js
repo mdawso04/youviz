@@ -369,6 +369,7 @@ document.addEventListener('navToggled', (e) => {
             
             // adn nav pane
             document.getElementById("navbar").classList.toggle("open");
+            //document.getElementById("navbar_container").classList.toggle("main-content");
             //document.getElementById(e.detail.navigator.active.navElementID).classList.toggle("open");
             // is small screen call dropup, else call left panel
             break;

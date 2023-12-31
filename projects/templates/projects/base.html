@@ -40,10 +40,10 @@
                 <form class="container-fluid pe-1" action="/">
                     <div class="row g-2 w-100 row-cols-1">
                         <div class="col input-group">
-                            <button class="btn border-0 ps-0" type="button" onclick="window.location.href='/'">
+                            <button class="btn border-0 ps-0 py-0" type="button" onclick="window.location.href='/'">
                                 <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
                             </button>
-                            <span class="input-group-text bg-light text-secondary border-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
+                            <span class="input-group-text bg-light text-secondary border-0 py-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
                             {% block search_field %}
                                 {% include './search/base_search_field.html' %}
                             {% endblock %}
@@ -148,26 +148,26 @@
 
                     {% if context.mode == "list" %}
                     <button type="button" class="btn btn-light text-primary border-0" onclick=""; id="dataEditButton" disabled>
-                            <i class="bi bi-house" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Home</span></i>
+                            <i class="bi bi-house" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">Home</span></i>
                     </button>
                     {% else %}
                     <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'list' %}';" id="dataEditButton">
-                            <i class="bi bi-house" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Home</span></i>
+                            <i class="bi bi-house" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">Home</span></i>
                     </button>
                     {% endif %}
 
 
                     {% if context.mode == "app" %}
                     <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'view' pk=project.selected_datasource %}';" id="dataEditButton">
-                            <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">View</span></i>
+                            <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">View</span></i>
                     </button>
                     {% elif context.mode == "view" %}
                     <button type="button" class="btn btn-light text-primary border-0" onclick="" id="dataEditButton" disabled>
-                            <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">View</span></i>
+                            <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">View</span></i>
                     </button>
                     {% else %}
                     <button type="button" class="btn btn-light text-secondary border-0" onclick="" id="dataEditButton" disabled>
-                            <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">View</span></i>
+                            <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">View</span></i>
                     </button>
                     {% endif %}
 
@@ -175,15 +175,15 @@
                     {% if user.is_authenticated %}
                         {% if context.mode == "list" %}
                         <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'new' %}?o=datamenu';" id="newVizListButton">
-                                <i class="bi bi-plus-circle" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">New</span></i>
+                                <i class="bi bi-plus-circle" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">New</span></i>
                         </button>
                         {% elif context.mode == "view" %}
                         <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'new' %}?o=vizmenu&datasource={{datasource.pk}}';" id="newVizButton">
-                                <i class="bi bi-plus-circle" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">New</span></i>
+                                <i class="bi bi-plus-circle" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">New</span></i>
                         </button>
                         {% elif context.mode == "new" %}
                         <button type="button" class="btn btn-light text-secondary border-0" onclick="history.back()" id="newVizListButton">
-                                <i class="bi bi-x-circle" style="font-size: 1.5rem; min-width: 70px;"><span class="d-block" style="font-size: 0.8rem;">Cancel</span></i>
+                                <i class="bi bi-x-circle" style="font-size: 1.5rem; min-width: 70px;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">Cancel</span></i>
                         </button>
                         {% endif %}
                     {% else %}
@@ -191,7 +191,7 @@
                         <form class="d-inline" action="{% provider_login_url 'google' %}" method="post">
                             {% csrf_token %}
                             <button class="btn btn-light text-secondary border-0" type="submit">
-                                <i class="bi bi-google" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem;">Signin</span></i>
+                                <i class="bi bi-google" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">Signin</span></i>
                             </button>
                         </form>
                         <!-- Allauth button ends here -->
@@ -278,10 +278,8 @@
                     <div class="tab-content" id="navpane-pills-tabContent">
                         <div class="tab-pane fade show active position-relative" id="navpane-pills-activity" role="tabpanel" aria-labelledby="navpane-pills-activity">
 
-                            {% include 'projects/content/datasource_info_large.html' with datasource=datasource %}
-
-                            {% if datasource %}
-                            {% else %}No datasource {% endif %}
+                            <div>This is for the detailed viz page</div>
+                            <div>This is for the comments page</div>
 
                         </div>
                         

@@ -5,9 +5,10 @@
     --edit-transition: .35s;
     --t-nav: 56px;
     --b-nav: 200px;
-    --viz-area: 450px;
+    --viz-area: 350px;
     --t-nav-viz-area: calc(var(--t-nav) + var(--viz-area));
     --mid-area: calc(100vh - var(--t-nav) - var(--b-nav));
+    --non-t-nav-viz-area: calc(100vh - var(--t-nav-viz-area) - var(--b-nav));
     --e-head: 62px;
     
     /* edit dimensions on small devices */
@@ -165,6 +166,19 @@
     padding-bottom: calc(var(--b-nav));
     /* webkit repaint hack */
     transform: translateZ(0);
+}
+
+.viz-container {
+    min-height: calc(var(--viz-area)); 
+    max-height: calc(var(--viz-area)); 
+}
+
+.viz-info-panel {
+    min-height: var(--non-t-nav-viz-area); 
+    max-height: var(--non-t-nav-viz-area); 
+    position: fixed; 
+    bottom: 86px; 
+    left: 0px; 
 }
 
 @keyframes fadeIn {

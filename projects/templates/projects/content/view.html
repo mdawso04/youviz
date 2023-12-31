@@ -1,11 +1,8 @@
 {% load humanize %}
 <!-- CONTENT - VIEW -->
     <!-- DATASOURCE INFO -->
-    <div class="card-body p-2 bg-light vw-100" style="position: fixed; bottom: 86px; left: 0px;" onclick="Handler.navigator.toggleNav();">
-        <button class="bg-transparent border-0 w-100 mt-2 position-absolute top-0 start-50 translate-middle">
-            <i class="bi bi-dash-lg text-black-50" style="font-size: 2rem;"></i>
-        </button>
-        {% include 'projects/content/datasource_info_small.html' with datasource=datasource %}
+    <div class="card-body p-2 bg-light vw-100 viz-info-panel">
+        {% include 'projects/content/datasource_info_large.html' with datasource=datasource %}
     </div>
     
     <div class="row h-100 pt-5 mt-4">

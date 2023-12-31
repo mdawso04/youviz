@@ -10,3 +10,7 @@ def divide(value, arg):
         return int(value) / int(arg)
     except (ValueError, ZeroDivisionError):
         return None
+    
+@register.simple_tag
+def is_owner(user, obj):
+    return obj.is_owner(user=user)

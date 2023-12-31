@@ -148,6 +148,14 @@ class BaseModel(models.Model):
             instance = cls.item(int(kwargs['pk']))
         
         super(BaseModel, instance).delete()
+        
+    def is_owner(self, *args, **kwargs):
+        if 'user' in kwargs:
+            user = kwargs['user']
+        else:
+            user = User.objects.get(pk=int(kwargs['user_id']))
+        return self.owner.pk == user.pk
+    
     
     '''
     def refresh_from_db(self, *args, **kwargs):
@@ -282,6 +290,7 @@ class Datasource(BaseModel):
         return self.datatable['data']
     
     '''
+
     @classmethod
     def from_datastream(cls, owner, pk):
         d=Datastream.objects.filter(pk=pk).last()

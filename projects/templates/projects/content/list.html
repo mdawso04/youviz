@@ -21,7 +21,32 @@
                     {% include 'projects/content/datasource_info_small.html' with datasource=l stretch_link=l %}
                 </div>
             </div>
+            
+            {% if forloop.counter|divisibleby:3 %}
+            <div class="col">
+                <div class="card rounded-3 p-1 position-relative" 
+                     style="border-color: rgb(0, 0, 0, 0.07); opacity: 0; animation: fadeIn 1s ease-in both; animation-delay: {{ forloop.counter|divide:3 }}s;">
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5028606190225422"
+                         crossorigin="anonymous"></script>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-format="fluid"
+                         data-ad-layout-key="-6t+ed+2i-1n-4w"
+                         data-ad-client="ca-pub-5028606190225422"
+                         data-ad-slot="3842171925"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                    {% endif %}
+                </div>
+            </div>
+            
             {% endfor %}
             <div style="height: 40px;"></div>
         </div>
     </div>
+
+
+
+
+
