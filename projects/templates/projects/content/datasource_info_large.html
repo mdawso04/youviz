@@ -1,7 +1,9 @@
 {% load humanize %}
 {% load customfilters %}
 
-{% include 'projects/content/ad_viz_info.html' %}
+{% if ad and ad.html %}
+    {% include 'projects/content/ad_viz_info.html' %}
+{% endif %}
 
 <div class="d-flex align-items-start px-1 my-1 position-relative" style="min-height: 60px; background-color: beige;" onclick="Handler.navigator.toggleNav();">
     <div>

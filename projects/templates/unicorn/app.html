@@ -9,7 +9,8 @@
 {% endblock %}
 
 {% block content %}
-    {% if context.mode == "list" %} {% include 'projects/content/list.html' %}
+    {% if context.mode == "list" %} 
+        {% include 'projects/content/list.html' %}
     {% elif context.mode == "user" %} 
         {% include 'projects/content/user.html' %}
     {% elif context.mode == "new" %}

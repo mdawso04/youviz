@@ -45,6 +45,8 @@ class AppView(UnicornView):
     
     notification: Notification = None
     
+    ad: Notification = None
+    
     class Meta:
         javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'list_datasources') 
     
@@ -95,7 +97,7 @@ class AppView(UnicornView):
             elif self.context['mode'] == 'user':
                 self.siteuser = User.objects.get(username=self.context['username'])
                 self.list_datasources = Datasource.list(owner=self.siteuser.pk)
-                self.notification = None
+                self.notification = Notification.objects.filter(position=Notification.USER).last()
                 return #do nothing
             
             
@@ -104,6 +106,7 @@ class AppView(UnicornView):
                 if self.context['pk']:
                     self.datasource = Datasource.item(self.context['pk'])
                     self.meta_object = self.datasource
+                    self.ad = Notification.objects.filter(position=Notification.VIEW_AD).last()
                 
                 
                 def get_client_ip(request):

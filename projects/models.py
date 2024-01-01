@@ -539,9 +539,11 @@ class Notification(models.Model):
         default=INFO)
     LIST = "LIST"
     VIEW = "VIEW"
+    VIEW_AD = "VAD"
     POSITION_CHOICES = (
         (LIST, "List"),
         (VIEW, "View"),
+        (VIEW_AD, "View ad"),
     )
     position = models.CharField(
         max_length=4,
