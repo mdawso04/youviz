@@ -6,7 +6,7 @@
     --t-nav: 56px;
     --b-nav: 88px;
     --viz-area: 350px;
-    --viz-text-area: 120px;
+    --viz-text-area: 70px;
     --t-nav-viz-area: calc(var(--t-nav) + var(--viz-area));
     --mid-area: calc(100vh - var(--t-nav) - var(--b-nav));
     --non-t-nav-viz-area: calc(100vh - var(--t-nav-viz-area) - var(--b-nav) - var(--viz-text-area));
