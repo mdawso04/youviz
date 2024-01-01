@@ -200,7 +200,7 @@
     </div>
     {% else %}
         {% is_owner request.user viz as current_user_is_owner %} 
-        <div class="position-relative pt-1" style="min-height: 120px; max-height: 120px;" {% if current_user_is_owner %}onclick="Handler.navigator.toggleEdit();"{% endif %}>
+        <div class="position-relative pt-1" style="font-size: 0.8rem; min-height: 120px; max-height: 120px;" {% if current_user_is_owner %}onclick="Handler.navigator.toggleEdit();"{% endif %}>
             {% if current_user_is_owner %}Click to edit this page. {% endif %}
             {% if viz.description %}{{viz.description}}{% else %}No descriptoion.{% endif %}
         </div>
