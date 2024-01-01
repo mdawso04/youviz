@@ -1029,6 +1029,44 @@ window.addEventListener("load", (event) => {
     observer.observe(top_nav);
 });
  
+/*
+window.addEventListener("load", (event) => {
+    var midPanel = document.getElementById("midPanel")
+ 
+    let observer = new ResizeObserver(entries => {
+            for(let entry of entries) {
+                if (entry.contentBoxSize) {
+                    // Firefox implements `contentBoxSize` as a single content rect, rather than an array
+                    //const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
+                    if(Handler.datasource_info_init) {
+                        var width = document.getElementById("midPanel").offsetWidth;
+                    
+                        //var r = document.querySelector(':root');
+                        //var rs = getComputedStyle(r);
+                        //rs.getPropertyValue('--t-nav'));
+                        //r.style.setProperty('--t-nav', height + 'px');
+                        document.querySelector(".viz-info-panel").style.setProperty('width', width + 'px');
+                    } else {
+                        Handler.datasource_info_init = true;
+                    }
+                } else {
+                    if(Handler.top_nav_init) {
+                       var width = document.getElementById("midPanel").offsetWidth;
+
+                        //var r = document.querySelector(':root');
+                        //var rs = getComputedStyle(r);
+                        //rs.getPropertyValue('--t-nav'));
+                        document.querySelector(".viz-info-panel").style.setProperty('width', width + 'px!important;');
+                    } else {
+                        Handler.datasource_info_init = true;
+                    }
+                }
+            }
+        });
+    observer.observe(midPanel);
+});
+*/
+ 
 // sharing app link
 /*
 const shareApp = {

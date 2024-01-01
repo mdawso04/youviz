@@ -519,6 +519,34 @@ class Activity(models.Model):
         default_related_name = 'activities'
     
     #prefetch = ('user',)
+    
+class Notification(models.Model):
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    title = models.CharField(max_length=100, blank=True, default='New notification title')
+    message = models.CharField(max_length=200, blank=True, default='New notification message')
+    html = models.CharField(max_length=1000, blank=True)
+    dismissable = models.BooleanField(default=True)
+    INFO = "INF"
+    DANGER = "DAN"
+    CATEGORY_CHOICES = (
+        (INFO, "Info"),
+        (DANGER, "Danger"),
+    )
+    category = models.CharField(
+        max_length=3,
+        choices=CATEGORY_CHOICES,
+        default=INFO)
+    LIST = "LIST"
+    VIEW = "VIEW"
+    POSITION_CHOICES = (
+        (LIST, "List"),
+        (VIEW, "View"),
+    )
+    position = models.CharField(
+        max_length=4,
+        choices=POSITION_CHOICES,
+        default=LIST)
        
 auditlog.register(Datastream)
 auditlog.register(Datasource, exclude_fields=['data'])

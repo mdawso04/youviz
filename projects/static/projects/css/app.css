@@ -4,11 +4,12 @@
     --edit-z-index: 1040;
     --edit-transition: .35s;
     --t-nav: 56px;
-    --b-nav: 200px;
+    --b-nav: 88px;
     --viz-area: 350px;
+    --viz-text-area: 120px;
     --t-nav-viz-area: calc(var(--t-nav) + var(--viz-area));
     --mid-area: calc(100vh - var(--t-nav) - var(--b-nav));
-    --non-t-nav-viz-area: calc(100vh - var(--t-nav-viz-area) - var(--b-nav));
+    --non-t-nav-viz-area: calc(100vh - var(--t-nav-viz-area) - var(--b-nav) - var(--viz-text-area));
     --e-head: 62px;
     
     /* edit dimensions on small devices */
@@ -177,7 +178,7 @@
     min-height: var(--non-t-nav-viz-area); 
     max-height: var(--non-t-nav-viz-area); 
     position: fixed; 
-    bottom: 86px; 
+    bottom: var(--b-nav); 
     left: 0px; 
 }
 

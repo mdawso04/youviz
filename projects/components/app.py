@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
-from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView
+from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification
 from django.contrib.auth.models import User
 
 from django.core.files.base import ContentFile
@@ -42,6 +42,8 @@ class AppView(UnicornView):
     page: str = None
     
     siteuser: User = None
+    
+    notification: Notification = None
     
     class Meta:
         javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'list_datasources') 
@@ -87,11 +89,13 @@ class AppView(UnicornView):
             
             if self.context['mode'] == 'list':
                 self.list_datasources = Datasource.list(query=self.context['query'])
+                self.notification = Notification.objects.filter(position=Notification.LIST).last()
                 return #do nothing
             
             elif self.context['mode'] == 'user':
                 self.siteuser = User.objects.get(username=self.context['username'])
                 self.list_datasources = Datasource.list(owner=self.siteuser.pk)
+                self.notification = None
                 return #do nothing
             
             
