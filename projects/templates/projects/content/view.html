@@ -1,9 +1,7 @@
 {% load humanize %}
 <!-- CONTENT - VIEW -->
     <!-- DATASOURCE INFO -->
-    <div class="card-body p-2 bg-light vw-100 viz-info-panel">
-        {% include 'projects/content/datasource_info_large.html' with datasource=datasource %}
-    </div>
+    {% include 'projects/content/datasource_info_large.html' with datasource=datasource %}
     
     <div class="row h-100 pt-5 mt-4">
         <div class="col d-flex">

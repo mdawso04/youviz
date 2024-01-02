@@ -138,6 +138,7 @@
     position: fixed; 
     bottom: var(--bottom-nav); 
     left: 0px; 
+    border-top: 1px solid #F8F9FA;
 }
 
 .viz-info-panel .notification {
@@ -145,6 +146,16 @@
     font-size: 0.8rem;
     min-height: 50px; 
     max-height: 50px; 
+}
+
+.viz-info-panel .details {
+    min-height: 60px; 
+    max-height: 60px; 
+}
+
+.viz-info-panel .gallery {
+    min-height: 40px; 
+    max-height: 40px; 
 }
 
 .viz-info-panel .comments {
