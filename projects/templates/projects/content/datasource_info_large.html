@@ -1,14 +1,14 @@
 {% load humanize %}
 {% load customfilters %}
 
-<div class="card-body p-1 bg-white vw-100 viz-info-panel">
+<div class="card-body p-2 bg-white vw-100 viz-info-panel">
     {% if ad and ad.html %}
-        <div class="notification p-1 mb-1 rounded-3 bg-light" style="">
+        <div class="notification p-2 mb-2 rounded-3 bg-light" style="">
             {% include 'projects/content/ad_viz_info.html' %}
         </div>
     {% endif %}
 
-    <div class="details mb-1 d-flex align-items-start p-1 position-relative rounded-3 bg-light" style="" onclick="Handler.navigator.toggleNav();">
+    <div class="details mb-2 d-flex align-items-start p-2 position-relative rounded-3 bg-light" style="" onclick="Handler.navigator.toggleNav();">
         <div>
             <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 1rem;">{{ datasource.name }}</p>
             <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
@@ -16,25 +16,25 @@
         </div>
     </div>
 
-    <div class="gallery mb-1 d-flex align-items-center p-1 position-relative rounded-3 bg-light" style="">
+    <div class="gallery mb-2 d-flex align-items-center p-2 position-relative rounded-3 bg-light" style="">
         <button class="border-0 rounded-circle p-2 me-2 mt-1" 
                 style="font-size: 0.7rem; min-height: 30px; max-height: 30px; min-width: 30px; min-width: 30px; 
                        background-color: {{datasource.owner.profiles.properties.profile_color|default:'#0dcaf0'}} !important"
                 data-bs-toggle="tooltip" data-bs-placement="top" title="Vizualized by {{ datasource.owner.get_username }}">{{ datasource.owner.get_username | first | upper}}</button>
         <div>
-            <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 1.0rem;">{{ datasource.owner.username }}</p>
-            {% if datasource %}
+            <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 1.0rem;">{{ datasource.owner.username }} 
+                <span class="text-secondary text-decoration-none" style="font-size: 0.8rem;">27 vizs</span>
+            </p>
             <a href="{% url 'user' datasource.owner.get_username %}" class="stretched-link"/>
-            {% endif %}
         </div>
     </div>
 
-    <div class="comments mb-1 p-1 position-relative rounded-3 bg-light" style="" onclick="Handler.navigator.toggleNav();">
+    <div class="comments mb-2 p-2 position-relative rounded-3 bg-light" style="" onclick="Handler.navigator.toggleNav();">
         <div class="d-block fw-bold" style="" onclick="">
             Comments
         </div>
         <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
-        Lorem ipsum
+        Lorem ipsum. Lorem ipsum.
         </p>
     </div>
 </div>
