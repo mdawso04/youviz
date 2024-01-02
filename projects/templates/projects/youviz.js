@@ -995,7 +995,7 @@ window.addEventListener("load", (event) => {
  
 
 window.addEventListener("load", (event) => {
-    var top_nav = document.getElementById("top_nav");
+    var top_nav = document.getElementById("top-nav");
     
     let observer = new ResizeObserver(entries => {
             for(let entry of entries) {
@@ -1003,23 +1003,23 @@ window.addEventListener("load", (event) => {
                     // Firefox implements `contentBoxSize` as a single content rect, rather than an array
                     //const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
                     if(Handler.top_nav_init) {
-                        var height = document.getElementById("top_nav").offsetHeight;
+                        var height = document.getElementById("top-nav").offsetHeight;
                     
                         var r = document.querySelector(':root');
                         //var rs = getComputedStyle(r);
                         //rs.getPropertyValue('--t-nav'));
-                        r.style.setProperty('--t-nav', height + 'px');
+                        r.style.setProperty('--top-nav', height + 'px');
                     } else {
                         Handler.top_nav_init = true;
                     }
                 } else {
                     if(Handler.top_nav_init) {
-                       var height = document.getElementById("top_nav").offsetHeight;
+                       var height = document.getElementById("top-nav").offsetHeight;
 
                         var r = document.querySelector(':root');
                         //var rs = getComputedStyle(r);
                         //rs.getPropertyValue('--t-nav'));
-                        r.style.setProperty('--t-nav', height + 'px');
+                        r.style.setProperty('--top-nav', height + 'px');
                     } else {
                         Handler.top_nav_init = true;
                     }

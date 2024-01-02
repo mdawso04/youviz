@@ -2,7 +2,7 @@
 {% load customfilters %}
 
 {% if ad and ad.html %}
-    <div class="" style="min-height: 50px; max-height: 50px;  font-size: 0.8rem;">
+    <div class="notification" style="">
         {% include 'projects/content/ad_viz_info.html' %}
     </div>
 {% endif %}
@@ -28,7 +28,7 @@
     </div>
 </div>
 
-<div class="px-1 position-relative rounded-3 bg-white" style="min-height: 50px; background-color: pink; font-size: 0.8rem;" onclick="Handler.navigator.toggleNav();">
+<div class="px-1 position-relative rounded-3 bg-white comments" style="" onclick="Handler.navigator.toggleNav();">
     <div class="d-block fw-bold" style="" onclick="">
         Comments
     </div>
