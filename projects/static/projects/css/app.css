@@ -175,8 +175,8 @@
 }
 
 .viz-info-panel {
-    min-height: var(--non-t-nav-viz-area); 
-    max-height: var(--non-t-nav-viz-area); 
+    min-height: 220px; 
+    max-height: 220px; 
     position: fixed; 
     bottom: var(--b-nav); 
     left: 0px; 
