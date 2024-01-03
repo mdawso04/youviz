@@ -72,7 +72,7 @@ INSTALLED_APPS = [
     'analytical',
     #'debug_toolbar',
     'django_unicorn',
-    'django_sass',
+    #'django_sass',
     'projects',
 ]
 
