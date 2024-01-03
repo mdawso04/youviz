@@ -12,6 +12,9 @@
             {"plot_data":{{plot_data|safe}}, "plot_layout":{{plot_layout|safe}}}
             </script>
             <div id="plotBox-{{vid}}" class="viz-container"></div>
+            <button class="bg-transparent border-0 position-absolute bottom-0 start-0 translate-middle ms-2" style="z-index: 20000;" onclick="alert('hi');">
+                <i class="bi bi-box-arrow-up-right text-black-50" style="font-size: 1.2rem;"></i>
+            </button>
         </div>
     </div>
     
@@ -201,7 +204,6 @@
     {% else %}
         {% is_owner request.user viz as current_user_is_owner %} 
         <div class="position-relative pt-1 viz-text-area" style="font-size: 0.8rem;" {% if current_user_is_owner %}onclick="Handler.navigator.toggleEdit();"{% endif %}>
-            {% if current_user_is_owner %}Click to edit this page. {% endif %}
             {% if viz.description %}{{viz.description}}{% else %}No descriptoion.{% endif %}
         </div>
     {% endif %}

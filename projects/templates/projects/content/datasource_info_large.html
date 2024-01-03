@@ -14,6 +14,9 @@
             <p class="text-secondary text-decoration-none" style="font-size: 0.7rem;">
                 {{ datasource.vizs.count }} vizs・{{ datasource.last_cached|naturaltime|capfirst }}・{{ datasource.itemviews.count }} views</p>
         </div>
+        <button class="bg-transparent border-0 mx-2 position-absolute top-0 end-0" style="z-index: 20000;" onclick="alert('hi');">
+            <i class="bi bi-bookmark text-black-50" style="font-size: 1.1rem;"></i>
+        </button>
     </div>
 
     <div class="gallery mb-2 d-flex align-items-center p-2 position-relative rounded-3 bg-light" style="">
@@ -28,13 +31,13 @@
             <a href="{% url 'user' datasource.owner.get_username %}" class="stretched-link"/>
         </div>
     </div>
-
+    
     <div class="comments mb-2 p-2 pt-1 position-relative rounded-3 bg-light" style="" onclick="Handler.navigator.toggleNav();">
         <div class="d-block fw-bold" style="" onclick="">
             Comments
         </div>
         <p class="text-secondary text-decoration-none px-1" style="font-size: 0.7rem;">
-        Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum.Lorem ipsum. Lorem ipsum.
+        {% if datasource.comments.count > 0 %}{{ datasource.comments.last }}{% else %} No comments yet {% endif %}
         </p>
     </div>
 </div>

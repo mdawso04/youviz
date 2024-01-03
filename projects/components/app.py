@@ -92,6 +92,7 @@ class AppView(UnicornView):
             if self.context['mode'] == 'list':
                 self.list_datasources = Datasource.list(query=self.context['query'])
                 self.notification = Notification.objects.filter(position=Notification.LIST).last()
+                self.ad = Notification.objects.filter(position=Notification.LIST_AD).last()
                 return #do nothing
             
             elif self.context['mode'] == 'user':
@@ -107,7 +108,6 @@ class AppView(UnicornView):
                     self.datasource = Datasource.item(self.context['pk'])
                     self.meta_object = self.datasource
                     self.ad = Notification.objects.filter(position=Notification.VIEW_AD).last()
-                
                 
                 def get_client_ip(request):
                     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')

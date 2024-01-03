@@ -254,7 +254,7 @@ class Datasource(BaseModel):
     class Meta:
         default_related_name = 'datasources'
     
-    prefetch = ('vizs', 'comments', 'activities', 'itemviews', )
+    prefetch = ('vizs', 'comments', 'activities', 'itemviews', 'comments', )
     
     @classmethod
     def _fetch(cls, *args, **kwargs):
@@ -538,10 +538,12 @@ class Notification(models.Model):
         choices=CATEGORY_CHOICES,
         default=INFO)
     LIST = "LIST"
+    LIST_AD = "LAD"
     VIEW = "VIEW"
     VIEW_AD = "VAD"
     POSITION_CHOICES = (
         (LIST, "List"),
+        (LIST_AD, "List Ad"),
         (VIEW, "View"),
         (VIEW_AD, "View ad"),
     )
