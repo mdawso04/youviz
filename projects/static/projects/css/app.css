@@ -149,13 +149,13 @@
 }
 
 .viz-info-panel .details {
-    min-height: 80px; 
-    max-height: 80px; 
+    min-height: 90px; 
+    max-height: 90px; 
 }
 
 .viz-info-panel .gallery {
-    min-height: 40px; 
-    max-height: 40px; 
+    min-height: 50px; 
+    max-height: 50px; 
 }
 
 .viz-info-panel .comments {
@@ -236,8 +236,8 @@
     /* content calc */
 
     .viz-info-panel {
-        min-height: 266px; 
-        max-height: 266px; 
+        min-height: 230px; 
+        max-height: 230px; 
         position: fixed; 
         bottom: var(--bottom-nav); 
         left: 0px; 
