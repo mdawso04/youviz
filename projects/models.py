@@ -94,6 +94,9 @@ class BaseModel(models.Model):
     def save(self, *args, **kwargs):
         self.hash_key = self._createHash()
         self.slug = slugify(self.name)
+        if not self.properties:
+            if not 'properties' in kwargs:
+                self.properties = {}
         super(BaseModel, self).save(*args, **kwargs)
         
     @classmethod
@@ -209,6 +212,8 @@ class Profile(BaseModel):
     def __str__(self):
         return f'{self.user.username} Profile'
     
+    default_profile_properties = {'profile_color': '#93e3fd',}
+    
     @classmethod
     def extra_kwargs(cls, *args, **kwargs):
         k = super(Profile, cls).extra_kwargs(*args, **kwargs)
@@ -220,6 +225,8 @@ class Profile(BaseModel):
             kwargs['owner'] = kwargs['user']
         if 'user_id' in kwargs:
             kwargs['owner_id'] = kwargs['user_id']
+        if not self.properties:
+            self.properties = self.default_profile_properties
         super(Profile, self).save(*args, **kwargs)
 
 class Datastream(BaseModel):
@@ -525,13 +532,16 @@ class Notification(models.Model):
     end_date = models.DateTimeField()
     title = models.CharField(max_length=100, blank=True, default='New notification title')
     message = models.CharField(max_length=200, blank=True, default='New notification message')
+    instructions = models.CharField(max_length=100, blank=True, default='New notification instructions')
     html = models.CharField(max_length=1000, blank=True)
     dismissable = models.BooleanField(default=True)
     INFO = "INF"
     DANGER = "DAN"
+    NONE = "NON"
     CATEGORY_CHOICES = (
         (INFO, "Info"),
         (DANGER, "Danger"),
+        (NONE, "None"),
     )
     category = models.CharField(
         max_length=3,
@@ -541,11 +551,15 @@ class Notification(models.Model):
     LIST_AD = "LAD"
     VIEW = "VIEW"
     VIEW_AD = "VAD"
+    USER = "USER"
+    USER_AD = "UAD"
     POSITION_CHOICES = (
         (LIST, "List"),
         (LIST_AD, "List Ad"),
         (VIEW, "View"),
         (VIEW_AD, "View ad"),
+        (USER, "User"),
+        (USER_AD, "User ad"),
     )
     position = models.CharField(
         max_length=4,

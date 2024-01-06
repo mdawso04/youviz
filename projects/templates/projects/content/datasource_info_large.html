@@ -8,14 +8,14 @@
         </div>
     {% endif %}
 
-    <div class="details mb-2 d-flex align-items-start p-3 pt-2 position-relative rounded-3 bg-light" style="" onclick="Handler.navigator.toggleNav();">
+    <div class="details mb-2 d-flex align-items-start p-3 pt-2 pe-5 position-relative rounded-3 bg-light" style="" onclick="Handler.navigator.toggleNav();">
         <div>
             <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 1rem;">{{ datasource.name }}</p>
             <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
                 {{ datasource.vizs.count }} vizs・{{ datasource.last_cached|naturaltime|capfirst }}・{{ datasource.itemviews.count }} views</p>
         </div>
-        <button class="bg-transparent border-0 m-2 position-absolute bottom-0 end-0" style="z-index: 20000;" onclick="alert('hi');">
-            <i class="bi bi-bookmark text-black-50" style="font-size: 1.1rem;"></i>
+        <button class="bg-transparent border-0 m-2 position-absolute top-0 end-0" style="z-index: 20000;" onclick="alert('hi');">
+            <i class="bi bi-bookmark text-black-50" style="font-size: 1.5rem;"></i>
         </button>
     </div>
 

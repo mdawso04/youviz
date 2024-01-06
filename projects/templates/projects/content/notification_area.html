@@ -3,14 +3,17 @@
 {% else %}
 <div class="alert 
             {% if notification.category == 'INF' %}alert-info
-            {% elif notification.category == 'DAN' %}alert-danger{% endif %}
+            {% elif notification.category == 'DAN' %}alert-danger
+            {% elif notification.category == 'NON' %}alert-light{% endif %}
             {% if notification.dismissable %}alert-dismissible fade show {% endif %}
             mb-1" 
      role="alert">
   <h4 class="alert-heading">{{ notification.title }}</h4>
   <p>{{ notification.message }}</p>
+  {% if notification.instructions %}
   <hr>
-  <p class="mb-0">Hide this and all other user hints for me.</p>
+  <p class="mb-0">{{ notification.instructions }}</p>
+  {% endif %}
     {% if notification.dismissable %}
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     {% endif %}

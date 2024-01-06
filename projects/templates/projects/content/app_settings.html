@@ -75,20 +75,46 @@
     <hr class="my-4"/>
     
     <!-- SUPPORT -->
-    <div class="row row-cols-auto g-3 pb-3">
+    <div class="row row-cols-1 g-3 pb-3">
         <div class="col">
-            <h6 class="card-subtitle mb-3 text-muted">Preferences</h6>  
+            <h6 class="card-subtitle mb-3 text-muted">Profile</h6>  
         </div>
     </div>
-    <div class="row row-cols-auto g-3 pb-3">
+    <div class="row row-cols-1 g-3 pb-3">
         <div class="col">
-            <label for="exampleColorInput" class="form-label">Profile color</label>
+            <div class="input-group">
+                <span class="input-group-text" id="profile-name-label">Name</span>
+                <input class="form-control" 
+                       unicorn:model.lazy="request.user.profiles.name"
+                       id="profile-name-input" unicorn:key="profile-name-input"
+                       unicorn:partial.key="profile-name-input"
+                       aria-label="Profile Name"/>
+            </div>
+        </div>
+        
+        <div class="col">
+            <div class="input-group">
+                <span class="input-group-text" id="profile-desc-label">Bio</span>
+                <textarea class="form-control" 
+                       unicorn:model.lazy="request.user.profiles.description"
+                       id="profile-desc-input" unicorn:key="profile-desc-input"
+                       unicorn:partial.key="profile-desc-input"
+                          aria-label="Profile Description"></textarea>
+            </div>
+        </div>
+        
+        <div class="col">
+            <label for="exampleColorInput" class="form-label">Color</label>
             <input type="color" class="form-control form-control-color" id="exampleColorInput" title="Choose your color"
                    unicorn:key="user-profile-color"
                    unicorn:partial.key="user-profile-color"
                    value="{{ request.user.profiles.properties.profile_color }}"
                    unicorn:model.lazy="request.user.profiles.properties.profile_color" />
         </div>
+        
+                
+        
+        
     </div>
     {% endif %}
     

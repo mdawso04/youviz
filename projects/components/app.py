@@ -48,7 +48,7 @@ class AppView(UnicornView):
     ad: Notification = None
     
     class Meta:
-        javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'list_datasources') 
+        javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'list_datasources', 'siteuser', ) 
     
     #def __init__(self, *args, **kwargs):
     #    super().__init__(**kwargs)  # calling super is required
