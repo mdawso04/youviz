@@ -5,12 +5,10 @@
 {% block author %}{% if meta_object %}{{meta_object.seo.author}}{% else %}{{ block.super }}{% endif %}{% endblock %}
 
 {% block notification_area %}
-    {% if notification %}
-        {% if context.mode == "user" %} 
-            {% include 'projects/content/notification_area_user.html' %}
-        {% else %}
-            {% include 'projects/content/notification_area.html' %}
-        {% endif %}
+    {% if context.mode == "user" %} 
+        {% include 'projects/content/notification_area_user.html' %}
+    {% elif notification %}
+        {% include 'projects/content/notification_area.html' %}
     {% else %}
         {{ block.super }}    
     {% endif %}
