@@ -4,29 +4,35 @@
 {% block keywords %}{% if meta_object %}{{meta_object.seo.title}}{% else %}{{ block.super }}{% endif %}{% endblock %}
 {% block author %}{% if meta_object %}{{meta_object.seo.author}}{% else %}{{ block.super }}{% endif %}{% endblock %}
 
-{% block notification_area %}
-    {% if context.mode == "user" %} 
-        {% include 'projects/content/notification_area_user.html' %}
-    {% elif notification %}
-        {% include 'projects/content/notification_area.html' %}
-    {% else %}
-        {{ block.super }}    
-    {% endif %}
+{% block top_navbar %}
+    {% include 'projects/top_navbar/top_navbar.html' %}
+{% endblock %}
+
+{% block offcanvas %}
+    {% include 'projects/offcanvas/offcanvas.html' %}
+{% endblock %}
+
+{% block bottom-navbar %}
+    {% include 'projects/bottom-navbar/bottom-navbar.html' %}
+{% endblock %}
+
+{% block navpanel %}
+    {% include 'projects/navpanel/navpanel.html' %}
 {% endblock %}
 
 {% block content %}
     {% if context.mode == "list" %} 
-        {% include 'projects/content/list.html' %}
+        {% include 'projects/content/list/list.html' %}
     {% elif context.mode == "user" %} 
-        {% include 'projects/content/user.html' %}
+        {% include 'projects/content/list/list.html' %}
     {% elif context.mode == "new" %}
-        {% if page == 'new.datamenu' %} {% include 'projects/content/new_datamenu.html' %} 
-        {% elif page == 'new.vizmenu' %} {% include 'projects/content/new_vizmenu.html' %}
-        {% elif page == 'new.datasource.complete' %} {% include 'projects/content/new_datasource_complete.html' %}
-        {% elif page == 'new.viz.complete' %} {% include 'projects/content/new_viz_complete.html' %}
+        {% if page == 'new.vizmenu' %} {% include 'projects/content/new/viz/list.html' %}
+        {% elif page == 'new.viz.complete' %} {% include 'projects/content/new/viz/new_viz_complete.html' %}
+        {% elif page == 'new.datamenu' %} {% include 'projects/content/new/data/new_datamenu.html' %} 
+        {% elif page == 'new.datasource.complete' %} {% include 'projects/content/new/data/new_datasource_complete.html' %}
         {% endif %}
     {% elif context.mode == "view" %} 
-        {% include 'projects/content/view.html' %}
-        {% include 'projects/content/payload.html' %}
+        {% include 'projects/content/view/view.html' %}
+        {% include 'projects/content/view/payload.html' %}
     {% endif %}
 {% endblock %}

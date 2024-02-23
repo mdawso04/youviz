@@ -30,6 +30,7 @@ STATIC_URL = '/static/'
 #)
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 MEDIA_ROOT= os.path.join(BASE_DIR, 'media/')
 MEDIA_URL= "/media/"
@@ -60,7 +61,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
-    'django.contrib.staticfiles',
+    #'django.contrib.staticfiles',
+    'projects.apps.ProjectsStaticFilesConfig',
     'django.contrib.humanize',
     'django.contrib.sitemaps',
     'allauth',
@@ -72,8 +74,8 @@ INSTALLED_APPS = [
     'analytical',
     #'debug_toolbar',
     'django_unicorn',
-    #'django_sass',
     'projects',
+    'django_sass',
 ]
 
 #SOCIALACCOUNT_AUTO_SIGNUP = False

@@ -29,7 +29,7 @@ class AppView(UnicornView):
     vizs: QuerySetType[Viz] = None
     #report: Report = None
     
-    list_datasources: QuerySetType[Datasource] = None
+    list_items: QuerySetType[Datasource] = None
     
     datastreams: QuerySetType[Datastream] = None
     
@@ -48,7 +48,7 @@ class AppView(UnicornView):
     ad: Notification = None
     
     class Meta:
-        javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'list_datasources', 'siteuser', ) 
+        javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'list_items', 'siteuser', ) 
     
     #def __init__(self, *args, **kwargs):
     #    super().__init__(**kwargs)  # calling super is required
@@ -90,15 +90,15 @@ class AppView(UnicornView):
             
             
             if self.context['mode'] == 'list':
-                self.list_datasources = Datasource.list(query=self.context['query'])
-                self.notification = Notification.objects.filter(position=Notification.LIST).last()
-                self.ad = Notification.objects.filter(position=Notification.LIST_AD).last()
+                self.list_items = Datasource.list(query=self.context['query'])
+                #self.notification = Notification.objects.filter(position=Notification.LIST).last()
+                #self.ad = Notification.objects.filter(position=Notification.LIST_AD).last()
                 return #do nothing
             
             elif self.context['mode'] == 'user':
                 self.siteuser = User.objects.get(username=self.context['username'])
-                self.list_datasources = Datasource.list(owner=self.siteuser.pk)
-                self.notification = Notification.objects.filter(position=Notification.USER).last()
+                self.list_items = Datasource.list(owner=self.siteuser.pk)
+                #self.notification = Notification.objects.filter(position=Notification.USER).last()
                 return #do nothing
             
             

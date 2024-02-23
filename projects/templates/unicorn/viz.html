@@ -19,7 +19,7 @@
     <div class="bg-light border-none test-edit" id="{{vid}}-edit" aria-labelledby="TBD">
         
         <div class="d-flex offcanvas-header p-3">
-            <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Viz Settings</h5>
+            <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Edit Page</h5>
             <!--<div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" id="maximize"
                        onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
@@ -38,7 +38,7 @@
             <div class="row row-cols-1 g-3 pb-3" unicorn:key="setting-row-01-{{vid}}">
                 <div class="col">
                     <!-- SELECT {{forloop.counter}} -->
-                    <div class="input-group">
+                    <div class="input-group input-group-sm">
                         <span class="input-group-text" id="viz-name-input">About</span>
                         <textarea class="form-control" 
                                unicorn:model.lazy="viz.description"
@@ -48,7 +48,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="input-group">
+                    <div class="input-group input-group-sm">
                         <span class="input-group-text" id="viz-type-select">Type</span>
                         <select class="form-select" unicorn:model="viz_settings.service.saved" 
                                 id="vizServiceSelect{{vid}}" unicorn:key="vizServiceSelect{{vid}}" 
@@ -65,7 +65,7 @@
 
                 {% for key, value in viz_settings.options.items %}
                 <div class="col">
-                    <div class="input-group">
+                    <div class="input-group input-group-sm">
                         <span class="input-group-text" id="viz-settings-{{forloop.counter0}}">{{key|title}}</span>
                         <select class="form-select" unicorn:model="viz_settings.options.{{key}}.saved" 
                                 id="data{{key|title}}Select{{vid}}" unicorn:key="data{{key|title}}Select{{vid}}" 
@@ -132,7 +132,7 @@
             <div class="row row-cols-1 g-3 pb-3" unicorn:key="filter-row-01-{{vid}}" id="filter-row-01-{{vid}}">
                 {% for d in drawings %}
                 <div class="col">
-                    <div class="input-group">
+                    <div class="input-group input-group-sm">
                         <span class="input-group-text" id="drawingAddonOne{{forloop.counter0}}">{{forloop.counter}}</span>
                         <input type="text" class="form-control" disabled>
                         <button class="btn btn-secondary" data-bs-toggle="popover"

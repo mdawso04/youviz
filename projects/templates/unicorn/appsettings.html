@@ -27,7 +27,7 @@
             </div>
             
             
-            <button type="button" class="btn btn-secondary" id="logoutButton" 
+            <button type="button" class="btn btn-secondary btn-sm" id="logoutButton" 
                     data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                 Logout
             </button>
@@ -68,7 +68,7 @@
             </form>
             <!-- Allauth button ends here -->
             {% endif %}
-            <button type="button" class="btn btn-secondary" id="refreshAppButton"
+            <button type="button" class="btn btn-secondary btn-sm" id="refreshAppButton"
                     onclick="caches.keys().then(cacheNames => {cacheNames.forEach(cacheName => {caches.delete(cacheName);});});
                              location.reload();">
                 Refresh app
@@ -87,7 +87,7 @@
     </div>
     <div class="row row-cols-auto g-3 pb-3">
         <div class="col">
-            <button type="button" class="btn btn-primary" id="settings-button-share" aria-label="Tell a Friend">
+            <button type="button" class="btn btn-primary btn-sm" id="settings-button-share" aria-label="Tell a Friend">
                     Share YouViz!
             </button>
         </div>

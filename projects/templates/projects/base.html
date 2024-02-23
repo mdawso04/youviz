@@ -17,11 +17,17 @@
         <meta name="author" content="{% block author %}{% endblock %}">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <meta name="referer" content="no-referrer-when-downgrade" />
-        <script src="/youviz_js" type="module"></script>
-        <link rel="stylesheet" href="{% static 'projects/css/bootstrap.min.css' %}"/>
-        <link rel="stylesheet" href="{% static 'projects/css/bootstrap-icons.css' %}"/>
-        <link rel="stylesheet" href="{% static 'projects/css/bootstrap-table.min.css' %}"/>
-        <link rel="stylesheet" href="{% static 'projects/css/app.css' %}"/>
+        <script defer="defer" src="{% static 'projects/dist/runtime.js' %}"></script>
+        <script defer="defer" src="{% static 'projects/dist/vendors.js' %}"></script>
+        <script defer="defer" src="{% static 'projects/dist/main.js' %}"></script>
+        <link rel="stylesheet" href="{% static 'projects/dist/main.css' %}"/>
+        
+        <!--<script src="/youviz_js" type="module"></script>-->
+        <!--<link rel="stylesheet" href="{% static 'projects/css/bootstrap.min.css' %}"/>-->
+        <!--<link rel="stylesheet" href="{% static 'projects/css/app.css' %}"/>-->
+        <!--<link rel="stylesheet" href="{% static 'projects/css/projects.css' %}"/>-->
+        <!--<link rel="stylesheet" href="{% static 'projects/src/css/bootstrap-icons.css' %}"/>-->
+        <!--<link rel="stylesheet" href="{% static 'projects/css/bootstrap-table.min.css' %}"/>-->
         {% progressive_web_app_meta %}
         {% unicorn_scripts %}
         <style>.dropdown-toggle.no-arrow::after {content: none;}</style>
@@ -32,356 +38,23 @@
         {% analytical_body_top %}
         {% csrf_token %}
         
-        <div unicorn:view class="container-fluid vh-100 p-0 overflow-hidden" id="appTop">
+        <div unicorn:view class="app-top" id="appTop">
         
             {% block top_navbar %}
-            <!-- TOP NAVBAR -->
-            <nav class="navbar fixed-top bg-white border-0" id="top-nav">
-                <form class="container-fluid pe-1" action="/">
-                    <div class="row g-2 w-100 row-cols-1">
-                        <div class="col input-group">
-                            <button class="btn border-0 ps-0 py-0" type="button" onclick="window.location.href='/'">
-                                <img src="/static/projects/img/icons/yvlogo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
-                            </button>
-                            <span class="input-group-text bg-light text-secondary border-0 py-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
-                            {% block search_field %}
-                                {% include './search/base_search_field.html' %}
-                            {% endblock %}
-                            {% if user.is_authenticated %}
-                            <div class="d-flex align-items-center">
-                                <button id="off-canvas-button" 
-                                        type="button" data-bs-toggle="offcanvas" 
-                                        data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample"
-                                        class="border-0 rounded-circle p-2 ms-2" 
-                                        style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
-                                                   background-color: {{request.user.profiles.properties.profile_color|default:'#0dcaf0'}} !important">
-                                    {{ request.user.get_username | first | upper}}
-                                </button>
-                            </div>
-                            {% else %}
-                            <button id="off-canvas-button" 
-                                    type="button" data-bs-toggle="offcanvas" 
-                                    data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample"
-                                    class="btn border-0 text-secondary">
-                                <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
-                            </button>
-                            {% endif %}
-                        </div>
-                        {% block notification_area %}
-                        {% if context.mode == "list" %}
-                        <div class="pt-2">
-                            <input type="submit" class="btn border-0 me-1 {% if request.GET.multiple == 'any' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
-                                   value="Any Vizs" 
-                                   onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'any';">
-                            <input type="submit" class="btn border-0 text-secondary me-1 {% if request.GET.multiple == 'multiple' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
-                                   value="Multiple Vizs" 
-                                   onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'multiple';">
-                        </div>
-                        {% elif context.mode == "new" %}
-                        <div class="pt-2">
-                            <input type="submit" class="btn border-0 me-1 {% if request.GET.multiple == 'any' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
-                                   value="Popular" 
-                                   onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'any';">
-                            <input type="submit" class="btn border-0 text-secondary me-1 {% if request.GET.multiple == 'multiple' %}bg-secondary text-white{% else %}bg-light text-secondary{% endif %}" 
-                                   value="New" 
-                                   onclick="this.classList.contains('bg-secondary') ? document.getElementById('viz_count').value = '' : document.getElementById('viz_count').value = 'multiple';">
-                        </div>
-                        {% endif %}
-                        {% endblock %}
-                    </div>
-                    
-                </form>
-            </nav>
             {% endblock %}
             
-            
             {% block offcanvas %}
-            <!-- OFFCANVAS --> 
-            <div class="offcanvas offcanvas-end" tabindex="-1" id="OFFCANVAS" aria-labelledby="offcanvasExampleLabel" 
-                 style="padding-right: calc(var(--bs-gutter-x) * .5); padding-left: calc(var(--bs-gutter-x) * .5);">
-                <div class="offcanvas-header">
-                    <h3 class="offcanvas-title" id="offcanvasExampleLabel">App Settings</h3>
-                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body pt-0"> 
-                <!-- FILE CONTROL -->
-                {% block app_settings %}
-                    {% include './content/app_settings.html' %}
-                {% endblock %}
-                </div>
-            </div>
+            {% endblock %}
+            
+            {% block navpanel %}
+            {% endblock %}
+    
+            {% block content %}
             {% endblock %}
             
             {% block bottom-navbar %}
-            
-            <!-- BOTTOM NAVBAR -->
-    
-            <style>
-            .dropup .dropdown-toggle::after {
-                float: right;
-                margin: 6px 0;
-            }
-            .button-toolbar {
-                  max-width: 440px;
-            }
-            @media only screen and (max-width: 993px) {
-                .edgy-right-element {
-                  border-top-left-radius: 0 !important;
-                  border-bottom-left-radius: 0 !important;
-                  border-top-right-radius: 6px !important;
-                  border-bottom-right-radius: 6px !important;
-                }
-                .edgy-left-element {
-                  border-top-left-radius: 6px !important;
-                  border-bottom-left-radius: 6px !important;
-                  border-top-right-radius: 0px !important;
-                  border-bottom-right-radius: 0px !important;
-                }
-                .button-toolbar {
-                      max-width: 350px;
-                }
-            }
-            </style>
-
-            <nav class="navbar fixed-bottom bg-light border-top border-warning border-2 pt-0 pb-3" id=bottom-navbar>
-                <div class="container-fluid d-flex justify-content-around">
-
-                    {% if context.mode == "list" %}
-                    <button type="button" class="btn btn-light text-primary border-0" onclick=""; id="dataEditButton" disabled>
-                            <i class="bi bi-house" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">Home</span></i>
-                    </button>
-                    {% else %}
-                    <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'list' %}';" id="dataEditButton">
-                            <i class="bi bi-house" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">Home</span></i>
-                    </button>
-                    {% endif %}
-
-
-                    {% if context.mode == "app" %}
-                    <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'view' pk=project.selected_datasource %}';" id="dataEditButton">
-                            <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">View</span></i>
-                    </button>
-                    {% elif context.mode == "view" %}
-                    <button type="button" class="btn btn-light text-primary border-0" onclick="" id="dataEditButton" disabled>
-                            <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">View</span></i>
-                    </button>
-                    {% else %}
-                    <button type="button" class="btn btn-light text-secondary border-0" onclick="" id="dataEditButton" disabled>
-                            <i class="bi bi-book" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">View</span></i>
-                    </button>
-                    {% endif %}
-
-
-                    {% if user.is_authenticated %}
-                        {% if context.mode == "list" or context.mode == "user" %}
-                        <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'new' %}?o=datamenu';" id="newVizListButton">
-                                <i class="bi bi-plus-circle" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">New</span></i>
-                        </button>
-                        {% elif context.mode == "view" %}
-                        <button type="button" class="btn btn-light text-secondary border-0" onclick="window.location.href='{% url 'new' %}?o=vizmenu&datasource={{datasource.pk}}';" id="newVizButton">
-                                <i class="bi bi-plus-circle" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">New</span></i>
-                        </button>
-                        {% elif context.mode == "new" %}
-                        <button type="button" class="btn btn-light text-secondary border-0" onclick="history.back()" id="newVizListButton">
-                                <i class="bi bi-x-circle" style="font-size: 1.5rem; min-width: 70px;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">Cancel</span></i>
-                        </button>
-                        {% endif %}
-                    {% else %}
-                        <!-- Allauth button starts here -->
-                        <form class="d-inline" action="{% provider_login_url 'google' %}" method="post">
-                            {% csrf_token %}
-                            <button class="btn btn-light text-secondary border-0" type="submit">
-                                <i class="bi bi-google" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">Signin</span></i>
-                            </button>
-                        </form>
-                        <!-- Allauth button ends here -->
-                    {% endif %}
-
-
-
-
-
-
-
-                    <div class="btn-toolbar d-flex d-none w-100 justify-content-evenly button-toolbar" role="toolbar" 
-                         aria-label="Toolbar with button groups">
-                        <div class="btn-group d-flex flex-grow-1 me-2 d-none" role="group" aria-label="button group">
-                            <button type="button" class="btn btn-primary d-none d-lg-block" onclick="Handler.navigator.back();">
-                                <i class="bi bi-caret-left-fill" style="font-size: 1.2rem;"></i>
-                            </button>
-                            <div class="btn-group nav dropup d-flex w-100" role="group tablist" aria-label="button group">
-                                <button id="btnGroupDrop1" type="button"
-                                        class="btn btn-primary dropdown-toggle w-100 text-start edgy-left-element" 
-                                        data-bs-toggle="dropdown" aria-expanded="false">Loading... 
-                                    <span class="badge rounded-pill bg-warning text-dark ps-2" id="vizCount"></span>
-                                </button>
-                                    <ul class="dropdown-menu" id="tabButtons" aria-labelledby="btnGroupDrop1">
-                                        <li><h6 class="dropdown-header">Select viz</h6></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><h6 class="dropdown-header">Add viz</h6></li>
-                                        <li><a class="dropdown-item" onclick="Unicorn.call('app', 'addViz');" href="#">New</a></li>
-                                    </ul>    
-                            </div> 
-                            <!--
-                            <button class="btn btn-primary" type="button" onclick="Handler.navigator.toggleNav();"
-                                        aria-expanded="false" aria-controls="collapseExample">
-                                <i class="bi bi-list" style="font-size: 2vw;"></i>
-                            </button>-->
-                            <!--
-                            <button id="showVizOffcanvas" class="btn btn-primary edgy-right-element" type="button" onclick="Handler.navigator.toggleEdit();"
-                                        aria-expanded="false" aria-controls="collapseExample" disabled>
-                                <i class="bi bi-bar-chart" style="font-size: 1.2rem;"></i>
-                            </button>
-                            -->
-                            <!--
-                            <button type="button" class="btn btn-primary" onclick="Handler.navigator.add('viz', 3, 'three');">
-                                Test
-                            </button>
-                            <button id="showVizOffcanvas" type="button" class="btn btn-primary" onclick="Handler.navigator.rename(2, 'too');">
-                                Name
-                            </button>-->
-                            <button type="button" class="btn btn-primary d-none d-lg-block" onclick="Handler.navigator.forward();">
-                                <i class="bi bi-caret-right-fill" style="font-size: 1.2rem;"></i>
-                            </button>    
-                        </div>
-                    </div>
-
-                </div>
-            </nav>
             {% endblock %}
             
-            
-            
-            {% block navpanel %}
-            <!-- NAVPANEL -->
-            <div class="bg-light border-none test-nav" id="navbar" aria-labelledby="TBD">
-                <div class="position-relative">
-                    <button type="button" class="btn-close text-reset p-3 position-absolute top-0 end-0" 
-                            style="z-index: 900;"
-                            onclick="Handler.navigator.toggleNav();" aria-label="Close"></button>
-                    
-                    <div class="pt-1">
-                        <!-- <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Datasource Settings</h5> -->
-                        <ul class="nav nav-pills" id="pills-tab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="navpane-pills-activity-tab" data-bs-toggle="pill" 
-                                        data-bs-target="#navpane-pills-activity" type="button" role="tab" aria-controls="navpane-pills-activity" aria-selected="true">
-                                    Details
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="navpane-pills-settings-tab" data-bs-toggle="pill" 
-                                        data-bs-target="#navpane-pills-chat" type="button" role="tab" aria-controls="navpane-pills-chat" aria-selected="false">
-                                     Chat
-                                </button>
-                            </li>
-                            {% if user.is_authenticated %}
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="navpane-pills-settings-tab" data-bs-toggle="pill" 
-                                        data-bs-target="#navpane-pills-settings" type="button" role="tab" aria-controls="navpane-pills-settings" aria-selected="false">
-                                     Settings
-                                </button>
-                            </li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                
-                
-                    <div class="tab-content" id="navpane-pills-tabContent">
-                        <div class="tab-pane fade show active position-relative" id="navpane-pills-activity" role="tabpanel" aria-labelledby="navpane-pills-activity">
-                            Details here
-                        </div>
-                        <div class="tab-pane fade" id="navpane-pills-chat" role="tabpanel" aria-labelledby="navpane-pills-chat">
-                            {% include './content/comments.html' %}
-                        </div>
-                        
-                        {% if user.is_authenticated %}
-                        <div class="tab-pane fade" id="navpane-pills-settings" role="tabpanel" aria-labelledby="navpane-pills-settings">
-                            <div class="offcanvas-body test-edit-inner small p-3" style="overflow-x: hidden;" id="switch">
-                                <div class="row row-cols-1 g-3 pb-3" id="fileInfo">
-                                    <div class="col">
-                                        <div class="input-group">
-                                            <span class="input-group-text" id="file-name-input">Name</span>
-                                            <input type="text" class="form-control" 
-                                                   unicorn:model.lazy="datasource.name"
-                                                   unicorn:partial.id="fileInfo" 
-                                                   id="fileNameText" unicorn:key="fileNameText"
-                                                   aria-label="File Name">
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="input-group">
-                                            <span class="input-group-text" id="file-description-input">About</span>    
-                                            <textarea type="text" class="form-control" 
-                                                   unicorn:model.lazy="datasource.description"
-                                                   unicorn:partial.id="fileInfo" 
-                                                   id="fileDescText" unicorn:key="fileDescText"
-                                                   aria-label="File Description"/>
-                                        </div>
-                                        <p class="pt-2 small trefresh">Last refreshed <span class="thuman">...</span>
-                                            <span class="tstamp d-none">{{datasource.last_cached|date:"c"}}</span></p>
-
-
-                                        <button type="button" 
-                                                class="btn btn-secondary" 
-                                                id="settings-datasource-refresh" 
-                                                unicorn:click="refreshDatasource( {{ datasource.pk }} )" 
-                                                aria-label="Refresh data">
-                                                Refresh
-                                        </button>
-
-                                        <button type="button" 
-                                                class="btn btn-danger"
-                                                id="settings-datasource-delete" 
-                                                unicorn:key="dataDeleteButton"
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#deleteDataConfirm"
-                                                aria-label="Delete data">
-                                                Delete
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-                
-            
-            <!-- DELETE DATASOURCE MODAL -->
-            <div class="modal fade yvmodal" id="deleteDataConfirm" data-bs-backdrop="static" data-bs-keyboard="false" 
-                 tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-sm">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Delete Data Source</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            Would you like to delete this datasource?
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" 
-                                    class="btn btn-secondary" 
-                                    unicorn:click.discard="cancel" 
-                                    data-bs-dismiss="modal">Cancel</button>
-                            <button type="button"
-                                    class="btn btn-danger"
-                                    onclick="bootstrap.Modal.getInstance('#deleteDataConfirm').hide(); 
-                                             Unicorn.call('app', 'delete_datasource', {{ datasource.pk }});">
-                                    OK
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            {% endblock %}
-    
-            {% block content %}{% endblock %}
-        
         </div>
         {% analytical_body_bottom %}
     </body>
