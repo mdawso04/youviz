@@ -10,7 +10,8 @@ urlpatterns = [
     #view all vizs
     path('', views.list, name="list"),
     #view one
-    path('view/<int:pk>/', views.view, name="view"),
+    path('view/<int:pk>/', views.view, name="view_pk"),
+    path('view/<slug:slug>/', views.view, name="view"),
     #view options to add new: datastream template or datastream, viz
     path('new/', views.new, name="new"),
     #view all vizs from 1 user

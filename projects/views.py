@@ -26,9 +26,9 @@ def user(request, username):
     return render(request, 'projects/app_top.html', c)
 
 #view one
-def view(request, pk):
+def view(request, pk = None, slug = None):
     if True: #id is valid && share is on
-        c = {'context': {'mode': 'view', 'pk': pk}}
+        c = {'context': {'mode': 'view', 'pk': pk, 'slug': slug}}
         return render(request, 'projects/app_top.html', c)
     else:
         return list(request)

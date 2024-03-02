@@ -105,7 +105,12 @@ class AppView(UnicornView):
             elif self.context['mode'] == 'view':
                 
                 if self.context['pk']:
-                    self.datasource = Datasource.item(self.context['pk'])
+                    self.datasource = Datasource.item(pk=self.context['pk'])
+                    self.meta_object = self.datasource
+                    self.ad = Notification.objects.filter(position=Notification.VIEW_AD).last()
+                    
+                elif self.context['slug']:
+                    self.datasource = Datasource.item(slug=self.context['slug'])
                     self.meta_object = self.datasource
                     self.ad = Notification.objects.filter(position=Notification.VIEW_AD).last()
                 
@@ -138,7 +143,7 @@ class AppView(UnicornView):
                     
                 elif self.request.GET['o'] == 'vizmenu':
                     self.services = Viz.services()
-                    self.datasource = Datasource.item(self.request.GET['datasource'])
+                    self.datasource = Datasource.item(pk=self.request.GET['datasource'])
                     self.page = 'new.vizmenu'
                     self.message = {
                         'class': 'alert-info',
@@ -164,7 +169,7 @@ class AppView(UnicornView):
                     if len(kwargs) == 1:
                         self.datasource = self.add(
                             cls=Datasource,
-                            datastream=Datastream.item(kwargs['datastream'])
+                            datastream=Datastream.item(pk=kwargs['datastream'])
                             #call_redirect='list'
                         )
                         self.add(
@@ -181,7 +186,7 @@ class AppView(UnicornView):
                 elif self.request.GET['o'] == 'viz':
                     kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('datasource',)}
                     if len(kwargs) == 1:
-                        self.datasource = Datasource.item(kwargs['datasource'])
+                        self.datasource = Datasource.item(pk=kwargs['datasource'])
                         self.add(
                             cls=Viz,
                             datasource=self.datasource,
@@ -362,7 +367,7 @@ class AppView(UnicornView):
     def addDatasource(self, datastream_pk, call_redirect=False):
         d = Datasource.new(
                 owner=self.request.user, 
-                datastream=Datastream.item(datastream_pk)
+                datastream=Datastream.item(pk=datastream_pk)
             )
     '''
 
@@ -431,7 +436,7 @@ class AppView(UnicornView):
         
     def refreshDatasource(self, pk):
         #logger.debug('AppView > addViz start')
-        d = Datasource.item(pk)
+        d = Datasource.item(pk=pk)
         d.refresh()
         return redirect(reverse('view', args=[pk]))
         #logger.debug('AppView > addViz end')

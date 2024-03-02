@@ -1,8 +1,8 @@
 {% extends "../projects/base.html" %}
-{% block title %}{% if meta_object %}{{meta_object.seo.title}} - {% endif %}{{ block.super }}{% endblock %}
-{% block description %}{% if meta_object %}{{meta_object.seo.description}}{% else %}{{ block.super }}{% endif %}{% endblock %}
-{% block keywords %}{% if meta_object %}{{meta_object.seo.title}}{% else %}{{ block.super }}{% endif %}{% endblock %}
-{% block author %}{% if meta_object %}{{meta_object.seo.author}}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block title %}{% if meta_object %}{{meta_object.seo.title}} - YouViz{% else %}YouViz{% endif %}{% endblock %}
+{% block description %}A web app where you can Find, Visualise and Share Open Data for Free{% endblock %}
+{% block keywords %}Free web app, open data, visualisation, insights, histograms, box plots, scatter plots, line plots, bar charts{% endblock %}
+{% block author %}youviz.app{% endblock %}
 
 {% block top_navbar %}
     {% include 'projects/top_navbar/top_navbar.html' %}

@@ -5,6 +5,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.text import slugify
 
 from project import settings
+ 
 
 # pp
 import pp
@@ -16,6 +17,8 @@ from io import StringIO
 import hashlib
 from copy import *
 import json
+import string  # for string constants
+import random  # for generating random strings
 
 #non-standard libraries
 import pandas as pd
@@ -33,7 +36,7 @@ class BaseModel(models.Model):
     hash_key = models.CharField(max_length=10, blank=True)
     history = AuditlogHistoryField()
     properties = models.JSONField(blank=True, null=True)
-    slug = models.SlugField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True)
    
     #foreign keys
     owner = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
@@ -90,10 +93,41 @@ class BaseModel(models.Model):
         hash.update(encoded_string)
         return hash.hexdigest()[-10:]
         #return 'dummy'
+        
+    def _generate_slug(self, save_to_obj=False, add_random_suffix=True):
+        """
+        Generates and returns slug for this obj.
+        If `save_to_obj` is True, then saves to current obj.
+        Warning: setting `save_to_obj` to True
+              when called from `.save()` method
+              can lead to recursion error!
+
+        `add_random_suffix ` is to make sure that slug field has unique value.
+        """
+
+        # We rely on django's slugify function here. But if
+        # it is not sufficient for you needs, you can implement
+        # you own way of generating slugs.
+        generated_slug = slugify(self.name)
+
+        # Generate random suffix here.
+        random_suffix = ""
+        if add_random_suffix:
+            random_suffix = ''.join([
+                random.choice(string.ascii_letters + string.digits)
+                for i in range(5)
+            ])
+            generated_slug += '-%s' % random_suffix
+
+        if save_to_obj:
+            self.slug = generated_slug
+            self.save(update_fields=['slug'])
+        
+        return generated_slug
     
     def save(self, *args, **kwargs):
         self.hash_key = self._createHash()
-        self.slug = slugify(self.name)
+        self.slug = self._generate_slug()
         if not self.properties:
             if not 'properties' in kwargs:
                 self.properties = {}
@@ -114,12 +148,15 @@ class BaseModel(models.Model):
             return cls.objects.filter(name__icontains=query, **kwargs).all().order_by('-id')
     
     @classmethod
-    def item(cls, pk):
+    def item(cls, *args, **kwargs):
+        '''
+        Takes pk=pk or slug=slug
+        '''
         p = cls.get_prefetch()
         if p:
-            return cls.objects.filter(pk=pk).prefetch_related(*p).last()
+            return cls.objects.filter(**kwargs).prefetch_related(*p).last()
         else:
-            return cls.objects.filter(pk=pk).last()
+            return cls.objects.filter(**kwargs).last()
         
     @classmethod
     def extra_kwargs(cls, *args, **kwargs):
