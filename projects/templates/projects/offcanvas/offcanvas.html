@@ -1,0 +1,16 @@
+{% load humanize %}
+{% load unicorn %}
+<!-- OFFCANVAS --> 
+<div class="offcanvas offcanvas-end" tabindex="-1" id="OFFCANVAS" aria-labelledby="offcanvasExampleLabel" 
+     style="padding-right: calc(var(--bs-gutter-x) * .5); padding-left: calc(var(--bs-gutter-x) * .5);">
+    <div class="offcanvas-header">
+        <h3 class="offcanvas-title" id="offcanvasExampleLabel">App Settings</h3>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body pt-0"> 
+    <!-- FILE CONTROL -->
+    {% block app_settings %}
+        {% include './app_settings/app_settings.html' %}
+    {% endblock %}
+    </div>
+</div>

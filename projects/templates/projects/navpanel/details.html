@@ -1,0 +1,55 @@
+{% load humanize %}
+{% load customfilters %}
+
+<div class="d-flex offcanvas-header p-3">
+    <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Viz Details</h5>
+    <!--<div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="maximize"
+               onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
+    </div>-->
+    <button type="button" class="btn-close text-reset" onclick="Handler.navigator.toggleNav();" aria-label="Close"></button>
+</div>
+                
+<div class="offcanvas-body test-edit-inner small p-2" style="overflow-x: auto;">
+    <div class="comments mb-2 p-2 position-relative rounded-3 bg-white" style="" 
+         onclick="Handler.showTab('#navpane-pills-edit-tab');">
+        <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 1rem;">{{ datasource.name }}</p>
+        <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ datasource.description }}</p>
+        
+        {% comment %}
+        {% for v in datasource.vizs.all %}
+        <button type="button" class="btn btn-sm btn-outline-info" style="font-size: 0.8rem;" onclick="alert('Jump to Page {{ forloop.counter }}'); event.stopPropagation();">Page {{ forloop.counter }}</button>
+        {% endfor %}
+        {% endcomment %}
+        
+    </div>
+    
+    {% if ready %}
+    <div class="comments mb-2 p-2 position-relative rounded-3 bg-white" 
+         onclick="Handler.showTab('#navpane-pills-comments-tab');">
+        <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 0.8rem;">Comments</p>
+        <p class="text-secondary text-decoration-none" style="font-size: 0.7rem;">The thing I like about this viz is that is uses open source data!</p>
+    </div>
+    
+    <div class="comments mb-2 p-2 position-relative rounded-3 bg-white" style="">
+        <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 0.8rem;">Datasource</p>
+        <p class="text-secondary text-decoration-none" style="font-size: 0.7rem;">{{ datasource.datastream.name }}</p>
+        
+        <div class="yv-component dsthumb" 
+             id="yv-component-dsthumb-{{ datasource.pk }}"
+             data-yv-component="dsthumb"
+             data-yv-id="{{ datasource.pk }}"
+             data-yv-link="{{ datasource.get_absolute_url_viewmode }}"
+             data-yv-button=""
+             data-yv-init="dsThumbInit"
+             style="max-height: 60px; max-width: 100px;">
+        </div>
+        
+        <img id="jpg-export"/>
+        
+    </div> 
+    {% endif %}
+</div>
+
+
+

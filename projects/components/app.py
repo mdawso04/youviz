@@ -29,8 +29,6 @@ class AppView(UnicornView):
     vizs: QuerySetType[Viz] = None
     #report: Report = None
     
-    list_items: QuerySetType[Datasource] = None
-    
     list_items_paginated: list = None
     
     page_no: int = 1
@@ -52,7 +50,7 @@ class AppView(UnicornView):
     ad: Notification = None
     
     class Meta:
-        javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'list_items', 'siteuser', ) 
+        javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'siteuser', ) 
     
     #def __init__(self, *args, **kwargs):
     #    super().__init__(**kwargs)  # calling super is required
@@ -94,16 +92,16 @@ class AppView(UnicornView):
             
             
             if self.context['mode'] == 'list':
-                self.list_items = Datasource.list(query=self.context['query'])
-                self.list_items_paginated = [self.list_items[i: i+4] for i in range(0, len(self.list_items), 4)]
+                self.datasources = Datasource.list(query=self.context['query'])
+                self.list_items_paginated = [self.datasources[i: i+20] for i in range(0, len(self.datasources), 20)]
                 #self.notification = Notification.objects.filter(position=Notification.LIST).last()
                 #self.ad = Notification.objects.filter(position=Notification.LIST_AD).last()
                 return #do nothing
             
             elif self.context['mode'] == 'user':
                 self.siteuser = User.objects.get(username=self.context['username'])
-                self.list_items = Datasource.list(owner=self.siteuser.pk)
-                self.list_items_paginated = [self.list_items[i: i+4] for i in range(0, len(self.list_items), 4)]
+                self.datasources = Datasource.list(owner=self.siteuser.pk)
+                self.list_items_paginated = [self.datasources[i: i+20] for i in range(0, len(self.datasources), 20)]
                 #self.notification = Notification.objects.filter(position=Notification.USER).last()
                 return #do nothing
             
@@ -139,8 +137,10 @@ class AppView(UnicornView):
             elif self.context['mode'] == 'new':
                 
                 if self.request.GET['o'] == 'datamenu':
-                    self.services = Datastream.services()
+                    #self.services = Datastream.services()
+                    #self.datastreams = Datastream.list()
                     self.datastreams = Datastream.list()
+                    self.list_items_paginated = [self.datastreams[i: i+20] for i in range(0, len(self.datastreams), 20)]
                     self.page = 'new.datamenu'
                     self.message = {
                         'class': 'alert-info',

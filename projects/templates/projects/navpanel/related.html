@@ -1,0 +1,17 @@
+{% load humanize %}
+{% load customfilters %}
+
+<div class="d-flex offcanvas-header p-3">
+    <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Related</h5>
+    <!--<div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="maximize"
+               onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
+    </div>-->
+    <button type="button" class="nav-btn" style="padding: 0px; width: auto; height: auto;" onclick="Handler.showTab('#navpane-pills-details-tab');" aria-label="Close">
+        <i class="bi-arrow-left"></i>
+    </button>
+</div>
+                
+<div class="offcanvas-body test-edit-inner small p-2" style="overflow-x: hidden;">
+    Related
+</div>

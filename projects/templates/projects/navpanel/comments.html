@@ -1,0 +1,31 @@
+{% load humanize %}
+{% load customfilters %}
+
+<div class="d-flex offcanvas-header p-3">
+    <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Comments</h5>
+    <!--<div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="maximize"
+               onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
+    </div>-->
+    <button type="button" class="nav-btn" style="padding: 0px; width: auto; height: auto;" onclick="Handler.showTab('#navpane-pills-details-tab');" aria-label="Close">
+        <i class="bi-arrow-left"></i>
+    </button>
+</div>
+                
+<div class="offcanvas-body test-edit-inner small p-2" style="overflow-x: hidden;">
+    <div class="comments mb-2 p-2 position-relative rounded-3 bg-white" style="" onclick="Handler.navigator.toggleNav();">
+        <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
+        Lorem ipsum
+        </p>
+    </div>
+    <div class="comments mb-2 p-2 position-relative rounded-3 bg-white" style="" onclick="Handler.navigator.toggleNav();">
+        <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
+        Lorem ipsum
+        </p>
+    </div>
+    <div class="comments ms-5 mb-2 p-2 position-relative rounded-3 bg-white" style="" onclick="Handler.navigator.toggleNav();">
+        <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
+        Reply
+        </p>
+    </div>
+</div>

@@ -28,7 +28,7 @@
     {% elif context.mode == "new" %}
         {% if page == 'new.vizmenu' %} {% include 'projects/content/new/viz/list.html' %}
         {% elif page == 'new.viz.complete' %} {% include 'projects/content/new/viz/new_viz_complete.html' %}
-        {% elif page == 'new.datamenu' %} {% include 'projects/content/new/data/new_datamenu.html' %} 
+        {% elif page == 'new.datamenu' %} {% include 'projects/content/new/data/list.html' %} 
         {% elif page == 'new.datasource.complete' %} {% include 'projects/content/new/data/new_datasource_complete.html' %}
         {% endif %}
     {% elif context.mode == "view" %} 

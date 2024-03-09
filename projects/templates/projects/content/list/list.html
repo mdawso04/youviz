@@ -1,0 +1,14 @@
+{% extends "../base/list.html" %}
+{% load humanize %}
+{% load customfilters %}     
+
+{% block item_content %}
+    {% include './list_item_content.html' with item=i%}
+{% endblock %}
+{% block item_info %}
+    {% include './list_item_info.html' with item=i%}
+{% endblock %}
+
+
+
+

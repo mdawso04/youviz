@@ -1,0 +1,101 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+
+<!-- NAVPANEL -->
+<div class="bg-light border-none test-nav" id="navbar" aria-labelledby="TBD">
+    <div class="position-relative">
+        <div class="pt-1 d-none">
+            <!-- <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Datasource Settings</h5> -->
+            <ul class="nav nav-pills" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="navpane-pills-details-tab" data-bs-toggle="pill" 
+                            data-bs-target="#navpane-pills-details" type="button" role="tab" aria-controls="navpane-pills-details" aria-selected="true">
+                        Details
+                    </button>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="navpane-pills-edit-tab" data-bs-toggle="pill" 
+                            data-bs-target="#navpane-pills-edit" type="button" role="tab" aria-controls="navpane-pills-edit" aria-selected="false">
+                         Edit
+                    </button>
+                </li>
+                {% endif %}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="navpane-pills-comments-tab" data-bs-toggle="pill" 
+                            data-bs-target="#navpane-pills-comments" type="button" role="tab" aria-controls="navpane-pills-comments" aria-selected="false">
+                         Comments
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="navpane-pills-related-tab" data-bs-toggle="pill" 
+                            data-bs-target="#navpane-pills-related" type="button" role="tab" aria-controls="navpane-pills-related" aria-selected="false">
+                         Related
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="tab-content" id="navpane-pills-tabContent">
+            
+            <div class="tab-pane fade show active position-relative" id="navpane-pills-details" role="tabpanel" aria-labelledby="navpane-pills-details">
+                {% block details %}
+                    {% include './details.html' %}
+                {% endblock %}
+            </div>
+            {% if user.is_authenticated %}
+            <div class="tab-pane fade" id="navpane-pills-edit" role="tabpanel" aria-labelledby="navpane-pills-edit">
+                {% block edit %}
+                    {% include './edit.html' %}
+                {% endblock %}                
+            </div>
+            {% endif %}
+            <div class="tab-pane fade" id="navpane-pills-comments" role="tabpanel" aria-labelledby="navpane-pills-comments">
+                {% block comments %}
+                    {% include './comments.html' %}
+                {% endblock %}
+            </div>
+            <div class="tab-pane fade" id="navpane-pills-related" role="tabpanel" aria-labelledby="navpane-pills-related">
+                {% block related %}
+                    {% include './related.html' %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- DELETE DATASOURCE MODAL -->
+<div class="modal fade yvmodal" id="deleteDataConfirm" data-bs-backdrop="static" data-bs-keyboard="false" 
+     tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Data Source</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Would you like to delete this datasource?
+            </div>
+            <div class="modal-footer">
+                <button type="button" 
+                        class="btn btn-secondary" 
+                        unicorn:click.discard="cancel" 
+                        data-bs-dismiss="modal">Cancel</button>
+                <button type="button"
+                        class="btn btn-danger"
+                        onclick="Modal.getInstance('#deleteDataConfirm').hide(); 
+                                 Unicorn.call('app', 'delete_datasource', {{ datasource.pk }});">
+                        OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+            

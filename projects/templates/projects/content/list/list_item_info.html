@@ -1,0 +1,11 @@
+{% extends "../base/list_item_info.html" %}
+{% load humanize %}
+{% load customfilters %}
+
+{% block stats %}
+{#{{ item.vizs.count }} vizs・#}{{ item.last_cached|naturalday|capfirst }}・{{ item.itemviews.count }} view{{ item.itemviews.count|pluralize }}
+{% endblock %}
+
+{% block stretched_link %}
+<a href="{% url 'view' slug=item.slug %}" class="stretched-link"/>
+{% endblock %}

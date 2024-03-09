@@ -1,0 +1,15 @@
+{% extends "../base/list_item_content.html" %}
+{% load humanize %}
+{% load customfilters %}
+
+{% block item_content %}
+<div class="yv-component dsthumb" 
+     id="yv-component-dsthumb-{{ item.pk }}"
+     data-yv-component="dsthumb"
+     data-yv-id="{{ item.pk }}"
+     data-yv-link="{{ item.get_absolute_url_viewmode }}"
+     data-yv-button=""
+     data-yv-init="dsThumbInit"
+     style="min-height: 230px;">
+</div>
+{% endblock %}

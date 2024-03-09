@@ -1,0 +1,35 @@
+{% load humanize %}
+{% load customfilters %}
+
+<div class="card-body p-2 bg-white viz-info-panel">
+    {% if ad and ad.html %}
+        <div class="notification p-3 pt-2 mb-2 rounded-3 bg-light" style="">
+            {% include 'projects/content/ad_viz_info.html' %}
+        </div>
+    {% endif %}
+
+    <div class="details mb-2 d-flex align-items-start p-3 pt-2 pe-5 position-relative rounded-3 bg-light" style="" onclick="Handler.navigator.toggleNav();">
+        <div>
+            <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 1rem;">{{ datasource.name }}</p>
+            <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
+                {#{{ datasource.vizs.count }} viz{{ datasource.vizs.count|pluralize }}・#}{{ datasource.last_cached|naturalday|capfirst }}・{{ datasource.itemviews.count }} view{{ datasource.itemviews.count|pluralize }}</p>
+        </div>
+        <button class="bg-transparent border-0 m-2 position-absolute top-0 end-0" 
+                onclick="alert('Toggle Favorites'); event.stopPropagation();">
+            <i class="bi bi-bookmark text-black-50" style="font-size: 1.5rem;"></i>
+        </button>
+    </div>
+
+    <div class="gallery mb-2 d-flex align-items-center p-3 pe-5 position-relative rounded-3 bg-light" style="">
+        <button class="border-0 rounded-circle p-2 me-2 mt-1" 
+                style="font-size: 0.7rem; min-height: 30px; max-height: 30px; min-width: 30px; min-width: 30px; 
+                       background-color: {{datasource.owner.profiles.properties.profile_color|default:'#0dcaf0'}} !important"
+                data-bs-toggle="tooltip" data-bs-placement="top" title="Vizualized by {{ datasource.owner.profiles.name }}">{{ datasource.owner.profiles.name | first | upper}}</button>
+        <div>
+            <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 1.0rem; line-height: 0.7;">{{ datasource.owner.profiles.name }} 
+                <span class="text-secondary text-decoration-none" style="font-size: 0.7rem;">{{ datasource.owner.datasources.count }} viz{{ datasource.owner.datasources.count|pluralize }}</span>
+            </p>
+            <a href="{% url 'user' datasource.owner.get_username %}" class="stretched-link"/>
+        </div>
+    </div>
+</div>
