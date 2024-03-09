@@ -31,6 +31,10 @@ class AppView(UnicornView):
     
     list_items: QuerySetType[Datasource] = None
     
+    list_items_paginated: list = None
+    
+    page_no: int = 1
+    
     datastreams: QuerySetType[Datastream] = None
     
     services: list = None
@@ -91,6 +95,7 @@ class AppView(UnicornView):
             
             if self.context['mode'] == 'list':
                 self.list_items = Datasource.list(query=self.context['query'])
+                self.list_items_paginated = [self.list_items[i: i+4] for i in range(0, len(self.list_items), 4)]
                 #self.notification = Notification.objects.filter(position=Notification.LIST).last()
                 #self.ad = Notification.objects.filter(position=Notification.LIST_AD).last()
                 return #do nothing
@@ -98,6 +103,7 @@ class AppView(UnicornView):
             elif self.context['mode'] == 'user':
                 self.siteuser = User.objects.get(username=self.context['username'])
                 self.list_items = Datasource.list(owner=self.siteuser.pk)
+                self.list_items_paginated = [self.list_items[i: i+4] for i in range(0, len(self.list_items), 4)]
                 #self.notification = Notification.objects.filter(position=Notification.USER).last()
                 return #do nothing
             
@@ -399,6 +405,14 @@ class AppView(UnicornView):
         #logger.debug('AppView > addViz end')
     '''
         
+    def more(self):
+        if self.list_items_paginated:
+            if self.page_no < len(self.list_items_paginated):
+                self.page_no += 1
+                self.load_table()
+            else:
+                return False
+    
     def copyViz(self, pk):
         Viz.copy(pk)
         self.load_table()
