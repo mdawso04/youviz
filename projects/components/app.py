@@ -159,16 +159,19 @@ class AppView(UnicornView):
                 elif self.request.GET['o'] == 'datastream':
                     kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('url',)}
                     if len(kwargs) == 1:
-                        self.add(
+                        self.datasource = self.add(
                             cls=Datastream,
                             **kwargs
                             #call_redirect='list'
                         )
-                    self.page = 'new.datastream.complete'
-                    self.message = {
-                        'class': 'alert-info',
-                        'content': 'Datastream added!'
-                    } 
+                        #self.page = 'new.datastream.complete'
+                        self.context['mode'] = 'view'
+                        self.load_table()
+                        
+                    #self.message = {
+                    #    'class': 'alert-info',
+                    #    'content': 'Datastream added!'
+                    #}
                 
                 elif self.request.GET['o'] == 'datasource':
                     kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('datastream',)}
@@ -183,11 +186,16 @@ class AppView(UnicornView):
                             datasource=self.datasource,
                             #call_redirect='list'
                         )
+                    '''
                     self.page = 'new.datasource.complete'
                     self.message = {
                         'class': 'alert-info',
                         'content': 'Datasource added!'
                     }
+                    '''
+                    self.context['mode'] = 'view'
+                    self.context['pk'] = self.datasource.pk
+                    self.load_table()
                 
                 elif self.request.GET['o'] == 'viz':
                     kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('datasource',)}
