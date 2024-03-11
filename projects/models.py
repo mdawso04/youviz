@@ -270,7 +270,10 @@ class Datastream(BaseModel):
     #attrs
     url = models.URLField()
     json = models.JSONField(blank=True, null=True)
-   
+    last_cached = models.DateTimeField(auto_now_add=False, auto_now=False, null=True, blank=True)
+    
+    #prefetch = ('datapods', )
+    
     class Meta:
         default_related_name = 'datastreams'
         
@@ -279,15 +282,44 @@ class Datastream(BaseModel):
         a.add('READ_CSV', {'src': self.url})
         self.json = a.todos
         super(Datastream, self).save(*args, **kwargs)
+        if not self.last_cached:
+            self.refresh()
     
     @classmethod
     def services(cls):
         s = pp.App().services()['read']
         return [i for i in s if i.startswith('READ_CSV')]
     
+    @classmethod
+    def fetch(cls, *args, **kwargs):
+        a = pp.App(kwargs['datastream'].json)
+        df = a.call()
+        return df.to_csv(index=False)
+        
+    def refresh(self, *args, **kwargs):
+        #self.data = self._fetch(datastream=self.datastream)
+        dp = Datapod.add(datastream = self)
+        dp.data = Datastream.fetch(datastream=self)
+        dp.save()
+        self.last_cached = dp.last_updated
+        self.save()
+        
+    def current_version(self, *args, **kwargs):
+        return Datapod.list(datastream=self.pk).last().data
+    
+class Datapod(BaseModel):
+    #attrs
+    data = models.TextField(null=True, blank=True)
+    
+    #foreign keys
+    datastream = models.ForeignKey(Datastream, on_delete=models.CASCADE)
+    
+    class Meta:
+        default_related_name = 'datapods'
+    
 class Datasource(BaseModel):
     #attrs
-    data = models.TextField()
+    #data = models.TextField()
     last_cached = models.DateTimeField(auto_now_add=True, auto_now=False, null=True, blank=True)
     selected_viz = models.IntegerField(null=True, blank=True)
     #document = models.FileField(upload_to='files/')
@@ -300,30 +332,36 @@ class Datasource(BaseModel):
     
     prefetch = ('vizs', 'comments', 'activities', 'itemviews', 'comments', )
     
+    '''
     @classmethod
     def _fetch(cls, *args, **kwargs):
         a = pp.App(kwargs['datastream'].json)
         df = a.call()
         return df.to_csv(index=False)
+    '''
     
+    '''
     @classmethod
     def extra_kwargs(cls, *args, **kwargs):
         return {'data': cls._fetch(*args, **kwargs)}
+    '''
     
     def refresh(self, *args, **kwargs):
-        self.data = self._fetch(datastream=self.datastream)
+        #self.data = self._fetch(datastream=self.datastream)
+        self.datastream.refresh()
         self.last_cached = datetime.utcnow()
         self.save()    
         
     @cached_property
     def datatable(self):
-        io = StringIO(self.data)
+        #io = StringIO(self.data)
+        io = StringIO(self.datastream.current_version())
         df = pd.read_csv(io)
         return df[:200].to_dict(orient='tight')
 
     @cached_property
     def databuffer(self):
-        return StringIO(self.data)
+        return StringIO(self.datastream.current_version())
     
     @cached_property
     def columns(self):

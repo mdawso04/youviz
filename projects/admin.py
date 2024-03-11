@@ -2,9 +2,12 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 
 # Register your models here.
-from .models import Profile, Datastream, Datasource, Viz, ItemView, Activity, Comment, Notification
+from .models import Profile, Datastream, Datapod, Datasource, Viz, ItemView, Activity, Comment, Notification
 
 class DatastreamAdmin(admin.ModelAdmin):
+    readonly_fields = ('pk', 'created_at', 'last_updated', 'last_cached', 'hash_key', 'slug')
+
+class DatapodAdmin(admin.ModelAdmin):
     readonly_fields = ('pk', 'created_at', 'last_updated', 'hash_key', 'slug')
 
 class DatasourceAdmin(admin.ModelAdmin):
@@ -35,6 +38,7 @@ class NotificationAdmin(admin.ModelAdmin):
 # Unregister default before register custom version
 #admin.site.unregister(User)
 admin.site.register(Datastream, DatastreamAdmin)
+admin.site.register(Datapod, DatapodAdmin)
 admin.site.register(Datasource, DatasourceAdmin)
 admin.site.register(Viz, VizAdmin)
 admin.site.register(Profile, ProfileAdmin)

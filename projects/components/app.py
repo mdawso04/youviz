@@ -50,7 +50,7 @@ class AppView(UnicornView):
     ad: Notification = None
     
     class Meta:
-        javascript_exclude = ('datastreams', 'datasources', 'datasource.data', 'vizs', 'siteuser', ) 
+        javascript_exclude = ('datastreams', 'datasources', 'datasource', 'vizs', 'siteuser', ) 
     
     #def __init__(self, *args, **kwargs):
     #    super().__init__(**kwargs)  # calling super is required
@@ -195,6 +195,7 @@ class AppView(UnicornView):
                     '''
                     self.context['mode'] = 'view'
                     self.context['pk'] = self.datasource.pk
+                    self.call("alert", "hello")
                     self.load_table()
                 
                 elif self.request.GET['o'] == 'viz':
