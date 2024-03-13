@@ -18,11 +18,11 @@ def list(request):
     return render(request, 'projects/app_top.html', c)
 
 #view all vizs from 1 user
-def user(request, username):
+def user(request, username = None, slug = None):
     query = request.GET.get('query', '')
     page = request.GET.get('page', 1)
     user = request.GET.get('user', '')
-    c = {'context': {'mode': 'user', 'query': query, 'page': page, 'user': user, 'username': username}}
+    c = {'context': {'mode': 'user', 'query': query, 'page': page, 'user': user, 'username': username, 'slug': slug}}
     return render(request, 'projects/app_top.html', c)
 
 #view one

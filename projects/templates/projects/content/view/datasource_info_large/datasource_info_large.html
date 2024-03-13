@@ -29,7 +29,7 @@
             <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 1.0rem; line-height: 0.7;">{{ datasource.owner.profiles.name }} 
                 <span class="text-secondary text-decoration-none" style="font-size: 0.7rem;">{{ datasource.owner.datasources.count }} viz{{ datasource.owner.datasources.count|pluralize }}</span>
             </p>
-            <a href="{% url 'user' datasource.owner.get_username %}" class="stretched-link"/>
+            <a href="{% url 'user' datasource.owner.profiles.slug %}" class="stretched-link"/>
         </div>
     </div>
 </div>

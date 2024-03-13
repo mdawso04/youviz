@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
-from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification
+from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Profile
 from django.contrib.auth.models import User
 
 from django.core.files.base import ContentFile
@@ -99,7 +99,9 @@ class AppView(UnicornView):
                 return #do nothing
             
             elif self.context['mode'] == 'user':
-                self.siteuser = User.objects.get(username=self.context['username'])
+                #self.siteuser = User.objects.get(username=self.context['username'])
+                p = Profile.item(slug=self.context['slug'])
+                self.siteuser = p.owner
                 self.datasources = Datasource.list(owner=self.siteuser.pk)
                 self.list_items_paginated = [self.datasources[i: i+20] for i in range(0, len(self.datasources), 20)]
                 #self.notification = Notification.objects.filter(position=Notification.USER).last()
