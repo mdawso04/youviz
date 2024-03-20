@@ -25,6 +25,7 @@ class VizView(UnicornView):
     viz: Viz = None
     viz_settings: dict = {}
     plot: str = None
+    filters: list = []
     drawings: list = []
     
     class Meta:
@@ -59,18 +60,31 @@ class VizView(UnicornView):
             #logger.debug('PK FROM BODY: ' + str(pk))
         '''
         
-        #load csv from db
+        #Load viz json, replace source id with source datastream, build app
         copied_json = deepcopy(self.viz.json)
         copied_json[0]['options']['src'] = self.viz.datasource.databuffer
         a = pp.App(copied_json)
         
-        #build viz options cache for current state
-        self.viz_settings = a.data(todo=1) #2nd item should be viz
+        #extract data todos
+        #self.filters = [td for td in a.todos if td['type']=='data']
+        self.filters = []
+        for count, td in enumerate(a.todos):
+            if td['type']=='data':
+                self.filters.append(a.data(todo=count))
+        for f in self.filters:
+            for i in f['options'].values():
+                if i['saved'] is None:
+                    i['saved'] = 'None'
+        
+        
+        #extract viz todo and build settings cache
+        #self.viz_settings = a.data(todo=1) #2nd item should be viz
+        self.viz_settings = a.data(todo=len(self.filters)+1)
         for v in self.viz_settings['options'].values():
             if v['saved'] is None:
                 v['saved'] = 'None'
                 
-        #build drawing list for current state
+        #extract drawing todos
         self.drawings = a.todos[2:]
         
         #build viz (including drawings) for current state
@@ -131,6 +145,15 @@ class VizView(UnicornView):
             a.todos[1]['options'][name.split('.')[2]] = value
             #self.viz.json = a.todos
             #self.viz.save()
+        elif name.startswith('filters.'):
+            if value == 'None':
+                value = None
+            a.todos[1]['service'] = value
+            #self.filters[0]['service'] = value
+            new_service_params = list(a.options(value, df=pd.DataFrame()).keys())
+            a.todos[1]['options'] = {k: v for k, v in a.todos[1]['options'].items() if k in new_service_params}
+            #self.filters[0]['options'] = {k: v for k, v in a.todos[1]['options'].items() if k in new_service_params}
+            self.call("alert", json.dumps(self.filters[0]))
         elif name.startswith('drawings'):
             if value == 'None':
                 value = None
@@ -174,6 +197,25 @@ class VizView(UnicornView):
         a.todos.append(
             {"name": d, "type": "draw", "service": "DRAW_VLINE", "options": {"x": 30, 'line_color': 'red'}}
         )
+        self.viz.json = a.todos
+        self.viz.save()
+        self.load_viz()
+        
+    def addFilter(self, f):
+        a = pp.App(self.viz.json)
+        a.add(
+            service="DATA_COL_FILTER",
+            todoName=f,
+            options={"criteria": 'HourlyRate < 50'},
+            index=len(self.filters)+1
+        )
+        self.viz.json = a.todos
+        self.viz.save()
+        self.load_viz()
+    
+    def deleteFilter(self, f):
+        a = pp.App(self.viz.json)
+        del a.todos[1 + f] # Count from 3rd element
         self.viz.json = a.todos
         self.viz.save()
         self.load_viz()
