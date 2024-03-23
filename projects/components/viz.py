@@ -21,12 +21,37 @@ import pandas as pd
 import plotly.io as pio
 import shortuuid
 
+'''
+Patch for pp.App.data
+'''
+def data(self, todo=None):
+    #todo
+    todo = -1 if todo is None else todo
+    td = self.todos[todo]
+    #available
+    available_options = self.options(td['service'], index=todo)
+    #saved
+    saved_options = td['options']
+
+    all = {k: {'available': y, 'saved': saved_options.get(k)} for k, y in available_options.items()}
+    all = {'options': all}
+    all['name'] = td['name']
+    all['service'] = {'available': self.services(), 'saved': td['service']}
+    return all
+
+pp.App.data = data
+
+'''
+End patch
+'''
+
 class VizView(UnicornView):
     viz: Viz = None
     viz_settings: dict = {}
     plot: str = None
     filters: list = []
     drawings: list = []
+    #xxx: dict = {}
     
     class Meta:
         exclude = ('plot', )
@@ -79,13 +104,15 @@ class VizView(UnicornView):
         
         #extract viz todo and build settings cache
         #self.viz_settings = a.data(todo=1) #2nd item should be viz
-        self.viz_settings = a.data(todo=len(self.filters)+1)
+        #self.viz_settings = a.data(todo=len(self.filters)+1)
+        self.viz_settings = a.data()
         for v in self.viz_settings['options'].values():
             if v['saved'] is None:
                 v['saved'] = 'None'
                 
         #extract drawing todos
-        self.drawings = a.todos[2:]
+        #self.drawings = a.todos[2:]
+        #self.xxx = a.options(service=a.todos[2]['service'], df=a.call())
         
         #build viz (including drawings) for current state
         fig = a.call(return_df=False)[0]
@@ -145,15 +172,23 @@ class VizView(UnicornView):
             a.todos[1]['options'][name.split('.')[2]] = value
             #self.viz.json = a.todos
             #self.viz.save()
-        elif name.startswith('filters.'):
+        elif all(s in name for s in ['filters.', '.service.saved']):
             if value == 'None':
                 value = None
-            a.todos[1]['service'] = value
+            filter_index = int(name.split('.')[1])
+            a.todos[filter_index + 1]['service'] = value
             #self.filters[0]['service'] = value
             new_service_params = list(a.options(value, df=pd.DataFrame()).keys())
-            a.todos[1]['options'] = {k: v for k, v in a.todos[1]['options'].items() if k in new_service_params}
+            a.todos[filter_index + 1]['options'] = {k: v for k, v in a.todos[1]['options'].items() if k in new_service_params}
             #self.filters[0]['options'] = {k: v for k, v in a.todos[1]['options'].items() if k in new_service_params}
-            self.call("alert", json.dumps(self.filters[0]))
+            #self.call("alert", json.dumps(self.filters[0]))
+        elif all(s in name for s in ['filters.', '.options.', '.saved']):
+            if value == 'None':
+                value = None
+            filter_index = int(name.split('.')[1])
+            a.todos[filter_index + 1]['options'][name.split('.')[3]] = value
+            #self.filters[0]['options'] = {k: v for k, v in a.todos[1]['options'].items() if k in new_service_params}
+            #self.call("alert", json.dumps(a.todos[1]['options']))
         elif name.startswith('drawings'):
             if value == 'None':
                 value = None
@@ -215,7 +250,7 @@ class VizView(UnicornView):
     
     def deleteFilter(self, f):
         a = pp.App(self.viz.json)
-        del a.todos[1 + f] # Count from 3rd element
+        del a.todos[1 + f] # Count from 2rd element
         self.viz.json = a.todos
         self.viz.save()
         self.load_viz()

@@ -46,7 +46,7 @@
                     <div class="input-group input-group-sm">
                         <span class="input-group-text" id="drawingAddonOne{{forloop.counter0}}">{{forloop.counter}}</span>
                         
-                        <input type="text" class="form-control" disabled>
+                        <input type="text" class="form-control" disabled value="{{ f.service.saved }}"/>
                         <button class="btn btn-secondary" 
                                 data-bs-toggle="collapse"
                                 data-bs-target="#data-modal{{forloop.counter0}}"
@@ -63,7 +63,10 @@
                         <button type="button" id="drawingButton{{forloop.counter0}}-{{vid}}" class="btn btn-danger" 
                                 unicorn:click="deleteFilter({{forloop.counter0}})"
                                 unicorn:partial.key="filter-row-01-{{vid}}"
-                                unicorn:partial.id="outerPlotBox-{{vid}}">×</button>
+                                unicorn:partial.id="outerPlotBox-{{vid}}"
+                                unicorn:partial="data-modal-body{{forloop.counter0}}">
+                            ×
+                        </button>
                     </div>
                     
                     
@@ -77,8 +80,9 @@
                                         id="dataServiceSelect{{forloop.counter}}" 
                                         unicorn:key="dataServiceSelect{{forloop.counter}}" 
                                         unicorn:model="filters.{{forloop.counter0}}.service.saved" 
+                                        unicorn:partial="data-modal-body{{forloop.counter0}}"
                                         unicorn:partial.id="outerPlotBox-{{vid}}" 
-                                        unicorn:partial.key="data-modal-body{{forloop.counter0}}"
+                                        unicorn:partial.key="setting-row-01-{{vid}}"
                                         aria-label="Viz Service Select">
                                     <option value="None" {% if f.service.saved == 'None' %} selected{% endif %}>Select type</option>
                                     {% for d in f.service.available.data %}
@@ -91,17 +95,33 @@
                             {% for key, value in f.options.items %}
                             <div class="input-group input-group-sm pb-2">
                                 <span class="input-group-text" id="filter-settings-{{forloop.parentloop.counter}}-{{forloop.counter0}}">{{key|title}}</span>
-                                <select class="form-select" unicorn:model="filters.{{forloop.parentloop.counter0}}.options.{{key}}.saved" 
-                                        id="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}" unicorn:key="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}" 
-                                        unicorn:partial.id="outerPlotBox-{{vid}}" 
-                                        {# unicorn:partial.key="data{{key|title}}Select{{vid}}" #}
-                                        aria-label="{{key|title}} Select">
-                                    <option value="None" {% if value.saved == 'None' %} selected{% endif %}>Select field</option>
-                                    {% for v in value.available %}
-                                        <option {% if v == value.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
-                                    {% endfor %}
-                                </select>
+                                {% if value.available|length > 0 %}
+                                    <select class="form-select" 
+                                            unicorn:model="filters.{{forloop.parentloop.counter0}}.options.{{key}}.saved" 
+                                            id="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}" 
+                                            unicorn:partial="data-modal-body{{forloop.parentloop.counter0}}"
+                                            unicorn:partial.id="outerPlotBox-{{vid}}" 
+                                            unicorn:partial.key="setting-row-01-{{vid}}"
+                                            aria-label="{{key|title}} Select">
+                                        <option value="None" {% if value.saved == 'None' %} selected{% endif %}>Select field</option>
+                                        {% for v in value.available %}
+                                            <option {% if v == value.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% else %}
+                                <input class="form-control" 
+                                       unicorn:model.lazy="filters.{{forloop.parentloop.counter0}}.options.{{key}}.saved"
+                                       id="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}"
+                                       unicorn:key="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}" 
+                                       unicorn:partial="data-modal-body{{forloop.parentloop.counter0}}"
+                                       unicorn:partial.id="outerPlotBox-{{vid}}" 
+                                       unicorn:partial.key="setting-row-01-{{vid}}"
+                                       aria-label="{{key|title}} Input"/>
+                                {% endif %}
                             </div>
+                            
+                            
+                            
                             {% endfor %}
 
 
@@ -132,7 +152,7 @@
             
             
             
-            
+            {{ xxx }}
             
             
             
