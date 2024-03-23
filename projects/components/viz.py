@@ -179,7 +179,7 @@ class VizView(UnicornView):
             a.todos[filter_index + 1]['service'] = value
             #self.filters[0]['service'] = value
             new_service_params = list(a.options(value, df=pd.DataFrame()).keys())
-            a.todos[filter_index + 1]['options'] = {k: v for k, v in a.todos[1]['options'].items() if k in new_service_params}
+            a.todos[filter_index + 1]['options'] = {k: v for k, v in a.todos[filter_index + 1]['options'].items() if k in new_service_params}
             #self.filters[0]['options'] = {k: v for k, v in a.todos[1]['options'].items() if k in new_service_params}
             #self.call("alert", json.dumps(self.filters[0]))
         elif all(s in name for s in ['filters.', '.options.', '.saved']):
@@ -250,7 +250,9 @@ class VizView(UnicornView):
     
     def deleteFilter(self, f):
         a = pp.App(self.viz.json)
+        
         del a.todos[1 + f] # Count from 2rd element
+        
         self.viz.json = a.todos
         self.viz.save()
         self.load_viz()

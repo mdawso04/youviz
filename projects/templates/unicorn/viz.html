@@ -42,7 +42,7 @@
             
             <div class="row row-cols-1 g-3 pb-3" unicorn:key="filter-row-01-{{vid}}" id="filter-row-01-{{vid}}">
                 {% for f in filters %}
-                <div class="col">
+                <div class="col" id="filter-col-{{forloop.counter0}}">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text" id="drawingAddonOne{{forloop.counter0}}">{{forloop.counter}}</span>
                         
@@ -64,7 +64,7 @@
                                 unicorn:click="deleteFilter({{forloop.counter0}})"
                                 unicorn:partial.key="filter-row-01-{{vid}}"
                                 unicorn:partial.id="outerPlotBox-{{vid}}"
-                                unicorn:partial="data-modal-body{{forloop.counter0}}">
+                                unicorn:partial="setting-row-01-{{vid}}">
                             ×
                         </button>
                     </div>
