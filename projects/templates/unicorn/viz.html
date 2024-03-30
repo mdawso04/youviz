@@ -9,7 +9,7 @@
     <div id="outerOuterPlotBox-{{vid}}" class="sticky-top" style="z-index: 995">
         <div id="outerPlotBox-{{vid}}">
             <script type="application/json" id="youviz:data:{{vid}}">
-            {"plot_data":{{plot_data|safe}}, "plot_layout":{{plot_layout|safe}}}
+            {"plot_data":{{viz.viz_html.plot_data|safe}}, "plot_layout":{{viz.viz_html.plot_layout|safe}}}
             </script>
             <div id="plotBox-{{vid}}" class="viz-container"></div>
         </div>
@@ -31,7 +31,7 @@
             <!-- SETTINGS -->
             <div class="row row-cols-auto g-3 pb-3">
                 <div class="col">
-                    <h6 class="card-subtitle text-muted">Edit Input Data</h6>
+                    <h6 class="card-subtitle text-muted">Edit Filters</h6>
                 </div>
             </div>
             
@@ -41,12 +41,19 @@
             
             
             <div class="row row-cols-1 g-3 pb-3" unicorn:key="filter-row-01-{{vid}}" id="filter-row-01-{{vid}}">
-                {% for f in filters %}
+                {% comment %}
+                <script>function previewRefresh(txt) {
+                        el = '#filter-service-preview-0';
+                        document.querySelector(el).innerHTML = txt;
+                    }
+                </script>
+                {% endcomment %}
+                {% for d in cache.data %}
                 <div class="col" id="filter-col-{{forloop.counter0}}">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text" id="drawingAddonOne{{forloop.counter0}}">{{forloop.counter}}</span>
                         
-                        <input type="text" class="form-control" disabled value="{{ f.service.saved }}"/>
+                        <input id="filter-service-preview-{{forloop.counter0}}" type="text" class="form-control" disabled value="{{ d.service.saved }}"/>
                         <button class="btn btn-secondary" 
                                 data-bs-toggle="collapse"
                                 data-bs-target="#data-modal{{forloop.counter0}}"
@@ -79,38 +86,38 @@
                                 <select class="form-select" 
                                         id="dataServiceSelect{{forloop.counter}}" 
                                         unicorn:key="dataServiceSelect{{forloop.counter}}" 
-                                        unicorn:model="filters.{{forloop.counter0}}.service.saved" 
+                                        unicorn:model="cache.data.{{forloop.counter0}}.service.saved" 
                                         unicorn:partial="data-modal-body{{forloop.counter0}}"
                                         unicorn:partial.id="outerPlotBox-{{vid}}" 
                                         unicorn:partial.key="setting-row-01-{{vid}}"
                                         aria-label="Viz Service Select">
-                                    <option value="None" {% if f.service.saved == 'None' %} selected{% endif %}>Select type</option>
-                                    {% for d in f.service.available.data %}
-                                        <option {% if d == f.service.saved %}selected {% endif %}value="{{d}}">{{d}}</option>
+                                    <option value="None" {% if d.service.saved == 'None' %} selected{% endif %}>Select type</option>
+                                    {% for o in d.service.available.data %}
+                                        <option {% if o == d.service.saved %}selected {% endif %}value="{{o}}">{{o}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
 
 
-                            {% for key, value in f.options.items %}
+                            {% for key, value in d.options.available.items %}
                             <div class="input-group input-group-sm pb-2">
                                 <span class="input-group-text" id="filter-settings-{{forloop.parentloop.counter}}-{{forloop.counter0}}">{{key|title}}</span>
-                                {% if value.available|length > 0 %}
+                                {% if value|length > 0 %}
                                     <select class="form-select" 
-                                            unicorn:model="filters.{{forloop.parentloop.counter0}}.options.{{key}}.saved" 
+                                            unicorn:model="cache.data.{{forloop.parentloop.counter0}}.options.saved.{{key}}" 
                                             id="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}" 
                                             unicorn:partial="data-modal-body{{forloop.parentloop.counter0}}"
                                             unicorn:partial.id="outerPlotBox-{{vid}}" 
                                             unicorn:partial.key="setting-row-01-{{vid}}"
                                             aria-label="{{key|title}} Select">
-                                        <option value="None" {% if value.saved == 'None' %} selected{% endif %}>Select field</option>
-                                        {% for v in value.available %}
-                                            <option {% if v == value.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
+                                        <option value="None" {% if not d.options.saved.key %} selected{% endif %}>Select field</option>
+                                        {% for v in value %}
+                                            <option {% if v == d.options.saved.key %}selected {% endif %}value="{{v}}">{{v}}</option>
                                         {% endfor %}
                                     </select>
                                 {% else %}
                                 <input class="form-control" 
-                                       unicorn:model.lazy="filters.{{forloop.parentloop.counter0}}.options.{{key}}.saved"
+                                       unicorn:model.lazy="cache.data.{{forloop.parentloop.counter0}}.options.saved.{{key}}"
                                        id="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}"
                                        unicorn:key="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}" 
                                        unicorn:partial="data-modal-body{{forloop.parentloop.counter0}}"
@@ -152,35 +159,9 @@
             
             
             
-            {{ xxx }}
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
             <div class="row row-cols-auto g-3 pb-3">
                 <div class="col">
-                    <h6 class="card-subtitle text-muted">Chart</h6>
+                    <h6 class="card-subtitle text-muted">Edit Chart</h6>
                 </div>
             </div>
             
@@ -199,37 +180,68 @@
                 <div class="col">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text" id="viz-type-select">Type</span>
-                        <select class="form-select" unicorn:model="viz_settings.service.saved" 
-                                id="vizServiceSelect{{vid}}" unicorn:key="vizServiceSelect{{vid}}" 
+                        <select class="form-select" 
+                                unicorn:model="cache.viz.service.saved" 
+                                id="vizServiceSelect{{vid}}" 
+                                unicorn:key="vizServiceSelect{{vid}}" 
                                 unicorn:partial.id="outerPlotBox-{{vid}}" 
                                 unicorn:partial.key="setting-row-01-{{vid}}"
                                 aria-label="Viz Service Select">
-                            <option value="None" {% if viz_settings.service.saved == 'None' %} selected{% endif %}>Select viz</option>
-                            {% for v in viz_settings.service.available.viz %}
-                                <option {% if v == viz_settings.service.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
+                            <option value="None" {% if cache.viz.service.saved == 'None' %} selected{% endif %}>Select viz</option>
+                            {% for v in cache.viz.service.available.viz %}
+                                <option {% if v == cache.viz.service.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>  
 
-                {% for key, value in viz_settings.options.items %}
+                {% for key, value in cache.viz.options.available.items %}
                 <div class="col">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text" id="viz-settings-{{forloop.counter0}}">{{key|title}}</span>
-                        <select class="form-select" unicorn:model="viz_settings.options.{{key}}.saved" 
-                                id="data{{key|title}}Select{{vid}}" unicorn:key="data{{key|title}}Select{{vid}}" 
+                        <select class="form-select" 
+                                unicorn:model="cache.viz.options.saved.{{key}}" 
+                                id="data{{key|title}}Select{{vid}}" 
+                                unicorn:key="data{{key|title}}Select{{vid}}" 
                                 unicorn:partial.id="outerPlotBox-{{vid}}" 
                                 {# unicorn:partial.key="data{{key|title}}Select{{vid}}" #}
                                 aria-label="{{key|title}} Select">
-                            <option value="None" {% if value.saved == 'None' %} selected{% endif %}>Select field</option>
-                            {% for v in value.available %}
-                                <option {% if v == value.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
+                            <option value="None" {% if not cache.viz.options.saved.key %} selected{% endif %}>Select field</option>
+                            {% for v in value %}
+                                <option {% if v == cache.viz.options.saved.key %}selected {% endif %}value="{{v}}">{{v}}</option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>
                 {% endfor %}
             </div>
+            
+            <div class="row row-cols-auto g-3 pb-3">
+                <div class="col">
+                    <h6 class="card-subtitle text-muted">Edit Layout</h6>
+                </div>
+            </div>
+            
+            {% for key, value in cache.viz.layout.available.items %}
+            <div class="input-group input-group-sm pb-2">
+                <span class="input-group-text" id="format-settings-{{forloop.counter}}">{{key|title}}</span>
+                <select class="form-select" 
+                        unicorn:model="cache.viz.layout.saved.{{key}}" 
+                        id="{{forloop.counter}}-data{{key|title}}Select{{vid}}" 
+                        unicorn:partial.id="outerPlotBox-{{vid}}" 
+                        unicorn:partial.key="setting-row-01-{{vid}}"
+                        aria-label="{{key|title}} Select">
+                    <option value="None" {% if not cache.viz.layout.saved.key %} selected{% endif %}>Select field</option>
+                    {% for v in value %}
+                        <option {% if v == cache.viz.layout.saved.key %}selected {% endif %}value="{{v}}">{{v}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endfor %}
+            
+            
+            
+            
             
             {% comment %}
             

@@ -4,6 +4,7 @@ from projects.models import Viz
 from django.shortcuts import render,redirect
 from django.utils.functional import cached_property
 from django.utils.decorators import classonlymethod
+from django.core.exceptions import ValidationError
 
 # pp
 import pp
@@ -14,6 +15,7 @@ import os
 import pprint
 from copy import *
 import json
+from types import SimpleNamespace
 
 #non-standard libraries
 import pandas as pd
@@ -21,40 +23,12 @@ import pandas as pd
 import plotly.io as pio
 import shortuuid
 
-'''
-Patch for pp.App.data
-'''
-def data(self, todo=None):
-    #todo
-    todo = -1 if todo is None else todo
-    td = self.todos[todo]
-    #available
-    available_options = self.options(td['service'], index=todo)
-    #saved
-    saved_options = td['options']
-
-    all = {k: {'available': y, 'saved': saved_options.get(k)} for k, y in available_options.items()}
-    all = {'options': all}
-    all['name'] = td['name']
-    all['service'] = {'available': self.services(), 'saved': td['service']}
-    return all
-
-pp.App.data = data
-
-'''
-End patch
-'''
-
 class VizView(UnicornView):
     viz: Viz = None
-    viz_settings: dict = {}
-    plot: str = None
-    filters: list = []
-    drawings: list = []
-    #xxx: dict = {}
+    cache: dict = {}
     
     class Meta:
-        exclude = ('plot', )
+        exclude = ()
     
 #LOAD/UPDATE
 
@@ -65,7 +39,7 @@ class VizView(UnicornView):
     
     def load_viz(self):
         #logger.debug('VizView > load_viz start')
-        #import pprint
+        
         pk = None
         if hasattr(self.request, '_body'):
             b = json.loads(self.request._body)
@@ -75,50 +49,8 @@ class VizView(UnicornView):
             pk = self.kwargs['pk']
             logger.debug('PK FROM KWARGS: ' + str(pk))
         self.viz = Viz.objects.filter(pk=pk).all().prefetch_related('datasource').last()
+        self.cache = self.viz.viz_cache()
         
-        '''
-        if hasattr(self.request, '_body'):
-            b = json.loads(self.request._body)
-            pretty = pprint.PrettyPrinter(depth=4)
-            logger.debug(pretty.pprint(b))
-            #pk = b.data.viz.pk
-            #logger.debug('PK FROM BODY: ' + str(pk))
-        '''
-        
-        #Load viz json, replace source id with source datastream, build app
-        copied_json = deepcopy(self.viz.json)
-        copied_json[0]['options']['src'] = self.viz.datasource.databuffer
-        a = pp.App(copied_json)
-        
-        #extract data todos
-        #self.filters = [td for td in a.todos if td['type']=='data']
-        self.filters = []
-        for count, td in enumerate(a.todos):
-            if td['type']=='data':
-                self.filters.append(a.data(todo=count))
-        for f in self.filters:
-            for i in f['options'].values():
-                if i['saved'] is None:
-                    i['saved'] = 'None'
-        
-        
-        #extract viz todo and build settings cache
-        #self.viz_settings = a.data(todo=1) #2nd item should be viz
-        #self.viz_settings = a.data(todo=len(self.filters)+1)
-        self.viz_settings = a.data()
-        for v in self.viz_settings['options'].values():
-            if v['saved'] is None:
-                v['saved'] = 'None'
-                
-        #extract drawing todos
-        #self.drawings = a.todos[2:]
-        #self.xxx = a.options(service=a.todos[2]['service'], df=a.call())
-        
-        #build viz (including drawings) for current state
-        fig = a.call(return_df=False)[0]
-        fig.update_layout(width=None, height=None,autosize=True, margin={'l': 0})
-        self.plot = pio.to_json(fig=fig, engine='json')
-
         #logger.debug('VizView > load_viz end')
         
     def hydrate(self):
@@ -133,62 +65,52 @@ class VizView(UnicornView):
         #logger.debug('VizView > updated start')
         
         a = pp.App(self.viz.json)
-        #todo = a.todos[-1]
-        if name == 'viz_settings.name':
-            #todo['name'] = value
-            #self.viz.json = a.todos
-            #self.viz.json[1]['name'] = value
-            a.todos[1]['name'] = value
-            #self.viz.save()
-        elif name == 'viz.name':
-            #logger.debug('VizView > viz.title updated ("{}") start'.format(value))
-            #todo['name'] = value
-            #self.viz.json = a.todos
-            #self.viz.json[1]['name'] = value
-            #self.viz.save()
-            a.todos[1]['name'] = value
-            # call javascript to update related gui elements
-            id = 'viz-' + str(self.viz.pk) + '-tab'
-            id_copy = id + '-copy'
-            value_copy = 'Copy ' + value
-            #self.call("elementUpdate", [[id, value], [id_copy, value_copy]])  
-            #self.call("Handler.navigator_rename", [[id, value]])
-            self.call("Handler.alert", [self.viz.pk, value])
-        elif name == 'viz_settings.service.saved':
-            #todo['service'] = value
-            #self.viz.json[1]['service'] = value
-            a.todos[1]['service'] = value
-            # filter out unusable params
-            new_service_params = list(a.options(value, df=pd.DataFrame()).keys())
-            a.todos[1]['options'] = {k: v for k, v in a.todos[1]['options'].items() if k in new_service_params}
-            #self.viz.json[1]['options'] = {k: v for k, v in self.viz.json[1]['options'].items() if k in new_service_params}
-            #self.load_viz()
-            #self.viz.json = a.todos
-            #self.viz.save()
-        elif name.startswith('viz_settings.options'):
+        if name == 'viz.name':
+            a.todos[-1]['name'] = value
+        
+        elif name.startswith('cache.viz'):
             if value == 'None':
                 value = None
-            #todo['options'][name.split('.')[2]] = value
-            a.todos[1]['options'][name.split('.')[2]] = value
-            #self.viz.json = a.todos
-            #self.viz.save()
-        elif all(s in name for s in ['filters.', '.service.saved']):
+                
+            property_group = name.split('.')[2]
+            property_item = name.split('.')[4]
+                
+            def update_nested(dic, tok, val):
+                '''
+                Iterate to bottom of dict, update property
+                '''
+                t = tok.split('-', 1)
+                if len(t) == 1:
+                    dic[t[0]] = val
+                else:
+                    update_nested(dic[t[0]], t[1], val)
+                
+            update_nested(a.todos[-1][property_group], property_item, value)
+            
+        elif name.startswith('cache.data'):
             if value == 'None':
                 value = None
-            filter_index = int(name.split('.')[1])
-            a.todos[filter_index + 1]['service'] = value
-            #self.filters[0]['service'] = value
-            new_service_params = list(a.options(value, df=pd.DataFrame()).keys())
-            a.todos[filter_index + 1]['options'] = {k: v for k, v in a.todos[filter_index + 1]['options'].items() if k in new_service_params}
-            #self.filters[0]['options'] = {k: v for k, v in a.todos[1]['options'].items() if k in new_service_params}
-            #self.call("alert", json.dumps(self.filters[0]))
-        elif all(s in name for s in ['filters.', '.options.', '.saved']):
-            if value == 'None':
-                value = None
-            filter_index = int(name.split('.')[1])
-            a.todos[filter_index + 1]['options'][name.split('.')[3]] = value
-            #self.filters[0]['options'] = {k: v for k, v in a.todos[1]['options'].items() if k in new_service_params}
-            #self.call("alert", json.dumps(a.todos[1]['options']))
+                
+            def update_nested(dic, tok, val):
+                '''Iterate to bottom of dict, update property'''
+                t = tok.split('-', 1)
+                if len(t) == 1:
+                    dic[t[0]] = val
+                else:
+                    update_nested(dic[t[0]], t[1], val)
+                
+            name_tokens = name.split('.')
+            has_property_items = True if len(name_tokens) == 6 else False
+            
+            cache_todo_index = int(name_tokens[2])
+            property_group = name_tokens[3]
+            if has_property_items:
+                property_item = name_tokens[5]
+                update_nested(a.todos[cache_todo_index + 1][property_group], property_item, value)
+            else:
+                a.todos[cache_todo_index + 1][property_group] = value
+        
+        '''
         elif name.startswith('drawings'):
             if value == 'None':
                 value = None
@@ -200,6 +122,7 @@ class VizView(UnicornView):
             a.todos[todo_index]['options'][key] = value
             #self.viz.json = a.todos
             #self.viz.save()
+        '''
         self.viz.json = a.todos
         self.viz.save()
         self.load_viz()
@@ -239,10 +162,10 @@ class VizView(UnicornView):
     def addFilter(self, f):
         a = pp.App(self.viz.json)
         a.add(
-            service="DATA_COL_FILTER",
+            service="DATA_COL_ADD_INDEX_FROM_0",
             todoName=f,
-            options={"criteria": 'HourlyRate < 50'},
-            index=len(self.filters)+1
+            options={},
+            index=len(self.cache['data'])+1
         )
         self.viz.json = a.todos
         self.viz.save()
@@ -256,6 +179,10 @@ class VizView(UnicornView):
         self.viz.json = a.todos
         self.viz.save()
         self.load_viz()
+        
+    def applyUpdate(self):
+        if name.startswith('cache.data.0.options.saved.criteria'):
+            raise ValidationError({'cache.data.0.options.saved.criteria': 'This field is required'}, code='required')
     
     def called(self, name, args):
         #logger.debug('VizView > called start')
@@ -268,6 +195,25 @@ class VizView(UnicornView):
 
 #RENDER
 
+    '''
+    def todot(self, dic={}):
+        jstr = json.dumps(dic)
+        return json.loads(jstr, object_hook= lambda x: SimpleNamespace(**x))
+    
+    def todic(obj: Any) -> Any:
+        if hasattr(obj, "__dict__"):
+            return dict([(k, convert_to_serializable(v)) for k, v in vars(obj).items()])
+        if isinstance(obj, list):
+            return [convert_to_serializable(el) for el in obj]
+        return obj  # Default for primitive types
+    
+    def prepare_dict_for_cache(d: dict) -> dict:
+        for key, value in d.items():
+            if isinstance(value, dict):
+                return {k: v for k, v in value}
+            elif isinstance(v, list):
+                return [prepare_dict_for_cache(i) for i in ]
+                '''
 
     '''
     def plot(self):

@@ -19,6 +19,7 @@ from copy import *
 import json
 import string  # for string constants
 import random  # for generating random strings
+from collections.abc import MutableMapping
 
 #non-standard libraries
 import pandas as pd
@@ -26,6 +27,38 @@ import plotly.io as pio
 from datetime import datetime
 from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
+
+
+
+'''
+Patch for pp.App.data
+'''
+def data(self, todo=None):
+    #todo
+    todo = -1 if todo is None else todo
+    td = self.todos[todo]
+    #available
+    available_options = self.options(td['service'], index=todo)
+    #saved
+    saved_options = td['options']
+
+    #all = {k: {'available': y, 'saved': saved_options.get(k)} for k, y in available_options.items()}
+    #all = {'options': all}
+    all = {
+        'options': {
+           'available': available_options,
+           'saved': saved_options,
+        }
+    }
+    all['name'] = td['name']
+    all['service'] = {'available': self.services(), 'saved': td['service']}
+    return all
+
+pp.App.data = data
+
+'''
+End patch
+'''
 
 
 class BaseModel(models.Model):
@@ -471,15 +504,32 @@ class Viz(BaseModel):
     #attrs
     json = models.JSONField(blank=True, null=True)
     
+    layout_options: dict = {
+        'xaxis': {
+            'categoryorder': [
+                    'trace',
+                    'category ascending',
+                    'category descending',
+                    'total ascending',
+                    'total descending',
+            ]
+        },
+    }
+    
     class Meta:
         default_related_name = 'vizs'
         
     def viz_html(self):
         #load csv from db
         copied_json = deepcopy(self.json)
-        #copied_json[0]['options']['src'] = self.parent.datasource.databuffer
-        copied_json[0]['options']['src'] = self.datasource.databuffer
         a = pp.App(copied_json)
+        #copied_json[0]['options']['src'] = self.parent.datasource.databuffer
+        a.todos[0]['options']['src'] = self.datasource.databuffer
+        
+        #handle missing layout
+        if not 'layout' in a.todos[-1]:
+            a.todos[-1]['layout'] = {}
+        
         fig = a.call(return_df=False)[0]
         fig.update_layout(
             width=350, 
@@ -499,11 +549,64 @@ class Viz(BaseModel):
                 'bgcolor': '#000000',
             }
         )
+        fig.update_layout(**a.todos[-1]['layout'])
         j = json.loads(pio.to_json(fig=fig, engine='json'))
         return {
             'plot_data': json.dumps(j['data']),
             'plot_layout': json.dumps(j['layout']),
         }
+    
+    def viz_cache(self):
+        copied_json = deepcopy(self.json)
+        a = pp.App(copied_json)
+        #copied_json[0]['options']['src'] = self.parent.datasource.databuffer
+        a.todos[0]['options']['src'] = self.datasource.databuffer
+        
+        #viz, data options, saved and available
+        cache = {'data': [], 'viz': None}
+        for count, td in enumerate(a.todos):
+            if count > 0:
+                if count < len(a.todos) - 1:
+                    cache['data'].append(a.data(todo=count))
+                else:
+                    #careful - layout loaded as is at first
+                    cache['viz'] = a.todos[-1] | a.data(todo=count)
+                    
+        def flatten(d: MutableMapping, sep: str= '-') -> MutableMapping:
+            [flat_dict] = pd.json_normalize(d, sep=sep).to_dict(orient='records')
+            return flat_dict
+        
+        #viz layout, saved and available 
+        avail = {'available': flatten(self.layout_options)}
+        if 'layout' in cache['viz']:
+            saved = {'saved': flatten(cache['viz']['layout'])}
+        else:
+            saved = {'saved': flatten({})}
+        cache['viz']['layout'] = {**saved, **avail}
+        
+        #stringify None types in viz
+        if not 'saved' in cache['viz']['options']:
+            cache['viz']['options'] = {'saved': {}}
+        else:
+            for i in cache['viz']['options']['saved'].values():
+                if i is None:
+                    i = 'None'
+                    
+        for i in cache['viz']['layout']['saved']:
+            if i is None:
+                i = 'None'
+        
+        #and data
+        for count, td in enumerate(cache['data']):
+            if not 'saved' in td['options']:
+                td['options'] = {'saved': {}}
+            else:
+                for i in td['options']['saved'].values():
+                    if i is None:
+                        i = 'None'
+                        
+        return cache
+    
     
     @classmethod
     def extra_kwargs(cls, **kwargs):
