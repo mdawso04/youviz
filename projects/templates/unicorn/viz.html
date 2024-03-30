@@ -53,7 +53,7 @@
                     <div class="input-group input-group-sm">
                         <span class="input-group-text" id="drawingAddonOne{{forloop.counter0}}">{{forloop.counter}}</span>
                         
-                        <input id="filter-service-preview-{{forloop.counter0}}" type="text" class="form-control" disabled value="{{ d.service.saved }}"/>
+                        <input id="filter-service-preview-{{forloop.counter0}}" type="text" class="form-control" disabled value="{{ d.service.saved|for_ui }}"/>
                         <button class="btn btn-secondary" 
                                 data-bs-toggle="collapse"
                                 data-bs-target="#data-modal{{forloop.counter0}}"
@@ -93,7 +93,7 @@
                                         aria-label="Viz Service Select">
                                     <option value="None" {% if d.service.saved == 'None' %} selected{% endif %}>Select type</option>
                                     {% for o in d.service.available.data %}
-                                        <option {% if o == d.service.saved %}selected {% endif %}value="{{o}}">{{o}}</option>
+                                        <option {% if o == d.service.saved %}selected {% endif %}value="{{o}}">{{o|for_ui}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -112,7 +112,7 @@
                                             aria-label="{{key|title}} Select">
                                         <option value="None" {% if not d.options.saved.key %} selected{% endif %}>Select field</option>
                                         {% for v in value %}
-                                            <option {% if v == d.options.saved.key %}selected {% endif %}value="{{v}}">{{v}}</option>
+                                            <option {% if v == d.options.saved.key %}selected {% endif %}value="{{v}}">{{v|for_ui}}</option>
                                         {% endfor %}
                                     </select>
                                 {% else %}
@@ -189,7 +189,7 @@
                                 aria-label="Viz Service Select">
                             <option value="None" {% if cache.viz.service.saved == 'None' %} selected{% endif %}>Select viz</option>
                             {% for v in cache.viz.service.available.viz %}
-                                <option {% if v == cache.viz.service.saved %}selected {% endif %}value="{{v}}">{{v}}</option>
+                                <option {% if v == cache.viz.service.saved %}selected {% endif %}value="{{v}}">{{v|for_ui|title}}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -198,7 +198,7 @@
                 {% for key, value in cache.viz.options.available.items %}
                 <div class="col">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-text" id="viz-settings-{{forloop.counter0}}">{{key|title}}</span>
+                        <span class="input-group-text" id="viz-settings-{{forloop.counter0}}">{{key|for_ui|title}}</span>
                         <select class="form-select" 
                                 unicorn:model="cache.viz.options.saved.{{key}}" 
                                 id="data{{key|title}}Select{{vid}}" 
@@ -208,7 +208,7 @@
                                 aria-label="{{key|title}} Select">
                             <option value="None" {% if not cache.viz.options.saved.key %} selected{% endif %}>Select field</option>
                             {% for v in value %}
-                                <option {% if v == cache.viz.options.saved.key %}selected {% endif %}value="{{v}}">{{v}}</option>
+                                <option {% if v == cache.viz.options.saved.key %}selected {% endif %}value="{{v}}">{{v|for_ui|title}}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -224,7 +224,7 @@
             
             {% for key, value in cache.viz.layout.available.items %}
             <div class="input-group input-group-sm pb-2">
-                <span class="input-group-text" id="format-settings-{{forloop.counter}}">{{key|title}}</span>
+                <span class="input-group-text" id="format-settings-{{forloop.counter}}">{{key|for_ui|title}}</span>
                 <select class="form-select" 
                         unicorn:model="cache.viz.layout.saved.{{key}}" 
                         id="{{forloop.counter}}-data{{key|title}}Select{{vid}}" 
@@ -233,7 +233,7 @@
                         aria-label="{{key|title}} Select">
                     <option value="None" {% if not cache.viz.layout.saved.key %} selected{% endif %}>Select field</option>
                     {% for v in value %}
-                        <option {% if v == cache.viz.layout.saved.key %}selected {% endif %}value="{{v}}">{{v}}</option>
+                        <option {% if v == cache.viz.layout.saved.key %}selected {% endif %}value="{{v}}">{{v|for_ui|title}}</option>
                     {% endfor %}
                 </select>
             </div>

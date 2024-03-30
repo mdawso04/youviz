@@ -10,6 +10,8 @@ from project import settings
 # pp
 import pp
 from pp.log import logger
+from pp.util import *
+from pp.data import *
 
 #python standard libraries
 import os
@@ -55,6 +57,44 @@ def data(self, todo=None):
     return all
 
 pp.App.data = data
+
+'''
+Patch for data
+'''
+
+@registerService(
+    column=OPTION_FIELD_SINGLE_COL_STRING,
+    matches=FIELD_STRING,
+)
+def DATA_COL_FILTER_TEXT_NOTEQUAL(df, column=None, matches=None):
+    '''Hides rows with specified filter criteria'''
+    column = colHelper(df, column, max=1, type='object')
+    column = column[0] if isinstance(column, list) else column
+    matches = matches if isinstance(matches, str) else None 
+    if column is not None and matches is not None:
+        matches = '{} != "{}"'.format(column, matches)
+        logger.debug('pp.data > Filtered columns by: {}'.format(matches))
+        return DATA_COL_FILTER(df, matches)
+    else:
+        logger.debug('pp.data > Filter columns skipped')
+        return df
+    
+@registerService(
+    column=OPTION_FIELD_SINGLE_COL_STRING,
+    matches=FIELD_STRING,
+)
+def DATA_COL_FILTER_TEXT_EQUAL(df, column=None, matches=None):
+    '''Keeps rows with specified filter criteria'''
+    column = colHelper(df, column, max=1, type='object')
+    column = column[0] if isinstance(column, list) else column
+    matches = matches if isinstance(matches, str) else None 
+    if column is not None and matches is not None:
+        matches = '{} == "{}"'.format(column, matches)
+        logger.debug('pp.data > Filtered columns by: {}'.format(matches))
+        return DATA_COL_FILTER(df, matches)
+    else:
+        logger.debug('pp.data > Filter columns skipped')
+        return df
 
 '''
 End patch
@@ -573,6 +613,8 @@ class Viz(BaseModel):
                     cache['viz'] = a.todos[-1] | a.data(todo=count)
                     
         def flatten(d: MutableMapping, sep: str= '-') -> MutableMapping:
+            if not isinstance(d, dict) or len(d.keys()) == 0:
+                return {}
             [flat_dict] = pd.json_normalize(d, sep=sep).to_dict(orient='records')
             return flat_dict
         

@@ -24,6 +24,7 @@ import plotly.io as pio
 import shortuuid
 
 class VizView(UnicornView):
+    
     viz: Viz = None
     cache: dict = {}
     
@@ -72,8 +73,9 @@ class VizView(UnicornView):
             if value == 'None':
                 value = None
                 
-            property_group = name.split('.')[2]
-            property_item = name.split('.')[4]
+            n = name.split('.')
+            property_group = n[2]
+            property_item = n[4] if len(n) > 4 else None
                 
             def update_nested(dic, tok, val):
                 '''
@@ -83,9 +85,17 @@ class VizView(UnicornView):
                 if len(t) == 1:
                     dic[t[0]] = val
                 else:
+                    if not t[0] in dic:
+                        dic[t[0]] = {}
                     update_nested(dic[t[0]], t[1], val)
-                
-            update_nested(a.todos[-1][property_group], property_item, value)
+            
+            if not property_group in a.todos[-1]: 
+                a.todos[-1][property_group] = {}
+            
+            if property_item is None:
+                a.todos[-1][property_group] = value
+            else:
+                update_nested(a.todos[-1][property_group], property_item, value)
             
         elif name.startswith('cache.data'):
             if value == 'None':
