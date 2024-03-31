@@ -587,7 +587,7 @@ class Viz(BaseModel):
                 'xanchor': 'right',
                 'y': 1,
                 'bgcolor': '#000000',
-            }
+            },
         )
         fig.update_layout(**a.todos[-1]['layout'])
         j = json.loads(pio.to_json(fig=fig, engine='json'))
@@ -648,6 +648,22 @@ class Viz(BaseModel):
                         i = 'None'
                         
         return cache
+    
+    @cached_property
+    def datatable(self):
+        copied_json = deepcopy(self.json)
+        a = pp.App(copied_json)
+        #copied_json[0]['options']['src'] = self.parent.datasource.databuffer
+        a.todos[0]['options']['src'] = self.datasource.databuffer
+        return a.call()[:200].to_dict(orient='tight')
+    
+    @cached_property
+    def columns(self):
+        return self.datatable['columns']
+    
+    @cached_property
+    def records(self):
+        return self.datatable['data']
     
     
     @classmethod

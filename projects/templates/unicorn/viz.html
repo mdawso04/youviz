@@ -88,9 +88,11 @@
                                         unicorn:key="dataServiceSelect{{forloop.counter}}" 
                                         unicorn:model="cache.data.{{forloop.counter0}}.service.saved" 
                                         unicorn:partial="data-modal-body{{forloop.counter0}}"
+                                        {#unicorn:partial="filter-col-{{forloop.counter0}}"#}
                                         unicorn:partial.id="outerPlotBox-{{vid}}" 
                                         unicorn:partial.key="setting-row-01-{{vid}}"
-                                        aria-label="Viz Service Select">
+                                        aria-label="Viz Service Select"
+                                        onchange="document.getElementById('filter-service-preview-{{forloop.counter0}}').value=this.options[this.selectedIndex].text;">
                                     <option value="None" {% if d.service.saved == 'None' %} selected{% endif %}>Select type</option>
                                     {% for o in d.service.available.data %}
                                         <option {% if o == d.service.saved %}selected {% endif %}value="{{o}}">{{o|for_ui}}</option>
@@ -149,11 +151,85 @@
             
             <div class="row row-cols-auto g-3 pb-3" unicorn:key="filter-row-02-{{vid}}">
                 <div class="col">
-                    <button type="button" id="addDrawingButton" class="btn btn-secondary btn-sm" 
+                    <button type="button" 
+                            id="addDrawingButton" 
+                            class="btn btn-secondary btn-sm pe-2" 
                             unicorn:click="addFilter('new filter')"
                             unicorn:partial.key="filter-row-01-{{vid}}"
-                            unicorn:partial.id="outerPlotBox-{{vid}}">Add</button>
+                            unicorn:partial.id="outerPlotBox-{{vid}}">
+                        Add
+                    </button>
+                    <button type="button" 
+                            id="previewDataButton" 
+                            class="btn btn-secondary btn-sm" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#previewDataModal{{vid}}"
+                            onclick="$('#table{{vid}}').bootstrapTable('resetView');">
+                        Preview data
+                    </button>
                 </div>
+            </div>
+            
+            
+            <div id="previewDataModal{{vid}}" 
+                 class="modal fade yvmodal" 
+                 data-bs-backdrop="static" 
+                 data-bs-keyboard="false" 
+                 tabindex="-1" 
+                 aria-hidden="true">
+
+                <style>
+                .bootstrap-table .fixed-table-container .table tbody tr .card-view .card-view-title {
+                    margin-right: 15px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    min-width: 40%
+                }
+                </style>
+
+
+            <!-- DATAFRAME START -->
+                <div class="modal-dialog modal-xl modal-fullscreen-xl-down modal-dialog-scrollable" 
+                     role="document">
+                    <div class="modal-content">
+                        <div class="modal-header border-0">
+                            <h3>Data</h3>
+                            <!-- TAB BUTTONS END-->
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    <div class="modal-body pt-0">
+                        <!-- TABLE -->
+                        <table id="table{{vid}}"
+                            data-toggle="table"
+                            data-search="true"
+                            data-show-columns="true"
+                            data-show-columns-toggle-all="true"
+                            data-show-toggle="true"
+                            data-card-view="true">
+                            <thead>
+                                <tr>
+                                    {% for column in viz.columns %}
+                                        <th data-field="col-{{ column }}">{{ column }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in viz.records %}
+                                <tr>
+                                    {% for c in record %}
+                                    <td>{{ c }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer border-0 mb-3">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+              </div>
             </div>
             
             

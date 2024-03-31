@@ -587,6 +587,17 @@ Handler.vizInit = function (node) {
         }
     });
     
+    //nested datatable init
+    
+    $('#table').bootstrapTable(); // init via javascript
+
+    // datatable modal
+    // append modals to prevent z-layer issues
+    var yvmodals = document.querySelectorAll('.yvmodal');
+    var body = document.getElementById("body");
+    for (let i = 0; i < yvmodals.length; i++) {
+        body.appendChild(yvmodals[i]); 
+    }
     /*
     Handler.mediaQuerySwitch({
         query: '(max-width: 992px)',
@@ -797,9 +808,13 @@ Handler.dsThumbInit = function (node) {
         layout.margin.r = 10;
         layout.showlegend = false;
         //if(layout.xaxis.visible) layout.xaxis.visible = false; 
-        if(layout.xaxis.showticklabel) layout.xaxis.showticklabels = false;
+        if(layout.xaxis.showticklabels){
+            layout.xaxis.showticklabels = false;
+        }
         //if(layout.yaxis.visible) layout.yaxis.visible = false;
-        if(layout.yaxis.showticklabels) layout.yaxis.showticklabels = false;
+        if(layout.yaxis.showticklabels){ 
+            layout.yaxis.showticklabels = false;
+        }
         /*layout.legend = {
             x: 1,
             xanchor: 'right',
@@ -1262,6 +1277,17 @@ window.addEventListener("DOMContentLoaded", (event) => {
                 //alert(component.id);
                 //alert(component.root.parentNode);
                 Handler.vizInit(component.root.parentNode);
+                
+                $('#table').bootstrapTable(); // init via javascript
+
+                // datatable modal
+                // append modals to prevent z-layer issues
+                var yvmodals = document.querySelectorAll('.yvmodal');
+                var body = document.getElementById("body");
+                for (let i = 0; i < yvmodals.length; i++) {
+                    body.appendChild(yvmodals[i]); 
+                }
+                
                 break;
             case 'datatable':
                 //bootstrap table
