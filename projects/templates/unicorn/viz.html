@@ -15,6 +15,12 @@
         </div>
     </div>
     
+    
+    {% include '../projects/editpanel/editpanel.html' %}
+    
+    
+    
+    {% if never %}
     <!-- EDIT PANEL -->
     <div class="bg-light border-none test-edit" id="{{vid}}-edit" aria-labelledby="TBD">
         
@@ -163,8 +169,7 @@
                             id="previewDataButton" 
                             class="btn btn-secondary btn-sm" 
                             data-bs-toggle="modal" 
-                            data-bs-target="#previewDataModal{{vid}}"
-                            onclick="$('#table{{vid}}').bootstrapTable('resetView');">
+                            data-bs-target="#previewDataModal{{vid}}">
                         Preview data
                     </button>
                 </div>
@@ -200,7 +205,7 @@
                         </div>
                     <div class="modal-body pt-0">
                         <!-- TABLE -->
-                        <table id="table{{vid}}"
+                        <table id="table"
                             data-toggle="table"
                             data-search="true"
                             data-show-columns="true"
@@ -425,6 +430,7 @@
         </div>
         <!-- test edit inner -->
     </div>
+    {% endif %}
     <!-- test edit -->
     
     {#<h6 class="card-subtitle mb-2 text-muted">{{viz.name}}</h6>#}
