@@ -70,8 +70,10 @@
                             <i class="bi-gear"></i>
                         </button>
                         
+                        {% comment %}
                         <button type="button" class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
                         <button type="button" class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
+                        {% endcomment %}
                         
                         <button type="button" id="drawingButton{{forloop.counter0}}-{{vid}}" class="btn btn-danger" 
                                 unicorn:click="deleteFilter({{forloop.counter0}})"
@@ -251,11 +253,13 @@
                     <!-- SELECT {{forloop.counter}} -->
                     <div class="input-group input-group-sm">
                         <span class="input-group-text" id="viz-name-input">About</span>
-                        <textarea class="form-control" 
-                               unicorn:model.lazy="viz.description"
-                               id="vizNameText{{vid}}" unicorn:key="vizNameText{{vid}}"
-                               unicorn:partial.key="viz-no-update{{vid}}"
-                               aria-label="Viz Name"/>
+                        <textarea class="form-control"
+                                  unicorn:model.lazy="viz.description"
+                                  id="vizNameText{{vid}}" 
+                                  unicorn:key="vizNameText{{vid}}"
+                                  unicorn:partial.id="floatingTextarea2{{vid}}"
+                                  unicorn:partial.key="viz-no-update{{vid}}"
+                                  aria-label="Viz Name"/>
                     </div>
                 </div>
                 <div class="col">
@@ -439,7 +443,7 @@
         <textarea unicorn:model.lazy="viz.description" 
                   unicorn:partial="floatingTextarea2{{vid}}" 
                   id="floatingTextarea2{{vid}}" 
-                  class="form-control" 
+                  class="form-control text-secondary" 
                   placeholder="Leave a memo here" 
                   style="min-height: 120px; max-height: 120px;">
         </textarea>
@@ -447,7 +451,10 @@
     </div>
     {% else %}
         {% is_owner request.user viz as current_user_is_owner %} 
-        <div class="position-relative pt-1 viz-text-area" style="font-size: 0.8rem;" {% if current_user_is_owner %}onclick="Handler.navigator.toggleEdit();"{% endif %}>
+        <div class="position-relative pt-1 viz-text-area text-secondary" 
+             style="font-size: 0.8rem;" 
+             {% if current_user_is_owner %}onclick="Handler.navigator.toggleEdit();"{% endif %}
+             id="floatingTextarea2{{vid}}">
             {% if viz.description %}{{viz.description}}{% else %}No descriptoion.{% endif %}
         </div>
     {% endif %}

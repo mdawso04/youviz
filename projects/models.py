@@ -95,6 +95,47 @@ def DATA_COL_FILTER_TEXT_EQUAL(df, column=None, matches=None):
     else:
         logger.debug('pp.data > Filter columns skipped')
         return df
+    
+@registerService(
+    column=OPTION_FIELD_SINGLE_COL_NUMBER,
+    matches=FIELD_NUMBER,
+)
+def DATA_COL_FILTER_NUM_NOTEQUAL(df, column=None, matches=None):
+    '''Hides rows with specified filter criteria'''
+    column = colHelper(df, column, max=1, type='number')
+    column = column[0] if isinstance(column, list) else column
+    try:
+        matches = int(matches)
+    except:
+        matches = None 
+    if column is not None and matches is not None:
+        matches = '{} != {}'.format(column, matches)
+        logger.debug('pp.data > Filtered columns by: {}'.format(matches))
+        return DATA_COL_FILTER(df, matches)
+    else:
+        logger.debug('pp.data > Filter columns skipped')
+        return df
+    
+@registerService(
+    column=OPTION_FIELD_SINGLE_COL_NUMBER,
+    matches=FIELD_NUMBER,
+)
+def DATA_COL_FILTER_NUM_EQUAL(df, column=None, matches=None):
+    '''Keeps rows with specified filter criteria'''
+    column = colHelper(df, column, max=1, type='number')
+    column = column[0] if isinstance(column, list) else column
+    try:
+        matches = int(matches)
+    except:
+        matches = None 
+    if column is not None and matches is not None:
+        matches = '{} == {}'.format(column, matches)
+        logger.debug('pp.data > Filtered columns by: {}'.format(matches))
+        return DATA_COL_FILTER(df, matches)
+    else:
+        logger.debug('pp.data > Filter columns skipped')
+        return df
+
 
 '''
 End patch

@@ -19,13 +19,13 @@
         <div class="col">
             <div class="input-group input-group-sm">
                 <span class="input-group-text" id="file-name-input">Name</span>
-                <input type="text" class="form-control" 
-                       unicorn:model.lazy="datasource.name"
-                       unicorn:partial.id="fileInfo" 
-                       id="fileNameText" 
-                       unicorn:key="fileNameText"
-                       aria-label="File Name" 
-                       value="{{ datasource.name }}">
+                <textarea type="text" 
+                          class="form-control" 
+                          unicorn:model.lazy="datasource.name"
+                          unicorn:partial.id="fileInfo" 
+                          id="fileNameText" 
+                          unicorn:key="fileNameText"
+                          aria-label="File Name">{{ datasource.name }}</textarea>
             </div>
         </div>
         <div class="col">

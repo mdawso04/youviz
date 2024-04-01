@@ -7,8 +7,10 @@ register = template.Library()
 
 
 ui_map = {
-    'DATA_COL_FILTER_TEXT_NOTEQUAL': 'Hide rows if',
-    'DATA_COL_FILTER_TEXT_EQUAL': 'Keep rows if',
+    'DATA_COL_FILTER_TEXT_NOTEQUAL': 'Hide rows if text matches',
+    'DATA_COL_FILTER_TEXT_EQUAL': 'Keep rows if text matches',
+    'DATA_COL_FILTER_NUM_NOTEQUAL': 'Hide rows if number matches',
+    'DATA_COL_FILTER_NUM_EQUAL': 'Keep rows if number matches',
     'VIZ_AREA': 'Area',
     'VIZ_BAR': 'Bar',
     'VIZ_BOX': 'Box',

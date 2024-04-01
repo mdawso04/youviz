@@ -16,11 +16,37 @@
         <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 1rem;">{{ datasource.name }}</p>
         <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ datasource.description }}</p>
         
+        
         {% comment %}
         {% for v in datasource.vizs.all %}
-        <button type="button" class="btn btn-sm btn-outline-info" style="font-size: 0.8rem;" onclick="alert('Jump to Page {{ forloop.counter }}'); event.stopPropagation();">Page {{ forloop.counter }}</button>
+        <button type="button" class="btn btn-sm btn-outline-info" style="font-size: 0.8rem;" onclick="alert('Jump to Page {{ forloop.counter }}'); event.stopPropagation();">
+            Page {{ forloop.counter }}
+        </button>
         {% endfor %}
         {% endcomment %}
+        
+    </div>
+    
+    <div class="comments mb-2 p-2 position-relative rounded-3 bg-white" 
+         style="">
+        <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 1rem;">{{ datasource.datastream.name }}</p>
+        <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
+             {{ datasource.datastream.last_cached|naturalday|capfirst }}・{{ datasource.datastream.datasources.count }} viz{{ datasource.datastream.datasources.count|pluralize }}
+        </p>
+        
+        <div class="gallery d-flex align-items-center position-relative bg-transparent" style="">
+            <button class="border-0 rounded-circle p-1 me-2 mt-1" 
+                    style="font-size: 0.5rem; min-height: 20px; max-height: 20px; min-width: 20px; min-width: 20px; 
+                           background-color: {{datasource.datastream.owner.profiles.properties.profile_color|default:'#0dcaf0'}} !important"
+                    data-bs-toggle="tooltip" data-bs-placement="top" title="Vizualized by {{ datasource.datastream.owner.profiles.name }}">
+                {{ datasource.datastream.owner.profiles.name | first | upper}}
+            </button>
+            <div>
+                <p class="text-secondary text-decoration-none mb-0 fw-bold" style="font-size: 0.7rem; line-height: 0.5;">
+                    {{ datasource.datastream.owner.profiles.name }} 
+                </p>
+            </div>
+        </div>
         
     </div>
     
