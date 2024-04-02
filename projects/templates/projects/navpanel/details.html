@@ -10,11 +10,11 @@
     <button type="button" class="btn-close text-reset" onclick="Handler.navigator.toggleNav();" aria-label="Close"></button>
 </div>
                 
-<div class="offcanvas-body test-edit-inner small p-2" style="overflow-x: auto;">
-    <div class="comments mb-2 p-2 position-relative rounded-3 bg-white" style="" 
+<div class="offcanvas-body test-edit-inner p-2" style="overflow-x: auto;">
+    <div class="mb-2 p-2 p-md-3 position-relative rounded-3 bg-white" style="" 
          onclick="Handler.showTab('#navpane-pills-edit-tab');">
-        <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 1rem;">{{ datasource.name }}</p>
-        <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">{{ datasource.description }}</p>
+        <h6 class="mb-0" style="">{{ datasource.name }}</h6>
+        <small class="text-muted">{{ datasource.description }}</small>
         
         
         {% comment %}
@@ -27,12 +27,12 @@
         
     </div>
     
-    <div class="comments mb-2 p-2 position-relative rounded-3 bg-white" 
+    <div class="comments mb-2 p-2 p-md-3 position-relative rounded-3 bg-white" 
          style="">
-        <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 1rem;">{{ datasource.datastream.name }}</p>
-        <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
+        <h6 class="mb-0" style="">{{ datasource.datastream.name }}</h6>
+        <small class="text-muted">
              {{ datasource.datastream.last_cached|naturalday|capfirst }}・{{ datasource.datastream.datasources.count }} viz{{ datasource.datastream.datasources.count|pluralize }}
-        </p>
+        </small>
         
         <div class="gallery d-flex align-items-center position-relative bg-transparent" style="">
             <button class="border-0 rounded-circle p-1 me-2 mt-1" 

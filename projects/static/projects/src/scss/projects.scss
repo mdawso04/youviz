@@ -97,20 +97,20 @@ $bootstrap-icons-font-dir: "../../../../node_modules/bootstrap-icons/font/fonts"
     /* edit on large */
     --large-edit-height: var(--mid-area);
     --large-edit-body-height: calc(var(--large-edit-height) - var(--e-head));
-    --large-edit-width: 320px;
+    --large-edit-width: 350px;
     --large-edit-top: var(--top-nav);
     --large-edit-left: auto;
     --large-edit-right-open: 0px;
-    --large-edit-right-closed: -320px;
+    --large-edit-right-closed: -350px;
     
     /* nav on large */
     --large-nav-height: var(--mid-area);
     --large-nav-body-height: calc(var(--large-nav-height) - var(--e-head));
-    --large-nav-width: 320px;
+    --large-nav-width: 350px;
     --large-nav-top: var(--top-nav);
     --large-nav-right: auto; /* was left */
     --large-nav-left-open: 0px; /* was right */
-    --large-nav-left-closed: -320px; /* was right */
+    --large-nav-left-closed: -350px; /* was right */
 }
 
 /* DEFAULT & SMALL & SHORT DEVICES */
@@ -252,8 +252,7 @@ $bootstrap-icons-font-dir: "../../../../node_modules/bootstrap-icons/font/fonts"
         left: var(--small-nav-left); 
         position: fixed;
         z-index: var(--edit-z-index); 
-        transition: var(--edit-transition); 
-        border-top: 1px solid rgba(0, 0, 0, 0.07); 
+        transition: var(--edit-transition);  
     }
     .test-nav.open {
         width: var(--small-nav-width); 
@@ -282,7 +281,6 @@ $bootstrap-icons-font-dir: "../../../../node_modules/bootstrap-icons/font/fonts"
         position: fixed;
         z-index: var(--edit-z-index); 
         transition: var(--edit-transition); 
-        border-top: 1px solid rgba(0, 0, 0, 0.07);
     }
     .test-edit.open {
         width: var(--small-edit-width); 
@@ -411,79 +409,79 @@ $bootstrap-icons-font-dir: "../../../../node_modules/bootstrap-icons/font/fonts"
 }
 
 .list-item-2 {
-    animation-delay: 0.5s;
+    animation-delay: 0.3s;
 }
 
 .list-item-3 {
-    animation-delay: 1s;
+    animation-delay: 0.6s;
 }
 
 .list-item-4 {
-    animation-delay: 1.5s;
+    animation-delay: 0.9s;
 }
 
 .list-item-5 {
-    animation-delay: 2s;
+    animation-delay: 1.2s;
 }
 
 .list-item-6 {
-    animation-delay: 2.5s;
+    animation-delay: 1.5s;
 }
 
 .list-item-7 {
-    animation-delay: 3s;
+    animation-delay: 1.8s;
 }
 
 .list-item-8 {
-    animation-delay: 3.5s;
+    animation-delay: 2.1s;
 }
 
 .list-item-9 {
-    animation-delay: 4s;
+    animation-delay: 2.4s;
 }
 
 .list-item-10 {
-    animation-delay: 4.5s;
+    animation-delay: 2.7s;
 }
 
 .list-item-11 {
-    animation-delay: 5s;
+    animation-delay: 3s;
 }
 
 .list-item-12 {
-    animation-delay: 5.5s;
+    animation-delay: 3.3s;
 }
 
 .list-item-13 {
-    animation-delay: 6s;
+    animation-delay: 3.6s;
 }
 
 .list-item-14 {
-    animation-delay: 6.5s;
+    animation-delay: 3.9s;
 }
 
 .list-item-15 {
-    animation-delay: 7s;
+    animation-delay: 4.2s;
 }
 
 .list-item-16 {
-    animation-delay: 7.5s;
+    animation-delay: 4.5s;
 }
 
 .list-item-17 {
-    animation-delay: 8s;
+    animation-delay: 4.8s;
 }
 
 .list-item-18 {
-    animation-delay: 8.5s;
+    animation-delay: 5.1s;
 }
 
 .list-item-19 {
-    animation-delay: 9s;
+    animation-delay: 5.4s;
 }
 
 .list-item-20 {
-    animation-delay: 9.5s;
+    animation-delay: 5.7s;
 }
 
 
