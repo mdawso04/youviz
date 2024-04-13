@@ -49,7 +49,7 @@ class AppView(UnicornView):
     
     ad: Notification = None
     
-    settings: dict = None
+    settings: dict = None 
     
     class Meta:
         javascript_exclude = ('datastreams', 'datasources', 'datasource', 'vizs', 'siteuser', ) 
