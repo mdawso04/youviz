@@ -1,0 +1,71 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+
+<!-- EDIT PANEL -->
+<div class="bg-light border-none test-edit" id="{{vid}}-edit" aria-labelledby="TBD">
+        
+    <div class="position-relative">
+        <div class="pt-1 d-none">
+            <!-- <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Datasource Settings</h5> -->
+            <ul class="nav nav-pills" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="editpane-pills-details-tab" data-bs-toggle="pill" 
+                            data-bs-target="#editpane-pills-details" type="button" role="tab" aria-controls="editpane-pills-details" aria-selected="true">
+                        Details
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="editpane-pills-edit-tab" data-bs-toggle="pill" 
+                            data-bs-target="#editpane-pills-edit" type="button" role="tab" aria-controls="editpane-pills-edit" aria-selected="false">
+                         Edit Filters
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="editpane-pills-comments-tab" data-bs-toggle="pill" 
+                            data-bs-target="#editpane-pills-comments" type="button" role="tab" aria-controls="editpane-pills-comments" aria-selected="false">
+                         Edit Chart
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="editpane-pills-related-tab" data-bs-toggle="pill" 
+                            data-bs-target="#editpane-pills-related" type="button" role="tab" aria-controls="editpane-pills-related" aria-selected="false">
+                         Edit Drawings
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="tab-content" id="editpane-pills-tabContent">
+            
+            <div class="tab-pane fade show active position-relative" id="editpane-pills-details" role="tabpanel" aria-labelledby="editpane-pills-details">
+                {% block details %}
+                    {% include './details.html' %}
+                {% endblock %}
+            </div>
+            {% if user.is_authenticated %}
+            <div class="tab-pane fade" id="editpane-pills-edit" role="tabpanel" aria-labelledby="editpane-pills-edit">
+                {% block edit %}
+                    {% include './editfilters.html' %}
+                {% endblock %}                
+            </div>
+            {% endif %}
+            <div class="tab-pane fade" id="editpane-pills-comments" role="tabpanel" aria-labelledby="editpane-pills-comments">
+                {% block comments %}
+                    {% include './editchart.html' %}
+                {% endblock %}
+            </div>
+            <div class="tab-pane fade" id="editpane-pills-related" role="tabpanel" aria-labelledby="editpane-pills-related">
+                {% block related %}
+                    {% include './editdrawings.html' %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</div>
+            

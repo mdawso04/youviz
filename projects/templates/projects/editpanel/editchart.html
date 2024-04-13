@@ -1,0 +1,96 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+
+<div class="d-flex offcanvas-header p-3">
+    <h5 class="offcanvas-title me-auto flex-grow-1" id="offcanvasBottomLabel">Edit Chart</h5>
+    <!--<div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="maximize"
+               onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
+    </div>-->
+    <button type="button" class="border-0 bg-transparent" style="padding: 0px; " onclick="Handler.showTab('#editpane-pills-details-tab');" aria-label="Close">
+        <i class="bi-arrow-left" style="width: 24px; height: 24px;"></i>
+    </button>
+</div>
+
+<div class="offcanvas-body test-edit-inner small p-3" style="overflow-x: hidden;" id="switch">
+    
+    <div class="row row-cols-1 g-3 pb-3" unicorn:key="setting-row-01-{{vid}}">
+        <div class="col">
+            <!-- SELECT {{forloop.counter}} -->
+            <div class="input-group input-group-sm">
+                <span class="input-group-text" id="viz-name-input">About</span>
+                <textarea class="form-control" 
+                       unicorn:model.lazy="viz.description"
+                       id="vizNameText{{vid}}" unicorn:key="vizNameText{{vid}}"
+                       unicorn:partial.key="viz-no-update{{vid}}"
+                       aria-label="Viz Name"/>
+            </div>
+        </div>
+        <div class="col">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text" id="viz-type-select">Type</span>
+                <select class="form-select" 
+                        unicorn:model="cache.viz.service.saved" 
+                        id="vizServiceSelect{{vid}}" 
+                        unicorn:key="vizServiceSelect{{vid}}" 
+                        unicorn:partial.id="outerPlotBox-{{vid}}" 
+                        unicorn:partial.key="setting-row-01-{{vid}}"
+                        aria-label="Viz Service Select">
+                    <option value="None" {% if cache.viz.service.saved == 'None' %} selected{% endif %}>Select viz</option>
+                    {% for v in cache.viz.service.available.viz %}
+                        <option {% if v == cache.viz.service.saved %}selected {% endif %}value="{{v}}">{{v|for_ui|title}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>  
+
+        {% for key, value in cache.viz.options.available.items %}
+        <div class="col">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text" id="viz-settings-{{forloop.counter0}}">{{key|for_ui|title}}</span>
+                <select class="form-select" 
+                        unicorn:model="cache.viz.options.saved.{{key}}" 
+                        id="data{{key|title}}Select{{vid}}" 
+                        unicorn:key="data{{key|title}}Select{{vid}}" 
+                        unicorn:partial.id="outerPlotBox-{{vid}}" 
+                        {# unicorn:partial.key="data{{key|title}}Select{{vid}}" #}
+                        aria-label="{{key|title}} Select">
+                    <option value="None" {% if not cache.viz.options.saved.key %} selected{% endif %}>Select field</option>
+                    {% for v in value %}
+                        <option {% if v == cache.viz.options.saved.key %}selected {% endif %}value="{{v}}">{{v|for_ui|title}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="row row-cols-auto g-3 pb-3">
+        <div class="col">
+            <h6 class="card-subtitle text-muted">Edit Layout</h6>
+        </div>
+    </div>
+
+    {% for key, value in cache.viz.layout.available.items %}
+    <div class="input-group input-group-sm pb-2">
+        <span class="input-group-text" id="format-settings-{{forloop.counter}}">{{key|for_ui|title}}</span>
+        <select class="form-select" 
+                unicorn:model="cache.viz.layout.saved.{{key}}" 
+                id="{{forloop.counter}}-data{{key|title}}Select{{vid}}" 
+                unicorn:partial.id="outerPlotBox-{{vid}}" 
+                unicorn:partial.key="setting-row-01-{{vid}}"
+                aria-label="{{key|title}} Select">
+            <option value="None" {% if not cache.viz.layout.saved.key %} selected{% endif %}>Select field</option>
+            {% for v in value %}
+                <option {% if v == cache.viz.layout.saved.key %}selected {% endif %}value="{{v}}">{{v|for_ui|title}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endfor %}
+    
+</div>

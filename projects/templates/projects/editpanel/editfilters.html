@@ -1,0 +1,207 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+
+<div class="d-flex offcanvas-header p-3">
+    <h5 class="offcanvas-title me-auto flex-grow-1" id="offcanvasBottomLabel">Edit Filters</h5>
+    <!--<div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="maximize"
+               onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
+    </div>-->
+    <button type="button" class="border-0 bg-transparent" style="padding: 0px; " onclick="Handler.showTab('#editpane-pills-details-tab');" aria-label="Close">
+        <i class="bi-arrow-left" style="width: 24px; height: 24px;"></i>
+    </button>
+</div>
+
+<div class="offcanvas-body test-edit-inner small p-3" style="overflow-x: hidden;" id="switch">
+        
+    <div class="row row-cols-1 g-3 pb-3" unicorn:key="filter-row-01-{{vid}}" id="filter-row-01-{{vid}}">
+        {% for d in cache.data %}
+        <div class="col" id="filter-col-{{forloop.counter0}}">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text" id="drawingAddonOne{{forloop.counter0}}">{{forloop.counter}}</span>
+
+                <input id="filter-service-preview-{{forloop.counter0}}" type="text" class="form-control" disabled value="{{ d.service.saved|for_ui }}"/>
+                <button class="btn btn-secondary" 
+                        data-bs-toggle="collapse"
+                        data-bs-target="#data-modal{{forloop.counter0}}"
+                        data-bs-title="Edit" 
+                        data-bs-placement="top" 
+                        role="button"
+                        data-bs-content-id="popover-content{{forloop.counter0}}">
+                    <i class="bi-gear"></i>
+                </button>
+
+                {% comment onhold %}
+                <button type="button" class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
+                <button type="button" class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
+                {% endcomment %}
+
+                <button type="button" id="drawingButton{{forloop.counter0}}-{{vid}}" class="btn btn-danger" 
+                        unicorn:click="deleteFilter({{forloop.counter0}})"
+                        unicorn:partial.key="filter-row-01-{{vid}}"
+                        unicorn:partial.id="outerPlotBox-{{vid}}"
+                        unicorn:partial="setting-row-01-{{vid}}">
+                    ×
+                </button>
+            </div>
+
+
+
+            <!-- DATA EDIT COLLAPSE -->
+            <div class="collapse pt-2" id="data-modal{{forloop.counter0}}" >
+                <div class="card card-body" unicorn:key="data-modal-body{{forloop.counter0}}">
+                    <div class="input-group input-group-sm pb-2">
+                        <span class="input-group-text" id="data-type-select">Type</span>
+                        <select class="form-select" 
+                                id="dataServiceSelect{{forloop.counter}}" 
+                                unicorn:key="dataServiceSelect{{forloop.counter}}" 
+                                unicorn:model="cache.data.{{forloop.counter0}}.service.saved" 
+                                unicorn:partial="data-modal-body{{forloop.counter0}}"
+                                {#unicorn:partial="filter-col-{{forloop.counter0}}"#}
+                                unicorn:partial.id="outerPlotBox-{{vid}}" 
+                                unicorn:partial.key="setting-row-01-{{vid}}"
+                                aria-label="Viz Service Select"
+                                onchange="document.getElementById('filter-service-preview-{{forloop.counter0}}').value=this.options[this.selectedIndex].text;">
+                            <option value="None" {% if d.service.saved == 'None' %} selected{% endif %}>Select type</option>
+                            {% for o in d.service.available.data %}
+                                <option {% if o == d.service.saved %}selected {% endif %}value="{{o}}">{{o|for_ui}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+
+                    {% for key, value in d.options.available.items %}
+                    <div class="input-group input-group-sm pb-2">
+                        <span class="input-group-text" id="filter-settings-{{forloop.parentloop.counter}}-{{forloop.counter0}}">{{key|title}}</span>
+                        {% if value|length > 0 %}
+                            <select class="form-select" 
+                                    unicorn:model="cache.data.{{forloop.parentloop.counter0}}.options.saved.{{key}}" 
+                                    id="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}" 
+                                    unicorn:partial="data-modal-body{{forloop.parentloop.counter0}}"
+                                    unicorn:partial.id="outerPlotBox-{{vid}}" 
+                                    unicorn:partial.key="setting-row-01-{{vid}}"
+                                    aria-label="{{key|title}} Select">
+                                <option value="None" {% if not d.options.saved.key %} selected{% endif %}>Select field</option>
+                                {% for v in value %}
+                                    <option {% if v == d.options.saved.key %}selected {% endif %}value="{{v}}">{{v|for_ui}}</option>
+                                {% endfor %}
+                            </select>
+                        {% else %}
+                        <input class="form-control" 
+                               unicorn:model.lazy="cache.data.{{forloop.parentloop.counter0}}.options.saved.{{key}}"
+                               id="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}"
+                               unicorn:key="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}" 
+                               unicorn:partial="data-modal-body{{forloop.parentloop.counter0}}"
+                               unicorn:partial.id="outerPlotBox-{{vid}}" 
+                               unicorn:partial.key="setting-row-01-{{vid}}"
+                               aria-label="{{key|title}} Input"/>
+                        {% endif %}
+                    </div>
+
+
+
+                    {% endfor %}
+
+
+                    <button type="button" class="btn btn-sm btn-secondary" 
+                            data-bs-toggle="collapse"
+                            data-bs-target="#data-modal{{forloop.counter0}}">
+                        Done
+                    </button>
+                </div>
+            </div>
+
+
+
+
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="row row-cols-auto g-3 pb-3" unicorn:key="filter-row-02-{{vid}}">
+        <div class="col">
+            <button type="button" 
+                    id="addDrawingButton" 
+                    class="btn btn-secondary btn-sm pe-2" 
+                    unicorn:click="addFilter('new filter')"
+                    unicorn:partial.key="filter-row-01-{{vid}}"
+                    unicorn:partial.id="outerPlotBox-{{vid}}">
+                Add
+            </button>
+            <button type="button" 
+                    id="previewDataButton" 
+                    class="btn btn-secondary btn-sm" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#previewDataModal{{vid}}">
+                Preview data
+            </button>
+        </div>
+    </div>
+
+
+    <div id="previewDataModal{{vid}}" 
+         class="modal fade yvmodal" 
+         data-bs-backdrop="static" 
+         data-bs-keyboard="false" 
+         tabindex="-1" 
+         aria-hidden="true">
+
+        <style>
+        .bootstrap-table .fixed-table-container .table tbody tr .card-view .card-view-title {
+            margin-right: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 40%
+        }
+        </style>
+
+
+    <!-- DATAFRAME START -->
+        <div class="modal-dialog modal-xl modal-fullscreen-xl-down modal-dialog-scrollable" 
+             role="document">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h3>Data</h3>
+                    <!-- TAB BUTTONS END-->
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            <div class="modal-body pt-0">
+                <!-- TABLE -->
+                <table id="table"
+                    data-toggle="table"
+                    data-search="true"
+                    data-show-columns="true"
+                    data-show-columns-toggle-all="true"
+                    data-show-toggle="true"
+                    data-card-view="true">
+                    <thead>
+                        <tr>
+                            {% for column in viz.columns %}
+                                <th data-field="col-{{ column }}">{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in viz.records %}
+                        <tr>
+                            {% for c in record %}
+                            <td>{{ c }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer border-0 mb-3">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
