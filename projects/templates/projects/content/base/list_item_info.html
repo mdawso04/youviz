@@ -7,7 +7,7 @@
                    background-color: {{item.owner.profiles.properties.profile_color|default:'#0dcaf0'}} !important"
             data-bs-toggle="tooltip" data-bs-placement="top" title="Vizualized by {{ item.owner.profiles.name }}">{{ item.owner.profiles.name | first | upper}}</button>
     <div>
-        <p class="text-body text-decoration-none mb-1 fs-6 lh-sm" style="">{{ item.name }}</p>
+        <p class="text-body text-decoration-none mb-1 fs-6 lh-sm" style="">{{ item.name|truncatechars:90 }}</p>
         <p class="text-secondary text-decoration-none" style="font-size: 0.75rem;">
             {% block stats %}
             {{ item.last_updated|naturalday|capfirst }}
@@ -18,8 +18,17 @@
     {% endblock %}
     {% block favourite %}
     {% if user.is_authenticated %}
-    <button class="bg-transparent border-0 mx-2 position-absolute top-0 end-0" style="z-index: 20000;" onclick="alert('Toggle Favorite');">
-        <i class="bi bi-bookmark text-black-50" style="font-size: 1.5rem;"></i>
+    <button class="bg-transparent border-0 mx-2 position-absolute top-0 end-0" 
+            id="fav_button_{{item.pk}}"
+            style="z-index: 20000;" 
+            unicorn:click="toggle_activity({{item.pk}});"
+            unicorn:partial.id="fav_button_{{item.pk}}">
+        {% is_favorite item request.user as fav %}
+        {% if fav %}
+            <i class="bi bi-bookmark-fill text-black-50" style="font-size: 1.5rem;"></i>
+        {% else %}
+            <i class="bi bi-bookmark text-black-50" style="font-size: 1.5rem;"></i>
+        {% endif %}
     </button>
     {% endif %}
     {% endblock %}

@@ -2,6 +2,8 @@ from django import template
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 
+from projects.models import Activity, Profile
+
 register = template.Library()
 
 
@@ -42,3 +44,10 @@ def for_ui(value):
 @register.simple_tag
 def is_owner(user, obj):
     return obj.is_owner(user=user)
+
+@register.simple_tag
+def is_favorite(item, user):
+    for a in user.activities.all():
+        if item == a.datasource:
+            return True
+    return False

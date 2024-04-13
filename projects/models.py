@@ -793,7 +793,7 @@ class Activity(models.Model):
         (DOWN_VOTE, 'Down Vote'),
     )
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     activity_type = models.CharField(max_length=1, choices=ACTIVITY_TYPES)
     date = models.DateTimeField(auto_now_add=True)
     datasource = models.ForeignKey(Datasource, null=True, on_delete=models.CASCADE)
@@ -801,6 +801,32 @@ class Activity(models.Model):
     
     class Meta:
         default_related_name = 'activities'
+        
+    @classmethod
+    def toggle(cls, *args, **kwargs):
+        try:
+            o = kwargs['owner']
+            if 'datasource_pk' in kwargs:
+                ds = Datasource.item(pk=kwargs['datasource_pk'])
+            else:
+                p = Profile.item(pk=kwargs['profile_pk'])
+        except:
+            return None
+        else:
+            if ds:
+                a = Activity.objects.filter(owner=o, datasource=ds).last()
+                if a:
+                    super(Activity, a).delete()
+                else:
+                    a = Activity(owner=o, activity_type=Activity.FAVORITE, datasource=ds)
+                    a.save()
+            else:
+                a = Activity.objects.filter(owner=u, profile=p).last()
+                if a:
+                    super(Activity, a).delete()
+                else:
+                    a = Activity(owner=o, activity_type=Activity.FAVORITE, profile=p)
+                    a.save()
     
     #prefetch = ('user',)
     
@@ -842,6 +868,37 @@ class Notification(models.Model):
         max_length=4,
         choices=POSITION_CHOICES,
         default=LIST)
+    
+class Settings(models.Model):
+    json = models.JSONField(blank=True, null=True)
+    
+    @classmethod
+    def all(cls):
+        s = cls.objects.all().last()
+        if s:
+            return s.json
+        return None
+    
+    @classmethod
+    def get(cls, k):
+        s = cls.objects.all().last()
+        if s:
+            if s.json:
+                if k in s.json:
+                    return s.json[k]
+        return None
+        
+    @classmethod
+    def set(cls, k, v):
+        s = cls.objects.all().last()
+        if not s:
+            s = cls(json={})
+        elif not s.json:
+            s.json = {}
+        s.json[k] = v
+        s.save()
+    
+    #prefetch = ('user',)
        
 auditlog.register(Datastream)
 auditlog.register(Datasource, exclude_fields=['data'])

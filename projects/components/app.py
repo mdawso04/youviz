@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
-from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Profile
+from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings
 from django.contrib.auth.models import User
 
 from django.core.files.base import ContentFile
@@ -49,6 +49,8 @@ class AppView(UnicornView):
     
     ad: Notification = None
     
+    settings: dict = None
+    
     class Meta:
         javascript_exclude = ('datastreams', 'datasources', 'datasource', 'vizs', 'siteuser', ) 
     
@@ -89,7 +91,7 @@ class AppView(UnicornView):
             
             '''
             
-            
+            self.settings = Settings.all()
             
             if self.context['mode'] == 'list':
                 self.datasources = Datasource.list(query=self.context['query'])
@@ -370,6 +372,11 @@ class AppView(UnicornView):
                 return redirect(reverse(kwargs['call_redirect']))
             
         return redirect(reverse('list'))
+    
+    def toggle_activity(self, ds):
+        p=None
+        Activity.toggle(owner=self.request.user, datasource_pk=ds, profile_pk=p) 
+        self.load_table()
     
     def delete_datasource(self, pk):
         return self.delete(cls=Datasource, pk=pk, call_redirect='list')
