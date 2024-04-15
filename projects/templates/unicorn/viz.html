@@ -451,8 +451,7 @@
     </div>
     {% else %}
         {% is_owner request.user viz as current_user_is_owner %} 
-        <div class="position-relative pt-1 viz-text-area text-secondary" 
-             style="font-size: 0.8rem;" 
+        <div class="position-relative pt-1 mx-2 viz-text-area text-secondary ts-6"
              {% if current_user_is_owner %}onclick="Handler.navigator.toggleEdit();"{% endif %}
              id="floatingTextarea2{{vid}}">
             {% if viz.description %}{{viz.description}}{% else %}No descriptoion.{% endif %}
