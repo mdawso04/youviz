@@ -51,8 +51,9 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY',
 #DEBUG = False
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = []
+#HTML_MINIFY = True
 
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -91,6 +92,9 @@ else:
 
 MIDDLEWARE = [
     # Request altering middleware
+    'django.middleware.gzip.GZipMiddleware',
+    'htmlmin.middleware.HtmlMinifyMiddleware',
+    'htmlmin.middleware.MarkRequestMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'allauth.account.middleware.AccountMiddleware',

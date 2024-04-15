@@ -12,3 +12,4 @@ redis
 hiredis
 pandas-plotly==0.2.4
 openpyxl
+django-htmlmin
