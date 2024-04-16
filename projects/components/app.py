@@ -380,7 +380,9 @@ class AppView(UnicornView):
     
     def delete_datasource(self, pk):
         return self.delete(cls=Datasource, pk=pk, call_redirect='list')
-        
+    
+    def duplicate_datasource(self, pk):
+        return
 
     def calling(self, name, args):
         #logger.debug('AppView > calling start')

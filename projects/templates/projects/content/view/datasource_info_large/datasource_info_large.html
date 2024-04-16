@@ -15,10 +15,21 @@
             <p class="text-secondary small">
                 {#{{ datasource.vizs.count }} viz{{ datasource.vizs.count|pluralize }}・#}{{ datasource.last_cached|naturalday|capfirst }}・{{ datasource.itemviews.count }} view{{ datasource.itemviews.count|pluralize }}</p>
         </div>
-        <button class="bg-transparent border-0 m-2 position-absolute top-0 end-0" 
-                onclick="alert('Toggle Favorites'); event.stopPropagation();">
-            <i class="bi bi-bookmark text-black-50" style="font-size: 1.5rem;"></i>
+        {% if user.is_authenticated %}
+        <button class="bg-transparent border-0 mx-1 my-2 position-absolute top-0 end-0" 
+                id="fav_button_{{datasource.pk}}"
+                style="z-index: 1020;" 
+                unicorn:click.stop="toggle_activity({{datasource.pk}});"
+                unicorn:partial.id="fav_button_{{datasource.pk}}">
+            {% is_favorite datasource request.user as fav %}
+            {% if fav %}
+                <i class="bi bi-bookmark-fill text-black-50" style="font-size: 1.5rem;"></i>
+            {% else %}
+                <i class="bi bi-bookmark text-black-50" style="font-size: 1.5rem;"></i>
+            {% endif %}
         </button>
+        {% endif %}
+        
     </div>
 
     <div class="gallery mb-2 d-flex align-items-center p-3 pe-5 position-relative rounded-3 bg-light" style="">
