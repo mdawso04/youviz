@@ -711,7 +711,7 @@ class Viz(BaseModel):
     def extra_kwargs(cls, **kwargs):
         a = pp.App()
         a.add('READ_CSV', {'src': kwargs['datasource'].pk})
-        a.add('VIZ_HIST', {'x': 'Age'})
+        a.add('VIZ_HIST', {})
         json = a.todos
         return {'json': json}
     
