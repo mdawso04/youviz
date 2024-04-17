@@ -471,7 +471,8 @@ class Datasource(BaseModel):
         #io = StringIO(self.data)
         io = StringIO(self.datastream.current_version())
         df = pd.read_csv(io)
-        return df[:200].to_dict(orient='tight')
+        #return df[:200].to_dict(orient='tight')
+        return df.to_dict(orient='tight')
 
     @cached_property
     def databuffer(self):
