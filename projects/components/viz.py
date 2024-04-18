@@ -49,7 +49,7 @@ class VizView(UnicornView):
         elif hasattr(self, 'kwargs'):
             pk = self.kwargs['pk']
             logger.debug('PK FROM KWARGS: ' + str(pk))
-        self.viz = Viz.objects.filter(pk=pk).all().prefetch_related('datasource').last()
+        self.viz = Viz.item(pk=pk)
         self.cache = self.viz.viz_cache()
         
         #logger.debug('VizView > load_viz end')
@@ -67,6 +67,11 @@ class VizView(UnicornView):
         
         a = pp.App(self.viz.json)
         if name == 'viz.name':
+            self.viz.name = value
+            a.todos[-1]['name'] = value
+            
+        elif name == 'viz.description':
+            self.viz.name = value
             a.todos[-1]['name'] = value
         
         elif name.startswith('cache.viz'):

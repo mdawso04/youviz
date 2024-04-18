@@ -26,7 +26,9 @@
                 <span class="input-group-text" id="viz-name-input">About</span>
                 <textarea class="form-control" 
                        unicorn:model.lazy="viz.description"
-                       id="vizNameText{{vid}}" unicorn:key="vizNameText{{vid}}"
+                       id="vizNameText{{vid}}" 
+                       unicorn:key="vizNameText{{vid}}"
+                       unicorn:partial="floatingTextarea2{{vid}}"
                        unicorn:partial.key="viz-no-update{{vid}}"
                        aria-label="Viz Name"/>
             </div>

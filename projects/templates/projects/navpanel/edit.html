@@ -22,7 +22,9 @@
                 <textarea rows="4" type="text" 
                           class="form-control" 
                           unicorn:model.lazy="datasource.name"
-                          unicorn:partial.id="fileInfo" 
+                          {#unicorn:partial.id="fileInfo" #}
+                          unicorn:partial.id="infoLargeTitle"
+                          unicorn:partial="navTitleDesc"
                           id="fileNameText" 
                           unicorn:key="fileNameText"
                           aria-label="File Name">{{ datasource.name }}</textarea>
@@ -33,7 +35,8 @@
                 <span class="input-group-text" id="file-description-input">About</span>    
                 <textarea rows="4" type="text" class="form-control" 
                        unicorn:model.lazy="datasource.description"
-                       unicorn:partial.id="fileInfo" 
+                       {#unicorn:partial.id="fileInfo" #}
+                       unicorn:partial="navTitleDesc"
                        id="fileDescText" 
                        unicorn:key="fileDescText"
                        aria-label="File Description">{{ datasource.description }}</textarea>
