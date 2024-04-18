@@ -51,8 +51,10 @@ class AppView(UnicornView):
     
     settings: dict = None 
     
+    context: dict = None
+    
     class Meta:
-        javascript_exclude = ('datastreams', 'datasources', 'datasource', 'vizs', 'siteuser', ) 
+        javascript_exclude = ('datastreams', 'datasources', 'datasource', 'vizs', 'siteuser', 'context', ) 
     
     #def __init__(self, *args, **kwargs):
     #    super().__init__(**kwargs)  # calling super is required
@@ -77,7 +79,8 @@ class AppView(UnicornView):
         
         if self.request:
             # collect various params
-            self.context = self.component_kwargs['context']
+            if 'context' in self.component_kwargs:
+                self.context = self.component_kwargs['context']
             
             '''
             if hasattr(self.request, '_body'):
