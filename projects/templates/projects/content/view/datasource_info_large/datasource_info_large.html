@@ -11,7 +11,7 @@
     <div class="details mb-2 d-flex align-items-start p-3 pt-2 pe-5 position-relative rounded-3 bg-light" 
          id="infoLargeTitle"
          style="" 
-         onclick="Handler.navigator.toggleNav();">
+         onclick="if(event.target.id != 'fav_button_icon_{{datasource.pk}}') {Handler.navigator.toggleNav();}">
         <div>
             <h1 class="mb-0 h5 lh-sm" 
                 style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{{ datasource.name }}</h1>
@@ -23,12 +23,12 @@
                 id="fav_button_{{datasource.pk}}"
                 style="z-index: 1020;" 
                 unicorn:click.stop="toggle_activity({{datasource.pk}});"
-                unicorn:partial.id="fav_button_{{datasource.pk}}">
+                unicorn:partial.id="fav_button_icon_{{datasource.pk}}">
             {% is_favorite datasource request.user as fav %}
             {% if fav %}
-                <i class="bi bi-bookmark-fill text-black-50" style="font-size: 1.5rem;"></i>
+                <i id="fav_button_icon_{{datasource.pk}}" class="bi bi-bookmark-fill text-black-50" style="font-size: 1.5rem;"></i>
             {% else %}
-                <i class="bi bi-bookmark text-black-50" style="font-size: 1.5rem;"></i>
+                <i id="fav_button_icon_{{datasource.pk}}" class="bi bi-bookmark text-black-50" style="font-size: 1.5rem;"></i>
             {% endif %}
         </button>
         {% endif %}
