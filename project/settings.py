@@ -218,7 +218,7 @@ django_heroku.settings(locals())
 
 # pwa
 PWA_APP_NAME = 'YouViz'
-PWA_APP_DESCRIPTION = "Free, Simple Vizualization for You"
+PWA_APP_DESCRIPTION = "Search, Vizualize and Share Open Data"
 PWA_APP_THEME_COLOR = '#0A0302'
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
 PWA_APP_DISPLAY = 'standalone'
