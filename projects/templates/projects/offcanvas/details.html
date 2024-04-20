@@ -1,0 +1,108 @@
+{% load humanize %}
+{% load customfilters %}
+{% load unicorn %} 
+{% load socialaccount %}
+
+<div class="d-flex offcanvas-header p-3">
+    <h3 class="offcanvas-title" id="offcanvasExampleLabel">App Settings</h3>
+    <!--<div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="maximize"
+               onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
+    </div>-->
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+                
+<div class="offcanvas-body test-edit-inner px-2 px-md-3 pb-2 pb-md-3" style="overflow-x: auto;">
+    <div class="mb-2 p-3 position-relative rounded-3 bg-light" 
+         style="" 
+         id="offcanvasUserDesc">
+         
+        
+    {% if user.is_authenticated %}
+        <div class="card-body mb-1">
+            <div class="d-flex align-items-start">
+                <div>
+                    <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">Hey {{ user.username | title }}!</p>
+                    <p class="small trefresh">Last login <span class="thuman">...</span>
+                    <span class="tstamp d-none">{{user.last_login|date:"c"}}</span></p>
+                </div>
+            </div>
+        </div>
+
+
+        <button type="button" class="btn btn-secondary btn-sm me-1" id="logoutButton" 
+                data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            Logout
+        </button>
+
+        <!-- LOGOUT MODAL -->
+        <div id="staticBackdrop" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
+             tabindex="-1" aria-hidden="true" aria-labelledby="staticBackdropLabel">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Logout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Would you like to logout?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" 
+                                data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" id="modalLogoutButton" 
+                                onclick="Modal.getInstance('#staticBackdrop').hide();
+                                         caches.delete('unicorn');
+                                         Unicorn.call('app', 'logout');"
+                                class="btn btn-primary">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Allauth button starts here -->
+        <form class="d-inline" action="{% provider_login_url 'google' %}" method="post">
+            {% csrf_token %}
+            <button class="btn btn-primary d-inline" type="submit">
+                <i class="bi bi-google"></i>
+                <span>Login with Google</span>
+            </button>
+        </form>
+        <!-- Allauth button ends here -->
+        {% endif %}
+        <button type="button" class="btn btn-secondary btn-sm" id="refreshAppButton"
+                onclick="caches.keys().then(cacheNames => {cacheNames.forEach(cacheName => {caches.delete(cacheName);});});
+                         location.reload();">
+            Refresh app
+        </button>    
+        
+        
+    </div>
+    
+    <div class="comments mb-2 p-3 position-relative rounded-3 bg-light" 
+         style=""
+         onclick="Handler.showTab('#offcanvas-pills-edit-tab');"
+         id="offcanvasProfileDesc">
+        <h6 class="text-muted">Profile</h6>
+        <div class="d-flex align-items-start">
+            <button class="border-0 rounded-circle p-2 me-2 mt-1" 
+                    style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
+                           background-color: {{request.user.profiles.properties.profile_color|default:'#0dcaf0'}} !important">
+                {{ request.user.profiles.name | first | upper}}
+            </button>
+            <div>
+                <p class="h6" style="">{{request.user.profiles.name}}</p>
+                <p class="text-muted small lh-sm">{{request.user.profiles.description}}</p>
+            </div>
+        </div>
+        <button class="bg-transparent border-0 mx-1 my-2 position-absolute top-0 end-0" 
+                style="z-index: 1020;"> 
+                <i class="bi bi-three-dots text-black-50"></i>
+        </button>
+    </div>
+    
+</div>
+
+
+

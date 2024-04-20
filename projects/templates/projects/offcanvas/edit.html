@@ -1,0 +1,49 @@
+{% load humanize %}
+{% load customfilters %}
+
+<div class="d-flex offcanvas-header p-3">
+    <h3 class="offcanvas-title me-auto flex-grow-1" id="offcanvasBottomLabel">Edit Profile</h3>
+    <!--<div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="maximize"
+               onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
+    </div>-->
+    <button type="button" class="border-0 bg-transparent" style="padding: 0px; " onclick="Handler.showTab('#offcanvas-pills-details-tab');" aria-label="Close">
+        <i class="bi-arrow-left" style="width: 24px; height: 24px;"></i>
+    </button>
+
+
+</div>
+
+<div class="offcanvas-body test-edit-inner small p-3" style="overflow-x: hidden;" id="switch">
+    <div class="row row-cols-1 g-3 pb-3" id="fileInfo">
+        <div class="col">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text" id="profile-name-label">Name</span>
+                <input class="form-control" 
+                       unicorn:model.lazy="request.user.profiles.name"
+                       id="profile-name-input" unicorn:key="profile-name-input"
+                       unicorn:partial="offcanvasProfileDesc"
+                       aria-label="Profile Name" value="{{request.user.profiles.name}}"/>
+            </div>
+        </div>
+        <div class="col">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text" id="profile-desc-label">Bio</span>
+                <textarea rows="4" class="form-control" 
+                       unicorn:model.lazy="request.user.profiles.description"
+                       id="profile-desc-input" unicorn:key="profile-desc-input"
+                       unicorn:partial="offcanvasProfileDesc"
+                       aria-label="Profile Description">{{request.user.profiles.description}}</textarea>
+            </div>
+        </div>
+        <div class="col">
+            <label for="exampleColorInput" class="form-label">Color</label>
+            <input type="color" class="form-control form-control-color" id="exampleColorInput" title="Choose your color"
+                   unicorn:key="user-profile-color"
+                   unicorn:partial="offcanvasProfileDesc"
+                   unicorn:partial.key="user-profile-color"
+                   value="{{ request.user.profiles.properties.profile_color }}"
+                   unicorn:model.lazy="request.user.profiles.properties.profile_color" />
+        </div>
+    </div>
+</div>
