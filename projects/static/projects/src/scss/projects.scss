@@ -395,101 +395,14 @@ $bootstrap-icons-font-dir: "../../../../node_modules/bootstrap-icons/font/fonts"
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translate3d(0, 20%, 0);
+        //transform: translate3d(0, 20%, 0);
     }
     
     to{
         opacity: 1;
-        transform: translate3d(0, 0, 0);
+        //transform: translate3d(0, 0, 0);
     }
 }
-
-.list-item-1 {
-    animation-delay: 0s;
-}
-
-.list-item-2 {
-    animation-delay: 0.3s;
-}
-
-.list-item-3 {
-    animation-delay: 0.6s;
-}
-
-.list-item-4 {
-    animation-delay: 0.9s;
-}
-
-.list-item-5 {
-    animation-delay: 1.2s;
-}
-
-.list-item-6 {
-    animation-delay: 1.5s;
-}
-
-.list-item-7 {
-    animation-delay: 1.8s;
-}
-
-.list-item-8 {
-    animation-delay: 2.1s;
-}
-
-.list-item-9 {
-    animation-delay: 2.4s;
-}
-
-.list-item-10 {
-    animation-delay: 2.7s;
-}
-
-.list-item-11 {
-    animation-delay: 3s;
-}
-
-.list-item-12 {
-    animation-delay: 3.3s;
-}
-
-.list-item-13 {
-    animation-delay: 3.6s;
-}
-
-.list-item-14 {
-    animation-delay: 3.9s;
-}
-
-.list-item-15 {
-    animation-delay: 4.2s;
-}
-
-.list-item-16 {
-    animation-delay: 4.5s;
-}
-
-.list-item-17 {
-    animation-delay: 4.8s;
-}
-
-.list-item-18 {
-    animation-delay: 5.1s;
-}
-
-.list-item-19 {
-    animation-delay: 5.4s;
-}
-
-.list-item-20 {
-    animation-delay: 5.7s;
-}
-
-
-
-
-
-
-
 
 .app-top {
     @extend .container-fluid, .vh-100, .p-0, .overflow-hidden;
