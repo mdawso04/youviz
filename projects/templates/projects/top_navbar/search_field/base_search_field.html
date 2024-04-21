@@ -11,7 +11,7 @@
        value="" />
 {% if context.mode == "view" or context.mode == "app" %}
     <button id="navbar-button-share" 
-            class="btn border-0 text-secondary" 
+            class="btn border-0 text-secondary py-0" 
             type="button" 
             data-url="{% url 'view' slug=datasource.slug %}" 
             data-text="{{ datasource.name }}">

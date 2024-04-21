@@ -21,7 +21,8 @@
     {% is_owner request.user viz as current_user_is_owner %} 
     <div class="position-relative pt-1 mx-2 viz-text-area text-secondary ts-6"
          {% if current_user_is_owner %}onclick="Handler.navigator.toggleEdit();"{% endif %}
-         id="floatingTextarea2{{vid}}">
+         id="floatingTextarea2{{vid}}"
+         style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;">
         {% if viz.description %}{{viz.description}}{% else %}No descriptoion.{% endif %}
     </div>
     {% endwith %}

@@ -208,7 +208,7 @@ class BaseModel(models.Model):
         return hash.hexdigest()[-10:]
         #return 'dummy'
         
-    def _generate_slug(self, save_to_obj=False, add_random_suffix=True):
+    def _generate_slug(self, use_name=False, save_to_obj=False, add_random_suffix=True):
         """
         Generates and returns slug for this obj.
         If `save_to_obj` is True, then saves to current obj.
@@ -222,17 +222,20 @@ class BaseModel(models.Model):
         # We rely on django's slugify function here. But if
         # it is not sufficient for you needs, you can implement
         # you own way of generating slugs.
-        generated_slug = slugify(self.name)
+        generated_slug = ''
+        
+        if use_name:
+            generated_slug += '-%s' % slugify(self.name)
 
         # Generate random suffix here.
         random_suffix = ""
         if add_random_suffix:
             random_suffix = ''.join([
                 random.choice(string.ascii_letters + string.digits)
-                for i in range(5)
+                for i in range(8)
             ])
-            generated_slug += '-%s' % random_suffix
-
+            generated_slug += '%s' % random_suffix
+            
         if save_to_obj:
             self.slug = generated_slug
             self.save(update_fields=['slug'])
@@ -241,7 +244,12 @@ class BaseModel(models.Model):
     
     def save(self, *args, **kwargs):
         self.hash_key = self._createHash()
-        self.slug = self._generate_slug()
+        
+        s = self.slug
+        if not s or len(s) != 8:
+            #overwrite existing only if not already an 8 char random hex string
+            self.slug = self._generate_slug()
+            
         if not self.properties:
             if not 'properties' in kwargs:
                 self.properties = {}
