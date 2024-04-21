@@ -80,6 +80,7 @@
         
     </div>
     
+    {% if user.is_authenticated %}
     <div class="comments mb-2 p-3 position-relative rounded-3 bg-light" 
          style=""
          onclick="Handler.showTab('#offcanvas-pills-edit-tab');"
@@ -101,6 +102,7 @@
                 <i class="bi bi-three-dots text-black-50"></i>
         </button>
     </div>
+    {% endif %}
     
 </div>
 
