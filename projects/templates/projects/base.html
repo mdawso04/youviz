@@ -26,7 +26,7 @@
         {% unicorn_scripts %}
         <style>.dropdown-toggle.no-arrow::after {content: none;}</style>
         {% analytical_head_bottom %}
-        {% if settings.adsensecode %}{% settings.adsensecode|safe %}{% endif %}
+        {% if settings.adsensecode %}{{ settings.adsensecode|safe }}{% endif %}
     </head>
     
     <body id="body">
