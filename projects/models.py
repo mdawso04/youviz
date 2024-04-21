@@ -246,7 +246,7 @@ class BaseModel(models.Model):
         self.hash_key = self._createHash()
         
         s = self.slug
-        if not s or len(s) != 8:
+        if not s:
             #overwrite existing only if not already an 8 char random hex string
             self.slug = self._generate_slug()
             
