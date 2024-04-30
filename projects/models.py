@@ -4,6 +4,11 @@ from django.utils.functional import cached_property
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.text import slugify
 
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from django.http import Http404
+
 from project import settings
  
 
@@ -157,6 +162,7 @@ class BaseModel(models.Model):
     
     class Meta:
         abstract = True
+        get_latest_by = 'created_at'
         
     prefetch = None
     
@@ -192,7 +198,7 @@ class BaseModel(models.Model):
         )
     
     def _getHashPayload(self):
-        return [self.__class__.__name__, self.id, self.last_updated]
+        return [self.__class__, self.name, self.created_at, self.last_updated]
     
     def _createHash(self):
         """This function generate 10 character long hash"""
@@ -255,6 +261,9 @@ class BaseModel(models.Model):
                 self.properties = {}
         super(BaseModel, self).save(*args, **kwargs)
         
+    def delete(self, *args, **kwargs):
+        super(BaseModel, self).delete()
+        
     @classmethod
     def get_prefetch(cls):
         return cls.prefetch
@@ -302,6 +311,7 @@ class BaseModel(models.Model):
         instance.save()
         return instance
     
+    '''
     @classmethod
     def delete(cls, *args, **kwargs):
         if 'instance' in kwargs:
@@ -310,7 +320,56 @@ class BaseModel(models.Model):
             instance = cls.item(int(kwargs['pk']))
         
         super(BaseModel, instance).delete()
+    '''
+    '''    
+    def can_view(self, user):
+        #owner always true
+        if user is self.owner:
+            return True
+        elif user in self.managers:
+            return True
+        elif user in self.collaborators:
+            return True
+        return False
+    
+    def can_view_or_404(self, user):
+        #owner always true
+        if self.can_view:
+            return True
+        raise Http404('No such object available for this user.')
+    
+    def can_change(self, user):
+        #owner always true
+        if user is self.owner:
+            return True
+        elif user in self.managers:
+            return True
+        elif user in self.collaborators:
+            return True
+        return False
+    
+    def can_change_or_404(self, user):
+        #owner always true
+        if self.can_change:
+            return True
+        raise Http404('No such object available for this user.')
+    
+    def can_delete(self, user):
+        if user is self.owner:
+            return True
+        elif user in self.managers:
+            return True
+        elif user in self.collaborators:
+            return False
+        return False
         
+    def can_delete_or_404(self, user):
+        #owner always true
+        if self.can_delete:
+            return True
+        raise Http404('No such object available for this user.')
+    '''
+    
     def is_owner(self, *args, **kwargs):
         if 'user' in kwargs:
             user = kwargs['user']
@@ -365,14 +424,16 @@ class Project(BaseModel):
 '''
 
 class Profile(BaseModel):
-    user = models.OneToOneField(User, related_name='profiles', on_delete=models.CASCADE)
+    #user = models.OneToOneField(User, related_name='profiles', on_delete=models.CASCADE, blank=True, null=True)
     #image = models.ImageField(default='default.jpg', upload_to='profile_pics')
 
     def __str__(self):
-        return f'{self.user.username} Profile'
+        return f'{self.owner.username} Profile'
     
     default_profile_properties = {'profile_color': '#93e3fd',}
     
+    owner = models.OneToOneField(User,on_delete=models.CASCADE, primary_key=True,)
+        
     @classmethod
     def extra_kwargs(cls, *args, **kwargs):
         k = super(Profile, cls).extra_kwargs(*args, **kwargs)
@@ -387,6 +448,25 @@ class Profile(BaseModel):
         if not self.properties:
             self.properties = self.default_profile_properties
         super(Profile, self).save(*args, **kwargs)
+        
+    '''
+    Signals wiring to create Profile when new user created
+    '''
+    def create_profile(sender, instance, created, **kwargs):
+        if created:
+            Profile.objects.create(owner=instance, name=instance.username.capitalize(), description="")
+
+    post_save.connect(create_profile, sender=User)
+
+    '''
+    def update_profile(sender, instance, created, **kwargs):
+        if created is False:
+            # NOTE profile"s" used here
+            if hasattr(instance, 'profile'):
+                instance.profile.save()
+
+    post_save.connect(update_profile, sender=User)
+    '''
 
 class Datastream(BaseModel):
     #attrs
@@ -395,6 +475,9 @@ class Datastream(BaseModel):
     last_cached = models.DateTimeField(auto_now_add=False, auto_now=False, null=True, blank=True)
     
     #prefetch = ('datapods', )
+    
+    managers = models.ManyToManyField(User, blank=True, related_name='datastream_managers')
+    collaborators = models.ManyToManyField(User, blank=True, related_name='datastream_collaborators')
     
     class Meta:
         default_related_name = 'datastreams'
@@ -438,6 +521,9 @@ class Datapod(BaseModel):
     
     class Meta:
         default_related_name = 'datapods'
+        
+    managers = models.ManyToManyField(User, blank=True, related_name='datapod_managers')
+    collaborators = models.ManyToManyField(User, blank=True, related_name='datapod_collaborators')
     
 class Datasource(BaseModel):
     #attrs
@@ -451,6 +537,9 @@ class Datasource(BaseModel):
     
     class Meta:
         default_related_name = 'datasources'
+        
+    managers = models.ManyToManyField(User, blank=True, related_name='datasource_managers')
+    collaborators = models.ManyToManyField(User, blank=True, related_name='datasource_collaborators')
     
     prefetch = ('vizs', 'comments', 'activities', 'itemviews', 'comments', )
     
@@ -590,6 +679,9 @@ class Datasource(BaseModel):
 class Viz(BaseModel):
     #relations
     datasource = models.ForeignKey(Datasource, on_delete=models.CASCADE)
+    
+    managers = models.ManyToManyField(User, blank=True, related_name='viz_managers')
+    collaborators = models.ManyToManyField(User, blank=True, related_name='viz_collaborators')
     
     #attrs
     json = models.JSONField(blank=True, null=True)
@@ -774,23 +866,16 @@ class Comment(BaseModel):
     datasource = models.ForeignKey(Datasource, null=True, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, null=True, on_delete=models.CASCADE)
     
+    managers = models.ManyToManyField(User, blank=True, related_name='comment_managers')
+    collaborators = models.ManyToManyField(User, blank=True, related_name='comment_collaborators')
+    
     class Meta:
         default_related_name = 'comments'
     
     prefetch = ('user',)
     
     
-class ItemView(models.Model):
-    IPAddress = models.GenericIPAddressField(default='45.243.82.169')
-    datasource = models.ForeignKey(Datasource, null=True, on_delete=models.CASCADE)
-    profile = models.ForeignKey(Profile, null=True, on_delete=models.CASCADE)
-    
-    class Meta:
-        default_related_name = 'itemviews'
-    
-    #prefetch = ('profile',)
-    
-class Activity(models.Model):
+class Activity(BaseModel):
     FAVORITE = 'F'
     LIKE = 'L'
     UP_VOTE = 'U'
@@ -802,9 +887,7 @@ class Activity(models.Model):
         (DOWN_VOTE, 'Down Vote'),
     )
     
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     activity_type = models.CharField(max_length=1, choices=ACTIVITY_TYPES)
-    date = models.DateTimeField(auto_now_add=True)
     datasource = models.ForeignKey(Datasource, null=True, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, null=True, on_delete=models.CASCADE)
     
@@ -838,6 +921,18 @@ class Activity(models.Model):
                     a.save()
     
     #prefetch = ('user',)
+    
+class ItemView(models.Model):
+    IPAddress = models.GenericIPAddressField(default='45.243.82.169')
+    datasource = models.ForeignKey(Datasource, null=True, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, null=True, on_delete=models.CASCADE)
+    
+    class Meta:
+        default_related_name = 'itemviews'
+    
+    #prefetch = ('profile',)
+    
+
     
 class Notification(models.Model):
     start_date = models.DateTimeField()

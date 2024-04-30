@@ -89,12 +89,12 @@
         <div class="d-flex align-items-start">
             <button class="border-0 rounded-circle p-2 me-2 mt-1" 
                     style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
-                           background-color: {{request.user.profiles.properties.profile_color|default:'#0dcaf0'}} !important">
-                {{ request.user.profiles.name | first | upper}}
+                           background-color: {{request.user.profile.properties.profile_color|default:'#0dcaf0'}} !important">
+                {{ request.user.profile.name | first | upper}}
             </button>
             <div>
-                <p class="h6" style="">{{request.user.profiles.name}}</p>
-                <p class="text-muted small lh-sm">{{request.user.profiles.description}}</p>
+                <p class="h6" style="">{{request.user.profile.name}}</p>
+                <p class="text-muted small lh-sm">{{request.user.profile.description}}</p>
             </div>
         </div>
         <button class="bg-transparent border-0 mx-1 my-2 position-absolute top-0 end-0" 

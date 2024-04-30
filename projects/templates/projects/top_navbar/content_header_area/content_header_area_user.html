@@ -1,8 +1,8 @@
 <div class="alert alert-light mb-0" 
      role="alert"
      style="background-color: {{ siteuser.profiles.properties.profile_color }} !important;">
-  <h4 class="alert-heading">{{ siteuser.profiles.name }}</h4>
-  {# <p>{{ siteuser.profiles.description }}</p> #}
+  <h4 class="alert-heading">{{ siteuser.profile.name }}</h4>
+  {# <p>{{ siteuser.profile.description }}</p> #}
   <hr>
   <p class="mb-0">{{ datasources.count }} Viz{{ datasources.count|pluralize }}</p>
 </div>

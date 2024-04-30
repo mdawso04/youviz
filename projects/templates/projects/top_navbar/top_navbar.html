@@ -24,8 +24,8 @@
                             data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample"
                             class="border-0 rounded-circle p-2 ms-2" 
                             style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
-                                       background-color: {{request.user.profiles.properties.profile_color|default:'#0dcaf0'}} !important">
-                        {{ request.user.profiles.name | first | upper}}
+                                       background-color: {{request.user.profile.properties.profile_color|default:'#0dcaf0'}} !important">
+                        {{ request.user.profile.name | first | upper}}
                     </button>
                 </div>
                 {% else %}

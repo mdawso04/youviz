@@ -2,45 +2,163 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.urls import reverse
+from django.contrib.auth.decorators import user_passes_test, permission_required
+from guardian.decorators import permission_required
 
 # Create your views here.
 from .models import Datasource
 from .forms import DatasourceForm
+from .decorators import check_user_able_to_see_page
 from project import settings
+from django.shortcuts import render, redirect
+
+from projects.components.viz import VizView
+from projects.components.dataframe import DataframeView
+from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings
+
 import os
 
-#view all vizs
+#switch if any
+#load item if any, judge request type & quality
+#authorise
+#marshal params
+#render
+default_template = 'projects/app_top.html'
+
+#@permission_required('projects.view_datasource', return_404=True)
 def list(request):
-    query = request.GET.get('query', '')
-    page = request.GET.get('page', 1)
-    user = request.GET.get('user', '')
-    c = {'context': {'mode': 'list', 'query': query, 'page': page, 'user': user}}
-    return render(request, 'projects/app_top.html', c)
-
-#view all vizs from 1 user
-def user(request, username = None, slug = None):
-    query = request.GET.get('query', '')
-    page = request.GET.get('page', 1)
-    user = request.GET.get('user', '')
-    c = {'context': {'mode': 'user', 'query': query, 'page': page, 'user': user, 'username': username, 'slug': slug}}
-    return render(request, 'projects/app_top.html', c)
-
-#view one
-def view(request, pk = None, slug = None):
-    if True: #id is valid && share is on
-        c = {'context': {'mode': 'view', 'pk': pk, 'slug': slug}}
-        return render(request, 'projects/app_top.html', c)
-    else:
-        return list(request)
+    #list so dont load
     
-#view options to add new: datastream template or datastream, viz
-def new(request):
+    #if not request.user.has_perm('projects.view_datasource', ):
+    #    raise Http404
+    
+    context = {
+        'context': {
+            'mode': 'list',
+            'query': request.GET.get('query', ''),
+            'page': request.GET.get('page', 1),
+            'user': request.GET.get('user', ''), 
+        }
+    }
+    
+    return render(request, default_template, context)
+
+#@permission_required('projects.view_profile', (Profile, 'slug', 'slug'))
+def user(request, slug):
+    context = {
+        'context': {
+            'mode': 'user',
+            'query': request.GET.get('query', ''),
+            'page': request.GET.get('page', 1),
+            'user': request.GET.get('user', ''), 
+            'slug': slug, 
+        }
+    }
+    
+    return render(request, default_template, context)
+
+#@permission_required('projects.view_datasource', (Datasource, 'slug', 'slug'))
+def view(request, slug):
+    context = {
+        'context': {
+            'mode': 'view',
+            'pk': None,
+            'slug': slug, 
+        }
+    }
+    
+    return render(request, default_template, context)
+    
+'''
+def _new(request):
     if request.user.is_authenticated:
         c = {'context': {'mode': 'new'}}
         return render(request, 'projects/app_top.html', c)
     else:
         return redirect(reverse('list'))
+'''
+    
+def new(request):
+    '''
+    Handle 'new' requests
+    '''
+    context = {
+        'context': {
+            'mode': 'new'
+        }
+    }
+    
+    if request.GET['o'] == 'datamenu':
+        context['context']['page'] = 'new.datamenu'
+        return add_datamenu(request, context=context)
 
+    elif request.GET['o'] == 'vizmenu':
+        context['context']['page'] = 'new.vizmenu'
+        return add_vizmenu(request, context=context)
+
+    elif request.GET['o'] == 'datastream':
+        context['context']['page'] = 'new.datastream'
+        return add_datastream(request, context=context)
+        
+    elif request.GET['o'] == 'datasource':
+        context['context']['page'] = 'new.datasource'
+        return add_datasource(request, context=context)
+
+    elif request.GET['o'] == 'viz':
+        context['context']['page'] = 'new.viz'
+        return add_viz(request, context=context)
+
+    else:
+        return redirect('/')
+
+#@permission_required(TBD,)
+def add_datamenu(request, context):
+    return render(request, default_template, context)
+
+#@permission_required('projects.add_viz',)
+def add_vizmenu(request, context):
+    return render(request, default_template, context)
+
+#@permission_required('projects.add_datastream',)
+def add_datastream(request, context):
+    return render(request, default_template, context)
+
+#@permission_required('projects.add_datasource',)
+def add_datasource(request, context):
+    return render(request, default_template, context)
+
+#@permission_required('projects.add_viz',)
+def add_viz(request, context):
+    return render(request, default_template, context)
+
+#@permission_required('projects.view_viz',)
+def viz(request, pk = None, hash_k = None):
+    context = {'context': {'mode': 'app'}}
+    
+    return VizView.as_view()(request, context=context, pk=pk, hash_k=hash_k)
+
+#@permission_required('projects.view_viz',)
+def viz_viewmode(request, pk = None, hash_k = None):
+    context = {'context': {'mode': 'view'}}
+    
+    return VizView.as_view()(request, context=context, pk=pk, hash_k=hash_k)
+
+#@permission_required('projects.view_datasource',)
+def dataframe(request, pk = None, hash_k = None):
+    context = {'context': {'mode': 'app'}}
+    
+    return DataframeView.as_view()(request, context=context, pk=pk, hash_k=hash_k)
+
+#@permission_required('projects.view_datasource',)
+def dataframe_viewmode(request, pk = None, hash_k = None):
+    context = {'context': {'mode': 'view'}}
+    
+    return DataframeView.as_view()(request, context=context, pk=pk, hash_k=hash_k)
+
+
+
+
+'''
 def app(request, pk=None):
     if request.user.is_authenticated:
         c = {'context': {'mode': 'app', 'pk': pk}}
@@ -54,7 +172,7 @@ def new_viz_list(request):
         return render(request, 'projects/app_top.html', c)
     else:
         return render(request, 'projects/landing_new.html')
-
+        
 def new_viz(request, pk):
     if request.user.is_authenticated:
         c = {'context': {'mode': 'new_viz', 'pk': pk}}
@@ -72,6 +190,8 @@ def dataframe(request, pk):
 
 def report(request, pk):
     return render(request, 'projects/report.html', {'pk' : pk})
+    
+'''
 
 def model_form_upload(request):
     if request.method == 'POST':
@@ -86,8 +206,12 @@ def model_form_upload(request):
         'form': form
     })
 
+'''
+
 def youviz_js(request):
     return render(request, 'projects/youviz.js', content_type='text/javascript')
+    
+'''
 
 def signup(request):
     if request.user.is_authenticated:

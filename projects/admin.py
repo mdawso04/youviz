@@ -1,26 +1,32 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
+from guardian.admin import GuardedModelAdmin
 
 # Register your models here.
 from .models import Profile, Datastream, Datapod, Datasource, Viz, ItemView, Activity, Comment, Notification, Settings
 
-class DatastreamAdmin(admin.ModelAdmin):
+class DatastreamAdmin(GuardedModelAdmin):
     readonly_fields = ('pk', 'created_at', 'last_updated', 'last_cached', 'hash_key', 'slug')
 
-class DatapodAdmin(admin.ModelAdmin):
+class DatapodAdmin(GuardedModelAdmin):
     readonly_fields = ('pk', 'created_at', 'last_updated', 'hash_key', 'slug')
 
-class DatasourceAdmin(admin.ModelAdmin):
+class DatasourceAdmin(GuardedModelAdmin):
     readonly_fields = ('pk', 'created_at', 'last_updated', 'last_cached', 'hash_key', 'slug')
     
-class VizAdmin(admin.ModelAdmin):
+class VizAdmin(GuardedModelAdmin):
     readonly_fields = ('pk', 'created_at', 'last_updated', 'hash_key', 'slug')
 
-class ReportAdmin(admin.ModelAdmin):
+class ReportAdmin(GuardedModelAdmin):
     readonly_fields = ('pk', 'created_at', 'last_updated', 'hash_key', 'slug')
 
-class ProfileAdmin(admin.ModelAdmin):
+class ProfileAdmin(GuardedModelAdmin):
     readonly_fields = ('pk', 'slug')
+    
+class CommentAdmin(GuardedModelAdmin):
+    readonly_fields = ('pk', )
+    
+#non-guarded models
     
 class ItemViewAdmin(admin.ModelAdmin):
     readonly_fields = ('pk', )
@@ -28,9 +34,6 @@ class ItemViewAdmin(admin.ModelAdmin):
 class ActivityAdmin(admin.ModelAdmin):
     readonly_fields = ('pk', )
 
-class CommentAdmin(admin.ModelAdmin):
-    readonly_fields = ('pk', )
-    
 class NotificationAdmin(admin.ModelAdmin):
     readonly_fields = ('pk', )
     
@@ -45,9 +48,9 @@ admin.site.register(Datapod, DatapodAdmin)
 admin.site.register(Datasource, DatasourceAdmin)
 admin.site.register(Viz, VizAdmin)
 admin.site.register(Profile, ProfileAdmin)
+admin.site.register(Comment, CommentAdmin)
 admin.site.register(ItemView, ItemViewAdmin)
 admin.site.register(Activity, ActivityAdmin)
-admin.site.register(Comment, CommentAdmin)
 admin.site.register(Notification, NotificationAdmin)
 admin.site.register(Settings, SettingsAdmin)
 #admin.site.register(Report, VizAdmin)

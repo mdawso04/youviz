@@ -50,7 +50,8 @@ class DataframeView(UnicornView):
     
     def updating(self, name, value):
         #logger.debug('DataframeView > updating start')
-        pass
+        if not self.datasource.can_change(self.request.user):
+            raise Http404('No such object available for this user.')
         #logger.debug('DataframeView > updating end')
     
     def updated(self, name, value):

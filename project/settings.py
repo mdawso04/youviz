@@ -48,8 +48,8 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY',
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
-DEBUG = False
-#DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+#DEBUG = False
+DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 #HTML_MINIFY = True
 
@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'analytical',
     #'debug_toolbar',
     'django_unicorn',
+    'guardian',
     'projects',
 ]
 
@@ -141,9 +142,9 @@ TEMPLATES = [
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
-
     # `allauth` specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
 ]
 
 LOGIN_REDIRECT_URL = '/'

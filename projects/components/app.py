@@ -135,6 +135,8 @@ class AppView(UnicornView):
                 
                 ItemView.objects.get_or_create(IPAddress=get_client_ip(self.request), datasource=self.datasource)
                 
+                print(self.datasource.owner)
+                
                 
                 #if hasattr(self.datasource, 'reports'):
                 #    self.report = self.datasource.reports.last()
@@ -143,7 +145,8 @@ class AppView(UnicornView):
             
             elif self.context['mode'] == 'new':
                 
-                if self.request.GET['o'] == 'datamenu':
+                if self.context['page'] == 'new.datamenu':
+                #if self.request.GET['o'] == 'datamenu':
                     #self.services = Datastream.services()
                     #self.datastreams = Datastream.list()
                     self.datastreams = Datastream.list()
@@ -154,7 +157,8 @@ class AppView(UnicornView):
                         'content': 'Select below to add a new item'
                     }
                     
-                elif self.request.GET['o'] == 'vizmenu':
+                elif self.context['page'] == 'new.vizmenu':
+                #elif self.request.GET['o'] == 'vizmenu':
                     self.services = Viz.services()
                     self.datasource = Datasource.item(pk=self.request.GET['datasource'])
                     self.page = 'new.vizmenu'
@@ -163,7 +167,8 @@ class AppView(UnicornView):
                         'content': 'Select below to add a new item'
                     }
                 
-                elif self.request.GET['o'] == 'datastream':
+                elif self.context['page'] == 'new.datastream':
+                #elif self.request.GET['o'] == 'datastream':
                     kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('url',)}
                     if len(kwargs) == 1:
                         self.datasource = self.add(
@@ -180,7 +185,8 @@ class AppView(UnicornView):
                     #    'content': 'Datastream added!'
                     #}
                 
-                elif self.request.GET['o'] == 'datasource':
+                elif self.context['page'] == 'new.datasource':
+                #elif self.request.GET['o'] == 'datasource':
                     kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('datastream',)}
                     if len(kwargs) == 1:
                         self.datasource = self.add(
@@ -205,7 +211,8 @@ class AppView(UnicornView):
                     self.call("alert", "hello")
                     self.load_table()
                 
-                elif self.request.GET['o'] == 'viz':
+                elif self.context['page'] == 'new.viz':
+                #elif self.request.GET['o'] == 'viz':
                     kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('datasource',)}
                     if len(kwargs) == 1:
                         self.datasource = Datasource.item(pk=kwargs['datasource'])
@@ -276,13 +283,20 @@ class AppView(UnicornView):
         
     def updating(self, name, value):
         #logger.debug('AppView > updating start')
-        pass
+        '''
+        if 'user.profile' in name:
+            if not self.request.user.has_perm('projects.change_profile', self.user.profile):
+                raise Http404
+        elif 'datasource.' in name:
+            if not self.request.user.has_perm('projects.change_datasource', self.datasource):
+                raise Http404
+        '''
         #logger.debug('AppView > updating end')
     
     def updated(self, name, value):
         #logger.debug('AppView > updated start')
-        if 'user.profiles' in name:
-            self.request.user.profiles.save()
+        if 'user.profile' in name:
+            self.request.user.profile.save()
         elif 'datasource.' in name:
             self.datasource.save()
         #logger.debug('AppView > updated end')
@@ -302,6 +316,7 @@ class AppView(UnicornView):
                 Returns:
                         object (object): The new instance if no redirect is requested
         '''
+        
         params = {k: v for k, v in kwargs.items() if k not in ('cls', 'cls_name', 'call_redirect')}
         
         if 'cls' in kwargs:

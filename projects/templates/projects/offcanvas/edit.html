@@ -20,20 +20,20 @@
             <div class="input-group input-group-sm">
                 <span class="input-group-text" id="profile-name-label">Name</span>
                 <input class="form-control" 
-                       unicorn:model.lazy="request.user.profiles.name"
+                       unicorn:model.lazy="request.user.profile.name"
                        id="profile-name-input" unicorn:key="profile-name-input"
                        unicorn:partial="offcanvasProfileDesc"
-                       aria-label="Profile Name" value="{{request.user.profiles.name}}"/>
+                       aria-label="Profile Name" value="{{request.user.profile.name}}"/>
             </div>
         </div>
         <div class="col">
             <div class="input-group input-group-sm">
                 <span class="input-group-text" id="profile-desc-label">Bio</span>
                 <textarea rows="4" class="form-control" 
-                       unicorn:model.lazy="request.user.profiles.description"
+                       unicorn:model.lazy="request.user.profile.description"
                        id="profile-desc-input" unicorn:key="profile-desc-input"
                        unicorn:partial="offcanvasProfileDesc"
-                       aria-label="Profile Description">{{request.user.profiles.description}}</textarea>
+                       aria-label="Profile Description">{{request.user.profile.description}}</textarea>
             </div>
         </div>
         <div class="col">
@@ -42,8 +42,8 @@
                    unicorn:key="user-profile-color"
                    unicorn:partial="offcanvasProfileDesc"
                    unicorn:partial.key="user-profile-color"
-                   value="{{ request.user.profiles.properties.profile_color }}"
-                   unicorn:model.lazy="request.user.profiles.properties.profile_color" />
+                   value="{{ request.user.profile.properties.profile_color }}"
+                   unicorn:model.lazy="request.user.profile.properties.profile_color" />
         </div>
     </div>
 </div>
