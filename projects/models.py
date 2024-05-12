@@ -3,8 +3,16 @@ from django.contrib.auth.models import User
 from django.utils.functional import cached_property
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.text import slugify
+from django.apps import apps
 
-from django.db.models.signals import post_save
+from django.contrib.auth.models import User, Group
+from guardian.shortcuts import assign_perm
+from guardian.shortcuts import remove_perm
+from guardian.shortcuts import get_perms, get_user_perms, get_users_with_perms, get_objects_for_user, get_perms_for_model
+from guardian.utils import get_anonymous_user
+
+from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 
 from django.http import Http404
@@ -156,6 +164,7 @@ class BaseModel(models.Model):
     history = AuditlogHistoryField()
     properties = models.JSONField(blank=True, null=True)
     slug = models.SlugField(max_length=255, unique=True)
+    is_published = models.BooleanField(default=True)
    
     #foreign keys
     owner = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
@@ -165,6 +174,8 @@ class BaseModel(models.Model):
         get_latest_by = 'created_at'
         
     prefetch = None
+    
+    use_object_permissions = False
     
     def __str__(self):
         return self.name
@@ -178,6 +189,22 @@ class BaseModel(models.Model):
             'author': self.owner.username, 
             #'h1': self.name,
         }
+    
+    @cached_property
+    def perms_req_by_owner(self):
+         return [p.codename for p in Group.objects.get(name='datasource_owner').permissions.all()] 
+    
+    @cached_property
+    def perms_req_by_managers(self):
+         return [p.codename for p in Group.objects.get(name='datasource_managers').permissions.all()] 
+        
+    @cached_property
+    def perms_req_by_collaborators(self):
+         return [p.codename for p in Group.objects.get(name='datasource_collaborators').permissions.all()] 
+        
+    @cached_property
+    def perms_req_by_anonymous(self):
+        return [p.codename for p in Group.objects.get(name='datasource_anonymous').permissions.all()] 
     
     #def get_meta_image(self):
     #    if self.image:
@@ -261,6 +288,9 @@ class BaseModel(models.Model):
                 self.properties = {}
         super(BaseModel, self).save(*args, **kwargs)
         
+        if self.use_object_permissions:
+            baseobject_perms_helper(get_users_with_perms(self), self)
+        
     def delete(self, *args, **kwargs):
         super(BaseModel, self).delete()
         
@@ -273,10 +303,11 @@ class BaseModel(models.Model):
         p = cls.get_prefetch()
         query = kwargs['query'] if 'query' in kwargs else ''
         kwargs = {k: v for k, v in kwargs.items() if k not in ('query',)}
+        
         if p:
-            return cls.objects.filter(name__icontains=query, **kwargs).all().order_by('-id').prefetch_related(*p)
+            return cls.objects.filter(name__icontains=query, **kwargs).order_by('-id').prefetch_related(*p)
         else:
-            return cls.objects.filter(name__icontains=query, **kwargs).all().order_by('-id')
+            return cls.objects.filter(name__icontains=query, **kwargs).order_by('-id')
     
     @classmethod
     def item(cls, *args, **kwargs):
@@ -453,8 +484,9 @@ class Profile(BaseModel):
     Signals wiring to create Profile when new user created
     '''
     def create_profile(sender, instance, created, **kwargs):
-        if created:
-            Profile.objects.create(owner=instance, name=instance.username.capitalize(), description="")
+        user = instance
+        if created and user.username != settings.ANONYMOUS_USER_NAME:
+            Profile.objects.create(owner=instance, name=user.username.capitalize(), description="")
 
     post_save.connect(create_profile, sender=User)
 
@@ -537,7 +569,10 @@ class Datasource(BaseModel):
     
     class Meta:
         default_related_name = 'datasources'
+        permissions = [('view_published_datasource', 'Can view published datasource')]
         
+    use_object_permissions = True
+       
     managers = models.ManyToManyField(User, blank=True, related_name='datasource_managers')
     collaborators = models.ManyToManyField(User, blank=True, related_name='datasource_collaborators')
     
@@ -675,6 +710,104 @@ class Datasource(BaseModel):
         # Add baz back since it doesn't exist in the pickle
         #self.baz = 0
     '''
+
+'''
+Datasource auth signal hooks
+'''
+
+def baseobject_perms_helper(users_with_perms, bobj, **kwargs):
+    
+    owner = bobj.owner
+    managers = bobj.managers.all()
+    collaborators = bobj.collaborators.all()
+    anonymous = get_anonymous_user()
+    
+    users_needing_perms = list(set([owner]) | set(managers) | set(collaborators) | set([anonymous]))
+
+    users_needing_no_perms = [user for user in users_with_perms if user not in users_needing_perms]
+    
+    perms_req_by_owner = bobj.perms_req_by_owner
+    perms_req_by_managers = bobj.perms_req_by_managers
+    perms_req_by_collaborators = bobj.perms_req_by_collaborators
+    perms_req_by_anonymous = bobj.perms_req_by_anonymous
+    
+    #remove all perms from users_needing_no_perms
+    for u in users_needing_no_perms:
+        for p in get_user_perms(u, bobj):
+            remove_perm(p, u, bobj)
+            
+    for u in users_needing_perms:
+        needed_perms = []
+        if u == owner:
+            needed_perms = list(set(needed_perms) | set(perms_req_by_owner))
+        if u in managers:
+            needed_perms = list(set(needed_perms) | set(perms_req_by_managers))
+        if u in collaborators:
+            needed_perms = list(set(needed_perms) | set(perms_req_by_collaborators))
+        if u == anonymous:
+            needed_perms = list(set(needed_perms) | set(perms_req_by_anonymous))
+            
+        user_perms = get_user_perms(u, bobj)
+        
+        perms_to_assign = list(set(needed_perms) - set(user_perms))
+        perms_to_remove = list(set(user_perms) - set(needed_perms))
+    
+        for p in perms_to_assign:
+            print(p)
+            assign_perm(p, u, bobj)
+        for p in perms_to_remove:
+            remove_perm(p, u, bobj)
+    
+def managers_changed(sender, **kwargs):
+    bobj, pk_set, action = kwargs['instance'], kwargs['pk_set'], kwargs['action']
+    if 'post' in action and bobj.use_object_permissions:
+        baseobject_perms_helper(get_users_with_perms(bobj), bobj)
+
+m2m_changed.connect(managers_changed, sender=Datasource.managers.through)
+
+def collaborators_changed(sender, **kwargs):
+    bobj, pk_set, action = kwargs['instance'], kwargs['pk_set'], kwargs['action']
+    if 'post' in action and bobj.use_object_permissions:
+        baseobject_perms_helper(get_users_with_perms(bobj), bobj)
+
+m2m_changed.connect(collaborators_changed, sender=Datasource.collaborators.through)
+
+def group_permissions_changed(sender, **kwargs):
+    group, action = kwargs['instance'], kwargs['action']
+    if 'post' in action:
+        model_name, role = group.name.split('_')
+        
+        #skip object-level update for site-level permission changes
+        if model_name == 'site':
+            return 
+        
+        model_to_refresh_perms = apps.get_model('projects', model_name)
+        
+        if not model_to_refresh_perms.use_object_permissions:
+            return #abort
+        
+        if role == 'anonymous':
+            filter_query = {
+                'pk__isnull': False,
+            }
+        else:
+            filter_query = {
+                '{0}__isnull'.format(role): False,
+            }
+        
+        bobjs_to_refresh_perms = model_to_refresh_perms.objects.filter(**filter_query)
+        for bobj in bobjs_to_refresh_perms:
+            baseobject_perms_helper(get_users_with_perms(bobj), bobj)
+
+m2m_changed.connect(group_permissions_changed, sender=Group.permissions.through)
+
+
+
+
+
+
+
+
     
 class Viz(BaseModel):
     #relations

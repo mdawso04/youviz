@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.urls import reverse
-from django.contrib.auth.decorators import user_passes_test, permission_required
+#from django.contrib.auth.decorators import user_passes_test, permission_required
 from guardian.decorators import permission_required
+from guardian.utils import get_anonymous_user
 
 # Create your views here.
 from .models import Datasource
@@ -25,12 +27,8 @@ import os
 #render
 default_template = 'projects/app_top.html'
 
-#@permission_required('projects.view_datasource', return_404=True)
+@permission_required('projects.view_datasource')
 def list(request):
-    #list so dont load
-    
-    #if not request.user.has_perm('projects.view_datasource', ):
-    #    raise Http404
     
     context = {
         'context': {
@@ -43,7 +41,7 @@ def list(request):
     
     return render(request, default_template, context)
 
-#@permission_required('projects.view_profile', (Profile, 'slug', 'slug'))
+@permission_required('projects.view_datasource')
 def user(request, slug):
     context = {
         'context': {
@@ -57,7 +55,7 @@ def user(request, slug):
     
     return render(request, default_template, context)
 
-#@permission_required('projects.view_datasource', (Datasource, 'slug', 'slug'))
+@permission_required('projects.view_datasource')
 def view(request, slug):
     context = {
         'context': {
@@ -131,25 +129,25 @@ def add_datasource(request, context):
 def add_viz(request, context):
     return render(request, default_template, context)
 
-#@permission_required('projects.view_viz',)
+@permission_required('projects.view_datasource')
 def viz(request, pk = None, hash_k = None):
     context = {'context': {'mode': 'app'}}
     
     return VizView.as_view()(request, context=context, pk=pk, hash_k=hash_k)
 
-#@permission_required('projects.view_viz',)
+@permission_required('projects.view_datasource')
 def viz_viewmode(request, pk = None, hash_k = None):
     context = {'context': {'mode': 'view'}}
     
     return VizView.as_view()(request, context=context, pk=pk, hash_k=hash_k)
 
-#@permission_required('projects.view_datasource',)
+@permission_required('projects.view_datasource')
 def dataframe(request, pk = None, hash_k = None):
     context = {'context': {'mode': 'app'}}
     
     return DataframeView.as_view()(request, context=context, pk=pk, hash_k=hash_k)
 
-#@permission_required('projects.view_datasource',)
+@permission_required('projects.view_datasource')
 def dataframe_viewmode(request, pk = None, hash_k = None):
     context = {'context': {'mode': 'view'}}
     

@@ -1,5 +1,9 @@
 {% load humanize %}
 {% load unicorn %}
+{% load guardian_tags %}
+{% get_obj_perms request.user for request.user.profile as "profile_perms" %}
+
+
 <!-- OFFCANVAS --> 
 <div class="offcanvas offcanvas-end" tabindex="-1" id="OFFCANVAS" aria-labelledby="offcanvasExampleLabel" 
      style="padding-right: calc(var(--bs-gutter-x) * .5); padding-left: calc(var(--bs-gutter-x) * .5);">
@@ -15,7 +19,7 @@
                         Details
                     </button>
                 </li>
-                {% if user.is_authenticated %}
+                {% if request.user.is_authenticated %}
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="offcanvas-pills-edit-tab" data-bs-toggle="pill" 
                             data-bs-target="#offcanvas-pills-edit" type="button" role="tab" aria-controls="offcanvas-pills-edit" aria-selected="false">

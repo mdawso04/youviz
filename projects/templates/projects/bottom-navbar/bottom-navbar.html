@@ -1,6 +1,8 @@
 {% load unicorn %} 
 {% load humanize %} 
 {% load socialaccount %}
+{% load guardian_tags %}
+
 
 <!-- BOTTOM NAVBAR -->
 
@@ -68,7 +70,7 @@
             </i>
         </button>
 
-        {% if user.is_authenticated %}
+        {% if 'projects.add_datasource' in perms %}
         <!-- NEW BTN -->
         <button type="button" 
                 class=

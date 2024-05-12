@@ -93,19 +93,21 @@ else:
 
 MIDDLEWARE = [
     # Request altering middleware
-    'django.middleware.gzip.GZipMiddleware',
-    'htmlmin.middleware.HtmlMinifyMiddleware',
-    'htmlmin.middleware.MarkRequestMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'htmlmin.middleware.HtmlMinifyMiddleware',
+    'htmlmin.middleware.MarkRequestMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'auditlog.middleware.AuditlogMiddleware',
+    'projects.middleware.guardian_anonymous_user_middleware',
+    'projects.middleware.RedirectMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
@@ -142,10 +144,12 @@ TEMPLATES = [
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
     # `allauth` specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
-    'guardian.backends.ObjectPermissionBackend',
 ]
+
+ANONYMOUS_USER_NAME = 'GuardianUser'
 
 LOGIN_REDIRECT_URL = '/'
 

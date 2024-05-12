@@ -1,4 +1,6 @@
 {% load customfilters %}
+{% load guardian_tags %}
+
 <div unicorn:view>
     <!-- PLOT -->
     {% with vids=viz.pk|stringformat:"s" %}
@@ -15,15 +17,16 @@
         </div>
     </div>
     
+    {% get_obj_perms request.user for viz as "viz_perms" %}
+    {% if "change_viz" in viz_perms %}
+        {% include '../projects/editpanel/editpanel.html' %}
+    {% endif %}
     
-    {% include '../projects/editpanel/editpanel.html' %}
-    
-    {% is_owner request.user viz as current_user_is_owner %} 
     <div class="position-relative pt-1 mx-2 viz-text-area text-secondary ts-6"
-         {% if current_user_is_owner %}onclick="Handler.navigator.toggleEdit();"{% endif %}
+        {% if 'change_viz' in viz_perms %}onclick="Handler.navigator.toggleEdit();"{% endif %}
          id="floatingTextarea2{{vid}}"
          style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;">
-        {% if viz.description %}{{viz.description}}{% else %}No descriptoion.{% endif %}
+        {% if viz.description %}{{viz.description}}{% else %}No description.{% endif %}
     </div>
     {% endwith %}
     {% endwith %}

@@ -2,9 +2,11 @@
 from django_unicorn.components import QuerySetType, UnicornView
 from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings
 from django.contrib.auth.models import User
+from projects.middleware import redirect
+from guardian.shortcuts import get_perms, get_user_perms, get_users_with_perms, get_objects_for_user, get_perms_for_model
 
 from django.core.files.base import ContentFile
-from django.shortcuts import render, redirect
+#from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 from django.urls import reverse
 from project import settings
@@ -21,7 +23,7 @@ from io import BufferedIOBase
 from datetime import datetime
 
 #non-standard libraries
-#none
+
 
 class AppView(UnicornView):
     datasources: QuerySetType[Datasource] = None
@@ -97,7 +99,9 @@ class AppView(UnicornView):
             self.settings = Settings.all()
             
             if self.context['mode'] == 'list':
-                self.datasources = Datasource.list(query=self.context['query'])
+                ds = Datasource.list(query=self.context['query'])
+                #filter on perms permission
+                self.datasources = get_objects_for_user(self.request.user, ('view_published_datasource'), ds)
                 self.list_items_paginated = [self.datasources[i: i+20] for i in range(0, len(self.datasources), 20)]
                 #self.notification = Notification.objects.filter(position=Notification.LIST).last()
                 #self.ad = Notification.objects.filter(position=Notification.LIST_AD).last()
@@ -107,7 +111,8 @@ class AppView(UnicornView):
                 #self.siteuser = User.objects.get(username=self.context['username'])
                 p = Profile.item(slug=self.context['slug'])
                 self.siteuser = p.owner
-                self.datasources = Datasource.list(owner=self.siteuser.pk)
+                ds = Datasource.list(owner=self.siteuser.pk)
+                self.datasources = get_objects_for_user(self.request.user, ('view_published_datasource',), ds)
                 self.list_items_paginated = [self.datasources[i: i+20] for i in range(0, len(self.datasources), 20)]
                 #self.notification = Notification.objects.filter(position=Notification.USER).last()
                 return #do nothing
