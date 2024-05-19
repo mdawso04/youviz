@@ -4,6 +4,8 @@
 {% load analytical %}
 {% load humanize %}
 {% load socialaccount %}
+{% load guardian_tags %}
+{% get_obj_perms request.user for datasource as "datasource_perms" %}
 
 <!-- NAVPANEL -->
 <div class="bg-light border-none test-nav" id="navbar" aria-labelledby="TBD">
@@ -17,7 +19,7 @@
                         Details
                     </button>
                 </li>
-                {% if user.is_authenticated %}
+                {% if 'change_datasource' in datasource_perms %}
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="navpane-pills-edit-tab" data-bs-toggle="pill" 
                             data-bs-target="#navpane-pills-edit" type="button" role="tab" aria-controls="navpane-pills-edit" aria-selected="false">
@@ -48,7 +50,7 @@
                     {% include './details.html' %}
                 {% endblock %}
             </div>
-            {% if user.is_authenticated %}
+            {% if 'change_datasource' in datasource_perms %}
             <div class="tab-pane fade" id="navpane-pills-edit" role="tabpanel" aria-labelledby="navpane-pills-edit">
                 {% block edit %}
                     {% include './edit.html' %}

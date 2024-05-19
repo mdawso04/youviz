@@ -720,16 +720,17 @@ def baseobject_perms_helper(users_with_perms, bobj, **kwargs):
     owner = bobj.owner
     managers = bobj.managers.all()
     collaborators = bobj.collaborators.all()
-    anonymous = get_anonymous_user()
+    #anonymous = get_anonymous_user()
     
-    users_needing_perms = list(set([owner]) | set(managers) | set(collaborators) | set([anonymous]))
+    #users_needing_perms = list(set([owner]) | set(managers) | set(collaborators) | set([anonymous]))
+    users_needing_perms = list(set([owner]) | set(managers) | set(collaborators))
 
     users_needing_no_perms = [user for user in users_with_perms if user not in users_needing_perms]
     
     perms_req_by_owner = bobj.perms_req_by_owner
     perms_req_by_managers = bobj.perms_req_by_managers
     perms_req_by_collaborators = bobj.perms_req_by_collaborators
-    perms_req_by_anonymous = bobj.perms_req_by_anonymous
+    #perms_req_by_anonymous = bobj.perms_req_by_anonymous
     
     #remove all perms from users_needing_no_perms
     for u in users_needing_no_perms:
@@ -744,8 +745,8 @@ def baseobject_perms_helper(users_with_perms, bobj, **kwargs):
             needed_perms = list(set(needed_perms) | set(perms_req_by_managers))
         if u in collaborators:
             needed_perms = list(set(needed_perms) | set(perms_req_by_collaborators))
-        if u == anonymous:
-            needed_perms = list(set(needed_perms) | set(perms_req_by_anonymous))
+        #if u == anonymous:
+        #    needed_perms = list(set(needed_perms) | set(perms_req_by_anonymous))
             
         user_perms = get_user_perms(u, bobj)
         

@@ -1,5 +1,6 @@
 {% load customfilters %}
 {% load guardian_tags %}
+{% get_obj_perms request.user for viz.datasource as "datasource_perms" %}
 
 <div unicorn:view>
     <!-- PLOT -->
@@ -17,13 +18,12 @@
         </div>
     </div>
     
-    {% get_obj_perms request.user for viz as "viz_perms" %}
-    {% if "change_viz" in viz_perms %}
+    {% if "change_datasource" in datasource_perms %}
         {% include '../projects/editpanel/editpanel.html' %}
     {% endif %}
     
     <div class="position-relative pt-1 mx-2 viz-text-area text-secondary ts-6"
-        {% if 'change_viz' in viz_perms %}onclick="Handler.navigator.toggleEdit();"{% endif %}
+        {% if 'change_datasource' in datasource_perms %}onclick="Handler.navigator.toggleEdit();"{% endif %}
          id="floatingTextarea2{{vid}}"
          style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;">
         {% if viz.description %}{{viz.description}}{% else %}No description.{% endif %}

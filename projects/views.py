@@ -3,9 +3,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.urls import reverse
-#from django.contrib.auth.decorators import user_passes_test, permission_required
-from guardian.decorators import permission_required
-from guardian.utils import get_anonymous_user
 
 # Create your views here.
 from .models import Datasource
@@ -20,16 +17,9 @@ from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, No
 
 import os
 
-#switch if any
-#load item if any, judge request type & quality
-#authorise
-#marshal params
-#render
 default_template = 'projects/app_top.html'
 
-@permission_required('projects.view_datasource')
-def list(request):
-    
+def list(request):    
     context = {
         'context': {
             'mode': 'list',
@@ -38,10 +28,8 @@ def list(request):
             'user': request.GET.get('user', ''), 
         }
     }
-    
     return render(request, default_template, context)
 
-@permission_required('projects.view_datasource')
 def user(request, slug):
     context = {
         'context': {
@@ -52,10 +40,8 @@ def user(request, slug):
             'slug': slug, 
         }
     }
-    
     return render(request, default_template, context)
 
-@permission_required('projects.view_datasource')
 def view(request, slug):
     context = {
         'context': {
@@ -64,17 +50,7 @@ def view(request, slug):
             'slug': slug, 
         }
     }
-    
     return render(request, default_template, context)
-    
-'''
-def _new(request):
-    if request.user.is_authenticated:
-        c = {'context': {'mode': 'new'}}
-        return render(request, 'projects/app_top.html', c)
-    else:
-        return redirect(reverse('list'))
-'''
     
 def new(request):
     '''
@@ -109,87 +85,40 @@ def new(request):
     else:
         return redirect('/')
 
-#@permission_required(TBD,)
 def add_datamenu(request, context):
     return render(request, default_template, context)
 
-#@permission_required('projects.add_viz',)
 def add_vizmenu(request, context):
     return render(request, default_template, context)
 
-#@permission_required('projects.add_datastream',)
 def add_datastream(request, context):
     return render(request, default_template, context)
 
-#@permission_required('projects.add_datasource',)
 def add_datasource(request, context):
     return render(request, default_template, context)
 
-#@permission_required('projects.add_viz',)
 def add_viz(request, context):
     return render(request, default_template, context)
 
-@permission_required('projects.view_datasource')
 def viz(request, pk = None, hash_k = None):
     context = {'context': {'mode': 'app'}}
     
     return VizView.as_view()(request, context=context, pk=pk, hash_k=hash_k)
 
-@permission_required('projects.view_datasource')
 def viz_viewmode(request, pk = None, hash_k = None):
     context = {'context': {'mode': 'view'}}
     
     return VizView.as_view()(request, context=context, pk=pk, hash_k=hash_k)
 
-@permission_required('projects.view_datasource')
 def dataframe(request, pk = None, hash_k = None):
     context = {'context': {'mode': 'app'}}
     
     return DataframeView.as_view()(request, context=context, pk=pk, hash_k=hash_k)
 
-@permission_required('projects.view_datasource')
 def dataframe_viewmode(request, pk = None, hash_k = None):
     context = {'context': {'mode': 'view'}}
     
     return DataframeView.as_view()(request, context=context, pk=pk, hash_k=hash_k)
-
-
-
-
-'''
-def app(request, pk=None):
-    if request.user.is_authenticated:
-        c = {'context': {'mode': 'app', 'pk': pk}}
-        return render(request, 'projects/app_top.html', c)
-    else:
-        return render(request, 'projects/landing_new.html')
-
-def new_viz_list(request):
-    if request.user.is_authenticated:
-        c = {'context': {'mode': 'new_viz_list'}}
-        return render(request, 'projects/app_top.html', c)
-    else:
-        return render(request, 'projects/landing_new.html')
-        
-def new_viz(request, pk):
-    if request.user.is_authenticated:
-        c = {'context': {'mode': 'new_viz', 'pk': pk}}
-        return render(request, 'projects/app_top.html', c)
-    else:
-        return render(request, 'projects/landing_new.html')
-
-def dataframe(request, pk):
-    if request.user.is_authenticated:
-        d = Datasource.objects.filter(pk=int(pk)).last()
-        if d and d.project.user == request.user:
-            return render(request, 'projects/dataframe.html', {'datasource' : d})
-    else:
-        return render(request, 'projects/landing_top.html')
-
-def report(request, pk):
-    return render(request, 'projects/report.html', {'pk' : pk})
-    
-'''
 
 def model_form_upload(request):
     if request.method == 'POST':
@@ -203,13 +132,6 @@ def model_form_upload(request):
     return render(request, 'projects/model_form_upload.html', {
         'form': form
     })
-
-'''
-
-def youviz_js(request):
-    return render(request, 'projects/youviz.js', content_type='text/javascript')
-    
-'''
 
 def signup(request):
     if request.user.is_authenticated:

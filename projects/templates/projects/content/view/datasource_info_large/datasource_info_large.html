@@ -1,5 +1,7 @@
 {% load humanize %}
 {% load customfilters %}
+{% load guardian_tags %}
+{% get_obj_perms request.user for datasource as "datasource_perms" %}
 
 <div class="card-body p-2 bg-white viz-info-panel">
     {% if ad and ad.html %}
@@ -14,9 +16,16 @@
          onclick="if(event.target.id != 'fav_button_icon_{{datasource.pk}}') {Handler.navigator.toggleNav();}">
         <div>
             <h1 class="mb-0 h5 lh-sm" 
-                style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{{ datasource.name }}</h1>
+                style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{{ datasource.name }}
+            </h1>
             <p class="text-secondary small">
-                {#{{ datasource.vizs.count }} viz{{ datasource.vizs.count|pluralize }}・#}{{ datasource.last_cached|naturalday|capfirst }}・{{ datasource.itemviews.count }} view{{ datasource.itemviews.count|pluralize }}</p>
+                {#{{ datasource.vizs.count }} viz{{ datasource.vizs.count|pluralize }}・#}{{ datasource.last_cached|naturalday|capfirst }}・{{ datasource.itemviews.count }} view{{ datasource.itemviews.count|pluralize }}
+                 {% if 'change_datasource' in datasource_perms %}
+                    {% if datasource.is_published %}<span class="badge bg-success bg-opacity-75">Published</span>
+                    {% else %}<span class="badge bg-warning text-dark bg-opacity-75">Unpublished</span>
+                    {% endif %}
+                {% endif %}
+            </p>
         </div>
         {% if user.is_authenticated %}
         <button class="bg-transparent border-0 mx-1 my-2 position-absolute top-0 end-0" 

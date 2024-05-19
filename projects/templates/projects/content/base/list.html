@@ -12,8 +12,9 @@
             {% if forloop.counter <= page_no  %}
             {% for i in page %}
                 <div class="col">
-                    <div class="card rounded-3 p-1 position-relative" 
-                         style="border-color: rgba(0, 0, 0, 0.07); opacity: 0; animation: fadeIn 1s ease-in both; animation-delay: {{ forloop.counter|divide:4 }}s;">
+                    <div class="card rounded-3 p-1 position-relative {% if not i.is_published %}border border-warning border-3 {% endif %}"  
+                         style="{% if i.is_published %}border-color: rgba(0, 0, 0, 0.07);{% endif %} 
+                                opacity: 0; animation: fadeIn 1s ease-in both; animation-delay: {{ forloop.counter|divide:4 }}s;">
                         {% block item_content %}
                             {% include './list_item_content.html' with item=i%}
                         {% endblock %}

@@ -3,7 +3,7 @@
 {% load customfilters %}
 
 {% block stretched_link %}
-<a href="{% url 'new' %}?o=datasource&datastream={{item.pk}}" class="stretched-link"/>
+<a href="{% url 'new' %}?o=datasource&datastream={{item.slug}}" class="stretched-link"/>
 {% endblock %}
 
 {% block favourite %}

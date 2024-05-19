@@ -2,8 +2,6 @@
 {% load customfilters %}
 {% load unicorn %} 
 {% load socialaccount %}
-{% load guardian_tags %}
-{% get_obj_perms request.user for request.user.profile as "profile_perms" %}
 
 <div class="d-flex offcanvas-header p-3">
     <h3 class="offcanvas-title" id="offcanvasExampleLabel">App Settings</h3>
@@ -20,7 +18,7 @@
          id="offcanvasUserDesc">
          
         
-    {% if request.user.is_authenticated %}
+    {% if perms.projects.view_profile %}
         <div class="card-body mb-1">
             <div class="d-flex align-items-start">
                 <div>
@@ -82,7 +80,7 @@
         
     </div>
     
-    {% if request.user.is_authenticated %}
+    {% if perms.projects.view_profile %}
     <div class="comments mb-2 p-3 position-relative rounded-3 bg-light" 
          style=""
          onclick="Handler.showTab('#offcanvas-pills-edit-tab');"
@@ -101,7 +99,7 @@
         </div>
         <button class="bg-transparent border-0 mx-1 my-2 position-absolute top-0 end-0" 
                 style="z-index: 1020;"> 
-                <i class="bi bi-three-dots text-black-50"></i>
+                <i class="bi bi-pen text-black-50"></i>
         </button>
     </div>
     {% endif %}

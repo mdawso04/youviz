@@ -13,7 +13,7 @@
             {{ item.vizs.count }} vizs・{{ item.last_cached|naturaltime|capfirst }}・{{ item.itemviews.count }} views</p>
     </div>
     {% if item %}
-    <a href="{% url 'new' %}?o=viz&datasource={{datasource.pk}}" class="stretched-link"/>
+    <a href="{% url 'new' %}?o=viz&datasource={{datasource.slug}}" class="stretched-link"/>
     {% endif %}
     <button class="bg-transparent border-0 mx-2 position-absolute top-0 end-0" style="z-index: 20000;" onclick="alert('hi');">
         <i class="bi bi-bookmark text-black-50" style="font-size: 1.5rem;"></i>

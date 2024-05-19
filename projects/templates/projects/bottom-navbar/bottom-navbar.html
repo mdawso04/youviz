@@ -78,8 +78,8 @@
                     {% elif context.mode == 'view' %}"nav-btn"
                     {% elif context.mode == 'new' %}"nav-btn"{% endif %} 
                 onclick=
-                    {% if context.mode == 'list' or context.mode == 'user' %}"window.location.href='{% url 'new' %}?o=datamenu';"
-                    {% elif context.mode == 'view' %}"window.location.href='{% url 'new' %}?o=vizmenu&datasource={{datasource.pk}}';"
+                    {% if context.mode == 'list' or context.mode == 'user' or context.mode == 'view' %}"window.location.href='{% url 'new' %}?o=datamenu';"
+                    {#{% elif context.mode == 'view' %}"window.location.href='{% url 'new' %}?o=vizmenu&datasource={{datasource.pk}}';"#}
                     {% elif context.mode == 'new' %}"history.back()"{% endif %}
                 id="newVizListButton" 
                 {% if context.mode == 'list' or context.mode == 'user' %}

@@ -36,26 +36,16 @@ class VizView(UnicornView):
     class Meta:
         exclude = ()
         
-    
-    '''
-    UserPassesTestMixin
-    login_url = '/'
-        
-    def test_func(self):
-        return False #self.request.user.username.startswith("m")
-    '''
-    
 #LOAD/UPDATE
 
     def mount(self):
-        #logger.debug('VizView > mount start')
         self.load_viz()
-        #logger.debug('VizView > mount end')
-    
+        
     def load_viz(self):
         #logger.debug('VizView > load_viz start')
         
         pk = None
+        current_user = self.request.user
         
         #unicorn
         if hasattr(self.request, '_body'):
@@ -68,7 +58,17 @@ class VizView(UnicornView):
             pk = self.kwargs['pk']
             logger.debug('PK FROM KWARGS: ' + str(pk))
         
-        self.viz = Viz.item(pk=pk)
+        v = Viz.item(pk=pk)
+        
+        #obj perms
+        if v.is_published:
+            if not current_user.has_perm('projects.view_published_viz', v):
+                redirect('/')
+        else:
+            if not current_user.has_perm('projects.view_viz', v):
+                redirect('/')
+        
+        self.viz = v
         
         #self.viz.can_view_or_404(self.request.user)
         #if not self.request.user.has_perm('projects.view_viz', self.viz):
@@ -83,15 +83,9 @@ class VizView(UnicornView):
         pass
         #logger.debug('VizView > hydrate end')
     
-    #def email_check(user):
-    #    return False #user.email.endswith("@example.com")
-
     def updating(self, name, value):
-        pass
-        #if not self.request.user.has_perm('projects.change_viz', self.viz):
-        #    raise Http404
-        #self.viz.can_change_or_404(self.request.user)
-        #self.request.user.has_perms(('projects.change_viz',))
+        if not self.request.user.has_perm('projects.change_datasource', self.viz.datasource):
+            raise Http404
         
     def updated(self, name, value):
         #logger.debug('VizView > updated start')
@@ -177,25 +171,13 @@ class VizView(UnicornView):
 #ACTIONS
 
     def calling(self, name, args):
-        #logger.debug('VizView > calling start')
-        pass
-        #if not self.request.user.has_perm('projects.change_viz', self.viz):
-        #    raise Http404
-        #self.viz.can_change_or_404(self.request.user)
-        #logger.debug('VizView > calling end')
+        if not self.request.user.has_perm('projects.change_datasource', self.viz.datasource):
+            raise Http404
         
     def caller(self, fun, params):
         self.call(fun, params)
         
-    def delete(self):
-        #self.parent.deleteViz(self.viz.pk)
-        #return redirect('/projects/app')
-        pass
-    
     def deleteDrawing(self, d):
-        
-        #self.viz.can_change_or_404(self.request.user)
-        #self.request.user.has_perms(('projects.change_viz',))        
         a = pp.App(self.viz.json)
         del a.todos[d + 2] # Count from 3rd element
         self.viz.json = a.todos
@@ -203,9 +185,6 @@ class VizView(UnicornView):
         self.load_viz()
         
     def addDrawing(self, d):
-        if not self.request.user.has_perm('projects.change_viz', self.viz):
-            raise Http404
-        
         a = pp.App(self.viz.json)
         a.todos.append(
             {"name": d, "type": "draw", "service": "DRAW_VLINE", "options": {"x": 30, 'line_color': 'red'}}
@@ -215,10 +194,6 @@ class VizView(UnicornView):
         self.load_viz()
         
     def addFilter(self, f):
-        
-        #if not self.request.user.has_perm('projects.change_viz', self.viz):
-        #    raise Http404
-        
         a = pp.App(self.viz.json)
         a.add(
             service="DATA_COL_ADD_INDEX_FROM_0",
@@ -231,9 +206,6 @@ class VizView(UnicornView):
         self.load_viz()
     
     def deleteFilter(self, f):
-        #if not self.request.user.has_perm('projects.change_viz', self.viz):
-        #    raise Http404
-        
         a = pp.App(self.viz.json)
         
         del a.todos[1 + f] # Count from 2rd element
@@ -242,9 +214,11 @@ class VizView(UnicornView):
         self.viz.save()
         self.load_viz()
         
+    '''
     def applyUpdate(self):
         if name.startswith('cache.data.0.options.saved.criteria'):
             raise ValidationError({'cache.data.0.options.saved.criteria': 'This field is required'}, code='required')
+    '''
     
     def called(self, name, args):
         #logger.debug('VizView > called start')
@@ -292,6 +266,8 @@ class VizView(UnicornView):
     
     def plot_data(self):
         #logger.debug('VizView > plot_data start')
+        pass
+        '''
         import json
         #p = self.plot()
         try:
@@ -303,9 +279,12 @@ class VizView(UnicornView):
         else:
             #logger.debug('VizView > plot_data end')
             return json.dumps(y['data'])
+        '''
     
     def plot_layout(self):
         #logger.debug('VizView > plot_layout start')
+        pass
+        '''
         import json
         #p = self.plot()
         try:
@@ -317,6 +296,7 @@ class VizView(UnicornView):
             return None
         else:
             return json.dumps(y['layout'])
+        '''
         
     def rendered(self, html):
         #logger.debug('VizView > rendered start')
