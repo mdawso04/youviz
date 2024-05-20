@@ -25,7 +25,8 @@
     <div class="position-relative pt-1 mx-2 viz-text-area text-secondary ts-6"
         {% if 'change_datasource' in datasource_perms %}onclick="Handler.navigator.toggleEdit();"{% endif %}
          id="floatingTextarea2{{vid}}"
-         style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;">
+         style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
+                {% if 'change_datasource' in datasource_perms %}cursor: pointer;{% endif %}">
         {% if viz.description %}{{viz.description}}{% else %}No description.{% endif %}
     </div>
     {% endwith %}

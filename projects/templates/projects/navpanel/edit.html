@@ -1,5 +1,7 @@
 {% load humanize %}
 {% load customfilters %}
+{% load guardian_tags %}
+{% get_obj_perms request.user for datasource as "datasource_perms" %}
 
 <div class="d-flex offcanvas-header p-3">
     <h5 class="offcanvas-title me-auto flex-grow-1 h4" id="offcanvasBottomLabel">Edit Viz Details</h5>
@@ -53,6 +55,7 @@
             </div>
         </div>
         <div class="col">
+            {% if 'add_datasource' in perms %}
             <button type="button" 
                     class="btn btn-secondary btn-sm me-1" 
                     id="settings-datasource-refresh" 
@@ -60,7 +63,9 @@
                     aria-label="Refresh data">
                     Duplicate
             </button>
+            {% endif %}
 
+            {% if 'delete_datasource' in datasource_perms %}
             <button type="button" 
                     class="btn btn-danger btn-sm"
                     id="settings-datasource-delete" 
@@ -70,6 +75,7 @@
                     aria-label="Delete data">
                     Delete
             </button>
+            {% endif %}
         </div>
     </div>
 </div>
