@@ -3,7 +3,7 @@ whitenoise
 gunicorn
 django-debug-toolbar
 django-pwa
-django-allauth
+django-allauth[socialaccount]
 django_heroku
 django-unicorn
 django-auditlog
