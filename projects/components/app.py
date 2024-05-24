@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
-from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings
+from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings, Cover
 from django.contrib.auth.models import User
 from projects.middleware import redirect as force_redirect
 from guardian.shortcuts import get_perms, get_user_perms, get_users_with_perms, get_objects_for_user, get_perms_for_model
@@ -12,6 +12,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 from django.urls import reverse
 from project import settings
+from django.db.models import Q
 #from django.contrib import messages
 
 # pp
@@ -44,6 +45,8 @@ class AppView(UnicornView):
     ad: Notification = None
     settings: dict = None 
     context: dict = None
+    covers: QuerySetType[Cover] = None
+    cover: Cover = None
     
     class Meta:
         javascript_exclude = ('datastreams', 'datasources', 'datasource', 'vizs', 'siteuser', 'context', ) 
@@ -72,6 +75,7 @@ class AppView(UnicornView):
             mode = self.context['mode']
             query = self.context['query'] if 'query' in self.context else None
             page = self.context['page'] if 'page' in self.context else None
+            search = self.context['search'] if 'search' in self.context else None
             
             current_user = self.request.user
             #checker = ObjectPermissionChecker(current_user)
@@ -95,12 +99,33 @@ class AppView(UnicornView):
                     # objs by perms
                     published_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(query=query, owner=owner_pk, is_published=True))
                     unpublished_ds = get_objects_for_user(current_user, ('view_datasource'), Datasource.list(query=query, owner=owner_pk, is_published=False))
-                else:
-                    # objs by perms
-                    published_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(query=query, is_published=True))
-                    unpublished_ds = get_objects_for_user(current_user, ('view_datasource'), Datasource.list(query=query, is_published=False))
-                
-                self.datasources = (published_ds | unpublished_ds).distinct()
+                    self.datasources = (published_ds | unpublished_ds).distinct()
+                elif mode == 'list':
+                    if search:
+                        # objs by perms
+                        published_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(query=query, is_published=True))
+                        unpublished_ds = get_objects_for_user(current_user, ('view_datasource'), Datasource.list(query=query, is_published=False))
+                        self.datasources = (published_ds | unpublished_ds).distinct()
+                    else:
+                        if not self.covers:
+                            self.covers = Cover.list()
+                        if not self.cover:
+                            self.cover = self.covers.filter(name__startswith='_').first()
+                        
+                        # objs by perms
+                        cover_search_terms = self.cover.search_terms.split(',') if self.cover else []
+                        
+                        q = Q(name__icontains=cover_search_terms[0])
+                        for v in cover_search_terms[1:]:
+                            q = q | Q(name__icontains=v)
+                        published_namematch_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(q, is_published=True))
+                        
+                        q1 = Q(description__icontains=cover_search_terms[0])
+                        for v in cover_search_terms[1:]:
+                            q1 = q1 | Q(description__icontains=v)
+                        published_descmatch_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(q1, is_published=True))
+                        
+                        self.datasources = (published_namematch_ds | published_descmatch_ds).distinct().order_by('?')
                 
                 self.list_items_paginated = [self.datasources[i: i+20] for i in range(0, len(self.datasources), 20)]
                 #self.notification = Notification.objects.filter(position=Notification.LIST).last()

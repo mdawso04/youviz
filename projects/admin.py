@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from guardian.admin import GuardedModelAdmin
 
 # Register your models here.
-from .models import Profile, Datastream, Datapod, Datasource, Viz, ItemView, Activity, Comment, Notification, Settings
+from .models import Profile, Datastream, Datapod, Datasource, Viz, ItemView, Activity, Comment, Notification, Settings, Cover
 
 class DatastreamAdmin(GuardedModelAdmin):
     readonly_fields = ('pk', 'created_at', 'last_updated', 'last_cached', 'hash_key', 'slug')
@@ -40,6 +40,9 @@ class NotificationAdmin(admin.ModelAdmin):
 class SettingsAdmin(admin.ModelAdmin):
     readonly_fields = ('pk', )
 
+class CoverAdmin(admin.ModelAdmin):
+    readonly_fields = ('pk', )
+
     
 # Unregister default before register custom version
 #admin.site.unregister(User)
@@ -53,4 +56,5 @@ admin.site.register(ItemView, ItemViewAdmin)
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(Notification, NotificationAdmin)
 admin.site.register(Settings, SettingsAdmin)
+admin.site.register(Cover, CoverAdmin)
 #admin.site.register(Report, VizAdmin)

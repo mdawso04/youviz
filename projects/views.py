@@ -19,16 +19,20 @@ import os
 
 default_template = 'projects/app_top.html'
 
-def list(request):    
+def list(request, search=False):    
     context = {
         'context': {
             'mode': 'list',
             'query': request.GET.get('query', ''),
             'page': request.GET.get('page', 1),
             'user': request.GET.get('user', ''), 
+            'search': search, 
         }
     }
     return render(request, default_template, context)
+
+def search(request):    
+    return list(request, search=True)
 
 def user(request, slug):
     context = {

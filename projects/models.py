@@ -302,12 +302,19 @@ class BaseModel(models.Model):
     def list(cls, *args, **kwargs):
         p = cls.get_prefetch()
         query = kwargs['query'] if 'query' in kwargs else ''
-        kwargs = {k: v for k, v in kwargs.items() if k not in ('query',)}
+        kwargs = {k: v for k, v in kwargs.items() if k not in ('query', )}
         
-        if p:
-            return cls.objects.filter(name__icontains=query, **kwargs).order_by('-id').prefetch_related(*p)
+        if args:
+            print(args)
+            if p:
+                return cls.objects.filter(*args, **kwargs).order_by('-id').prefetch_related(*p)
+            else:
+                return cls.objects.filter(*args, **kwargs).order_by('-id')
         else:
-            return cls.objects.filter(name__icontains=query, **kwargs).order_by('-id')
+            if p:
+                return cls.objects.filter(name__icontains=query, **kwargs).order_by('-id').prefetch_related(*p)
+            else:
+                return cls.objects.filter(name__icontains=query, **kwargs).order_by('-id')
     
     @classmethod
     def item(cls, *args, **kwargs):
@@ -1055,6 +1062,10 @@ class Activity(BaseModel):
                     a.save()
     
     #prefetch = ('user',)
+    
+class Cover(BaseModel):
+    #attrs
+    search_terms = models.CharField(max_length=255, blank=True)
     
 class ItemView(models.Model):
     IPAddress = models.GenericIPAddressField(default='45.243.82.169')
