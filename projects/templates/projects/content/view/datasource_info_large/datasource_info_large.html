@@ -27,7 +27,7 @@
                 {% endif %}
             </p>
         </div>
-        {% if user.is_authenticated %}
+        {% if 'projects.change_activity' in perms %}
         <button class="bg-transparent border-0 mx-1 my-2 position-absolute top-0 end-0" 
                 id="fav_button_{{datasource.pk}}"
                 style="z-index: 1020;" 

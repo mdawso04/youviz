@@ -30,7 +30,7 @@
         </div>
 
 
-        <button type="button" class="btn btn-secondary btn-sm me-1" id="logoutButton" 
+        <button type="button" class="btn btn-secondary me-1" id="logoutButton" 
                 data-bs-toggle="modal" data-bs-target="#staticBackdrop">
             Logout
         </button>
@@ -71,7 +71,7 @@
         </form>
         <!-- Allauth button ends here -->
         {% endif %}
-        <button type="button" class="btn btn-secondary btn-sm" id="refreshAppButton"
+        <button type="button" class="btn btn-secondary" id="refreshAppButton"
                 onclick="caches.keys().then(cacheNames => {cacheNames.forEach(cacheName => {caches.delete(cacheName);});});
                          location.reload();">
             Refresh app

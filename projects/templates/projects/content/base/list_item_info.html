@@ -18,7 +18,7 @@
     {% block stretched_link %}
     {% endblock %}
     {% block favourite %}
-    {% if user.is_authenticated %}
+    {% if 'projects.change_activity' in perms %}
     <button class="bg-transparent border-0 ms-2 position-absolute top-0 end-0" 
             id="fav_button_{{item.pk}}"
             style="z-index: 1030;" 

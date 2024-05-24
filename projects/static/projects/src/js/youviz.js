@@ -1244,9 +1244,14 @@ window.addEventListener("DOMContentLoaded", (event) => {
                     Handler.shareListener('#navbar-button-share', 'null', shareData.text,  shareData.text,  shareData.url);
                 }
                 
-                // list scrolldown
-                if (component.currentActionQueue[0].partials[0].id) {
-                    Handler.loadYVComponents("#".concat(component.currentActionQueue[0].partials[0].id));
+               // list scrolldown
+                for (let i = 0; i < component.currentActionQueue[0].partials.length; i++) {
+                    if (component.currentActionQueue[0].partials[i].id) {
+                        Handler.loadYVComponents("#".concat(component.currentActionQueue[0].partials[i].id));
+                    }
+                    else if (component.currentActionQueue[0].partials[i].target) {
+                        Handler.loadYVComponents("#".concat(component.currentActionQueue[0].partials[i].target));
+                    }
                 }
                 
                 break;

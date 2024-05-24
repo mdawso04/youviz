@@ -305,7 +305,6 @@ class BaseModel(models.Model):
         kwargs = {k: v for k, v in kwargs.items() if k not in ('query', )}
         
         if args:
-            print(args)
             if p:
                 return cls.objects.filter(*args, **kwargs).order_by('-id').prefetch_related(*p)
             else:

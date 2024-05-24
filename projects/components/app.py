@@ -108,7 +108,7 @@ class AppView(UnicornView):
                         self.datasources = (published_ds | unpublished_ds).distinct()
                     else:
                         if not self.covers:
-                            self.covers = Cover.list()
+                            self.covers = Cover.list().order_by('name')
                         if not self.cover:
                             self.cover = self.covers.filter(name__startswith='_').first()
                         
@@ -325,6 +325,13 @@ class AppView(UnicornView):
             return redirect('/')
         
         v.delete()
+        self.load_table()
+        
+    def toggleCover(self, pk):
+        if self.cover and self.cover.pk == pk:
+            self.cover = None
+        else:
+            self.cover = Cover.item(pk=pk)
         self.load_table()
     
     def toggle_activity(self, ds):
