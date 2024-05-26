@@ -18,7 +18,7 @@
          id="offcanvasUserDesc">
          
         
-    {% if perms.projects.view_profile %}
+    {% if 'projects.view_profile' in perms %}
         <div class="card-body mb-1">
             <div class="d-flex align-items-start">
                 <div>

@@ -47,9 +47,9 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY',
                             'django-insecure-kfz#ag8=&yb1lynyfj0v=k%et%5++u08(q%@q(839gwqd-reah')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
 #DEBUG = False
-#DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 #HTML_MINIFY = True
 
@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     #'django.contrib.staticfiles',
     'projects.apps.ProjectsStaticFilesConfig',
+    'projects.apps.ProjectsConfig',
     'django.contrib.humanize',
     'django.contrib.sitemaps',
     'allauth',
@@ -79,17 +80,21 @@ INSTALLED_APPS = [
     #'debug_toolbar',
     'django_unicorn',
     'guardian',
-    'projects',
+    #'projects',
 ]
 
 #SOCIALACCOUNT_AUTO_SIGNUP = False
 
-if not DEBUG:
+if DEBUG:
     #http://localhost:8000
     SITE_ID = 3
+    SITE_DOMAIN_NAME = 'http://localhost:8000'
 else:
     #https://prod
     SITE_ID = 2
+    SITE_DOMAIN_NAME = 'https://youviz.app'
+
+SITE_DISPLAY_NAME = SITE_DOMAIN_NAME
 
 MIDDLEWARE = [
     # Request altering middleware

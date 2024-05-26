@@ -62,10 +62,10 @@ class VizView(UnicornView):
         
         #obj perms
         if v.is_published:
-            if not current_user.has_perm('projects.view_published_viz', v):
+            if not current_user.has_perm('view_published_viz', v):
                 redirect('/')
         else:
-            if not current_user.has_perm('projects.view_viz', v):
+            if not current_user.has_perm('view_viz', v):
                 redirect('/')
         
         self.viz = v
@@ -84,7 +84,7 @@ class VizView(UnicornView):
         #logger.debug('VizView > hydrate end')
     
     def updating(self, name, value):
-        if not self.request.user.has_perm('projects.change_datasource', self.viz.datasource):
+        if not self.request.user.has_perm('change_datasource', self.viz.datasource):
             raise Http404
         
     def updated(self, name, value):
@@ -171,7 +171,7 @@ class VizView(UnicornView):
 #ACTIONS
 
     def calling(self, name, args):
-        if not self.request.user.has_perm('projects.change_datasource', self.viz.datasource):
+        if not self.request.user.has_perm('change_datasource', self.viz.datasource):
             raise Http404
         
     def caller(self, fun, params):

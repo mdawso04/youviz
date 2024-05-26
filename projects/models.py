@@ -191,8 +191,8 @@ class BaseModel(models.Model):
         }
     
     @cached_property
-    def perms_req_by_owner(self):
-         return [p.codename for p in Group.objects.get(name='datasource_owner').permissions.all()] 
+    def perms_req_by_owners(self):
+         return [p.codename for p in Group.objects.get(name='datasource_owners').permissions.all()] 
     
     @cached_property
     def perms_req_by_managers(self):
@@ -487,12 +487,17 @@ class Profile(BaseModel):
         super(Profile, self).save(*args, **kwargs)
         
     '''
-    Signals wiring to create Profile when new user created
+    Signals wiring to create Profile and add user to permission groups when new user created
     '''
     def create_profile(sender, instance, created, **kwargs):
         user = instance
         if created and user.username != settings.ANONYMOUS_USER_NAME:
             Profile.objects.create(owner=instance, name=user.username.capitalize(), description="")
+            
+            allusers_group = Group.objects.get(name='site_allusers')
+            registeredusers_group = Group.objects.get(name='site_registeredusers')
+            user.groups.add(allusers_group)
+            user.groups.add(registeredusers_group)
 
     post_save.connect(create_profile, sender=User)
 
@@ -733,7 +738,7 @@ def baseobject_perms_helper(users_with_perms, bobj, **kwargs):
 
     users_needing_no_perms = [user for user in users_with_perms if user not in users_needing_perms]
     
-    perms_req_by_owner = bobj.perms_req_by_owner
+    perms_req_by_owners = bobj.perms_req_by_owners
     perms_req_by_managers = bobj.perms_req_by_managers
     perms_req_by_collaborators = bobj.perms_req_by_collaborators
     #perms_req_by_anonymous = bobj.perms_req_by_anonymous
@@ -746,7 +751,7 @@ def baseobject_perms_helper(users_with_perms, bobj, **kwargs):
     for u in users_needing_perms:
         needed_perms = []
         if u == owner:
-            needed_perms = list(set(needed_perms) | set(perms_req_by_owner))
+            needed_perms = list(set(needed_perms) | set(perms_req_by_owners))
         if u in managers:
             needed_perms = list(set(needed_perms) | set(perms_req_by_managers))
         if u in collaborators:
@@ -783,6 +788,9 @@ def group_permissions_changed(sender, **kwargs):
     group, action = kwargs['instance'], kwargs['action']
     if 'post' in action:
         model_name, role = group.name.split('_')
+        
+        if role == 'owners':
+            role = 'owner'
         
         #skip object-level update for site-level permission changes
         if model_name == 'site':
@@ -1079,8 +1087,8 @@ class ItemView(models.Model):
 
     
 class Notification(models.Model):
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    start_date = models.DateTimeField(null=True, )
+    end_date = models.DateTimeField(null=True, )
     title = models.CharField(max_length=100, blank=True, default='New notification title')
     message = models.CharField(max_length=200, blank=True, default='New notification message')
     instructions = models.CharField(max_length=100, blank=True, default='New notification instructions')
@@ -1160,3 +1168,4 @@ auditlog.register(Viz)
 #    serialize_data=True,
 #    serialize_kwargs={"fields": ["foo", "bar", "biz", "baz"]}
 #)
+
