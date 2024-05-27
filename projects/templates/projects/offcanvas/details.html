@@ -4,7 +4,7 @@
 {% load socialaccount %}
 
 <div class="d-flex offcanvas-header p-3">
-    <h3 class="offcanvas-title" id="offcanvasExampleLabel">App Settings</h3>
+    <h3 class="offcanvas-title" id="offcanvasExampleLabel">My Settings</h3>
     <!--<div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" role="switch" id="maximize"
                onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
@@ -19,10 +19,10 @@
          
         
     {% if 'projects.view_profile' in perms %}
+        <h6 class="text-muted">Hey {{ user.username | title }}!</h6>
         <div class="card-body mb-1">
             <div class="d-flex align-items-start">
                 <div>
-                    <p class="text-body text-decoration-none mb-0" style="font-size: 1.0rem;">Hey {{ user.username | title }}!</p>
                     <p class="small trefresh">Last login <span class="thuman">...</span>
                     <span class="tstamp d-none">{{user.last_login|date:"c"}}</span></p>
                 </div>
@@ -104,6 +104,24 @@
     </div>
     {% endif %}
     
+    {% if 'projects.view_profile' in perms %}
+    <div class="mb-2 p-3 position-relative rounded-3 bg-light" 
+         style="" 
+         id="offcanvasUserContentList">
+        <h6 class="text-muted">My Activity</h6>
+        
+        <div class="card-body pt-1 mb-1">
+            <a class="btn btn-primary position-relative" href="{% url 'user' request.user.profile.slug %}" role="button">
+                My Vizs
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{request.user.datasources.count }}
+                    <span class="visually-hidden">viz{{ datasource.owner.datasources.count|pluralize }}</span>
+                </span>
+            </a>
+            
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 
