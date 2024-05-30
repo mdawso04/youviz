@@ -2,16 +2,6 @@ from django.apps import AppConfig
 from django.conf import settings as app_settings
 from django.db.models.signals import post_migrate
 
-def create_default_site_profile(sender, **kwargs):
-    """after migrations"""
-    from django.contrib.sites.models import Site
-    from core.models import SiteProfile
-
-    site = Site.objects.get(id=getattr(settings, 'SITE_ID', 1))
-
-    if not SiteProfile.objects.exists():
-        SiteProfile.objects.create(site=site)
-
 def initialise(sender, **kwargs):
     """after migrations"""
     
@@ -20,12 +10,12 @@ def initialise(sender, **kwargs):
     from django.contrib.auth.models import User, Group, Permission
     
     #groups
-    site_allusers = Group.objects.create(name='site_allusers')
-    site_registeredusers = Group.objects.create(name='site_registeredusers')
-    site_powerusers = Group.objects.create(name='site_powerusers')
-    datasource_owners = Group.objects.create(name='datasource_owners')
-    datasource_managers = Group.objects.create(name='datasource_managers')
-    datasource_collaborators = Group.objects.create(name='datasource_collaborators')
+    site_allusers = Group.objects.get_or_create(name='site_allusers')
+    site_registeredusers = Group.objects.get_or_create(name='site_registeredusers')
+    site_powerusers = Group.objects.get_or_create(name='site_powerusers')
+    datasource_owners = Group.objects.get_or_create(name='datasource_owners')
+    datasource_managers = Group.objects.get_or_create(name='datasource_managers')
+    datasource_collaborators = Group.objects.get_or_create(name='datasource_collaborators')
     
     #perms
     view_published_datasource_perm = Permission.objects.get(codename='view_published_datasource')
@@ -38,14 +28,18 @@ def initialise(sender, **kwargs):
     add_datasource_perm = Permission.objects.get(codename='add_datasource')
     add_datastream_perm = Permission.objects.get(codename='add_datastream')
     
-    site_allusers.permissions.add(view_published_datasource_perm.pk)
+    site_allusers.permissions.add(
+        view_published_datasource_perm.pk
+    )
     site_registeredusers.permissions.add(
         change_activity_perm.pk,
         view_profile_perm.pk,
         change_profile_perm.pk,
         add_datasource_perm.pk,
     )
-    site_powerusers.permissions.add(add_datastream_perm.pk)
+    site_powerusers.permissions.add(
+        add_datastream_perm.pk
+    )
     datasource_owners.permissions.add(
         view_datasource_perm.pk,
         change_datasource_perm.pk,
@@ -78,81 +72,91 @@ def initialise(sender, **kwargs):
     guardian_user.groups.add(site_allusers)
     
     #system user
-    email = f'user{randint(1, 99999)}@example.com'
-    password = User.objects.make_random_password()
-    system_user = User.objects.create_user(
-        username='system',
-        email=email,
-        password=password)
+    system_user_exists = User.objects.filter(username='system').exists()
+    if not system_user_exists:
+        email = f'user{randint(1, 99999)}@example.com'
+        password = User.objects.make_random_password()
+        system_user = User.objects.create_user(
+            username='system',
+            email=email,
+            password=password)
     
 
     #covers
-    business_cover = Cover.objects.create(
-        name='Business',
-        description='Business',
-        slug='business',
-        owner=system_user,
-        search_terms='business,employee,work,attrition,turnover',
-    )
-    society_cover = Cover.objects.create(
-        name='Society',
-        description='Society',
-        slug='society',
-        owner=system_user,
-        search_terms='society,population,',
-    )
-    health_cover = Cover.objects.create(
-        name='Health',
-        description='Health',
-        slug='health',
-        owner=system_user,
-        search_terms='health,covid,sick,disease,death,accident,injur',
-    )
-    education_cover = Cover.objects.create(
-        name='Education',
-        description='Education',
-        slug='education',
-        owner=system_user,
-        search_terms='education,univerity,school,learn',
-    )
-    default_cover = Cover.objects.create(
-        name='_default',
-        description='_default',
-        slug='_default',
-        owner=system_user,
-        search_terms='{},{},{},{},'.format(
-            business_cover.search_terms,
-            society_cover.search_terms,
-            health_cover.search_terms,
-            education_cover.search_terms,
-        ),
-    )
+    covers_exist = Cover.objects.exists()
+    if not covers_exist:
+        business_cover = Cover.objects.create(
+            name='Business',
+            description='Business',
+            slug='business',
+            owner=system_user,
+            search_terms='business,employee,work,attrition,turnover',
+        )
+        society_cover = Cover.objects.create(
+            name='Society',
+            description='Society',
+            slug='society',
+            owner=system_user,
+            search_terms='society,population,',
+        )
+        health_cover = Cover.objects.create(
+            name='Health',
+            description='Health',
+            slug='health',
+            owner=system_user,
+            search_terms='health,covid,sick,disease,death,accident,injur',
+        )
+        education_cover = Cover.objects.create(
+            name='Education',
+            description='Education',
+            slug='education',
+            owner=system_user,
+            search_terms='education,univerity,school,learn',
+        )
+        default_cover = Cover.objects.create(
+            name='_default',
+            description='_default',
+            slug='_default',
+            owner=system_user,
+            search_terms='{},{},{},{},'.format(
+                business_cover.search_terms,
+                society_cover.search_terms,
+                health_cover.search_terms,
+                education_cover.search_terms,
+            ),
+        )
     
     #datastream
-    ds1 = Datastream.objects.create(
-        name='Synthetic Attrition Data',
-        url='https://raw.githubusercontent.com/IBM/employee-attrition-aif360/master/data/emp_attrition.csv',
-        owner=system_user,
-    )
+    datastreams_exist = Datastream.objects.exists()
+    if not datastreams_exist:
+        ds1 = Datastream.objects.create(
+            name='Synthetic Attrition Data',
+            url='https://raw.githubusercontent.com/IBM/employee-attrition-aif360/master/data/emp_attrition.csv',
+            owner=system_user,
+        )
     
     #settings
-    settings = Settings.objects.create(
-        json={
-            "sitename": "YouViz", 
-            "sitedesc": "The free web app where you can Find, Visualise and Share Open Data", 
-            "sitewelcome": {
-                "topline": "Welcome to YouViz!", 
-                "subline": "Search, Vizualize and Share Open Data for Free"
-            }
-        },
-    )
+    settings_exist = Settings.objects.exists()
+    if not settings_exist:
+        settings = Settings.objects.create(
+            json={
+                "sitename": "YouViz", 
+                "sitedesc": "The free web app where you can Find, Visualise and Share Open Data", 
+                "sitewelcome": {
+                    "topline": "Welcome to YouViz!", 
+                    "subline": "Search, Vizualize and Share Open Data for Free"
+                }
+            },
+        )
     
     #notifications
-    view_ad = Notification.objects.create(
-        title='View ad',
-        position=Notification.VIEW_AD,
-        html='Block content',
-    )
+    notifications_exist = Notification.objects.exists()
+    if not notifications_exist:
+        view_ad = Notification.objects.create(
+            title='View ad',
+            position=Notification.VIEW_AD,
+            html='Block content',
+        )
     
     #site
     from django.contrib.sites.models import Site
@@ -169,10 +173,7 @@ class ProjectsConfig(AppConfig):
     name = 'projects'
     
     def ready(self):
-        #from . import signals
-        
         post_migrate.connect(initialise, sender=self)
-        #post_migrate.connect(create_default_site_profile, sender=self)
 
         
 from django.contrib.staticfiles.apps import StaticFilesConfig

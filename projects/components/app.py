@@ -48,6 +48,10 @@ class AppView(UnicornView):
     covers: QuerySetType[Cover] = None
     cover: Cover = None
     
+    related_datasources: QuerySetType[Datasource] = None
+    related_items_paginated: list = None
+    related_page_no: int = 1
+    
     class Meta:
         javascript_exclude = ('datastreams', 'datasources', 'datasource', 'vizs', 'siteuser', 'context', ) 
     
@@ -78,6 +82,9 @@ class AppView(UnicornView):
             search = self.context['search'] if 'search' in self.context else None
             
             current_user = self.request.user
+            
+            is_get = True if self.request.method == 'GET' else False
+            
             #checker = ObjectPermissionChecker(current_user)
             
             '''
@@ -92,7 +99,8 @@ class AppView(UnicornView):
             
             '''
             if mode in ('list', 'user'):
-                owner_pk = None
+                
+                #owner_pk = None
                 if mode == 'user':
                     self.siteuser = Profile.item(slug=self.context['slug']).owner
                     owner_pk = self.siteuser.pk
@@ -100,6 +108,7 @@ class AppView(UnicornView):
                     published_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(query=query, owner=owner_pk, is_published=True))
                     unpublished_ds = get_objects_for_user(current_user, ('view_datasource'), Datasource.list(query=query, owner=owner_pk, is_published=False))
                     self.datasources = (published_ds | unpublished_ds).distinct()
+                
                 elif mode == 'list':
                     if search:
                         # objs by perms
@@ -133,15 +142,19 @@ class AppView(UnicornView):
                 return #do nothing
             
             elif mode == 'view':
+                
+                if is_get:
+                    self.related_datasources = None
+                
                 # site perms
                 #if not current_user.has_perm('projects.view_published_datasource'):
                 #    redirect('/')
-                
+
                 if self.context['pk']:
                     ds = Datasource.item(pk=self.context['pk'])
                 elif self.context['slug']:
                     ds = Datasource.item(slug=self.context['slug'])
-                    
+
                 #obj perms
                 if ds.is_published:
                     if not any({current_user.has_perm('projects.view_published_datasource', ds), current_user.has_perm('projects.view_datasource', ds)}):
@@ -153,7 +166,11 @@ class AppView(UnicornView):
                 self.datasource = ds
                 self.meta_object = self.datasource
                 self.ad = Notification.objects.filter(position=Notification.VIEW_AD).last()
-                
+
+                if not self.related_datasources:
+                    self.related_datasources = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(is_published=True)).exclude(pk=self.datasource.pk).order_by('?')[:20]
+                self.related_items_paginated = [self.related_datasources[i: i+5] for i in range(0, len(self.related_datasources), 5)]
+
                 def get_client_ip(request):
                     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
                     if x_forwarded_for:
@@ -162,6 +179,7 @@ class AppView(UnicornView):
                         ip = request.META.get('REMOTE_ADDR')
                     return ip
                 ItemView.objects.get_or_create(IPAddress=get_client_ip(self.request), datasource=self.datasource)
+                
                 
                 #if hasattr(self.datasource, 'reports'):
                 #    self.report = self.datasource.reports.last()
@@ -436,6 +454,14 @@ class AppView(UnicornView):
         if self.list_items_paginated:
             if self.page_no < len(self.list_items_paginated):
                 self.page_no += 1
+                self.load_table()
+            else:
+                return False
+            
+    def more_related(self):
+        if self.related_items_paginated:
+            if self.related_page_no < len(self.related_items_paginated):
+                self.related_page_no += 1
                 self.load_table()
             else:
                 return False

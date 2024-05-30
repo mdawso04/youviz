@@ -3,6 +3,16 @@
 {% load guardian_tags %}
 {% get_obj_perms request.user for datasource as "datasource_perms" %}
 
+<style>
+.noscroll {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+.noscroll::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+</style>
+
 <div class="d-flex offcanvas-header p-3">
     <h2 class="offcanvas-title me-auto h4" id="offcanvasBottomLabel">Viz Details</h2>
     <!--<div class="form-check form-switch">
@@ -12,7 +22,7 @@
     <button type="button" class="btn-close text-reset" onclick="Handler.navigator.toggleNav();" aria-label="Close"></button>
 </div>
                 
-<div class="offcanvas-body test-edit-inner px-2 px-md-3 pb-2 pb-md-3" style="overflow-x: auto;">
+<div class="offcanvas-body test-edit-inner px-2 px-md-3 pb-2 pb-md-3 noscroll" style="overflow-x: auto;">
     <div class="mb-2 p-3 position-relative rounded-3 bg-white" 
          {% if 'change_datasource' in datasource_perms %}
          style="cursor: pointer;" 
@@ -47,11 +57,17 @@
         
     </div>
     
-    <div class="comments mb-2 p-3 position-relative rounded-3 bg-white" 
-         style="">
+    {% if ad and ad.html %}
+        <div class="notification mb-2 rounded-3 bg-light" style="">
+            {% include 'projects/content/ad_viz_info.html' %}
+        </div>
+    {% endif %}
+    
+    <div class="comments mb-2 p-3 position-relative rounded-3 bg-white" >
         <h3 class="h6 text-muted">Datasource</h3>
         <p class="h6" style="">{{ datasource.datastream.name }}</p>
         <p class="text-muted small lh-sm">{{ datasource.datastream.description }}</p>
+        
     </div>
     
     <div class="comments mb-2 p-3 position-relative rounded-3 bg-white" 
@@ -78,25 +94,38 @@
         <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 0.8rem;">Comments</p>
         <p class="text-secondary text-decoration-none" style="font-size: 0.7rem;">The thing I like about this viz is that is uses open source data!</p>
     </div>
-    
-    <div class="comments mb-2 p-2 position-relative rounded-3 bg-white" style="">
-        <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 0.8rem;">Datasource</p>
-        <p class="text-secondary text-decoration-none" style="font-size: 0.7rem;">{{ datasource.datastream.name }}</p>
-        
-        <div class="yv-component dsthumb" 
-             id="yv-component-dsthumb-{{ datasource.pk }}"
-             data-yv-component="dsthumb"
-             data-yv-id="{{ datasource.pk }}"
-             data-yv-link="{{ datasource.get_absolute_url_viewmode }}"
-             data-yv-button=""
-             data-yv-init="dsThumbInit"
-             style="max-height: 60px; max-width: 100px;">
-        </div>
-        
-        <img id="jpg-export"/>
-        
-    </div> 
     {% endif %}
+    
+    
+    <h3 class="h6 text-muted">Related</h3>
+    {% for page in related_items_paginated %}
+    <div class="row row-cols-1 g-2 pb-2" id="page-{{ forloop.counter }}" unicorn:key="page-{{ forloop.counter }}">
+        {% if forloop.counter <= related_page_no  %}
+        {% for i in page %}
+            <div class="col">
+                <div class="card rounded-3 p-1 position-relative {% if not i.is_published %}border border-warning border-3 {% endif %}"  
+                     style="{% if i.is_published %}border-color: rgba(0, 0, 0, 0.07);{% endif %} 
+                            opacity: 0; animation: fadeIn 1s ease-in both; animation-delay: {{ forloop.counter|divide:4 }}s;">
+                    {% block item_content %}
+                        {% include 'projects/content/list/list_item_content.html' with item=i%}
+                    {% endblock %}
+                    {% block item_info %}
+                        {% include 'projects/content/list/list_item_info.html' with item=i %}
+                    {% endblock %}
+                </div>
+            </div>
+        {% endfor %}
+        {% elif forloop.counter == related_page_no|add:"1" %}
+        <div id="page-{{ forloop.counter }}-trigger" 
+             unicorn:visible.debounce-1000.threshold-100="more_related" 
+             unicorn:partial.id="page-{{ forloop.counter }}" 
+             unicorn:partial.key="page-{{ forloop.counter|add:'1' }}">
+            Grabbing more now...
+        </div>
+        {% endif  %}
+    </div>
+    {% endfor %}
+    
 </div>
 
 

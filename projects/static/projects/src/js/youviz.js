@@ -823,6 +823,7 @@ Handler.dsThumbInit = function (node) {
         };*/
         layout.clickmode = 'none';
         layout.dragmode = false;
+        layout.hovermode = false;
         const config = {displayModeBar: false, scrollZoom: false};
         
         //var img_jpg= document.querySelector('#jpg-export');
