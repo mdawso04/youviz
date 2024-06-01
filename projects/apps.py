@@ -10,12 +10,12 @@ def initialise(sender, **kwargs):
     from django.contrib.auth.models import User, Group, Permission
     
     #groups
-    site_allusers = Group.objects.get_or_create(name='site_allusers')
-    site_registeredusers = Group.objects.get_or_create(name='site_registeredusers')
-    site_powerusers = Group.objects.get_or_create(name='site_powerusers')
-    datasource_owners = Group.objects.get_or_create(name='datasource_owners')
-    datasource_managers = Group.objects.get_or_create(name='datasource_managers')
-    datasource_collaborators = Group.objects.get_or_create(name='datasource_collaborators')
+    site_allusers, _ = Group.objects.get_or_create(name='site_allusers')
+    site_registeredusers, _ = Group.objects.get_or_create(name='site_registeredusers')
+    site_powerusers, _ = Group.objects.get_or_create(name='site_powerusers')
+    datasource_owners, _ = Group.objects.get_or_create(name='datasource_owners')
+    datasource_managers, _ = Group.objects.get_or_create(name='datasource_managers')
+    datasource_collaborators, _ = Group.objects.get_or_create(name='datasource_collaborators')
     
     #perms
     view_published_datasource_perm = Permission.objects.get(codename='view_published_datasource')
