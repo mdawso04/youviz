@@ -23,15 +23,17 @@
 </div>
                 
 <div class="offcanvas-body test-edit-inner px-2 px-md-3 pb-2 pb-md-3 noscroll" style="overflow-x: auto;">
+    
+    <!-- name & desc -->
     <div class="mb-2 p-3 position-relative rounded-3 bg-white" 
          {% if 'change_datasource' in datasource_perms %}
          style="cursor: pointer;" 
          onclick="Handler.showTab('#navpane-pills-edit-tab');"
          {% endif %}
          id="navTitleDesc">
-         <h3 class="h6 text-muted">Title & Description</h3>
+         <h3 class="small text-muted">Title & Description</h3>
         <p class="h6" style="">{{ datasource.name }}</p>
-        {#<p class="text-muted small lh-sm">{{ datasource.description }}</p>#}
+        <p class="text-muted small lh-sm">{{ datasource.description }}</p>
         {% if 'change_datasource' in datasource_perms %}
             {% if datasource.is_published %}<span class="badge bg-success bg-opacity-75">Published</span>
             {% else %}<span class="badge bg-warning text-dark bg-opacity-75">Unpublished</span>
@@ -45,32 +47,31 @@
                 <i class="bi bi-pen text-black-50"></i>
         </button>
         {% endif %}
-        
-        
-        {% comment %}
-        {% for v in datasource.vizs.all %}
-        <button type="button" class="btn btn-sm btn-outline-info" style="font-size: 0.8rem;" onclick="alert('Jump to Page {{ forloop.counter }}'); event.stopPropagation();">
-            Page {{ forloop.counter }}
-        </button>
-        {% endfor %}
-        {% endcomment %}
-        
     </div>
     
-    {% if ad and ad.html %}
-        <div class="notification mb-2 rounded-3 bg-light" style="">
-            {% include 'projects/content/ad_viz_info.html' %}
+    <!-- ad1 -->
+    {% if settings.ads.view_1 and ads.0.html %}
+        <div class="notification py-2 rounded-3 bg-light" style="">
+            {{ ads.0.html|safe }}
         </div>
     {% endif %}
     
+    <!-- ds -->
     <div class="comments mb-2 p-3 position-relative rounded-3 bg-white" >
-        <h3 class="h6 text-muted">Datasource</h3>
+        <h3 class="small text-muted">Datasource</h3>
         <p class="h6" style="">{{ datasource.datastream.name }}</p>
         <p class="text-muted small lh-sm">{{ datasource.datastream.description }}</p>
-        
     </div>
     
-    <div class="comments mb-2 p-3 position-relative rounded-3 bg-white" 
+    <!-- ad2 -->
+    {% if settings.ads.view_2 and ads.1.html %}
+        <div class="notification py-2 rounded-3 bg-light" style="">
+            {{ ads.1.html|safe }}
+        </div>
+    {% endif %}
+    
+    <!-- auth -->
+    <div class="comments mb-2 p-3 position-relative rounded-3 bg-white d-block d-md-none" 
          style="">
         <h3 class="h6 text-muted">Author</h3>
         
@@ -88,16 +89,15 @@
         <p class="text-muted small lh-sm">{{ datasource.owner.datasources.count }} viz{{ datasource.owner.datasources.count|pluralize }}</p>
     </div>
     
-    {% if ready %}
-    <div class="comments mb-2 p-2 position-relative rounded-3 bg-white" 
-         onclick="Handler.showTab('#navpane-pills-comments-tab');">
-        <p class="text-body text-decoration-none mb-0 fw-bold" style="font-size: 0.8rem;">Comments</p>
-        <p class="text-secondary text-decoration-none" style="font-size: 0.7rem;">The thing I like about this viz is that is uses open source data!</p>
-    </div>
+    <!-- ad3 -->
+    {% if settings.ads.view_3 and ads.2.html %}
+        <div class="notification py-2 rounded-3 bg-light" style="">
+            {{ ads.2.html|safe }}
+        </div>
     {% endif %}
     
-    
-    <h3 class="h6 text-muted">Related</h3>
+    <!-- related -->
+    <div class="d-flex justify-content-center"><h3 class="small text-muted mt-2">Related</h3></div>
     {% for page in related_items_paginated %}
     <div class="row row-cols-1 g-2 pb-2" id="page-{{ forloop.counter }}" unicorn:key="page-{{ forloop.counter }}">
         {% if forloop.counter <= related_page_no  %}

@@ -6,7 +6,7 @@
 <div class="card-body p-2 bg-white viz-info-panel">
     <div class="notification d-flex mb-2 rounded-3 bg-light" style="">
         {% for v in datasource.vizs.all %}
-            <button class="btn btn-light text-muted flex-fill">Page {{ forloop.counter }}</button>
+            <button class="btn btn-light text-muted flex-fill" {% if datasource.vizs.all|length == 1 %}disabled{% endif %}>Page {{ forloop.counter }}</button>
         {% endfor %}
     </div>
 

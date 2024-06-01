@@ -7,32 +7,44 @@
         document.querySelector(':root').style.setProperty('--top-nav', document.getElementById("top-nav").offsetHeight + 'px');
     </script>
     
-    {% for page in list_items_paginated %}
-        <div class="row row-cols-1 row-cols-md-4 g-2 pb-2" id="page-{{ forloop.counter }}" unicorn:key="page-{{ forloop.counter }}">
-            {% if forloop.counter <= page_no  %}
-            {% for i in page %}
-                <div class="col">
-                    <div class="card rounded-3 p-1 position-relative {% if not i.is_published %}border border-warning border-3 {% endif %}"  
-                         style="{% if i.is_published %}border-color: rgba(0, 0, 0, 0.07);{% endif %} 
-                                opacity: 0; animation: fadeIn 1s ease-in both; animation-delay: {{ forloop.counter|divide:4 }}s;">
-                        {% block item_content %}
-                            {% include './list_item_content.html' with item=i%}
-                        {% endblock %}
-                        {% block item_info %}
-                            {% include './list_item_info.html' with item=i %}
-                        {% endblock %}
+    <div class="row h-100">
+        
+        <div class="col-12 {% if settings.ads.list_1 and ads.0.html %}col-lg-10{% endif %}">    
+            {% for page in list_items_paginated %}
+                <div class="row row-cols-1 row-cols-md-4 g-2 pb-2" id="page-{{ forloop.counter }}" unicorn:key="page-{{ forloop.counter }}">
+                    {% if forloop.counter <= page_no  %}
+                    {% for i in page %}
+                        <div class="col">
+                            <div class="card rounded-3 p-1 position-relative {% if not i.is_published %}border border-warning border-3 {% endif %}"  
+                                 style="{% if i.is_published %}border-color: rgba(0, 0, 0, 0.07);{% endif %} 
+                                        opacity: 0; animation: fadeIn 1s ease-in both; animation-delay: {{ forloop.counter|divide:4 }}s;">
+                                {% block item_content %}
+                                    {% include './list_item_content.html' with item=i%}
+                                {% endblock %}
+                                {% block item_info %}
+                                    {% include './list_item_info.html' with item=i %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% elif forloop.counter == page_no|add:"1" %}
+                    <div id="page-{{ forloop.counter }}-trigger" 
+                         unicorn:visible.debounce-1000.threshold-100="more" 
+                         unicorn:partial.id="page-{{ forloop.counter }}" 
+                         unicorn:partial.key="page-{{ forloop.counter|add:'1' }}">
+                        Grabbing more now...
                     </div>
+                    {% endif  %}
                 </div>
             {% endfor %}
-            {% elif forloop.counter == page_no|add:"1" %}
-            <div id="page-{{ forloop.counter }}-trigger" 
-                 unicorn:visible.debounce-1000.threshold-100="more" 
-                 unicorn:partial.id="page-{{ forloop.counter }}" 
-                 unicorn:partial.key="page-{{ forloop.counter|add:'1' }}">
-                Grabbing more now...
-            </div>
-            {% endif  %}
         </div>
-    {% endfor %}
+    
+        {% if settings.ads.list_1 and ads.0.html %}
+        <div class="col-2 d-none d-lg-block bg-white border-none px-2 px-md-3 py-2 py-md-3 noscroll" style="overflow-x: auto;">
+            {{ ads.0.html|safe }}
+        </div>
+        {% endif %}
+    
+    </div>
 </div>
 

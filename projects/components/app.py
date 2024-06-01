@@ -42,7 +42,7 @@ class AppView(UnicornView):
     page: str = None
     siteuser: User = None
     notification: Notification = None
-    ad: Notification = None
+    ads: QuerySetType[Notification] = None
     settings: dict = None 
     context: dict = None
     covers: QuerySetType[Cover] = None
@@ -108,6 +108,7 @@ class AppView(UnicornView):
                     published_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(query=query, owner=owner_pk, is_published=True))
                     unpublished_ds = get_objects_for_user(current_user, ('view_datasource'), Datasource.list(query=query, owner=owner_pk, is_published=False))
                     self.datasources = (published_ds | unpublished_ds).distinct()
+                    self.ads = Notification.objects.filter(position=Notification.USER_AD).order_by('?')[:4]
                 
                 elif mode == 'list':
                     if search:
@@ -135,10 +136,10 @@ class AppView(UnicornView):
                         published_descmatch_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(q1, is_published=True))
                         
                         self.datasources = (published_namematch_ds | published_descmatch_ds).distinct().order_by('?')
+                    
+                    self.ads = Notification.objects.filter(position=Notification.LIST_AD).order_by('?')[:4]
                 
                 self.list_items_paginated = [self.datasources[i: i+20] for i in range(0, len(self.datasources), 20)]
-                #self.notification = Notification.objects.filter(position=Notification.LIST).last()
-                #self.ad = Notification.objects.filter(position=Notification.LIST_AD).last()
                 return #do nothing
             
             elif mode == 'view':
@@ -165,7 +166,7 @@ class AppView(UnicornView):
 
                 self.datasource = ds
                 self.meta_object = self.datasource
-                self.ad = Notification.objects.filter(position=Notification.VIEW_AD).last()
+                self.ads = Notification.objects.filter(position=Notification.VIEW_AD).order_by('?')[:4]
 
                 if not self.related_datasources:
                     self.related_datasources = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(is_published=True)).exclude(pk=self.datasource.pk).order_by('?')[:20]

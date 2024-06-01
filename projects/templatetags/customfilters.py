@@ -51,3 +51,4 @@ def is_favorite(item, user):
         if item == a.datasource:
             return True
     return False
+

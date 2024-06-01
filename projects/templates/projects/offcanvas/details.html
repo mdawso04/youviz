@@ -112,11 +112,7 @@
         
         <div class="card-body pt-1 mb-1">
             <a class="btn btn-primary position-relative" href="{% url 'user' request.user.profile.slug %}" role="button">
-                My Vizs
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    {{request.user.datasources.count }}
-                    <span class="visually-hidden">viz{{ datasource.owner.datasources.count|pluralize }}</span>
-                </span>
+                My Vizs <span class="badge bg-danger">{{request.user.datasources.count }}</span>
             </a>
             
         </div>
