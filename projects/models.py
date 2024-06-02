@@ -1014,13 +1014,10 @@ class Comment(BaseModel):
     datasource = models.ForeignKey(Datasource, null=True, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, null=True, on_delete=models.CASCADE)
     
-    managers = models.ManyToManyField(User, blank=True, related_name='comment_managers')
-    collaborators = models.ManyToManyField(User, blank=True, related_name='comment_collaborators')
-    
     class Meta:
         default_related_name = 'comments'
     
-    prefetch = ('user',)
+    #prefetch = ('user',)
     
     
 class Activity(BaseModel):

@@ -18,19 +18,6 @@
     {% block stretched_link %}
     {% endblock %}
     {% block favourite %}
-    {% if 'projects.change_activity' in perms %}
-    <button class="bg-transparent border-0 ms-2 position-absolute top-0 end-0" 
-            id="fav_button_{{item.pk}}"
-            style="z-index: 1030;" 
-            unicorn:click="toggle_activity({{item.pk}});"
-            unicorn:partial.id="fav_button_icon_{{item.pk}}">
-        {% is_favorite item request.user as fav %}
-        {% if fav %}
-            <i id="fav_button_icon_{{item.pk}}" class="bi bi-bookmark-fill text-black-50" style="font-size: 1.5rem;"></i>
-        {% else %}
-            <i id="fav_button_icon_{{item.pk}}" class="bi bi-bookmark text-black-50" style="font-size: 1.5rem;"></i>
-        {% endif %}
-    </button>
-    {% endif %}
+    {% include 'projects/common/activity_toggle_top_right.html' with item=item%}
     {% endblock %}
 </div>

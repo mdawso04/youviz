@@ -1,6 +1,6 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
-from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings, Cover
+from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings, Cover, Comment
 from django.contrib.auth.models import User
 from projects.middleware import redirect as force_redirect
 from guardian.shortcuts import get_perms, get_user_perms, get_users_with_perms, get_objects_for_user, get_perms_for_model
@@ -51,6 +51,8 @@ class AppView(UnicornView):
     related_datasources: QuerySetType[Datasource] = None
     related_items_paginated: list = None
     related_page_no: int = 1
+    
+    add_comment_text: str = None
     
     class Meta:
         javascript_exclude = ('datastreams', 'datasources', 'datasource', 'vizs', 'siteuser', 'context', ) 
@@ -344,6 +346,21 @@ class AppView(UnicornView):
             return redirect('/')
         
         v.delete()
+        self.load_table()
+        
+    def add_comment(self):
+        if self.add_comment_text:
+            self.add(
+                cls=Comment,
+                datasource=self.datasource,
+                description=self.add_comment_text,
+            )
+            self.add_comment_text = None
+        self.load_table()
+        
+    def delete_comment(self, pk):
+        c = Comment.item(pk=pk)
+        c.delete()
         self.load_table()
         
     def toggleCover(self, pk):

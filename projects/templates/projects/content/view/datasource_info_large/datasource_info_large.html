@@ -6,12 +6,25 @@
 <div class="card-body p-2 bg-white viz-info-panel">
     <div class="notification d-flex mb-2 rounded-3 bg-light" style="">
         {% for v in datasource.vizs.all %}
-            <button class="btn btn-light text-muted flex-fill" {% if datasource.vizs.all|length == 1 %}disabled{% endif %}>Page {{ forloop.counter }}</button>
+            <div class="bg-light text-muted flex-fill position-relative text-center"
+                 style="cursor: pointer;" 
+                 {% if 'change_datasource' in datasource_perms %}onclick="Handler.navigator.toggleEdit();"{% endif %}>
+                <span class="align-middle">Page {{ forloop.counter }}</span>
+                
+                {% if 'change_datasource' in datasource_perms %}
+                <button class="bg-transparent border-0 mx-1 my-2 position-absolute top-0 end-0" 
+                        style="z-index: 1020;"> 
+                        <i class="bi bi-pen text-black-50"></i>
+                </button>
+                {% endif %}
+                
+            </div>
         {% endfor %}
     </div>
 
     <div class="details mb-2 d-flex align-items-start p-3 pt-2 pe-5 position-relative rounded-3 bg-light" 
          id="infoLargeTitle"
+         unicorn:key="infoLargeTitle"
          style="cursor: pointer;" 
          onclick="if(event.target.id != 'fav_button_icon_{{datasource.pk}}') {Handler.navigator.toggleNav();}">
         <div>
@@ -19,7 +32,7 @@
                 style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{{ datasource.name }}
             </h1>
             <p class="text-secondary small">
-                {#{{ datasource.vizs.count }} viz{{ datasource.vizs.count|pluralize }}・#}{{ datasource.last_cached|naturalday|capfirst }}・{{ datasource.itemviews.count }} view{{ datasource.itemviews.count|pluralize }}
+                {#{{ datasource.vizs.count }} viz{{ datasource.vizs.count|pluralize }}・#}{{ datasource.last_cached|naturalday|capfirst }}・{{ datasource.itemviews.count }} view{{ datasource.itemviews.count|pluralize }}・{{ datasource.comments.count }} comment{{ datasource.comments.count|pluralize }}
                  {% if 'change_datasource' in datasource_perms %}
                     {% if datasource.is_published %}<span class="badge bg-success bg-opacity-75">Published</span>
                     {% else %}<span class="badge bg-warning text-dark bg-opacity-75">Unpublished</span>
@@ -27,20 +40,7 @@
                 {% endif %}
             </p>
         </div>
-        {% if 'projects.change_activity' in perms %}
-        <button class="bg-transparent border-0 mx-1 my-2 position-absolute top-0 end-0" 
-                id="fav_button_{{datasource.pk}}"
-                style="z-index: 1020;" 
-                unicorn:click.stop="toggle_activity({{datasource.pk}});"
-                unicorn:partial.id="fav_button_icon_{{datasource.pk}}">
-            {% is_favorite datasource request.user as fav %}
-            {% if fav %}
-                <i id="fav_button_icon_{{datasource.pk}}" class="bi bi-bookmark-fill text-black-50" style="font-size: 1.5rem;"></i>
-            {% else %}
-                <i id="fav_button_icon_{{datasource.pk}}" class="bi bi-bookmark text-black-50" style="font-size: 1.5rem;"></i>
-            {% endif %}
-        </button>
-        {% endif %}
+        {% include 'projects/common/activity_toggle_top_right.html' with item=datasource%}
         
     </div>
 

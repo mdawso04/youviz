@@ -1,31 +1,51 @@
 {% load humanize %}
 {% load customfilters %}
 
+<style>
+.noscroll {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+.noscroll::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+</style>
+
 <div class="d-flex offcanvas-header p-3">
-    <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Comments</h5>
-    <!--<div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" role="switch" id="maximize"
-               onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
-    </div>-->
-    <button type="button" class="nav-btn" style="padding: 0px; width: auto; height: auto;" onclick="Handler.showTab('#navpane-pills-details-tab');" aria-label="Close">
-        <i class="bi-arrow-left"></i>
+   <h5 class="offcanvas-title me-auto flex-grow-1 h4" id="offcanvasCommentLabel">Comments</h5>
+    <button type="button" class="border-0 bg-transparent" style="padding: 0px; " onclick="Handler.showTab('#navpane-pills-details-tab');" aria-label="Close">
+        <i class="bi-arrow-left" style="width: 24px; height: 24px;"></i>
     </button>
 </div>
                 
-<div class="offcanvas-body test-edit-inner small p-2" style="overflow-x: hidden;">
-    <div class="comments mb-2 p-2 position-relative rounded-3 bg-white" style="" onclick="Handler.navigator.toggleNav();">
-        <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
-        Lorem ipsum
-        </p>
+<div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" 
+     id="comment-form"
+     style="overflow-x: hidden;">
+    <div class="input-group input-group-sm mb-2" id="add_comment_input">
+        <span class="input-group-text" id="comment-input">Comment</span>
+        <input class="form-control"
+                value=""
+                  type="text"
+                  unicorn:model.lazy="add_comment_text"
+                  aria-label="Comment"/>
+        <button class="btn btn-outline-secondary"
+                type="button" 
+                unicorn:click="add_comment"
+                unicorn:partial="comment-form"
+                unicorn:partial.id="nav-comments-summary"
+                unicorn:partial.key="infoLargeTitle">
+            <i class="bi-send"></i>
+        </button>
     </div>
-    <div class="comments mb-2 p-2 position-relative rounded-3 bg-white" style="" onclick="Handler.navigator.toggleNav();">
-        <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
-        Lorem ipsum
-        </p>
+    <div id="comment_list" class="">
+        {% for c in datasource.comments.all %}
+        <div class="comments mb-2 p-3 py-2 position-relative rounded-3 bg-white" id="comment-{{c.pk}}" style="">
+            <p class="text-secondary text-decoration-none me-4" style="font-size: 0.8rem; ">{{ c.description }}</p>
+            {% include 'projects/common/profile_tag_name_small.html' with item=c%}
+            {% include 'projects/common/item_edit_comment.html' with item=c%}
+            {% include 'projects/common/item_last_updated_small.html' with item=c%}
+        </div>
+        {% endfor %}
     </div>
-    <div class="comments ms-5 mb-2 p-2 position-relative rounded-3 bg-white" style="" onclick="Handler.navigator.toggleNav();">
-        <p class="text-secondary text-decoration-none" style="font-size: 0.8rem;">
-        Reply
-        </p>
-    </div>
+    
 </div>

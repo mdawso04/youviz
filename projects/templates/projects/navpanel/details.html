@@ -49,6 +49,17 @@
         {% endif %}
     </div>
     
+    <!-- comments -->
+    <div class="comments mb-2 p-3 position-relative rounded-3 bg-white" 
+         id="nav-comments-summary"
+         onclick="Handler.showTab('#navpane-pills-comments-tab');">
+        <h3 class="small text-muted">Comments<span class="badge rounded-pill bg-light text-dark">{{ datasource.comments.all|length }}</span></h3> 
+        
+        <div class="comments mb-1 p-2 rounded-3 bg-light small">
+            {{ datasource.comments.last.description }}
+        </div>
+    </div>
+    
     <!-- ad1 -->
     {% if settings.ads.view_1 and ads.0.html %}
         <div class="notification py-2 rounded-3 bg-light" style="">
