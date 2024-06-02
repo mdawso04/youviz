@@ -52,10 +52,12 @@
     <!-- comments -->
     <div class="comments mb-2 p-3 position-relative rounded-3 bg-white" 
          id="nav-comments-summary"
+         style="cursor: pointer;" 
          onclick="Handler.showTab('#navpane-pills-comments-tab');">
         <h3 class="small text-muted">Comments<span class="badge rounded-pill bg-light text-dark">{{ datasource.comments.all|length }}</span></h3> 
         
-        <div class="comments mb-1 p-2 rounded-3 bg-light small">
+        <div class="comments mb-1 p-2 rounded-3 bg-light small"
+             style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">
             {{ datasource.comments.last.description }}
         </div>
     </div>
@@ -108,7 +110,7 @@
     {% endif %}
     
     <!-- related -->
-    <div class="d-flex justify-content-center"><h3 class="small text-muted mt-2">Related</h3></div>
+    <div class="d-flex justify-content-center"><h3 class="small text-muted mt-2">Related Vizs</h3></div>
     {% for page in related_items_paginated %}
     <div class="row row-cols-1 g-2 pb-2" id="page-{{ forloop.counter }}" unicorn:key="page-{{ forloop.counter }}">
         {% if forloop.counter <= related_page_no  %}

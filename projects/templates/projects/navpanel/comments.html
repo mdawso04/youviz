@@ -27,8 +27,10 @@
                 value=""
                   type="text"
                   unicorn:model.lazy="add_comment_text"
+               onkeypress="if(event.key === 'Enter'){event.preventDefault(); document.getElementById('add_comment_button').click();}"
                   aria-label="Comment"/>
         <button class="btn btn-outline-secondary"
+                id="add_comment_button"
                 type="button" 
                 unicorn:click="add_comment"
                 unicorn:partial="comment-form"

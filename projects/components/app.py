@@ -361,6 +361,7 @@ class AppView(UnicornView):
     def delete_comment(self, pk):
         c = Comment.item(pk=pk)
         c.delete()
+        self.add_comment_text =''
         self.load_table()
         
     def toggleCover(self, pk):

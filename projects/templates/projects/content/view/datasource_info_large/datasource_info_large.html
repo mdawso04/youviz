@@ -6,10 +6,10 @@
 <div class="card-body p-2 bg-white viz-info-panel">
     <div class="notification d-flex mb-2 rounded-3 bg-light" style="">
         {% for v in datasource.vizs.all %}
-            <div class="bg-light text-muted flex-fill position-relative text-center"
+            <div class="bg-light text-muted flex-fill position-relative d-flex justify-content-center align-items-center"
                  style="cursor: pointer;" 
                  {% if 'change_datasource' in datasource_perms %}onclick="Handler.navigator.toggleEdit();"{% endif %}>
-                <span class="align-middle">Page {{ forloop.counter }}</span>
+                <span class="align-middle fs-6">Page {{ forloop.counter }}</span>
                 
                 {% if 'change_datasource' in datasource_perms %}
                 <button class="bg-transparent border-0 mx-1 my-2 position-absolute top-0 end-0" 
@@ -30,6 +30,7 @@
         <div>
             <h1 class="mb-0 h5 lh-sm" 
                 style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{{ datasource.name }}
+                <span class="text-secondary fs-6">...more</span>
             </h1>
             <p class="text-secondary small">
                 {#{{ datasource.vizs.count }} viz{{ datasource.vizs.count|pluralize }}・#}{{ datasource.last_cached|naturalday|capfirst }}・{{ datasource.itemviews.count }} view{{ datasource.itemviews.count|pluralize }}・{{ datasource.comments.count }} comment{{ datasource.comments.count|pluralize }}
