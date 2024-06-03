@@ -160,7 +160,7 @@ def initialise(sender, **kwargs):
                     "topline": "Welcome to YouViz!", 
                     "subline": "Search, Vizualize and Share Open Data for Free"
                 },
-                "comments": true,
+                "comments": True,
             },
         )
     
