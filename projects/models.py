@@ -192,19 +192,19 @@ class BaseModel(models.Model):
     
     @cached_property
     def perms_req_by_owners(self):
-         return [p.codename for p in Group.objects.get(name='datasource_owners').permissions.all()] 
+         return None
     
     @cached_property
     def perms_req_by_managers(self):
-         return [p.codename for p in Group.objects.get(name='datasource_managers').permissions.all()] 
+         return None
         
     @cached_property
     def perms_req_by_collaborators(self):
-         return [p.codename for p in Group.objects.get(name='datasource_collaborators').permissions.all()] 
+         return None
         
     @cached_property
     def perms_req_by_anonymous(self):
-        return [p.codename for p in Group.objects.get(name='datasource_anonymous').permissions.all()] 
+        return None
     
     #def get_meta_image(self):
     #    if self.image:
@@ -587,6 +587,22 @@ class Datasource(BaseModel):
     managers = models.ManyToManyField(User, blank=True, related_name='datasource_managers')
     collaborators = models.ManyToManyField(User, blank=True, related_name='datasource_collaborators')
     
+    @cached_property
+    def perms_req_by_owners(self):
+         return [p.codename for p in Group.objects.get(name='datasource_owners').permissions.all()] 
+    
+    @cached_property
+    def perms_req_by_managers(self):
+         return [p.codename for p in Group.objects.get(name='datasource_managers').permissions.all()] 
+        
+    @cached_property
+    def perms_req_by_collaborators(self):
+         return [p.codename for p in Group.objects.get(name='datasource_collaborators').permissions.all()] 
+        
+    @cached_property
+    def perms_req_by_anonymous(self):
+        return [p.codename for p in Group.objects.get(name='datasource_anonymous').permissions.all()] 
+    
     prefetch = ('vizs', 'comments', 'activities', 'itemviews', 'comments', )
     
     '''
@@ -728,20 +744,24 @@ Datasource auth signal hooks
 
 def baseobject_perms_helper(users_with_perms, bobj, **kwargs):
     
-    owner = bobj.owner
-    managers = bobj.managers.all()
-    collaborators = bobj.collaborators.all()
-    #anonymous = get_anonymous_user()
+    has_managers_and_collaborators = hasattr(bobj, 'managers')
     
-    #users_needing_perms = list(set([owner]) | set(managers) | set(collaborators) | set([anonymous]))
-    users_needing_perms = list(set([owner]) | set(managers) | set(collaborators))
+    owner = bobj.owner
+    
+    if has_managers_and_collaborators:
+        managers = bobj.managers.all()
+        collaborators = bobj.collaborators.all()
+        users_needing_perms = list(set([owner]) | set(managers) | set(collaborators))
+    else:
+        users_needing_perms = list(set([owner]))
 
     users_needing_no_perms = [user for user in users_with_perms if user not in users_needing_perms]
     
     perms_req_by_owners = bobj.perms_req_by_owners
-    perms_req_by_managers = bobj.perms_req_by_managers
-    perms_req_by_collaborators = bobj.perms_req_by_collaborators
-    #perms_req_by_anonymous = bobj.perms_req_by_anonymous
+    
+    if has_managers_and_collaborators:
+        perms_req_by_managers = bobj.perms_req_by_managers
+        perms_req_by_collaborators = bobj.perms_req_by_collaborators
     
     #remove all perms from users_needing_no_perms
     for u in users_needing_no_perms:
@@ -752,12 +772,10 @@ def baseobject_perms_helper(users_with_perms, bobj, **kwargs):
         needed_perms = []
         if u == owner:
             needed_perms = list(set(needed_perms) | set(perms_req_by_owners))
-        if u in managers:
+        if has_managers_and_collaborators and u in managers:
             needed_perms = list(set(needed_perms) | set(perms_req_by_managers))
-        if u in collaborators:
+        if has_managers_and_collaborators and u in collaborators:
             needed_perms = list(set(needed_perms) | set(perms_req_by_collaborators))
-        #if u == anonymous:
-        #    needed_perms = list(set(needed_perms) | set(perms_req_by_anonymous))
             
         user_perms = get_user_perms(u, bobj)
         
@@ -1016,9 +1034,12 @@ class Comment(BaseModel):
     
     class Meta:
         default_related_name = 'comments'
+                                   
+    use_object_permissions = True
     
-    #prefetch = ('user',)
-    
+    @cached_property
+    def perms_req_by_owners(self):
+         return [p.codename for p in Group.objects.get(name='comment_owners').permissions.all()] 
     
 class Activity(BaseModel):
     FAVORITE = 'F'

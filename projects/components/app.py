@@ -195,7 +195,21 @@ class AppView(UnicornView):
                         redirect('/')
                     
                     if page == 'new.datamenu':
-                        self.datastreams = Datastream.list()
+                        
+                        
+                        if not self.covers:
+                            self.covers = Cover.list().order_by('name')
+                        if not self.cover:
+                            self.cover = self.covers.filter(name__startswith='_').first()
+                        
+                        # objs by perms
+                        cover_search_terms = self.cover.search_terms.split(',') if self.cover else []
+                        
+                        q = Q(name__icontains=cover_search_terms[0])
+                        for v in cover_search_terms[1:]:
+                            q = q | Q(name__icontains=v)
+                        
+                        self.datastreams = Datastream.list(q)
                         self.list_items_paginated = [self.datastreams[i: i+20] for i in range(0, len(self.datastreams), 20)]
                         self.page = 'new.datamenu'
                         self.message = {
@@ -349,6 +363,8 @@ class AppView(UnicornView):
         self.load_table()
         
     def add_comment(self):
+        if not self.request.user.has_perm('projects.add_comment'):
+            return redirect('/')
         if self.add_comment_text:
             self.add(
                 cls=Comment,
@@ -360,8 +376,10 @@ class AppView(UnicornView):
         
     def delete_comment(self, pk):
         c = Comment.item(pk=pk)
+        if not self.request.user.has_perm('projects.delete_comment', c):
+            return redirect('/')
         c.delete()
-        self.add_comment_text =''
+        #self.add_comment_text =''
         self.load_table()
         
     def toggleCover(self, pk):

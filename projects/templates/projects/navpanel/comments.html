@@ -21,12 +21,13 @@
 <div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" 
      id="comment-form"
      style="overflow-x: hidden;">
+    {% if 'projects.add_comment' in perms %}
     <div class="input-group input-group-sm mb-2" id="add_comment_input">
         <span class="input-group-text" id="comment-input">Comment</span>
         <input class="form-control"
                 value=""
                   type="text"
-                  unicorn:model.lazy="add_comment_text"
+                  unicorn:model.defer="add_comment_text"
                onkeypress="if(event.key === 'Enter'){event.preventDefault(); document.getElementById('add_comment_button').click();}"
                   aria-label="Comment"/>
         <button class="btn btn-outline-secondary"
@@ -39,12 +40,15 @@
             <i class="bi-send"></i>
         </button>
     </div>
+    {% endif %}
     <div id="comment_list" class="">
         {% for c in datasource.comments.all %}
         <div class="comments mb-2 p-3 py-2 position-relative rounded-3 bg-white" id="comment-{{c.pk}}" style="">
             <p class="text-secondary text-decoration-none me-4" style="font-size: 0.8rem; ">{{ c.description }}</p>
             {% include 'projects/common/profile_tag_name_small.html' with item=c%}
-            {% include 'projects/common/item_edit_comment.html' with item=c%}
+            {% if c.owner.pk == request.user.pk %}
+                {% include 'projects/common/item_edit_comment.html' with item=c%}
+            {% endif %}
             {% include 'projects/common/item_last_updated_small.html' with item=c%}
         </div>
         {% endfor %}

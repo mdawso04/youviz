@@ -16,6 +16,7 @@ def initialise(sender, **kwargs):
     datasource_owners, _ = Group.objects.get_or_create(name='datasource_owners')
     datasource_managers, _ = Group.objects.get_or_create(name='datasource_managers')
     datasource_collaborators, _ = Group.objects.get_or_create(name='datasource_collaborators')
+    comment_owners, _ = Group.objects.get_or_create(name='comment_owners')
     
     #perms
     view_published_datasource_perm = Permission.objects.get(codename='view_published_datasource')
@@ -28,14 +29,22 @@ def initialise(sender, **kwargs):
     add_datasource_perm = Permission.objects.get(codename='add_datasource')
     add_datastream_perm = Permission.objects.get(codename='add_datastream')
     
+    add_comment_perm = Permission.objects.get(codename='add_comment')
+    view_comment_perm = Permission.objects.get(codename='view_comment')
+    change_comment_perm = Permission.objects.get(codename='change_comment')
+    delete_comment_perm = Permission.objects.get(codename='delete_comment')
+    
+    
     site_allusers.permissions.add(
-        view_published_datasource_perm.pk
+        view_published_datasource_perm.pk,
+        view_comment_perm.pk,
     )
     site_registeredusers.permissions.add(
         change_activity_perm.pk,
         view_profile_perm.pk,
         change_profile_perm.pk,
         add_datasource_perm.pk,
+        add_comment_perm.pk,
     )
     site_powerusers.permissions.add(
         add_datastream_perm.pk
@@ -54,6 +63,11 @@ def initialise(sender, **kwargs):
         view_datasource_perm.pk,
         change_datasource_perm.pk,
     )
+    comment_owners.permissions.add(
+        change_comment_perm.pk,
+        delete_comment_perm.pk,
+    )
+    
     
     #assign group to GuardianUser
     guardian_user_exists = User.objects.filter(username='GuardianUser').exists()
@@ -145,7 +159,8 @@ def initialise(sender, **kwargs):
                 "sitewelcome": {
                     "topline": "Welcome to YouViz!", 
                     "subline": "Search, Vizualize and Share Open Data for Free"
-                }
+                },
+                "comments": true,
             },
         )
     
