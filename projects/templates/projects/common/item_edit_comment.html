@@ -1,0 +1,14 @@
+{% extends "./item_edit_base.html" %}
+{% load humanize %}
+{% load customfilters %}
+
+{% block location %}mx-1 my-2 top-0 end-0{% endblock %}
+
+{% block edit_button %}{% endblock %}
+
+{% block delete_function %}delete_comment({{item.pk}}){% endblock %}
+{% block delete_partial %}comment_list{% endblock %}
+{% block delete_partial_id %}nav-comments-summary{% endblock %}
+{% block delete_partial_key %}infoLargeTitle{% endblock %}
+
+{% block delete_font_remsize %}{% endblock %}

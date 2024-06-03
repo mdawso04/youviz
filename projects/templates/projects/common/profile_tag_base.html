@@ -1,0 +1,16 @@
+{% load humanize %}
+{% load customfilters %}
+
+<div class="d-flex align-items-center position-relative" style="">
+    <button class="border-0 rounded-circle p-2 me-2" 
+        style="
+            {% block icon_size %}font-size: 0.7rem; min-height: 28px; max-height: 28px; min-width: 28px; min-width: 28px; {% endblock %}
+            background-color: {{item.owner.profile.properties.profile_color|default:'#0dcaf0'}} !important">
+            {{ item.owner.profile.name | first | upper}}
+    </button>
+    <div>
+        <span class="text-decoration-none {% block name_size %}small lh-sm{% endblock %}" 
+            style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{{ item.owner.profile.name }}
+        </span>
+    </div>
+</div>

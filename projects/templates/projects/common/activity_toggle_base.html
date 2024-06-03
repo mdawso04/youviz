@@ -1,0 +1,27 @@
+{% load humanize %}
+{% load customfilters %}
+{% load guardian_tags %}
+{% get_obj_perms request.user for datasource as "datasource_perms" %}
+
+<div class="bg-transparent border-0 position-absolute {% block panel_location %}mx-1 my-2 top-0 end-0{% endblock %}"
+        id="activity_panel_{{item.pk}}"
+        style="z-index: 1020;">
+    
+    {% block fav_button %}
+    {% if 'projects.change_activity' in perms %}
+    <button class="bg-transparent border-0" 
+            id="fav_button_{{item.pk}}"
+            style="z-index: 1020;" 
+            unicorn:click.stop="toggle_activity({{item.pk}});"
+            unicorn:partial.id="fav_button_icon_{{item.pk}}">
+        {% is_favorite item request.user as fav %}
+        {% if fav %}
+            <i id="fav_button_icon_{{item.pk}}" class="bi bi-bookmark-fill text-black-50" style="font-size: 1.5rem;"></i>
+        {% else %}
+            <i id="fav_button_icon_{{item.pk}}" class="bi bi-bookmark text-black-50" style="font-size: 1.5rem;"></i>
+        {% endif %}
+    </button>
+    {% endif %}
+    {% endblock %}
+
+</div>

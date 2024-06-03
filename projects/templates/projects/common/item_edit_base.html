@@ -1,0 +1,31 @@
+{% load humanize %}
+{% load customfilters %}
+{% load guardian_tags %}
+{% get_obj_perms request.user for datasource as "datasource_perms" %}
+
+<div class="bg-transparent border-0 position-absolute {% block location %}mx-1 my-2 top-0 end-0{% endblock %}"
+        id="edit_panel_{{item.pk}}"
+        style="z-index: 1020;">
+    {% block edit_button %}
+    <button class="bg-transparent border-0" 
+            id="edit_button_{{item.pk}}"
+            style="" 
+            unicorn:click.stop="{% block edit_function %}{% endblock %}"
+            unicorn:partial="{% block edit_partial %}{% endblock %}"
+            unicorn:partial.id="{% block edit_partial_id %}{% endblock %}"
+            unicorn:partial.key="{% block edit_partial_key %}{% endblock %}">
+        <i id="edit_button_icon_{{item.pk}}" class="bi bi-pen text-black-50" style="font-size: {% block edit_font_remsize %}{% endblock %};"></i>
+    </button>
+    {% endblock %}
+    {% block delete_button %}
+    <button class="bg-transparent border-0" 
+            id="delete_button_{{item.pk}}"
+            style="" 
+            unicorn:click.stop="{% block delete_function %}{% endblock %}"
+            unicorn:partial="{% block delete_partial %}{% endblock %}"
+            unicorn:partial.id="{% block delete_partial_id %}{% endblock %}"
+            unicorn:partial.key="{% block delete_partial_key %}{% endblock %}">
+        <i id="delete_button_icon_{{item.pk}}" class="bi bi-x text-black-50" style="font-size: {% block delete_font_remsize %}{% endblock %};"></i>
+    </button>
+    {% endblock %}
+</div>

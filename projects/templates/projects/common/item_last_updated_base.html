@@ -1,0 +1,8 @@
+{% load humanize %}
+{% load customfilters %}
+
+<div class="bg-transparent border-0 position-absolute small text-muted {% block location %}mx-2 my-2 bottom-0 end-0{% endblock %}"
+        id="last_updated_panel_{{item.pk}}"
+        style="z-index: 1020; font-size: 0.7rem; ">
+    {% block last_updated %}{{ item.last_updated|naturalday|capfirst }}{% endblock %}
+</div>
