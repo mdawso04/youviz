@@ -33,8 +33,12 @@ class AppView(UnicornView):
     datasource: Datasource = None
     vizs: QuerySetType[Viz] = None
     #report: Report = None
+    
     list_items_paginated: list = None
     page_no: int = 1
+    page_count: int = 10
+    items_per_page: int = 8
+    
     datastreams: QuerySetType[Datastream] = None
     services: list = None
     meta_object: BaseModel = None
@@ -137,11 +141,20 @@ class AppView(UnicornView):
                             q1 = q1 | Q(description__icontains=v)
                         published_descmatch_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(q1, is_published=True))
                         
-                        self.datasources = (published_namematch_ds | published_descmatch_ds).distinct().order_by('?')
+                        if self.page_no == 1:
+                            self.list_items_paginated = []
+                        displayed_item_ids = [i['pk'] for p in self.list_items_paginated[:self.page_no] for i in p] 
+                        self.datasources = (published_namematch_ds | published_descmatch_ds).distinct().exclude(id__in=displayed_item_ids).order_by('?')[:self.items_per_page + 1]
+                        
+                        if len(self.datasources[:self.items_per_page]) > 0:
+                            self.list_items_paginated = self.list_items_paginated[:self.page_no - 1] + [self.datasources[:self.items_per_page]]
+                        if len(self.datasources[self.items_per_page:]) > 0:
+                            self.list_items_paginated = self.list_items_paginated[:self.page_no ] + [self.datasources[self.items_per_page:]]
+                        self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
+                        
                     
                     self.ads = Notification.objects.filter(position=Notification.LIST_AD).order_by('?')[:4]
-                
-                self.list_items_paginated = [self.datasources[i: i+20] for i in range(0, len(self.datasources), 20)]
+                                    
                 return #do nothing
             
             elif mode == 'view':
@@ -387,6 +400,7 @@ class AppView(UnicornView):
             self.cover = None
         else:
             self.cover = Cover.item(pk=pk)
+        #self.call("clear_cover_focus")
         self.load_table()
     
     def toggle_activity(self, ds):
@@ -489,19 +503,15 @@ class AppView(UnicornView):
         
     def more(self):
         if self.list_items_paginated:
-            if self.page_no < len(self.list_items_paginated):
+            if self.page_no < len([i for i in self.list_items_paginated if not None]):
                 self.page_no += 1
                 self.load_table()
-            else:
-                return False
             
     def more_related(self):
         if self.related_items_paginated:
             if self.related_page_no < len(self.related_items_paginated):
                 self.related_page_no += 1
                 self.load_table()
-            else:
-                return False
     
     '''
     def addReport(self, name='NewReport'):

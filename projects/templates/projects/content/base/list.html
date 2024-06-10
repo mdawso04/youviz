@@ -9,10 +9,10 @@
     
     <div class="row h-100">
         
-        <div class="col-12 {% if settings.ads.list_1 and ads.0.html %}col-lg-10{% endif %}">    
+        <div class="col-12 {% if settings.ads.list_1 and ads.0.html %}col-lg-10{% endif %}">  
             {% for page in list_items_paginated %}
-                <div class="row row-cols-1 row-cols-md-4 g-2 pb-2" id="page-{{ forloop.counter }}" unicorn:key="page-{{ forloop.counter }}">
-                    {% if forloop.counter <= page_no  %}
+            <div class="row row-cols-1 row-cols-md-4 g-2 pb-2" id="page-{{ forloop.counter }}" unicorn:key="page-{{ forloop.counter }}">
+                {% if forloop.counter <= page_no and page  %}
                     {% for i in page %}
                         <div class="col">
                             <div class="card rounded-3 p-1 position-relative {% if not i.is_published %}border border-warning border-3 {% endif %}"  
@@ -27,17 +27,21 @@
                             </div>
                         </div>
                     {% endfor %}
-                    {% elif forloop.counter == page_no|add:"1" %}
-                    <div id="page-{{ forloop.counter }}-trigger" 
+                {% elif forloop.counter == page_no|add:"1" and page %}
+                    <div class="col" 
+                         id="page-{{ forloop.counter }}-trigger"
                          unicorn:visible.debounce-1000.threshold-100="more" 
                          unicorn:partial.id="page-{{ forloop.counter }}" 
                          unicorn:partial.key="page-{{ forloop.counter|add:'1' }}">
                         Grabbing more now...
                     </div>
-                    {% endif  %}
-                </div>
+                {% else %}
+                {% endif  %}
+            </div>
             {% endfor %}
+            <div class="row"><div class="col" style="min-height:200px;"></div></div>
         </div>
+    
     
         {% if settings.ads.list_1 and ads.0.html %}
         <div class="col-2 d-none d-lg-block bg-white border-none px-2 px-md-3 py-2 py-md-3 noscroll" style="overflow-x: auto;">
