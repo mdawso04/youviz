@@ -59,7 +59,8 @@ class AppView(UnicornView):
     add_comment_text: str = None
     
     class Meta:
-        javascript_exclude = ('datastreams', 'datasources', 'datasource', 'vizs', 'siteuser', 'context', ) 
+        javascript_exclude = ('datasources', 'datasource', 'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover',
+                             'related_datasources', 'related_items_paginated') 
     
     #def __init__(self, *args, **kwargs):
     #    super().__init__(**kwargs)  # calling super is required
@@ -106,6 +107,10 @@ class AppView(UnicornView):
             '''
             if mode in ('list', 'user'):
                 
+                if self.page_no == 1:
+                    self.list_items_paginated = []
+                displayed_item_ids = [i['pk'] if isinstance(i, dict) else i.pk for p in self.list_items_paginated[:self.page_no - 1] for i in p] 
+                    
                 #owner_pk = None
                 if mode == 'user':
                     self.siteuser = Profile.item(slug=self.context['slug']).owner
@@ -113,7 +118,7 @@ class AppView(UnicornView):
                     # objs by perms
                     published_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(query=query, owner=owner_pk, is_published=True))
                     unpublished_ds = get_objects_for_user(current_user, ('view_datasource'), Datasource.list(query=query, owner=owner_pk, is_published=False))
-                    self.datasources = (published_ds | unpublished_ds).distinct()
+                    self.datasources = (published_ds | unpublished_ds).distinct().exclude(id__in=displayed_item_ids).order_by('?')[:self.items_per_page + 1]
                     self.ads = Notification.objects.filter(position=Notification.USER_AD).order_by('?')[:4]
                 
                 elif mode == 'list':
@@ -121,7 +126,7 @@ class AppView(UnicornView):
                         # objs by perms
                         published_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(query=query, is_published=True))
                         unpublished_ds = get_objects_for_user(current_user, ('view_datasource'), Datasource.list(query=query, is_published=False))
-                        self.datasources = (published_ds | unpublished_ds).distinct()
+                        self.datasources = (published_ds | unpublished_ds).distinct().exclude(id__in=displayed_item_ids)[:self.items_per_page + 1]
                     else:
                         if not self.covers:
                             self.covers = Cover.list().order_by('name')
@@ -141,19 +146,15 @@ class AppView(UnicornView):
                             q1 = q1 | Q(description__icontains=v)
                         published_descmatch_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(q1, is_published=True))
                         
-                        if self.page_no == 1:
-                            self.list_items_paginated = []
-                        displayed_item_ids = [i['pk'] for p in self.list_items_paginated[:self.page_no] for i in p] 
                         self.datasources = (published_namematch_ds | published_descmatch_ds).distinct().exclude(id__in=displayed_item_ids).order_by('?')[:self.items_per_page + 1]
                         
-                        if len(self.datasources[:self.items_per_page]) > 0:
-                            self.list_items_paginated = self.list_items_paginated[:self.page_no - 1] + [self.datasources[:self.items_per_page]]
-                        if len(self.datasources[self.items_per_page:]) > 0:
-                            self.list_items_paginated = self.list_items_paginated[:self.page_no ] + [self.datasources[self.items_per_page:]]
-                        self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
-                        
-                    
                     self.ads = Notification.objects.filter(position=Notification.LIST_AD).order_by('?')[:4]
+                    
+                if len(self.datasources[:self.items_per_page]) > 0:
+                    self.list_items_paginated = self.list_items_paginated[:self.page_no - 1] + [self.datasources[:self.items_per_page]]
+                if len(self.datasources[self.items_per_page:]) > 0:
+                    self.list_items_paginated = self.list_items_paginated[:self.page_no ] + [self.datasources[self.items_per_page:]]
+                self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
                                     
                 return #do nothing
             

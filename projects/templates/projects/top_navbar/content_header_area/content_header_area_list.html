@@ -4,11 +4,10 @@
     <div class="d-flex flex-row no-scroll-fix overflow-scroll" 
          style="-ms-overflow-style: none; scrollbar-width: none;"
          id="cover-button-row">
-        <button id="focus_taker" class="d-none"></button>
         {% for c in covers %}
             {% if c.name|first != "_" %}
                 <button type="button" 
-                    class="btn btn-outline-secondary btn me-2 opacity-75 {% if cover.pk == c.pk %}active{% endif %}"
+                    class="btn btn-outline-secondary btn me-2 opacity-75 {% if c.pk == cover.pk %}active{% endif %}"
                     id="cover-{{c.name}}" 
                     aria-label="{{c.name}}"
                     unicorn:partial="cover-button-row"
