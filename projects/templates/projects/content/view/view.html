@@ -35,6 +35,14 @@
                                 </div>
                             {% endwith %}
                             {% endwith %}
+                            {% if forloop.last %}
+                                <div class="tab-pane yv fade" id="last" 
+                                     role="tabpanel" aria-labelledby="last-tab">
+                                    <div class="h-100 w-100 bg-light">
+                                        More...
+                                    </div>
+                                </div>
+                            {% endif %}
                         {% endfor %}
                     </div>
                 </div>

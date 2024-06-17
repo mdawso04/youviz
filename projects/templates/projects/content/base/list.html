@@ -29,11 +29,12 @@
                     {% endfor %}
                 {% elif forloop.counter == page_no|add:"1" and page %}
                     <div class="col" 
+                         style="opacity: 0; animation: fadeIn 1s ease-in both; animation-delay: {{ forloop.counter|divide:4 }}s;"
                          id="page-{{ forloop.counter }}-trigger"
                          unicorn:visible.debounce-1000.threshold-100="more" 
                          unicorn:partial.id="page-{{ forloop.counter }}" 
                          unicorn:partial.key="page-{{ forloop.counter|add:'1' }}">
-                        Grabbing more now...
+                        ...
                     </div>
                 {% else %}
                 {% endif  %}
@@ -43,12 +44,17 @@
         </div>
     
     
-        {% if settings.ads.list_1 and ads.0.html %}
+        {% if settings.ads.list_1 and ads %}
         <div class="col-2 d-none d-lg-block bg-white border-none px-2 px-md-3 py-2 py-md-3 noscroll" style="overflow-x: auto;">
-            {{ ads.0.html|safe }}
+            <div class="row row-cols-1 g-2 pb-2">
+                {% for ad in ads %}
+                    <div class="col">
+                        {{ ad.html|safe }}
+                    </div>
+                {% endfor %}
+            </div>
         </div>
         {% endif %}
-    
     </div>
 </div>
 

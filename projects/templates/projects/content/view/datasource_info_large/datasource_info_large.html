@@ -19,6 +19,16 @@
                 {% endif %}
                 
             </div>
+            {% if never %}
+            {% if forloop.last %}
+                <div class="bg-light text-muted flex-fill position-relative d-flex justify-content-center align-items-center"
+                     style="cursor: pointer;" 
+                     {% if 'change_datasource' in datasource_perms %}onclick="Handler.navigator.toggleEdit();"{% endif %}>
+                    <span class="align-middle fs-6">More...</span>
+
+                </div>
+            {% endif %}
+            {% endif %}
         {% endfor %}
     </div>
 
@@ -33,7 +43,7 @@
                 <span class="text-secondary fs-6">...more</span>
             </h1>
             <p class="text-secondary small">
-                {#{{ datasource.vizs.count }} viz{{ datasource.vizs.count|pluralize }}・#}{{ datasource.last_cached|naturalday|capfirst }}・{{ datasource.itemviews.count }} view{{ datasource.itemviews.count|pluralize }}・{{ datasource.comments.count }} comment{{ datasource.comments.count|pluralize }}
+                {#{{ datasource.vizs.count }} viz{{ datasource.vizs.count|pluralize }}・#}{{ datasource.last_cached|naturalday|capfirst }}・{{ datasource.itemviews.count }} view{{ datasource.itemviews.count|pluralize }}{#・{{ datasource.comments.count }} comment{{ datasource.comments.count|pluralize }}#}
                  {% if 'change_datasource' in datasource_perms %}
                     {% if datasource.is_published %}<span class="badge bg-success bg-opacity-75">Published</span>
                     {% else %}<span class="badge bg-warning text-dark bg-opacity-75">Unpublished</span>
@@ -49,7 +59,8 @@
         <button class="border-0 rounded-circle p-2 me-2 mt-1" 
                 style="font-size: 0.7rem; min-height: 30px; max-height: 30px; min-width: 30px; min-width: 30px; 
                        background-color: {{datasource.owner.profile.properties.profile_color|default:'#0dcaf0'}} !important"
-                data-bs-toggle="tooltip" data-bs-placement="top" title="Vizualized by {{ datasource.owner.profile.name }}">{{ datasource.owner.profile.name | first | upper}}</button>
+                data-bs-toggle="tooltip" data-bs-placement="top" title="Vizualized by {{ datasource.owner.profile.name }}">{{ datasource.owner.profile.name | first | upper}}
+        </button>
         <div>
             <p class="text-body text-decoration-none mb-0 h6" style="">{{ datasource.owner.profile.name }} 
                 <span class="text-secondary small" style="">{{ datasource.owner.datasources.count }} viz{{ datasource.owner.datasources.count|pluralize }}</span>

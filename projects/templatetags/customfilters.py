@@ -52,3 +52,8 @@ def is_favorite(item, user):
             return True
     return False
 
+@register.filter()
+def field_name_to_label(value):
+    value = value.replace('_', ' ')
+    return value.title()
+
