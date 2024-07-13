@@ -6,7 +6,7 @@ from projects.models import Activity, Profile
 
 register = template.Library()
 
-
+#filters
 
 ui_map = {
     'DATA_COL_FILTER_TEXT_NOTEQUAL': 'Hide rows if text matches',
@@ -27,19 +27,26 @@ ui_map = {
 }
 
 @register.filter
-def divide(value, arg):
-    try:
-        return int(value) / int(arg)
-    except (ValueError, ZeroDivisionError):
-        return None
-    
-@register.filter
 def for_ui(value):
     try:
         return ui_map[value]
     #except (ValueError, ZeroDivisionError):
     except:
         return value
+
+@register.filter()
+def field_name_to_label(value):
+    value = value.replace('_', ' ')
+    return value.title()
+
+@register.filter
+def divide(value, arg):
+    try:
+        return int(value) / int(arg)
+    except (ValueError, ZeroDivisionError):
+        return None
+    
+#tags
     
 @register.simple_tag
 def is_owner(user, obj):
@@ -52,8 +59,5 @@ def is_favorite(item, user):
             return True
     return False
 
-@register.filter()
-def field_name_to_label(value):
-    value = value.replace('_', ' ')
-    return value.title()
+
 

@@ -18,7 +18,7 @@
          id="offcanvasUserDesc">
          
         
-    {% if 'projects.view_profile' in perms %}
+        {% if 'projects.view_profile' in perms %}
         <h6 class="text-muted">Hey {{ user.username | title }}!</h6>
         <div class="card-body mb-1">
             <div class="d-flex align-items-start">
@@ -30,7 +30,7 @@
         </div>
 
 
-        <button type="button" class="btn btn-secondary me-1" id="logoutButton" 
+        <button type="button" class="btn btn-secondary" id="logoutButton" 
                 data-bs-toggle="modal" data-bs-target="#staticBackdrop">
             Logout
         </button>
@@ -71,7 +71,8 @@
         </form>
         <!-- Allauth button ends here -->
         {% endif %}
-        <button type="button" class="btn btn-secondary" id="refreshAppButton"
+        
+        <button type="button" class="btn btn-secondary ms-1" id="refreshAppButton"
                 onclick="caches.keys().then(cacheNames => {cacheNames.forEach(cacheName => {caches.delete(cacheName);});});
                          location.reload();">
             Refresh app

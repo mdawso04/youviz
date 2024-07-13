@@ -7,7 +7,7 @@
         document.querySelector(':root').style.setProperty('--top-nav', document.getElementById("top-nav").offsetHeight + 'px');
     </script>
     
-    <div class="row h-100">
+    <div class="row h-100 g-0 g-lg-1">
         
         <div class="col-12 {% if settings.ads.list_1 and ads.0.html %}col-lg-10{% endif %}">  
             {% for page in list_items_paginated %}
@@ -40,7 +40,7 @@
                 {% endif  %}
             </div>
             {% endfor %}
-            <div class="row"><div class="col" style="min-height:200px;"></div></div>
+            <div class="row row-cols-1 row-cols-md-4 g-2 pb-2"><div class="col" style="min-height:200px;"></div></div>
         </div>
     
     

@@ -2,8 +2,9 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from guardian.admin import GuardedModelAdmin
 
-# Register your models here.
 from .models import Profile, Datastream, Datapod, Datasource, Viz, ItemView, Activity, Comment, Notification, Settings, Cover
+
+#guarded models
 
 class DatastreamAdmin(GuardedModelAdmin):
     readonly_fields = ('pk', 'created_at', 'last_updated', 'last_cached', 'hash_key', 'slug')
@@ -27,7 +28,7 @@ class CommentAdmin(GuardedModelAdmin):
     readonly_fields = ('pk', )
     
 #non-guarded models
-    
+
 class ItemViewAdmin(admin.ModelAdmin):
     readonly_fields = ('pk', )
     

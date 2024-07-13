@@ -13,6 +13,7 @@ from django.contrib.auth import logout
 from django.urls import reverse
 from project import settings
 from django.db.models import Q
+from django.db.models import Case, When
 #from django.contrib import messages
 
 # pp
@@ -129,7 +130,10 @@ class AppView(UnicornView):
                         self.datasources = list((published_ds | unpublished_ds).distinct().exclude(id__in=self.displayed_item_ids)[:self.items_per_page + 1])
                     else:
                         if not self.covers:
-                            self.covers = Cover.list().order_by('name')
+                            self.covers = Cover.list().order_by(
+                                Case(When(name__startswith='_', then=0), default=1),
+                                'name',
+                            )
                         if not self.cover:
                             self.cover = self.covers.filter(name__startswith='_').first()
                         

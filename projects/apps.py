@@ -128,9 +128,9 @@ def initialise(sender, **kwargs):
             search_terms='education,univerity,school,learn',
         )
         default_cover = Cover.objects.create(
-            name='_default',
-            description='_default',
-            slug='_default',
+            name='_top',
+            description='_top',
+            slug='_top',
             owner=system_user,
             search_terms='{},{},{},{},'.format(
                 business_cover.search_terms,
