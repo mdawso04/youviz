@@ -86,7 +86,7 @@
          style="cursor: pointer;"
          onclick="Handler.showTab('#offcanvas-pills-edit-tab');"
          id="offcanvasProfileDesc">
-        <h6 class="text-muted">Profile</h6>
+        <h6 class="text-muted">Display Name</h6>
         <div class="d-flex align-items-start">
             <button class="border-0 rounded-circle p-2 me-2 mt-1" 
                     style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
@@ -109,7 +109,7 @@
     <div class="mb-2 p-3 position-relative rounded-3 bg-light" 
          style="" 
          id="offcanvasUserContentList">
-        <h6 class="text-muted">My Activity</h6>
+        <h6 class="text-muted">Activity</h6>
         
         <div class="card-body pt-1 mb-1">
             <a class="btn btn-primary position-relative" href="{% url 'user' request.user.profile.slug %}" role="button">
@@ -119,6 +119,61 @@
         </div>
     </div>
     {% endif %}
+    
+    
+    <div class="mb-2 p-3 position-relative rounded-3 bg-white" 
+         style="" 
+         id="offcanvasUserAbout">
+        
+        <a class="small link-secondary" data-bs-toggle="modal" data-bs-target="#aboutModal">About YouViz</a> | 
+        <a class="small link-secondary" data-bs-toggle="modal" data-bs-target="#termsModal">Terms of Use</a>
+        
+        <!-- ABOUT MODAL -->
+        <div id="aboutModal" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
+             tabindex="-1" aria-hidden="true" aria-labelledby="aboutModalLabel">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">About YouViz</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        YouViz is a free web app to find, visualise and share open data.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" 
+                                data-bs-dismiss="modal">Done</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Terms of Use MODAL -->
+        <div id="termsModal" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
+             tabindex="-1" aria-hidden="true" aria-labelledby="termsModalLabel">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Terms of Use</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        By using YouViz, all users agree that YouViz is provided "as is" and YouViz, it's operators nor anyone affiliated with YouViz can not be held responsible
+                        in any way for any damage or loss incurred through the use of the service.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" 
+                                data-bs-dismiss="modal">Done</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+    
+    
+    
 </div>
 
 
