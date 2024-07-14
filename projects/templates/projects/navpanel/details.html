@@ -31,9 +31,9 @@
          onclick="Handler.showTab('#navpane-pills-edit-tab');"
          {% endif %}
          id="navTitleDesc">
-         <h3 class="small text-muted">Title & Description</h3>
+         <h3 class="small text-muted">Info</h3>
         <p class="h6" style="">{{ datasource.name }}</p>
-        <p class="text-muted small lh-sm">{{ datasource.description }}</p>
+        {# <p class="text-muted small lh-sm">{{ datasource.description }}</p> #}
         {% if 'change_datasource' in datasource_perms %}
             {% if datasource.is_published %}<span class="badge bg-success bg-opacity-75">Published</span>
             {% else %}<span class="badge bg-warning text-dark bg-opacity-75">Unpublished</span>

@@ -21,29 +21,34 @@
         <div class="col">
             <div class="input-group input-group-sm">
                 <span class="input-group-text" id="file-name-input">Name</span>
-                <textarea rows="4" type="text" 
+                <textarea rows="6" 
+                          type="text" 
                           class="form-control" 
-                          unicorn:model.lazy="datasource.name"
-                          {#unicorn:partial.id="fileInfo" #}
-                          unicorn:partial.id="infoLargeTitle"
-                          unicorn:partial="navTitleDesc"
                           id="fileNameText" 
                           unicorn:key="fileNameText"
+                          unicorn:model.lazy="datasource.name"
+                          {#unicorn:partial.id="fileInfo" #}
+                          unicorn:partial="navTitleDesc"
+                          unicorn:partial.id="infoLargeTitle"
                           aria-label="File Name">{{ datasource.name }}</textarea>
             </div>
         </div>
+        {% comment %}
         <div class="col">
             <div class="input-group input-group-sm">
                 <span class="input-group-text" id="file-description-input">About</span>    
-                <textarea rows="4" type="text" class="form-control" 
-                       unicorn:model.lazy="datasource.description"
-                       {#unicorn:partial.id="fileInfo" #}
-                       unicorn:partial="navTitleDesc"
-                       id="fileDescText" 
-                       unicorn:key="fileDescText"
-                       aria-label="File Description">{{ datasource.description }}</textarea>
+                <textarea rows="6" 
+                          type="text" 
+                          class="form-control" 
+                          id="fileDescText"
+                          unicorn:key="fileDescText"
+                          unicorn:model.lazy="datasource.description"
+                          unicorn:partial="navTitleDesc"
+                          {#unicorn:partial.id="fileInfo" #}
+                          aria-label="File Description">{{ datasource.description }}</textarea>
             </div>
         </div>
+        {% endcomment %}
         <div class="col">
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" 
