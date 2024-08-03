@@ -179,7 +179,7 @@ class BaseModel(models.Model):
     history = AuditlogHistoryField()
     properties = models.JSONField(blank=True, null=True)
     slug = models.SlugField(max_length=255, unique=True)
-    is_published = models.BooleanField(default=True)
+    is_published = models.BooleanField(default=False)
    
     #foreign keys
     owner = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
