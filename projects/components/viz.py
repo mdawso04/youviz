@@ -75,8 +75,8 @@ class VizView(UnicornView):
         #    raise Http404
         
         self.cache = self.viz.viz_cache()
-        print(self.cache['viz']['options']['saved'])
-        print(self.cache['viz']['layout']['saved'])
+        #print(self.cache['viz']['options']['saved'])
+        #print(self.cache['viz']['layout']['saved'])
         
         #logger.debug('VizView > load_viz end')
         

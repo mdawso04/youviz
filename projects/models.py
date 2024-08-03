@@ -950,7 +950,6 @@ class Viz(BaseModel):
         
         fig = a.call(return_df=False)[0]
         
-        '''
         fig.update_layout(
             width=350, 
             height=250,
@@ -969,8 +968,7 @@ class Viz(BaseModel):
             #    'bgcolor': '#000000',
             #},
         )
-        '''
-        print(a.todos[-1]['layout'])
+        #print(a.todos[-1]['layout'])
         
         fig.update_layout(**a.todos[-1]['layout'])
         j = json.loads(pio.to_json(fig=fig, engine='json'))
