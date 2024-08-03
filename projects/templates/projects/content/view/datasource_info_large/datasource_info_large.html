@@ -42,7 +42,7 @@
                 style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{{ datasource.name }}<span class="text-secondary fs-6">...more</span>
             </h1>
             <p class="text-secondary small">
-                {#{{ datasource.vizs.count }} viz{{ datasource.vizs.count|pluralize }}・#}{{ datasource.last_cached|naturalday|capfirst }}・{{ datasource.itemviews.count }} view{{ datasource.itemviews.count|pluralize }}{#・{{ datasource.comments.count }} comment{{ datasource.comments.count|pluralize }}#}
+                {#{{ datasource.vizs.count }} viz{{ datasource.vizs.count|pluralize }}・#}{{ datasource.last_updated|naturalday|capfirst }}・{{ datasource.itemviews.count }} view{{ datasource.itemviews.count|pluralize }}{#・{{ datasource.comments.count }} comment{{ datasource.comments.count|pluralize }}#}
                  {% if 'change_datasource' in datasource_perms %}
                     {% if datasource.is_published %}<span class="badge bg-success bg-opacity-75">Published</span>
                     {% else %}<span class="badge bg-warning text-dark bg-opacity-75">Unpublished</span>

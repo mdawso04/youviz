@@ -21,9 +21,17 @@ ui_map = {
     'VIZ_LINE': 'Line',
     'VIZ_SCATTER': 'Scatter',
     'VIZ_VIOLIN': 'Violin',
-    'xaxis-categoryorder': 'x-axis order',
+    'xaxis_categoryorder': 'x-axis order',
+    'xaxis_title_text': 'x-axis title',
+    'xaxis_showticklabels': 'x-axis labels',
+    'xaxis_ticks': 'x-axis ticks',
+    'xaxis_showgrid': 'x-axis gridlines',
+    'yaxis_categoryorder': 'y-axis order',
+    'yaxis_title_text': 'y-axis title',
+    'yaxis_showticklabels': 'y-axis labels',
+    'yaxis_ticks': 'y-axis ticks',
     'facet_col': 'columns',
-    'facet_row': 'rows',
+    'facet_row': 'rows', 
 }
 
 @register.filter
@@ -45,7 +53,7 @@ def divide(value, arg):
         return int(value) / int(arg)
     except (ValueError, ZeroDivisionError):
         return None
-    
+
 #tags
     
 @register.simple_tag
@@ -59,5 +67,25 @@ def is_favorite(item, user):
             return True
     return False
 
+@register.simple_tag
+def value_is_selected(cache_dict, option_name, current_value):
+    if isinstance(cache_dict, dict):
+        if option_name in cache_dict:
+            if cache_dict[option_name] == current_value:
+                return 'selected'
+    return ''
 
+@register.simple_tag
+def no_value_selected(cache_dict, option_name):
+    if isinstance(cache_dict, dict):
+        if option_name in cache_dict:
+            if option_name in cache_dict:
+                return ''
+    return 'selected'
 
+@register.simple_tag
+def saved_value(cache_dict, option_name):
+    if isinstance(cache_dict, dict):
+        if option_name in cache_dict:
+            return cache_dict[option_name]
+    return ''

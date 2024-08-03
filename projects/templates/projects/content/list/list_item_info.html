@@ -3,7 +3,7 @@
 {% load customfilters %}
 
 {% block stats %}
-{#{{ item.vizs.count }} vizs・#}{{ item.last_cached|naturalday|capfirst }}・{{ item.itemviews.count }} view{{ item.itemviews.count|pluralize }}
+{#{{ item.vizs.count }} vizs・#}{{ item.last_updated|naturalday|capfirst }}・{{ item.itemviews.count }} view{{ item.itemviews.count|pluralize }}
 {% endblock %}
 
 {% block stretched_link %}

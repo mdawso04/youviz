@@ -17,9 +17,9 @@
     </button>
 </div>
 
-<div class="offcanvas-body test-edit-inner p-3 pt-0" style="overflow-x: hidden;" id="switch">
+<div class="offcanvas-body test-edit-inner p-3 pt-0" style="overflow-x: hidden;" id="switch" unicorn:key="setting-row-top-{{vid}}">
     
-    <div class="row row-cols-1 g-3 pb-3" unicorn:key="setting-row-01-{{vid}}">
+    <div class="row row-cols-1 g-2 pb-3" unicorn:key="setting-row-01-{{vid}}">
         <div class="col">
             <!-- SELECT {{forloop.counter}} -->
             <div class="input-group input-group-sm">
@@ -62,9 +62,9 @@
                         unicorn:partial.id="outerPlotBox-{{vid}}" 
                         {# unicorn:partial.key="data{{key|title}}Select{{vid}}" #}
                         aria-label="{{key|title}} Select">
-                    <option value="None" {% if not cache.viz.options.saved.key %} selected{% endif %}>Select field</option>
+                    <option value="None" {% no_value_selected cache.viz.options.saved key %}>Select field</option>
                     {% for v in value %}
-                        <option {% if v == cache.viz.options.saved.key %}selected {% endif %}value="{{v}}">{{v|for_ui|title}}</option>
+                        <option value="{{v}}"{% value_is_selected cache.viz.options.saved key v %}>{{v|for_ui|title}}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -82,14 +82,16 @@
     <div class="input-group input-group-sm pb-2">
         <span class="input-group-text" id="format-settings-{{forloop.counter}}">{{key|for_ui|title}}</span>
         <select class="form-select" 
-                unicorn:model="cache.viz.layout.saved.{{key}}" 
-                id="{{forloop.counter}}-data{{key|title}}Select{{vid}}" 
+                unicorn:model="cache.viz.layout.saved.{{key}}"
+                id="layout{{key|title}}Select{{vid}}" 
+                unicorn:key="layout{{key|title}}Select{{vid}}" 
                 unicorn:partial.id="outerPlotBox-{{vid}}" 
-                unicorn:partial.key="setting-row-01-{{vid}}"
+                {# unicorn:partial.key="setting-row-top-{{vid}}" #}
                 aria-label="{{key|title}} Select">
-            <option value="None" {% if not cache.viz.layout.saved.key %} selected{% endif %}>Select field</option>
+            <option value="Auto" {% no_value_selected cache.viz.layout.saved key %}>Auto</option>
             {% for v in value %}
-                <option {% if v == cache.viz.layout.saved.key %}selected {% endif %}value="{{v}}">{{v|for_ui|title}}</option>
+                {# <option {% if v == cache.viz.layout.saved.key %}selected {% endif %}value="{{v}}">{{v|for_ui|title}}</option> #}
+                <option value="{{v}}"{% value_is_selected cache.viz.layout.saved key v %}>{{v|for_ui|title}}</option>
             {% endfor %}
         </select>
     </div>

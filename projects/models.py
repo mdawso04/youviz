@@ -25,6 +25,7 @@ import pp
 from pp.log import logger
 from pp.util import *
 from pp.data import *
+from pp.io import *
 
 #python standard libraries
 import os
@@ -72,6 +73,20 @@ def data(self, todo=None):
 pp.App.data = data
 
 '''
+Patch for pp.io.SimpleCsvExcelReader.read
+'''
+
+def read(self):
+    '''Returns dataframe based on config'''
+    s = self._src
+    if hasattr(s, 'read'):
+        s.seek(0)
+        return pd.read_csv(s)
+    return pd.read_csv(s)
+
+pp.io.SimpleCsvExcelReader.read = read
+
+'''
 Patch for data
 '''
 
@@ -85,7 +100,7 @@ def DATA_COL_FILTER_TEXT_NOTEQUAL(df, column=None, matches=None):
     column = column[0] if isinstance(column, list) else column
     matches = matches if isinstance(matches, str) else None 
     if column is not None and matches is not None:
-        matches = '{} != "{}"'.format(column, matches)
+        matches = '`{}` != "{}"'.format(column, matches)
         logger.debug('pp.data > Filtered columns by: {}'.format(matches))
         return DATA_COL_FILTER(df, matches)
     else:
@@ -102,7 +117,7 @@ def DATA_COL_FILTER_TEXT_EQUAL(df, column=None, matches=None):
     column = column[0] if isinstance(column, list) else column
     matches = matches if isinstance(matches, str) else None 
     if column is not None and matches is not None:
-        matches = '{} == "{}"'.format(column, matches)
+        matches = '`{}` == "{}"'.format(column, matches)
         logger.debug('pp.data > Filtered columns by: {}'.format(matches))
         return DATA_COL_FILTER(df, matches)
     else:
@@ -122,7 +137,7 @@ def DATA_COL_FILTER_NUM_NOTEQUAL(df, column=None, matches=None):
     except:
         matches = None 
     if column is not None and matches is not None:
-        matches = '{} != {}'.format(column, matches)
+        matches = '`{}` != {}'.format(column, matches)
         logger.debug('pp.data > Filtered columns by: {}'.format(matches))
         return DATA_COL_FILTER(df, matches)
     else:
@@ -142,7 +157,7 @@ def DATA_COL_FILTER_NUM_EQUAL(df, column=None, matches=None):
     except:
         matches = None 
     if column is not None and matches is not None:
-        matches = '{} == {}'.format(column, matches)
+        matches = '`{}` == {}'.format(column, matches)
         logger.debug('pp.data > Filtered columns by: {}'.format(matches))
         return DATA_COL_FILTER(df, matches)
     else:
@@ -286,6 +301,7 @@ class BaseModel(models.Model):
         if not self.properties:
             if not 'properties' in kwargs:
                 self.properties = {}
+        
         super(BaseModel, self).save(*args, **kwargs)
         
         if self.use_object_permissions:
@@ -853,32 +869,88 @@ class Viz(BaseModel):
     json = models.JSONField(blank=True, null=True)
     
     layout_options: dict = {
-        'xaxis': {
-            'categoryorder': [
-                    'trace',
-                    'category ascending',
-                    'category descending',
-                    'total ascending',
-                    'total descending',
-            ]
-        },
+        'xaxis_categoryorder': [
+            'trace',
+            'category ascending',
+            'category descending',
+            'total ascending',
+            'total descending',
+        ],
+        'xaxis_title_text': [
+            None,
+        ],
+        'xaxis_showticklabels': [
+            True,
+            False,
+        ],
+        'xaxis_ticks': [
+            'outside',
+            'inside',
+        ],
+        'xaxis_showgrid': [
+            True,
+            False,
+        ],
+        'yaxis_categoryorder': [
+            'trace',
+            'category ascending',
+            'category descending',
+            'total ascending',
+            'total descending',
+        ],
+        'yaxis_title_text': [
+            None,
+        ],
+        'yaxis_showticklabels': [
+            True,
+            False,
+        ],
+        'yaxis_ticks': [
+            'outside',
+            'inside',
+        ],
+        'yaxis_showgrid': [
+            True,
+            False,
+        ],
+        'yaxis_categoryorder': [
+            'trace',
+            'category ascending',
+            'category descending',
+            'total ascending',
+            'total descending',
+        ],
     }
     
     class Meta:
         default_related_name = 'vizs'
         
-    def viz_html(self):
+    @cached_property
+    def _copied_json(self):
         #load csv from db
         copied_json = deepcopy(self.json)
         a = pp.App(copied_json)
         #copied_json[0]['options']['src'] = self.parent.datasource.databuffer
         a.todos[0]['options']['src'] = self.datasource.databuffer
-        
+        return a
+    
+    @cached_property
+    def viz_html(self):
+        '''
+        #load csv from db
+        copied_json = deepcopy(self.json)
+        a = pp.App(copied_json)
+        #copied_json[0]['options']['src'] = self.parent.datasource.databuffer
+        a.todos[0]['options']['src'] = self.datasource.databuffer
+        '''
+        a = self._copied_json
         #handle missing layout
         if not 'layout' in a.todos[-1]:
             a.todos[-1]['layout'] = {}
         
         fig = a.call(return_df=False)[0]
+        
+        '''
         fig.update_layout(
             width=350, 
             height=250,
@@ -889,14 +961,17 @@ class Viz(BaseModel):
                 'b': 68,
                 'r': 10,
             },
-            showlegend=True,
-            legend = {
-                'x': 1,
-                'xanchor': 'right',
-                'y': 1,
-                'bgcolor': '#000000',
-            },
+            #showlegend=True,
+            #legend = {
+            #    'x': 1,
+            #    'xanchor': 'right',
+            #    'y': 1,
+            #    'bgcolor': '#000000',
+            #},
         )
+        '''
+        print(a.todos[-1]['layout'])
+        
         fig.update_layout(**a.todos[-1]['layout'])
         j = json.loads(pio.to_json(fig=fig, engine='json'))
         return {
@@ -905,10 +980,13 @@ class Viz(BaseModel):
         }
     
     def viz_cache(self):
+        '''
         copied_json = deepcopy(self.json)
         a = pp.App(copied_json)
         #copied_json[0]['options']['src'] = self.parent.datasource.databuffer
         a.todos[0]['options']['src'] = self.datasource.databuffer
+        '''
+        a = self._copied_json
         
         #viz, data options, saved and available
         cache = {'data': [], 'viz': None}
@@ -934,26 +1012,38 @@ class Viz(BaseModel):
             saved = {'saved': flatten({})}
         cache['viz']['layout'] = {**saved, **avail}
         
-        #stringify None types in viz
+        #stringify None, bool types in viz
         if not 'saved' in cache['viz']['options']:
             cache['viz']['options'] = {'saved': {}}
         else:
-            for i in cache['viz']['options']['saved'].values():
-                if i is None:
-                    i = 'None'
+            for k, v in cache['viz']['options']['saved'].items():
+                if v is None:
+                    cache['viz']['options']['saved'][k] = 'None'
+                elif v == False:
+                    cache['viz']['options']['saved'][k] = 'False'
+                elif v == True:
+                    cache['viz']['options']['saved'][k] = 'True'
                     
-        for i in cache['viz']['layout']['saved']:
-            if i is None:
-                i = 'None'
+        for k, v in cache['viz']['layout']['saved'].items():
+            if v is None:
+                cache['viz']['layout']['saved'][k] = 'None'
+            elif v == False:
+                cache['viz']['layout']['saved'][k] = 'False'
+            elif v == True:
+                cache['viz']['layout']['saved'][k] = 'True'
         
         #and data
         for count, td in enumerate(cache['data']):
             if not 'saved' in td['options']:
                 td['options'] = {'saved': {}}
             else:
-                for i in td['options']['saved'].values():
-                    if i is None:
-                        i = 'None'
+                for k, v in td['options']['saved'].items():
+                    if v is None:
+                        k[v] = 'None'
+                    elif v == False:
+                        k[v] = 'False'
+                    elif v == True:
+                        k[v] = 'True'
                         
         return cache
     

@@ -75,6 +75,8 @@ class VizView(UnicornView):
         #    raise Http404
         
         self.cache = self.viz.viz_cache()
+        print(self.cache['viz']['options']['saved'])
+        print(self.cache['viz']['layout']['saved'])
         
         #logger.debug('VizView > load_viz end')
         
@@ -102,6 +104,11 @@ class VizView(UnicornView):
         elif name.startswith('cache.viz'):
             if value == 'None':
                 value = None
+            elif value == 'True':
+                value = True
+            elif value == 'False':
+                value = False
+                
                 
             n = name.split('.')
             property_group = n[2]
@@ -122,14 +129,27 @@ class VizView(UnicornView):
             if not property_group in a.todos[-1]: 
                 a.todos[-1][property_group] = {}
             
-            if property_item is None:
-                a.todos[-1][property_group] = value
+            #update property
+            if value == 'Auto':
+                if property_item:
+                    #if hasattr(a.todos[-1][property_group], property_item):
+                    del a.todos[-1][property_group][property_item]
+                else:
+                    #if hasattr(a.todos[-1], property_group):
+                    del a.todos[-1][property_group]
             else:
-                update_nested(a.todos[-1][property_group], property_item, value)
+                if property_item:
+                    update_nested(a.todos[-1][property_group], property_item, value)
+                else:
+                    a.todos[-1][property_group] = value
             
         elif name.startswith('cache.data'):
             if value == 'None':
                 value = None
+            elif value == 'True':
+                value = True
+            elif value == 'False':
+                value = False
                 
             def update_nested(dic, tok, val):
                 '''Iterate to bottom of dict, update property'''
