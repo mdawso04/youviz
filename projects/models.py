@@ -356,13 +356,18 @@ class BaseModel(models.Model):
     
     @classmethod
     def copy(cls, *args, **kwargs):
-        if 'instance' in kwargs:
-            instance = kwargs['instance']
-        else:
-            instance = cls.item(int(kwargs['pk']))
-        instance.pk = None
-        instance.save()
-        return instance
+        kwargs['instance'] = cls.item(pk=int(kwargs['pk']))
+        copy = cls.item(pk=int(kwargs['pk']))
+        params = {k: v for k, v in kwargs.items() if k not in ('pk', 'id', 'instance', 'copy', 'slug') }
+        copy.__dict__.update(params)
+        copy.pk = None
+        copy.id = None
+        copy._state.adding = True
+        copy.slug = None
+        copy.name += ' copy'
+        copy.save()
+        kwargs['copy'] = copy
+        return kwargs
     
     '''
     @classmethod
@@ -660,6 +665,25 @@ class Datasource(BaseModel):
     @cached_property
     def records(self):
         return self.datatable['data']
+    
+    @classmethod
+    def copy(cls, *args, **kwargs):
+        kwargs['is_published'] = False
+        kwargs = super(Datasource, cls).copy(*args, **kwargs)
+        original_datasource = kwargs['instance']
+        copied_datasource = kwargs['copy']
+        
+        for v in original_datasource.vizs.all():
+            copied_json = deepcopy(v.json)
+            json_patch = {'options': {'src': copied_datasource.pk}}
+            copied_json[0].update(json_patch) 
+            #use _id for foreign keys!
+            newViz = Viz.copy(pk=v.pk, 
+                              datasource_id=copied_datasource.pk,
+                             json=copied_json)['copy']
+            
+        return kwargs
+        #copy vizs, replace ols
     
     '''
 

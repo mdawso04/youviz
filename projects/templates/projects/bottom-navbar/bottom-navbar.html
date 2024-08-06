@@ -109,6 +109,24 @@
         <!-- Allauth button ends here -->
 
         {% endif %}
+        
+        {% if context.mode == 'view' and 'projects.add_datasource' in perms %}
+        <!-- COPY BTN -->
+        <button type="button" 
+                class=
+                    "nav-btn"
+                onclick=
+                    "Unicorn.call('app', 'copy_datasource', {{ datasource.pk }});"
+                id="copyVizButton" >
+            <i class=
+                "bi-copy">
+                <span>
+                   Copy
+                </span>
+            </i>
+        </button>
+
+        {% endif %}
 
         <!-- TO DELETE -->
         <div class="btn-toolbar d-flex d-none w-100 justify-content-evenly button-toolbar" role="toolbar" 

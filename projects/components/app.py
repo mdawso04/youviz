@@ -201,7 +201,7 @@ class AppView(UnicornView):
                     ds = Datasource.item(pk=self.context['pk'])
                 elif self.context['slug']:
                     ds = Datasource.item(slug=self.context['slug'])
-
+                    
                 #obj perms
                 if ds.is_published:
                     if not any({current_user.has_perm('projects.view_published_datasource', ds), current_user.has_perm('projects.view_datasource', ds)}):
@@ -211,6 +211,7 @@ class AppView(UnicornView):
                         redirect('/')
 
                 self.datasource = ds
+                
                 self.meta_object = self.datasource
                 self.ads = Notification.objects.filter(position=Notification.VIEW_AD).order_by('?')[:4]
 
@@ -377,7 +378,12 @@ class AppView(UnicornView):
     '''
     
     def copy_datasource(self, pk):
-        return
+        if not self.request.user.has_perm('projects.add_datasource'):
+            return redirect('/')
+        
+        print('copy '+ str(pk))
+        new_datasource = Datasource.copy(pk=pk)['copy']
+        return redirect(reverse('view', kwargs={'slug': new_datasource.slug}))
     
     def delete_datasource(self, pk):
         d = Datasource.item(pk=pk)
