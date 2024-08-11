@@ -31,7 +31,7 @@
                     <div class="col" 
                          style="opacity: 0; animation: fadeIn 1s ease-in both; animation-delay: {{ forloop.counter|divide:4 }}s;"
                          id="page-{{ forloop.counter }}-trigger"
-                         unicorn:visible.debounce-1000.threshold-100="more" 
+                         unicorn:visible.debounce-500="more" 
                          unicorn:partial.id="page-{{ forloop.counter }}" 
                          unicorn:partial.key="page-{{ forloop.counter|add:'1' }}">
                         ...
