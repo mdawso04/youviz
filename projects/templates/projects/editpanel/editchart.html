@@ -43,7 +43,7 @@
                         unicorn:partial.id="outerPlotBox-{{vid}}" 
                         unicorn:partial.key="setting-row-01-{{vid}}"
                         aria-label="Viz Service Select">
-                    <option value="None" {% if cache.viz.service.saved == 'None' %} selected{% endif %}>Select viz</option>
+                    <option value="Auto" {% if cache.viz.service.saved == 'None' %} selected{% endif %}>Auto</option>
                     {% for v in cache.viz.service.available.viz %}
                         <option {% if v == cache.viz.service.saved %}selected {% endif %}value="{{v}}">{{v|for_ui|title}}</option>
                     {% endfor %}
@@ -62,7 +62,7 @@
                         unicorn:partial.id="outerPlotBox-{{vid}}" 
                         {# unicorn:partial.key="data{{key|title}}Select{{vid}}" #}
                         aria-label="{{key|title}} Select">
-                    <option value="None" {% no_value_selected cache.viz.options.saved key %}>Select field</option>
+                    <option value="Auto" {% no_value_selected cache.viz.options.saved key %}>Auto</option>
                     {% for v in value %}
                         <option value="{{v}}"{% value_is_selected cache.viz.options.saved key v %}>{{v|for_ui|title}}</option>
                     {% endfor %}
