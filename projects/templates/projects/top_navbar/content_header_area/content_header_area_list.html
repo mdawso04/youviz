@@ -13,7 +13,7 @@
                 aria-label="{{c.name}}"
                 unicorn:partial="cover-button-row"
                 unicorn:partial.id="page-container"
-                unicorn:click="toggleCover({{ c.pk }})">
+                unicorn:click="toggleCover({{ c.pk }}, 'list')">
                 {{c.name|field_name_to_label}}
             </button>
         {% endfor %}

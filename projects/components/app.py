@@ -433,13 +433,15 @@ class AppView(UnicornView):
         #self.add_comment_text =''
         self.load_table()
         
-    def toggleCover(self, pk):
+    def toggleCover(self, pk, mode):
         if self.cover and self.cover.pk == pk:
             self.cover = None
         else:
             self.cover = Cover.item(pk=pk)
         #self.call("clear_cover_focus")
         self.page_no = 1
+        #set mode param to handle odd cases of call after browser back button
+        self.context['mode'] = mode
         self.load_table()
     
     def toggle_activity(self, ds):
