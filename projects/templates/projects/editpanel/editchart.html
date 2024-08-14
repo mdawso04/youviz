@@ -79,22 +79,49 @@
     </div>
 
     {% for key, value in cache.viz.layout.available.items %}
-    <div class="input-group input-group-sm pb-2">
+    {% custom_input_required cache.viz.layout.available cache.viz.layout.saved key as custom_required %}
+    <div class="input-group input-group-sm pb-2"
+         id="layoutInput{{vid}}{{key}}"
+         unicorn:key="layoutInput{{vid}}{{key}}">
         <span class="input-group-text" id="format-settings-{{forloop.counter}}">{{key|for_ui|title}}</span>
         <select class="form-select" 
                 unicorn:model="cache.viz.layout.saved.{{key}}"
                 id="layout{{key|title}}Select{{vid}}" 
                 unicorn:key="layout{{key|title}}Select{{vid}}" 
                 unicorn:partial.id="outerPlotBox-{{vid}}" 
-                {# unicorn:partial.key="setting-row-top-{{vid}}" #}
+                unicorn:partial="layoutInput{{vid}}{{key}}"
+                unicorn:partial.key="customLayoutInput{{vid}}{{key}}"
                 aria-label="{{key|title}} Select">
-            <option value="Auto" {% no_value_selected cache.viz.layout.saved key %}>Auto</option>
-            {% for v in value %}
-                {# <option {% if v == cache.viz.layout.saved.key %}selected {% endif %}value="{{v}}">{{v|for_ui|title}}</option> #}
-                <option value="{{v}}"{% value_is_selected cache.viz.layout.saved key v %}>{{v|for_ui|title}}</option>
+            {% get_select_options cache.viz.layout.available cache.viz.layout.saved key as options %}
+            {#<option value="Auto" {% no_value_selected cache.viz.layout.saved key %}>Auto</option>#}
+            {% for option, text, selection in options %}
+                <option value="{{option}}" {{selection}}>{{text|for_ui|title}}</option>
+            {% endfor %}
+            {% get_select_options cache.viz.layout.available cache.viz.layout.saved key as options %}
+            {% for option, text, selection in options %}
+                {{option}}, {{selection}}, {{text|for_ui|title}} |
             {% endfor %}
         </select>
+
     </div>
+    {% if custom_required %}
+    {% custom_selected cache.viz.layout.available cache.viz.layout.saved key as custom_selected %}
+    <div class="input-group input-group-sm pb-2
+                {% if custom_selected %}d-flex{% else %}d-none{% endif %}" 
+         id="customLayoutInput{{vid}}{{key}}"
+         unicorn:key="customLayoutInput{{vid}}{{key}}">
+        {#<span class="input-group-text" id="format-settings-{{forloop.counter}}">Custom value</span>#}
+        <input class="form-control" 
+               type="text"
+                unicorn:model.lazy="cache.viz.layout.saved.{{key}}"
+                id="layout{{key|title}}Custom{{vid}}" 
+                {#unicorn:key="layout{{key|title}}Select{{vid}}" #}
+                unicorn:partial.id="outerPlotBox-{{vid}}" 
+                unicorn:partial="layoutInput{{vid}}{{key}}"
+                unicorn:partial.key="customLayoutInput{{vid}}{{key}}"
+                aria-label="{{key|title}} Select">
+    </div>
+    {% endif %}
     {% endfor %}
     
 </div>

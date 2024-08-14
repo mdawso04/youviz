@@ -133,7 +133,8 @@ class VizView(UnicornView):
             if value == 'Auto':
                 if property_item:
                     #if hasattr(a.todos[-1][property_group], property_item):
-                    del a.todos[-1][property_group][property_item]
+                    if property_item in a.todos[-1][property_group]:
+                        del a.todos[-1][property_group][property_item]
                 else:
                     #if hasattr(a.todos[-1], property_group):
                     del a.todos[-1][property_group]

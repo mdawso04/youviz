@@ -80,9 +80,83 @@ def no_value_selected(cache_dict, option_name):
     if isinstance(cache_dict, dict):
         if option_name in cache_dict:
             if option_name in cache_dict:
-                return ''
+                return ' '
     return 'selected'
 
+@register.simple_tag
+def custom_selected(avail_dict, sel_dict, key):
+    if isinstance(avail_dict, dict) and isinstance(sel_dict, dict):
+        default_options = ['Auto'] + avail_dict[key]
+        selection_saved = True if key in sel_dict else False
+        no_selection_saved = not selection_saved
+        if selection_saved:
+            #selection is in stringified form so change back first
+            current_selection = None if sel_dict[key] == 'None' else sel_dict[key]
+            selection_in_default_options = current_selection in default_options
+        else:
+            current_selection = 'Auto'
+        
+        if no_selection_saved:
+            return False
+        if current_selection == ' ' and ' ' in default_options:
+            return True
+        if current_selection not in default_options:
+            return True
+        
+                    
+@register.simple_tag
+def get_select_options(avail_dict, sel_dict, key):
+    '''
+    Reserved names: ' ' (custom), 'Auto' (auto)
+    '''
+    if isinstance(avail_dict, dict) and isinstance(sel_dict, dict):
+        default_options = ['Auto'] + avail_dict[key]
+        selection_saved = True if key in sel_dict else False
+        no_selection_saved = not selection_saved
+        if selection_saved:
+            #selection is in stringified form so change back first
+            current_selection = None if sel_dict[key] == 'None' else sel_dict[key]
+            selection_in_default_options = current_selection in default_options
+        else:
+            current_selection = 'Auto'
+        #watch for 'None' vs None
+        
+        if no_selection_saved or selection_in_default_options:
+            #options as is
+            dynamic_options = default_options
+            dynamic_options_text = ['Custom' if o == ' ' else o for o in default_options]
+        else:
+            #replace custom option
+            dynamic_options = [current_selection if o == ' ' else o for o in default_options]
+            dynamic_options_text = ['Custom' if o == ' ' else o for o in default_options]
+            
+        dynamic_options_selection = ['selected' if current_selection == d else '' for d in dynamic_options]
+        return zip(dynamic_options, dynamic_options_text, dynamic_options_selection)
+
+'''
+@register.simple_tag
+def custom_selected(avail_dict, sel_dict, key):
+    if isinstance(avail_dict, dict) and isinstance(sel_dict, dict):
+        if key not in sel_dict:
+            return False
+        else:
+            value = sel_dict[key]
+            value = None if value == 'None' else value
+            if value == ' ':
+                return True
+            else:
+                if value not in avail_dict[key]:
+                    return True
+                else:
+                    return False
+'''                    
+
+@register.simple_tag
+def custom_input_required(avail_dict, sel_dict, key):
+    if ' ' in avail_dict[key]:
+        return True
+    return False
+        
 @register.simple_tag
 def saved_value(cache_dict, option_name):
     if isinstance(cache_dict, dict):

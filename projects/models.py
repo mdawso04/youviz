@@ -902,6 +902,7 @@ class Viz(BaseModel):
         ],
         'xaxis_title_text': [
             None,
+            ' ',
         ],
         'xaxis_showticklabels': [
             True,
