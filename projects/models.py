@@ -925,6 +925,7 @@ class Viz(BaseModel):
         ],
         'yaxis_title_text': [
             None,
+            ' ',
         ],
         'yaxis_showticklabels': [
             True,
