@@ -116,7 +116,6 @@ MIDDLEWARE = [
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
-'''
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -155,7 +154,7 @@ def get_cache():
         }
 
 CACHES = get_cache()
-
+'''
 #SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 ROOT_URLCONF = 'project.urls'
