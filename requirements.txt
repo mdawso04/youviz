@@ -14,3 +14,4 @@ pandas-plotly==0.2.4
 openpyxl
 django-htmlmin
 django-guardian
+django-bmemcached
