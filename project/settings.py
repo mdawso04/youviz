@@ -128,6 +128,36 @@ CACHES = {
 }
 '''
 
+def get_cache():
+    try:
+        servers = os.environ['MEMCACHIER_SERVERS']
+        username = os.environ['MEMCACHIER_USERNAME']
+        password = os.environ['MEMCACHIER_PASSWORD']
+        return {
+          'default': {
+            'BACKEND': 'django_bmemcached.memcached.BMemcached',
+            # TIMEOUT is not the connection timeout! It's the default expiration
+            # timeout that should be applied to keys! Setting it to `None`
+            # disables expiration.
+            'TIMEOUT': None,
+            'LOCATION': servers,
+            'OPTIONS': {
+              'username': username,
+              'password': password,
+            }
+          }
+        }
+    except:
+        return {
+          'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
+          }
+        }
+
+CACHES = get_cache()
+
+#SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
 ROOT_URLCONF = 'project.urls'
 
 TEMPLATES = [
@@ -397,33 +427,4 @@ PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'projects', 'templates', 'proje
 
 GOOGLE_ANALYTICS_GTAG_PROPERTY_ID = 'G-LDHFFBL5TS'
 
-def get_cache():
-    try:
-        servers = os.environ['MEMCACHIER_SERVERS']
-        username = os.environ['MEMCACHIER_USERNAME']
-        password = os.environ['MEMCACHIER_PASSWORD']
-        return {
-          'default': {
-            'BACKEND': 'django_bmemcached.memcached.BMemcached',
-            # TIMEOUT is not the connection timeout! It's the default expiration
-            # timeout that should be applied to keys! Setting it to `None`
-            # disables expiration.
-            'TIMEOUT': None,
-            'LOCATION': servers,
-            'OPTIONS': {
-              'username': username,
-              'password': password,
-            }
-          }
-        }
-    except:
-        return {
-          'default': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
-          }
-        }
-
-CACHES = get_cache()
-
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
