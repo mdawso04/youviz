@@ -1,4 +1,5 @@
 from guardian.utils import get_anonymous_user
+import gc
 
 def guardian_anonymous_user_middleware(get_response):
     # One-time configuration and initialization.
@@ -40,3 +41,25 @@ class RedirectMiddleware:
     def process_exception(self, request, exception):
         if isinstance(exception, Redirect):
             return shortcuts.redirect(exception.url)
+        
+class GarbageCollectionMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+        # One-time configuration and initialization.
+
+    def get_custom_response(self, request):
+        gc.collect()
+        response = self.get_response(request)
+        gc.collect()
+        return response
+    
+    def __call__(self, request):
+        # Code to be executed for each request before
+        # the view (and later middleware) are called.
+
+        response = self.get_custom_response(request)
+
+        # Code to be executed for each request/response after
+        # the view is called.
+
+        return response

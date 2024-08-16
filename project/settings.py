@@ -113,6 +113,7 @@ MIDDLEWARE = [
     'auditlog.middleware.AuditlogMiddleware',
     'projects.middleware.guardian_anonymous_user_middleware',
     'projects.middleware.RedirectMiddleware',
+    'projects.middleware.GarbageCollectionMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
