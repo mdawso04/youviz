@@ -1,5 +1,6 @@
 from django.urls import path, include
 from django.contrib.sitemaps.views import sitemap
+from django.views.decorators.cache import cache_page
 from project.sitemaps import DatasourceSitemap
 from . import views
 
@@ -25,5 +26,5 @@ urlpatterns = [
     #new login code
     #path('signup/', views.signup, name ='signup'),
     #path('login/', views.login, name = 'login'),
-    path("sitemap.xml", sitemap, {"sitemaps": {'viz': DatasourceSitemap}}, name="django.contrib.sitemaps.views.sitemap")
+    path("sitemap.xml", cache_page(60 * 15)(sitemap), {"sitemaps": {'viz': DatasourceSitemap}}, name="django.contrib.sitemaps.views.sitemap")
 ]

@@ -27,7 +27,7 @@ from io import BufferedIOBase
 from datetime import datetime
 
 #non-standard libraries
-
+#from memory_profile import profile
 
 class AppView(UnicornView):
     datasources: list = None
@@ -76,7 +76,7 @@ class AppView(UnicornView):
         
     def hydrate(self):
         pass
-        
+    
     def load_table(self):
         if self.request:
             # collect various params
@@ -627,5 +627,8 @@ class AppView(UnicornView):
     
     def parent_rendered(self, html):
         #logger.debug('AppView > parent_rendered start')
-        pass
+        try:
+            del obj.expensive_property 
+        except AttributeError:
+            pass
         #logger.debug('AppView > parent_rendered end')

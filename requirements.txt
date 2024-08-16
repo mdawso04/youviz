@@ -1,7 +1,6 @@
 django
 whitenoise
 gunicorn
-django-debug-toolbar
 django-pwa
 django-allauth[socialaccount]
 django_heroku
