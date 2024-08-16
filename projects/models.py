@@ -225,6 +225,17 @@ class BaseModel(models.Model):
     #    if self.image:
     #        return self.image.url
     
+    cached_properties = []
+    
+    def delete_cached_properties(self):
+        #print(self.__dict__)
+        for property in self.cached_properties:
+            try:
+                del self.__dict__[property]
+                #print('**************deleted cache '+property)
+            except KeyError:
+                pass
+    
     def get_absolute_url(self):
         #return '/report/%i/' % self.id
         return '/{cls_name}/{ob_id}/{hash_k}'.format(
@@ -626,6 +637,17 @@ class Datasource(BaseModel):
     
     prefetch = ('vizs', 'comments', 'activities', 'itemviews', 'comments', )
     
+    cached_properties = [
+        'perms_req_by_owners',
+        'perms_req_by_managers',
+        'perms_req_by_collaborators',
+        'perms_req_by_anonymous',
+        'datatable',
+        'databuffer',
+        'columns',
+        'records',
+    ]
+    
     '''
     @classmethod
     def _fetch(cls, *args, **kwargs):
@@ -648,6 +670,7 @@ class Datasource(BaseModel):
         
     @cached_property
     def datatable(self):
+        #print('xxxxxxdatatable')
         #io = StringIO(self.data)
         io = StringIO(self.datastream.current_version())
         df = pd.read_csv(io)
@@ -656,14 +679,17 @@ class Datasource(BaseModel):
 
     @cached_property
     def databuffer(self):
+        #print('xxxxxxxxxxdatabuffer')
         return StringIO(self.datastream.current_version())
     
     @cached_property
     def columns(self):
+        #print('xxxxxxxxxxcolumns')
         return self.datatable['columns']
     
     @cached_property
     def records(self):
+        #print('xxxxxxxxxrecords')
         return self.datatable['data']
     
     @classmethod
@@ -748,7 +774,6 @@ class Datasource(BaseModel):
         #logger.debug('AppView > addViz end')
     '''
     
-    '''
     def refresh_from_db(self, *args, **kwargs):
         super(Foo, self).refresh_from_db(*args, **kwargs)
         cached_properties[
@@ -776,7 +801,6 @@ class Datasource(BaseModel):
         self.__dict__.update(state)
         # Add baz back since it doesn't exist in the pickle
         #self.baz = 0
-    '''
 
 '''
 Datasource auth signal hooks
@@ -950,6 +974,16 @@ class Viz(BaseModel):
     
     class Meta:
         default_related_name = 'vizs'
+        
+    cached_properties = [
+        '_copied_json',
+        'viz_html',
+        'datatable',
+        'perms_req_by_anonymous',
+        'datatable',
+        'columns',
+        'records',
+    ]
         
     @cached_property
     def _copied_json(self):

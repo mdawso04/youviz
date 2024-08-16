@@ -84,7 +84,8 @@ class DataframeView(UnicornView):
 
 #RENDER
     def rendered(self, html):
-        pass
+        if self.datasource:
+            self.datasource.delete_cached_properties()
         #logger.debug('DataframeView > rendered start')
         #logger.debug('DataframeView > rendered end')
     

@@ -622,13 +622,11 @@ class AppView(UnicornView):
     
     def rendered(self, html):
         #logger.debug('AppView > rendered start')
-        pass
+        if self.datasource:
+            self.datasource.delete_cached_properties()
         #logger.debug('AppView > rendered end')
     
     def parent_rendered(self, html):
         #logger.debug('AppView > parent_rendered start')
-        try:
-            del obj.expensive_property 
-        except AttributeError:
-            pass
+        pass
         #logger.debug('AppView > parent_rendered end')
