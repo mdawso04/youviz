@@ -30,7 +30,7 @@ urlpatterns = [
     #path('', include('pwa.urls')),
     # if you used the patch for django 4 compatibility then use the following code instead
     path('', include('pwa1.urls')),
-    path('debug/', include('debug_toolbar.urls')),
+    #path('debug/', include('debug_toolbar.urls')),
     path("unicorn/", include("django_unicorn.urls")),
     path("sitemap.xml", cache_page(60 * 15)(sitemap), {"sitemaps": {"datasources": DatasourceSitemap}},),
 ] 
