@@ -78,6 +78,11 @@ class AppView(UnicornView):
         pass
     
     def load_table(self):
+        
+        #from pympler import tracker
+        #tr = tracker.SummaryTracker()
+        #tr.print_diff()
+        
         if self.request:
             # collect various params
             if 'context' in self.component_kwargs:

@@ -77,24 +77,13 @@ INSTALLED_APPS = [
     'pwa',
     'auditlog',
     'analytical',
-    #'debug_toolbar',
     'django_unicorn',
     'guardian',
+    'pympler',
     #'projects',
 ]
 
 #SOCIALACCOUNT_AUTO_SIGNUP = False
-
-if DEBUG:
-    #http://localhost:8000
-    SITE_ID = 3
-    SITE_DOMAIN_NAME = 'http://localhost:8000'
-else:
-    #https://prod
-    SITE_ID = 2
-    SITE_DOMAIN_NAME = 'https://youviz.app'
-
-SITE_DISPLAY_NAME = SITE_DOMAIN_NAME
 
 MIDDLEWARE = [
     # Request altering middleware
@@ -114,12 +103,27 @@ MIDDLEWARE = [
     'projects.middleware.guardian_anonymous_user_middleware',
     'projects.middleware.RedirectMiddleware',
     'projects.middleware.GarbageCollectionMiddleware',
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
+
+
+if DEBUG:
+    #http://localhost:8000
+    SITE_ID = 3
+    SITE_DOMAIN_NAME = 'http://localhost:8000'
+    INSTALLED_APPS += ['debug_toolbar',]
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware',]
+else:
+    #https://prod
+    SITE_ID = 2
+    SITE_DOMAIN_NAME = 'https://youviz.app'
+
+SITE_DISPLAY_NAME = SITE_DOMAIN_NAME
 
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        "TIMEOUT": 0,
     }
     #'default': {
     #    'BACKEND': 'django.core.cache.backends.redis.RedisCache',
@@ -244,10 +248,29 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-if DEBUG:
-    DEBUG_TOOLBAR_CONFIG = {
-        'SHOW_TOOLBAR_CALLBACK': lambda r: False,  # disables it
-    }
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda r: DEBUG, # show if DEBUG mode
+}
+
+DEBUG_TOOLBAR_PANELS = (
+    'pympler.panels.MemoryPanel',
+    'debug_toolbar.panels.history.HistoryPanel',
+    'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.cache.CachePanel',
+    'debug_toolbar.panels.signals.SignalsPanel',
+    'debug_toolbar.panels.redirects.RedirectsPanel',
+    'debug_toolbar.panels.profiling.ProfilingPanel',
+)
+
+#import gc
+#gc.set_debug(gc.DEBUG_LEAK)
 
 # settings.py
 UNICORN = {

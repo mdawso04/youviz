@@ -51,6 +51,8 @@ class GarbageCollectionMiddleware:
         gc.collect()
         response = self.get_response(request)
         gc.collect()
+        from django.db import reset_queries
+        reset_queries()
         return response
     
     def __call__(self, request):
