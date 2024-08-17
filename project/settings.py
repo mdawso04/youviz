@@ -79,7 +79,6 @@ INSTALLED_APPS = [
     'analytical',
     'django_unicorn',
     'guardian',
-    'pympler',
     #'projects',
 ]
 
@@ -111,7 +110,7 @@ if DEBUG:
     #http://localhost:8000
     SITE_ID = 3
     SITE_DOMAIN_NAME = 'http://localhost:8000'
-    INSTALLED_APPS += ['debug_toolbar',]
+    INSTALLED_APPS += ['debug_toolbar','pympler',]
     MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware',]
 else:
     #https://prod
