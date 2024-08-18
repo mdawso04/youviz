@@ -160,7 +160,7 @@ def get_cache():
 
 CACHES = get_cache()
 '''
-#SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 ROOT_URLCONF = 'project.urls'
 
