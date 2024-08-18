@@ -104,7 +104,12 @@ MIDDLEWARE = [
     'projects.middleware.GarbageCollectionMiddleware',
 ]
 
-
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        "LOCATION": os.environ.get('REDIS_URL', ''),
+    }
+}
 
 if DEBUG:
     #http://localhost:8000
@@ -112,6 +117,12 @@ if DEBUG:
     SITE_DOMAIN_NAME = 'http://localhost:8000'
     INSTALLED_APPS += ['debug_toolbar','pympler',]
     MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware',]
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            "TIMEOUT": 300,
+        }
+    }
 else:
     #https://prod
     SITE_ID = 2
@@ -119,16 +130,6 @@ else:
 
 SITE_DISPLAY_NAME = SITE_DOMAIN_NAME
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        "TIMEOUT": 0,
-    }
-    #'default': {
-    #    'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-    #    'LOCATION': 'redis://127.0.0.1:6379',
-    #}
-}
 '''
 
 def get_cache():

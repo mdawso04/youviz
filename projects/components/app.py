@@ -61,8 +61,8 @@ class AppView(UnicornView):
     add_comment_text: str = None
     
     class Meta:
-        javascript_exclude = ('datasources', 'datasource', 'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover',
-                             'related_datasources', 'related_items_paginated') 
+        javascript_exclude = ('datasources', 'datasource', 'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
+                              'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'related_datasources', 'related_items_paginated') 
     
     #def __init__(self, *args, **kwargs):
     #    super().__init__(**kwargs)  # calling super is required
