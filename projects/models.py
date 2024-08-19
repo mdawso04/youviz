@@ -675,7 +675,10 @@ class Datasource(BaseModel):
         io = StringIO(self.datastream.current_version())
         df = pd.read_csv(io)
         #return df[:200].to_dict(orient='tight')
-        return df.to_dict(orient='tight')
+        result = df.to_dict(orient='tight')
+        del io
+        del df
+        return result
 
     @cached_property
     def databuffer(self):
@@ -978,7 +981,6 @@ class Viz(BaseModel):
     cached_properties = [
         '_copied_json',
         'viz_html',
-        'datatable',
         'perms_req_by_anonymous',
         'datatable',
         'columns',
@@ -1032,10 +1034,14 @@ class Viz(BaseModel):
         
         fig.update_layout(**a.todos[-1]['layout'])
         j = json.loads(pio.to_json(fig=fig, engine='json'))
-        return {
+        result = {
             'plot_data': json.dumps(j['data']),
             'plot_layout': json.dumps(j['layout']),
         }
+        del a
+        del fig
+        del j
+        return result
     
     def viz_cache(self):
         '''
@@ -1102,7 +1108,9 @@ class Viz(BaseModel):
                         k[v] = 'False'
                     elif v == True:
                         k[v] = 'True'
-                        
+        
+        del a
+        
         return cache
     
     @cached_property
@@ -1111,7 +1119,12 @@ class Viz(BaseModel):
         a = pp.App(copied_json)
         #copied_json[0]['options']['src'] = self.parent.datasource.databuffer
         a.todos[0]['options']['src'] = self.datasource.databuffer
-        return a.call()[:200].to_dict(orient='tight')
+        result = a.call()[:200].to_dict(orient='tight')
+        
+        del copied_json
+        del a
+        
+        return result
     
     @cached_property
     def columns(self):

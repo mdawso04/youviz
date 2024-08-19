@@ -49,8 +49,19 @@ class GarbageCollectionMiddleware:
 
     def get_custom_response(self, request):
         gc.collect()
+        
+        #import tracemalloc
+        #tracemalloc.start(25)
+        
         response = self.get_response(request)
         gc.collect()
+        
+        #snapshot = tracemalloc.take_snapshot()
+        #top_stats = snapshot.statistics('traceback')
+        #stat = top_stats[0]
+        #for line in stat.traceback.format():
+        #    print(line)
+        
         from django.db import reset_queries
         reset_queries()
         return response

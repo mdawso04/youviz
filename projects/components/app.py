@@ -629,6 +629,31 @@ class AppView(UnicornView):
         #logger.debug('AppView > rendered start')
         if self.datasource:
             self.datasource.delete_cached_properties()
+            
+            
+        if self.datasources:
+            del self.datasources
+        if self.vizs:
+            del self.vizs
+        #report: Report = None
+
+        if self.list_items_paginated:
+            del self.list_items_paginated
+        if self.datastreams:
+            del self.datastreams
+        if self.services:
+            del self.services
+        if self.meta_object:
+            del self.meta_object
+        if self.context:
+            del self.context
+        if self.covers:
+            del self.covers
+        if self.related_datasources:
+            del self.related_datasources
+        if self.related_items_paginated:
+            del self.related_items_paginated
+            
         #logger.debug('AppView > rendered end')
     
     def parent_rendered(self, html):
