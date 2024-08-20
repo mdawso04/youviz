@@ -90,7 +90,8 @@ class DataframeView(UnicornView):
         #logger.debug('DataframeView > rendered end')
     
     def parent_rendered(self, html):
-        pass
+        if self.datasource:
+            del self.datasource
         #logger.debug('DataframeView > parent_rendered start')
         #logger.debug('DataframeView > parent_rendered end')
         

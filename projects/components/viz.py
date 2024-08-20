@@ -327,7 +327,10 @@ class VizView(UnicornView):
     
     def parent_rendered(self, html):
         #logger.debug('VizView > parent_rendered start')
-        pass
+        if self.viz:
+            del self.viz
+        if self.cache:
+            del self.cache
         #logger.debug('VizView > parent_rendered end')
     
     @classonlymethod
