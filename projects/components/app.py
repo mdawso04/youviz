@@ -654,6 +654,23 @@ class AppView(UnicornView):
         if self.related_items_paginated:
             del self.related_items_paginated
             
+        if self.datasource:
+            del self.datasource
+        if self.meta_object:
+            del self.meta_object
+        if self.message:
+            del self.message
+        if self.siteuser:
+            del self.siteuser
+        if self.notification:
+            del self.notification
+        if self.ads:
+            del self.ads
+        if self.settings:
+            del self.settings
+        if self.cover:
+            del self.cover
+        
         #logger.debug('AppView > rendered end')
     
     def parent_rendered(self, html):
