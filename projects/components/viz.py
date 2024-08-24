@@ -74,7 +74,7 @@ class VizView(UnicornView):
         #if not self.request.user.has_perm('projects.view_viz', self.viz):
         #    raise Http404
         
-        self.cache = self.viz.viz_cache()
+        self.cache = self.viz.viz_cache
         #print(self.cache['viz']['options']['saved'])
         #print(self.cache['viz']['layout']['saved'])
         

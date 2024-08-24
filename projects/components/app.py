@@ -632,13 +632,17 @@ class AppView(UnicornView):
             
             
         if self.datasources:
+            for o in self.datasources:
+                o.delete_cached_properties()
             del self.datasources
+        
         if self.vizs:
             del self.vizs
         #report: Report = None
 
         if self.list_items_paginated:
             del self.list_items_paginated
+        
         if self.datastreams:
             del self.datastreams
         if self.services:
@@ -649,15 +653,23 @@ class AppView(UnicornView):
             del self.context
         if self.covers:
             del self.covers
+        
         if self.related_datasources:
+            for o in self.related_datasources:
+                o.delete_cached_properties()
             del self.related_datasources
+        
+        
         if self.related_items_paginated:
             del self.related_items_paginated
             
         if self.datasource:
             del self.datasource
+        
         if self.meta_object:
             del self.meta_object
+        
+        
         if self.message:
             del self.message
         if self.siteuser:

@@ -232,7 +232,7 @@ class BaseModel(models.Model):
         for property in self.cached_properties:
             try:
                 del self.__dict__[property]
-                #print('**************deleted cache '+property)
+                print('**************deleted cache '+property)
             except KeyError:
                 pass
     
@@ -668,22 +668,30 @@ class Datasource(BaseModel):
         self.last_cached = datetime.utcnow()
         self.save()    
         
-    @cached_property
+    #@cached_property
     def datatable(self):
         #print('xxxxxxdatatable')
         #io = StringIO(self.data)
-        io = StringIO(self.datastream.current_version())
+        #io = StringIO(self.datastream.current_version())
+        io = StringIO(self.databuffer)
         df = pd.read_csv(io)
+        io.close()
         #return df[:200].to_dict(orient='tight')
         result = df.to_dict(orient='tight')
         del io
         del df
         return result
 
-    @cached_property
-    def databuffer(self):
-        #print('xxxxxxxxxxdatabuffer')
-        return StringIO(self.datastream.current_version())
+    #@cached_property
+    #def databuffer(self):
+    #    #print('xxxxxxxxxxdatabuffer')
+    #    #return StringIO(self.datastream.current_version())
+    #    return self.datastream.current_version()
+    
+    def delete_cached_properties(self):
+        if hasattr(self, 'databuffer'):
+            self.databuffer.close()
+        super(Datasource, self).delete_cached_properties()
     
     @cached_property
     def columns(self):
@@ -987,25 +995,23 @@ class Viz(BaseModel):
         'records',
     ]
         
-    @cached_property
-    def _copied_json(self):
-        #load csv from db
-        copied_json = deepcopy(self.json)
-        a = pp.App(copied_json)
-        #copied_json[0]['options']['src'] = self.parent.datasource.databuffer
-        a.todos[0]['options']['src'] = self.datasource.databuffer
-        return a
+    #@cached_property
+    #def _copied_json(self):
+    #    #load csv from db
+    #    copied_json = deepcopy(self.json)
+    #    a = pp.App(copied_json)
+    #    #copied_json[0]['options']['src'] = self.parent.datasource.databuffer
+    #    a.todos[0]['options']['src'] = self.datasource.databuffer
+    #    return a
     
     @cached_property
     def viz_html(self):
-        '''
-        #load csv from db
         copied_json = deepcopy(self.json)
         a = pp.App(copied_json)
-        #copied_json[0]['options']['src'] = self.parent.datasource.databuffer
-        a.todos[0]['options']['src'] = self.datasource.databuffer
-        '''
-        a = self._copied_json
+        io = StringIO(self.datasource.datastream.current_version()) 
+        a.todos[0]['options']['src'] = io
+        #a = self._copied_json
+        
         #handle missing layout
         if not 'layout' in a.todos[-1]:
             a.todos[-1]['layout'] = {}
@@ -1038,19 +1044,19 @@ class Viz(BaseModel):
             'plot_data': json.dumps(j['data']),
             'plot_layout': json.dumps(j['layout']),
         }
+        io.close()
         del a
         del fig
         del j
         return result
     
+    @cached_property
     def viz_cache(self):
-        '''
         copied_json = deepcopy(self.json)
         a = pp.App(copied_json)
-        #copied_json[0]['options']['src'] = self.parent.datasource.databuffer
-        a.todos[0]['options']['src'] = self.datasource.databuffer
-        '''
-        a = self._copied_json
+        io = StringIO(self.datasource.datastream.current_version()) 
+        a.todos[0]['options']['src'] = io
+        #a = self._copied_json
         
         #viz, data options, saved and available
         cache = {'data': [], 'viz': None}
@@ -1109,10 +1115,12 @@ class Viz(BaseModel):
                     elif v == True:
                         k[v] = 'True'
         
+        io.close()
         del a
         
         return cache
     
+    '''
     @cached_property
     def datatable(self):
         copied_json = deepcopy(self.json)
@@ -1122,6 +1130,7 @@ class Viz(BaseModel):
         result = a.call()[:200].to_dict(orient='tight')
         
         del copied_json
+        a.todos[0]['options']['src'].close()
         del a
         
         return result
@@ -1133,6 +1142,7 @@ class Viz(BaseModel):
     @cached_property
     def records(self):
         return self.datatable['data']
+    '''
     
     
     @classmethod
