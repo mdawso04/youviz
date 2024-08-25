@@ -129,7 +129,7 @@ else:
     CSRF_TRUSTED_ORIGINS = ["https://youviz.app"]
     CSRF_ALLOWED_ORIGINS = ["https://youviz.app"]
     CORS_ORIGINS_WHITELIST = ["https://youviz.app"]
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    #SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 SITE_DISPLAY_NAME = SITE_DOMAIN_NAME
