@@ -250,6 +250,7 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
+'''
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': lambda r: DEBUG, # show if DEBUG mode
 }
@@ -270,6 +271,7 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.redirects.RedirectsPanel',
     'debug_toolbar.panels.profiling.ProfilingPanel',
 )
+'''
 
 #import gc
 #gc.set_debug(gc.DEBUG_LEAK)
