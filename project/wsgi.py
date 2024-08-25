@@ -20,7 +20,6 @@ from django.conf import settings
 
 application = get_wsgi_application()
 
-'''
 if settings.DEBUG:
     #application = GarbageCollectionMiddleware(application)
     # my_wsgi_app is a WSGI application
@@ -29,4 +28,3 @@ if settings.DEBUG:
     #from dozer import Profiler
     application = Dozer(application)
     #application = Profiler(application, profile_path=mkdtemp(prefix='dozer-'))
-'''

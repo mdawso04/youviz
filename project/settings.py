@@ -47,9 +47,9 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY',
                             'django-insecure-kfz#ag8=&yb1lynyfj0v=k%et%5++u08(q%@q(839gwqd-reah')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
 #DEBUG = False
-#DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 #HTML_MINIFY = True
 
@@ -111,7 +111,6 @@ CACHES = {
     }
 }
 
-'''
 if DEBUG:
     #http://localhost:8000
     SITE_ID = 3
@@ -125,10 +124,9 @@ if DEBUG:
         }
     }
 else:
-'''
     #https://prod
-SITE_ID = 2
-SITE_DOMAIN_NAME = 'https://youviz.app'
+    SITE_ID = 2
+    SITE_DOMAIN_NAME = 'https://youviz.app'
 
 SITE_DISPLAY_NAME = SITE_DOMAIN_NAME
 
@@ -250,7 +248,6 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-'''
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': lambda r: DEBUG, # show if DEBUG mode
 }
@@ -271,7 +268,6 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.redirects.RedirectsPanel',
     'debug_toolbar.panels.profiling.ProfilingPanel',
 )
-'''
 
 #import gc
 #gc.set_debug(gc.DEBUG_LEAK)
