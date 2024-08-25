@@ -182,13 +182,13 @@
                     data-card-view="true">
                     <thead>
                         <tr>
-                            {% for column in viz.datasource.columns %}
+                            {% for column in viz.datasource.datatable_preview.columns %}
                                 <th data-field="col-{{ column }}">{{ column }}</th>
                             {% endfor %}
                         </tr>
                     </thead>
                     <tbody>
-                        {% for record in viz.datasource.records %}
+                        {% for record in viz.datasource.datatable_preview.data %}
                         <tr>
                             {% for c in record %}
                             <td>{{ c }}</td>

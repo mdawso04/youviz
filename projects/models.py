@@ -643,7 +643,7 @@ class Datasource(BaseModel):
         'perms_req_by_collaborators',
         'perms_req_by_anonymous',
         'datatable',
-        'databuffer',
+        'datatable_preview',
         'columns',
         'records',
     ]
@@ -668,40 +668,50 @@ class Datasource(BaseModel):
         self.last_cached = datetime.utcnow()
         self.save()    
         
-    #@cached_property
+    @cached_property
     def datatable(self):
-        #print('xxxxxxdatatable')
-        #io = StringIO(self.data)
-        #io = StringIO(self.datastream.current_version())
-        io = StringIO(self.databuffer)
+        io = StringIO(self.datastream.current_version())
         df = pd.read_csv(io)
-        io.close()
-        #return df[:200].to_dict(orient='tight')
         result = df.to_dict(orient='tight')
+        io.close()
         del io
         del df
         return result
-
+    
+    @cached_property
+    def datatable_preview(self):
+        io = StringIO(self.datastream.current_version())
+        df = pd.read_csv(io)
+        result = df[:200].to_dict(orient='tight')
+        io.close()
+        del io
+        del df
+        return result
+    
     #@cached_property
     #def databuffer(self):
     #    #print('xxxxxxxxxxdatabuffer')
     #    #return StringIO(self.datastream.current_version())
     #    return self.datastream.current_version()
     
+    '''
     def delete_cached_properties(self):
         if hasattr(self, 'databuffer'):
             self.databuffer.close()
         super(Datasource, self).delete_cached_properties()
+    '''
     
+    '''
     @cached_property
     def columns(self):
         #print('xxxxxxxxxxcolumns')
-        return self.datatable['columns']
+        return self.datatable()['columns']
     
     @cached_property
     def records(self):
         #print('xxxxxxxxxrecords')
-        return self.datatable['data']
+        return self.datatable()['data']
+    '''
     
     @classmethod
     def copy(cls, *args, **kwargs):
