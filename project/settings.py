@@ -47,9 +47,9 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY',
                             'django-insecure-kfz#ag8=&yb1lynyfj0v=k%et%5++u08(q%@q(839gwqd-reah')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
 #DEBUG = False
-#DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 #HTML_MINIFY = True
 
