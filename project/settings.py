@@ -125,10 +125,10 @@ else:
     #https://prod
     SITE_ID = 2
     SITE_DOMAIN_NAME = 'https://youviz.app'
-    ALLOWED_HOSTS = ["youviz.app"]
-    CSRF_TRUSTED_ORIGINS = ["https://youviz.app"]
-    CSRF_ALLOWED_ORIGINS = ["https://youviz.app"]
-    CORS_ORIGINS_WHITELIST = ["https://youviz.app"]
+    #ALLOWED_HOSTS = ["youviz.app"]
+    CSRF_TRUSTED_ORIGINS = ["https://www.youviz.app"]
+    #CSRF_ALLOWED_ORIGINS = ["https://youviz.app"]
+    #CORS_ORIGINS_WHITELIST = ["https://youviz.app"]
     #SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
