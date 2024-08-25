@@ -53,8 +53,6 @@ DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 #HTML_MINIFY = True
 
-ALLOWED_HOSTS = []
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -127,6 +125,12 @@ else:
     #https://prod
     SITE_ID = 2
     SITE_DOMAIN_NAME = 'https://youviz.app'
+    ALLOWED_HOSTS = ["youviz.app"]
+    CSRF_TRUSTED_ORIGINS = ["https://youviz.app"]
+    CSRF_ALLOWED_ORIGINS = ["https://youviz.app"]
+    CORS_ORIGINS_WHITELIST = ["https://youviz.app"]
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 SITE_DISPLAY_NAME = SITE_DOMAIN_NAME
 
