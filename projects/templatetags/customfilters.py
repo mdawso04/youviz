@@ -34,6 +34,13 @@ ui_map = {
     'facet_row': 'rows', 
 }
 
+ui_map_summary = {
+    'DATA_COL_FILTER_TEXT_NOTEQUAL': '{} is not {}',
+    'DATA_COL_FILTER_TEXT_EQUAL': '{} is {}',
+    'DATA_COL_FILTER_NUM_NOTEQUAL': '{} is not {}',
+    'DATA_COL_FILTER_NUM_EQUAL': '{} is {}',
+}
+
 @register.filter
 def for_ui(value):
     try:
@@ -41,6 +48,13 @@ def for_ui(value):
     #except (ValueError, ZeroDivisionError):
     except:
         return value
+    
+@register.simple_tag
+def for_ui_summary(lookup_key, str_params):
+    try:
+        return ui_map_summary[lookup_key].format(*str_params)
+    except:
+        return lookup_key
 
 @register.filter()
 def field_name_to_label(value):

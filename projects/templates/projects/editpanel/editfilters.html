@@ -7,7 +7,7 @@
 {% load customfilters %}
 
 <div class="d-flex offcanvas-header p-3">
-    <h5 class="offcanvas-title me-auto flex-grow-1 h4" id="offcanvasBottomLabel">Edit Data</h5>
+    <h5 class="offcanvas-title me-auto flex-grow-1 h4" id="offcanvasBottomLabel">Edit Chart Data</h5>
     <!--<div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" role="switch" id="maximize"
                onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
@@ -25,7 +25,8 @@
             <div class="input-group input-group-sm">
                 <span class="input-group-text" id="drawingAddonOne{{forloop.counter0}}">{{forloop.counter}}</span>
 
-                <input id="filter-service-preview-{{forloop.counter0}}" type="text" class="form-control" disabled value="{{ d.service.saved|for_ui }}"/>
+                <input id="filter-service-preview-{{forloop.counter0}}" type="text" class="form-control" disabled 
+                       value="{% for_ui_summary d.service.saved d.options.saved.values %}"/>
                 <button class="btn btn-secondary" 
                         data-bs-toggle="collapse"
                         data-bs-target="#data-modal{{forloop.counter0}}"
@@ -61,8 +62,8 @@
                                 id="dataServiceSelect{{forloop.counter}}" 
                                 unicorn:key="dataServiceSelect{{forloop.counter}}" 
                                 unicorn:model="cache.data.{{forloop.counter0}}.service.saved" 
-                                unicorn:partial="data-modal-body{{forloop.counter0}}"
-                                {#unicorn:partial="filter-col-{{forloop.counter0}}"#}
+                                {#unicorn:partial="data-modal-body{{forloop.counter0}}"#}
+                                unicorn:partial="filter-col-{{forloop.counter0}}"
                                 unicorn:partial.id="outerPlotBox-{{vid}}" 
                                 unicorn:partial.key="setting-row-01-{{vid}}"
                                 aria-label="Viz Service Select"
@@ -82,7 +83,8 @@
                             <select class="form-select" 
                                     unicorn:model="cache.data.{{forloop.parentloop.counter0}}.options.saved.{{key}}" 
                                     id="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}" 
-                                    unicorn:partial="data-modal-body{{forloop.parentloop.counter0}}"
+                                    {#unicorn:partial="data-modal-body{{forloop.parentloop.counter0}}"#}
+                                    unicorn:partial="filter-col-{{forloop.parentloop.counter0}}"
                                     unicorn:partial.id="outerPlotBox-{{vid}}" 
                                     unicorn:partial.key="setting-row-01-{{vid}}"
                                     aria-label="{{key|title}} Select">
@@ -96,7 +98,8 @@
                                unicorn:model.lazy="cache.data.{{forloop.parentloop.counter0}}.options.saved.{{key}}"
                                id="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}"
                                unicorn:key="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}" 
-                               unicorn:partial="data-modal-body{{forloop.parentloop.counter0}}"
+                               {#unicorn:partial="data-modal-body{{forloop.parentloop.counter0}}"#}
+                               unicorn:partial="filter-col-{{forloop.parentloop.counter0}}"
                                unicorn:partial.id="outerPlotBox-{{vid}}" 
                                unicorn:partial.key="setting-row-01-{{vid}}"
                                aria-label="{{key|title}} Input"/>
@@ -131,7 +134,7 @@
                     unicorn:click="addFilter('new filter')"
                     unicorn:partial.key="filter-row-01-{{vid}}"
                     unicorn:partial.id="outerPlotBox-{{vid}}">
-                Add
+                Add edit
             </button>
             <button type="button" 
                     id="previewDataButton" 
@@ -163,7 +166,7 @@
 
 
     <!-- DATAFRAME START -->
-        <div class="modal-dialog modal-xl modal-fullscreen-xl-down modal-dialog-scrollable" 
+        <div class="modal-dialog modal-xl modal-fullscreen" 
              role="document">
             <div class="modal-content">
                 <div class="modal-header border-0">
@@ -171,7 +174,7 @@
                     <!-- TAB BUTTONS END-->
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            <div class="modal-body pt-0">
+            <div class="modal-body pt-0 h-100 w-100 overflow-auto">
                 <!-- TABLE -->
                 <table id="table"
                     data-toggle="table"
@@ -180,16 +183,16 @@
                     data-show-columns-toggle-all="true"
                     data-show-toggle="true"
                     data-card-view="true">
-                    <thead>
+                    <thead style="">
                         <tr>
                             {% for column in viz.datasource.datatable_preview.columns %}
-                                <th data-field="col-{{ column }}">{{ column }}</th>
+                                <th class="" data-field="col-{{ column }}">{{ column }}</th>
                             {% endfor %}
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="" style="">
                         {% for record in viz.datasource.datatable_preview.data %}
-                        <tr>
+                        <tr style="">
                             {% for c in record %}
                             <td>{{ c }}</td>
                             {% endfor %}
