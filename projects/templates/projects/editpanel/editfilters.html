@@ -18,7 +18,6 @@
 </div>
 
 <div class="offcanvas-body test-edit-inner p-3 pt-0" style="overflow-x: hidden;" id="switch">
-        
     <div class="row row-cols-1 g-2 pb-2" unicorn:key="filter-row-01-{{vid}}" id="filter-row-01-{{vid}}">
         {% for d in cache.data %}
         <div class="col" id="filter-col-{{forloop.counter0}}">
@@ -44,7 +43,8 @@
 
                 <button type="button" id="drawingButton{{forloop.counter0}}-{{vid}}" class="btn btn-danger" 
                         unicorn:click="deleteFilter({{forloop.counter0}})"
-                        unicorn:partial.key="filter-row-01-{{vid}}"
+                        {#unicorn:partial.key="filter-row-01-{{vid}}"#}
+                        unicorn:partial.key="filter-col-{{forloop.counter0}}"
                         unicorn:partial.id="outerPlotBox-{{vid}}"
                         unicorn:partial="setting-row-01-{{vid}}">
                     ×
@@ -62,12 +62,12 @@
                                 id="dataServiceSelect{{forloop.counter}}" 
                                 unicorn:key="dataServiceSelect{{forloop.counter}}" 
                                 unicorn:model="cache.data.{{forloop.counter0}}.service.saved" 
-                                {#unicorn:partial="data-modal-body{{forloop.counter0}}"#}
-                                unicorn:partial="filter-col-{{forloop.counter0}}"
+                                unicorn:partial="data-modal-body{{forloop.counter0}}"
+                                {#unicorn:partial="filter-col-{{forloop.counter0}}"#}
                                 unicorn:partial.id="outerPlotBox-{{vid}}" 
                                 unicorn:partial.key="setting-row-01-{{vid}}"
                                 aria-label="Viz Service Select"
-                                onchange="document.getElementById('filter-service-preview-{{forloop.counter0}}').value=this.options[this.selectedIndex].text;">
+                                {#onchange="document.getElementById('filter-service-preview-{{forloop.counter0}}').value=this.options[this.selectedIndex].text;"#}>
                             <option value="None" {% if d.service.saved == 'None' %} selected{% endif %}>Select type</option>
                             {% for o in d.service.available.data %}
                                 <option {% if o == d.service.saved %}selected {% endif %}value="{{o}}">{{o|for_ui}}</option>
@@ -83,8 +83,8 @@
                             <select class="form-select" 
                                     unicorn:model="cache.data.{{forloop.parentloop.counter0}}.options.saved.{{key}}" 
                                     id="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}" 
-                                    {#unicorn:partial="data-modal-body{{forloop.parentloop.counter0}}"#}
-                                    unicorn:partial="filter-col-{{forloop.parentloop.counter0}}"
+                                    unicorn:partial="data-modal-body{{forloop.parentloop.counter0}}"
+                                    {#unicorn:partial="filter-col-{{forloop.parentloop.counter0}}"#}
                                     unicorn:partial.id="outerPlotBox-{{vid}}" 
                                     unicorn:partial.key="setting-row-01-{{vid}}"
                                     aria-label="{{key|title}} Select">
@@ -98,8 +98,8 @@
                                unicorn:model.lazy="cache.data.{{forloop.parentloop.counter0}}.options.saved.{{key}}"
                                id="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}"
                                unicorn:key="{{forloop.parentloop.counter}}-data{{key|title}}Select{{vid}}" 
-                               {#unicorn:partial="data-modal-body{{forloop.parentloop.counter0}}"#}
-                               unicorn:partial="filter-col-{{forloop.parentloop.counter0}}"
+                               unicorn:partial="data-modal-body{{forloop.parentloop.counter0}}"
+                               {#unicorn:partial="filter-col-{{forloop.parentloop.counter0}}"#}
                                unicorn:partial.id="outerPlotBox-{{vid}}" 
                                unicorn:partial.key="setting-row-01-{{vid}}"
                                aria-label="{{key|title}} Input"/>

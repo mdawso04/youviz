@@ -170,6 +170,7 @@ class VizView(UnicornView):
                 update_nested(a.todos[cache_todo_index + 1][property_group], property_item, value)
             else:
                 a.todos[cache_todo_index + 1][property_group] = value
+                
         
         '''
         elif name.startswith('drawings'):

@@ -35,10 +35,10 @@ ui_map = {
 }
 
 ui_map_summary = {
-    'DATA_COL_FILTER_TEXT_NOTEQUAL': '{} is not {}',
-    'DATA_COL_FILTER_TEXT_EQUAL': '{} is {}',
-    'DATA_COL_FILTER_NUM_NOTEQUAL': '{} is not {}',
-    'DATA_COL_FILTER_NUM_EQUAL': '{} is {}',
+    'DATA_COL_FILTER_TEXT_NOTEQUAL': "'{}' is not '{}'",
+    'DATA_COL_FILTER_TEXT_EQUAL': "'{}' is '{}'",
+    'DATA_COL_FILTER_NUM_NOTEQUAL': "'{}' is not '{}'",
+    'DATA_COL_FILTER_NUM_EQUAL': "'{}' is '{}'",
 }
 
 @register.filter
