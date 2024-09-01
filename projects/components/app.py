@@ -159,37 +159,18 @@ class AppView(UnicornView):
                         
                     self.ads = Notification.objects.filter(position=Notification.LIST_AD).order_by('?')[:4]
                     
-                #print(self.page_no)
-                
-                #cache db results
-                #print(self.datasources)
-                #print('')
-                
                 #if items on current page, add them to cache
                 if len(self.datasources[:self.items_per_page]) > 0:
-                    #print(self.list_items_paginated)
-                    #print('')
                     self.list_items_paginated = self.list_items_paginated[:self.page_no - 1] + [self.datasources[:self.items_per_page]]
-                    #print(self.list_items_paginated)
-                    #print('')
                     
                 self.displayed_item_ids = [i['pk'] if isinstance(i, dict) else i.pk for p in self.list_items_paginated[:self.page_no] for i in p] 
-                #print(self.displayed_item_ids)
-                #print('')
                     
                 #if items on next page (spare), add them to cache
                 if len(self.datasources[self.items_per_page:]) > 0:
                     self.list_items_paginated = self.list_items_paginated[:self.page_no ] + [self.datasources[self.items_per_page:]]
-                    #print(self.list_items_paginated)
-                    #print('')
                 
                 #pad out remainder of list
                 self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
-                #print(self.list_items_paginated)
-                #print('')
-                
-
-                
                                     
                 return #do nothing
             
@@ -246,9 +227,14 @@ class AppView(UnicornView):
                     
                     if page == 'new.datamenu':
                         
+                        if self.page_no == 1:
+                            self.list_items_paginated, self.displayed_item_ids = [], []
                         
                         if not self.covers:
-                            self.covers = Cover.list().order_by('name')
+                            self.covers = Cover.list().order_by(
+                                Case(When(name__startswith='_', then=0), default=1),
+                                'name',
+                            )
                         if not self.cover:
                             self.cover = self.covers.filter(name__startswith='_').first()
                         
@@ -260,7 +246,22 @@ class AppView(UnicornView):
                             q = q | Q(name__icontains=v)
                         
                         self.datastreams = Datastream.list(q)
-                        self.list_items_paginated = [self.datastreams[i: i+20] for i in range(0, len(self.datastreams), 20)]
+                        
+                        
+                        #if items on current page, add them to cache
+                        if len(self.datastreams[:self.items_per_page]) > 0:
+                            self.list_items_paginated = self.list_items_paginated[:self.page_no - 1] + [self.datastreams[:self.items_per_page]]
+
+                        self.displayed_item_ids = [i['pk'] if isinstance(i, dict) else i.pk for p in self.list_items_paginated[:self.page_no] for i in p] 
+
+                        #if items on next page (spare), add them to cache
+                        if len(self.datastreams[self.items_per_page:]) > 0:
+                            self.list_items_paginated = self.list_items_paginated[:self.page_no ] + [self.datastreams[self.items_per_page:]]
+
+                        #pad out remainder of list
+                        self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
+                        
+                        
                         self.page = 'new.datamenu'
                         self.message = {
                             'class': 'alert-info',

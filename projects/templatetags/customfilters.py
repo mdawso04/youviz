@@ -30,6 +30,7 @@ ui_map = {
     'yaxis_title_text': 'y-axis title',
     'yaxis_showticklabels': 'y-axis labels',
     'yaxis_ticks': 'y-axis ticks',
+    'yaxis_showgrid': 'y-axis gridlines',
     'facet_col': 'columns',
     'facet_row': 'rows', 
 }
