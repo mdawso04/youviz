@@ -43,8 +43,8 @@
 
                 <button type="button" id="drawingButton{{forloop.counter0}}-{{vid}}" class="btn btn-danger" 
                         unicorn:click="deleteFilter({{forloop.counter0}})"
-                        {#unicorn:partial.key="filter-row-01-{{vid}}"#}
-                        unicorn:partial.key="filter-col-{{forloop.counter0}}"
+                        unicorn:partial.key="filter-row-01-{{vid}}"
+                        {#unicorn:partial.key="filter-col-{{forloop.counter0}}"#}
                         unicorn:partial.id="outerPlotBox-{{vid}}"
                         unicorn:partial="setting-row-01-{{vid}}">
                     ×
