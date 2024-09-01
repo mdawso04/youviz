@@ -1294,6 +1294,16 @@ window.addEventListener("DOMContentLoaded", (event) => {
                     body.appendChild(yvmodals[i]); 
                 }
                 
+                var yvlisteners = document.querySelectorAll('[data-yv-listener="viz"]')
+                for (let i = 0; i < yvlisteners.length; i++) {
+                    let target = yvlisteners[i].dataset.yvTarget;
+                    let value = yvlisteners[i].dataset.yvValue;
+                    let el = document.getElementById(target);
+                    if(el) {
+                        el.value = value;
+                    }
+                }
+                
                 break;
             case 'datatable':
                 //bootstrap table
