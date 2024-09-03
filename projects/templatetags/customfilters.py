@@ -14,7 +14,7 @@ ui_map = {
     'DATA_COL_FILTER_TEXT_NOTEQUAL': 'Filter: text is',
     'DATA_COL_FILTER_TEXT_EQUAL': 'Filter: text is not',
     'DATA_COL_FILTER_NUM_NOTEQUAL': 'Filter: num is',
-    'DATA_COL_FILTER_NUM_EQUAL': 'Filter: num is not,
+    'DATA_COL_FILTER_NUM_EQUAL': 'Filter: num is not',
     'DATA_COL_FORMAT_ADD_PREFIX': 'Transform col: add prefix',
     'DATA_COL_FORMAT_ADD_SUFFIX': 'Transform col: add suffix',
     'DATA_COL_FORMAT_FILL_DOWN': 'Transform col: fill down',
