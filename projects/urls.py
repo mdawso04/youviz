@@ -12,6 +12,7 @@ urlpatterns = [
     path('view/<slug:slug>/', views.view, name="view"),
     path('new/', views.new, name="new"),
     #path('viz/<int:pk>/<hash_k>/', VizView.as_view(), {'context': {'mode': 'app'}}, name="viz"),
+    path('viz/<int:pk>/data/', views.viz_data, name="viz_data"),
     path('viz/<int:pk>/<hash_k>/', views.viz, name="viz"),
     #path('viz/<int:pk>/<hash_k>/viewmode/', VizView.as_view(), {'context': {'mode': 'view'}}, name="viz_viewmode"),
     path('viz/<int:pk>/<hash_k>/viewmode/', views.viz_viewmode, name="viz_viewmode"),

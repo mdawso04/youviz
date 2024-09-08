@@ -3,9 +3,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.urls import reverse
+from django.http import Http404
 
 # Create your views here.
-from .models import Datasource
+from .models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings, Cover, Comment
 from .forms import DatasourceForm
 from .decorators import check_user_able_to_see_page
 from project import settings
@@ -113,6 +114,22 @@ def viz_viewmode(request, pk = None, hash_k = None):
     context = {'context': {'mode': 'view'}}
     
     return VizView.as_view()(request, context=context, pk=pk, hash_k=hash_k)
+
+def viz_data(request, pk = None):
+    viz = Viz.item(pk=pk)
+    ds = viz.datasource
+    current_user = request.user
+    
+    if ds.is_published:
+        if not any({current_user.has_perm('projects.view_published_datasource', ds), current_user.has_perm('projects.view_datasource', ds)}):
+            raise Http404()
+    else:
+        if not current_user.has_perm('projects.view_datasource', ds):
+            raise Http404()
+    
+    context = {'context': {'mode': 'data', 'viz': viz}}
+    
+    return render(request, 'projects/data.json', context)
 
 def dataframe(request, pk = None, hash_k = None):
     context = {'context': {'mode': 'app'}}

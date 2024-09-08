@@ -181,6 +181,10 @@ def divide(value, arg):
         return int(value) / int(arg)
     except (ValueError, ZeroDivisionError):
         return None
+    
+@register.filter(name='zip')
+def zip_lists(a, b):
+    return zip(a, b)
 
 #tags
     

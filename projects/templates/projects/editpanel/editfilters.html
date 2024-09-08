@@ -121,10 +121,6 @@
                     </button>
                 </div>
             </div>
-
-
-
-
         </div>
         {% endfor %}
     </div>
@@ -148,8 +144,9 @@
             </button>
         </div>
     </div>
-
-
+    
+    
+    <!-- MODAL START -->
     <div id="previewDataModal{{vid}}" 
          class="modal fade yvmodal" 
          data-bs-backdrop="static" 
@@ -168,7 +165,6 @@
         </style>
 
 
-    <!-- DATAFRAME START -->
         <div class="modal-dialog modal-xl modal-fullscreen" 
              role="document">
             <div class="modal-content">
@@ -177,7 +173,10 @@
                     <!-- TAB BUTTONS END-->
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            <div class="modal-body pt-0 h-100 w-100 overflow-auto">
+            <div class="modal-body pt-0 h-100 w-100 overflow-auto"
+                 id="previewDataModalBody{{vid}}">
+                
+                {% if never %}
                 <!-- TABLE -->
                 <table id="table"
                     data-toggle="table"
@@ -188,13 +187,13 @@
                     data-card-view="true">
                     <thead style="">
                         <tr>
-                            {% for column in viz.datasource.datatable_preview.columns %}
+                            {% for column in viz.datatable_preview.columns %}
                                 <th class="" data-field="col-{{ column }}">{{ column }}</th>
                             {% endfor %}
                         </tr>
                     </thead>
                     <tbody class="" style="">
-                        {% for record in viz.datasource.datatable_preview.data %}
+                        {% for record in viz.datatable_preview.data %}
                         <tr style="">
                             {% for c in record %}
                             <td>{{ c }}</td>
@@ -203,11 +202,69 @@
                     {% endfor %}
                     </tbody>
                 </table>
+                {% endif %}
+                
+                <!-- TABLE -->
+                <table
+                    id="table"
+                    data-search="true"
+                    data-show-toggle="true"
+                    data-show-columns="true"
+                    data-show-columns-toggle-all="true"
+                    data-show-export="true"
+                    data-sortable="true"
+  
+                    {% if never %}
+                    data-toolbar="#toolbar"
+                    data-show-refresh="true"
+                    data-show-fullscreen="true"
+                    data-detail-view="true"
+                    data-click-to-select="true"
+                    data-detail-formatter="detailFormatter"
+                    data-minimum-count-columns="2"
+                    data-show-pagination-switch="true"
+                    data-pagination="true"
+                    data-id-field="id"
+                    data-page-list="[10, 25, 50, 100, all]"
+                    data-show-footer="true"
+                    data-side-pagination="server"
+                    data-url="https://examples.wenzhixin.net.cn/examples/bootstrap_table/data"
+                    data-response-handler="responseHandler"
+                    {% endif %}
+                       >
+                </table>
+                
+                
             </div>
             <div class="modal-footer border-0 mb-3">
+                <button type="button" 
+                        class="btn btn-secondary" 
+                        id="previewDataModalBodyButton{{vid}}" 
+                        {#unicorn:click="refreshTable()"#}
+                        onclick="$.get('{% url 'viz_data' viz.id %}', function (res) {
+                         async function deleteFromCache(cacheName, urlOrPath) {
+                          const cache = await caches.open(cacheName);
+                          await cache.delete(urlOrPath);
+                        } 
+                        deleteFromCache('unicorn', '{% url 'viz_data' viz.id %}');
+                        json = JSON.parse(res);
+                          $('#table').bootstrapTable('destroy');
+                          $('#table').bootstrapTable({
+                            columns: json.columns,
+                            data: json.rows,
+                            height: 700,
+                            sortable: true,
+                            showExport: true
+                          });
+                        });"
+                        {#unicorn:partial.id="previewDataModalBody{{vid}}"#}
+                        >Refresh Table</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
       </div>
     </div>
+    <!-- MODAL END -->
+
+
 </div>

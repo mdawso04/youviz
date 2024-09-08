@@ -236,6 +236,12 @@ class VizView(UnicornView):
         self.viz.save()
         self.load_viz()
         
+    def refreshTable(self):
+        #empty function to enable refresh
+        self.call('alert', 'table refreshed!')
+        print('refreshing table')
+        self.load_viz()
+        
     '''
     def applyUpdate(self):
         if name.startswith('cache.data.0.options.saved.criteria'):

@@ -1001,8 +1001,7 @@ class Viz(BaseModel):
         'viz_html',
         'perms_req_by_anonymous',
         'datatable',
-        'columns',
-        'records',
+        'datatable_preview',
     ]
         
     #@cached_property
@@ -1153,7 +1152,31 @@ class Viz(BaseModel):
     def records(self):
         return self.datatable['data']
     '''
+    @cached_property
+    def datatable(self):
+        copied_json = deepcopy(self.json)
+        a = pp.App(copied_json)
+        io = StringIO(self.datasource.datastream.current_version())
+        a.todos[0]['options']['src'] = io
+        df = a.call(return_df=True)
+        result = df.to_dict(orient='tight')
+        io.close()
+        del io
+        del df
+        return result
     
+    @cached_property
+    def datatable_preview(self):
+        copied_json = deepcopy(self.json)
+        a = pp.App(copied_json)
+        io = StringIO(self.datasource.datastream.current_version())
+        a.todos[0]['options']['src'] = io
+        df = a.call(return_df=True)
+        result = df[:200].to_dict(orient='tight')
+        io.close()
+        del io
+        del df
+        return result
     
     @classmethod
     def extra_kwargs(cls, **kwargs):
