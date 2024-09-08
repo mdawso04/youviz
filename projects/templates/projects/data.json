@@ -1,0 +1,20 @@
+{% load customfilters %}
+{
+    "columns": [
+        {% for column in context.viz.datatable_preview.columns %}
+        {
+            "title": "{{ column }}",
+            "field": "{{ column }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ],
+    "rows": [
+        {% for row in context.viz.datatable_preview.data %}
+        {
+            {% for k, v in context.viz.datatable_preview.columns|zip:row %}
+            "{{k}}": "{{v}}"{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %} 
+    ]
+}
