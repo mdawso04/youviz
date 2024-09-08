@@ -247,11 +247,10 @@
                           await cache.delete(urlOrPath);
                         } 
                         deleteFromCache('unicorn', '{% url 'viz_data' viz.id %}');
-                        json = JSON.parse(res);
                           $('#table').bootstrapTable('destroy');
                           $('#table').bootstrapTable({
-                            columns: json.columns,
-                            data: json.rows,
+                            columns: res.columns,
+                            data: res.rows,
                             height: 700,
                             sortable: true,
                             showExport: true
