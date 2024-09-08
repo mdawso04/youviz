@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.urls import reverse
 from django.http import Http404
+from django.http import JsonResponse
 
 # Create your views here.
 from .models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings, Cover, Comment
@@ -127,9 +128,19 @@ def viz_data(request, pk = None):
         if not current_user.has_perm('projects.view_datasource', ds):
             raise Http404()
     
-    context = {'context': {'mode': 'data', 'viz': viz}}
+    #context = {'context': {'mode': 'data', 'viz': viz}}
     
-    return render(request, 'projects/data.json', context)
+    #return render(request, 'projects/data.json', context)
+    
+    cols = [{"title": c, "field": c} for c in viz.datatable_preview["columns"]]
+    rows = [{k: v for k, v in zip(viz.datatable_preview["columns"], r)} for r in viz.datatable_preview["data"]]
+    res = {"columns": cols, "rows": rows}
+    return JsonResponse(res)
+
+
+
+
+
 
 def dataframe(request, pk = None, hash_k = None):
     context = {'context': {'mode': 'app'}}
