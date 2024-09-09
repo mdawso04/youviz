@@ -135,11 +135,7 @@ def viz_data(request, pk = None):
     cols = [{"title": c, "field": c} for c in viz.datatable_preview["columns"]]
     rows = [{k: v for k, v in zip(viz.datatable_preview["columns"], r)} for r in viz.datatable_preview["data"]]
     res = {"columns": cols, "rows": rows}
-    return JsonResponse(res)
-
-
-
-
+    return JsonResponse(res, json_dumps_params={"allow_nan": False})
 
 
 def dataframe(request, pk = None, hash_k = None):
