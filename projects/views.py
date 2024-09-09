@@ -133,9 +133,16 @@ def viz_data(request, pk = None):
     #return render(request, 'projects/data.json', context)
     
     cols = [{"title": c, "field": c} for c in viz.datatable_preview["columns"]]
-    rows = [{k: v for k, v in zip(viz.datatable_preview["columns"], r)} for r in viz.datatable_preview["data"]]
+    
+    def isNaN(num):
+        if num == 'nan':
+            return True
+        return num!= num
+    
+    #replace Nan with None to prevent JSON decode error in client browser
+    rows = [{k: v if not isNaN(v) else None for k, v in zip(viz.datatable_preview["columns"], r)} for r in viz.datatable_preview["data"]]
     res = {"columns": cols, "rows": rows}
-    return JsonResponse(res, json_dumps_params={"allow_nan": False})
+    return JsonResponse(res)
 
 
 def dataframe(request, pk = None, hash_k = None):
