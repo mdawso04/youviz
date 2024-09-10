@@ -24,16 +24,18 @@
             <div class="input-group input-group-sm">
                 <span class="input-group-text" id="drawingAddonOne{{forloop.counter0}}">{{forloop.counter}}</span>
 
-                <input id="filter-service-preview-{{forloop.counter0}}" type="text" class="form-control" disabled 
+                <input id="filter-service-preview-{{forloop.counter0}}" type="text" 
+                       class="form-control bg-white text-dark" 
+                       onclick="Collapse.getOrCreateInstance('#data-modal{{forloop.counter0}}').toggle();"
                        value="{% for_ui_summary d.service.saved d.options.saved.values %}"/>
-                <button class="btn btn-secondary" 
+                <button class="btn btn-secondary bg-white text-dark border-start-0 border-secondary-subtle" 
                         data-bs-toggle="collapse"
                         data-bs-target="#data-modal{{forloop.counter0}}"
                         data-bs-title="Edit" 
                         data-bs-placement="top" 
                         role="button"
                         data-bs-content-id="popover-content{{forloop.counter0}}">
-                    <i class="bi-three-dots"></i>
+                    <i class="bi-chevron-down"></i>
                 </button>
 
                 {% comment onhold %}

@@ -1172,7 +1172,7 @@ class Viz(BaseModel):
         io = StringIO(self.datasource.datastream.current_version())
         a.todos[0]['options']['src'] = io
         df = a.call(return_df=True)
-        result = df[:200].to_dict(orient='tight')
+        result = df[:1000].to_dict(orient='tight')
         io.close()
         del io
         del df
