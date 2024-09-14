@@ -214,7 +214,6 @@
                     data-show-columns="true"
                     data-show-columns-toggle-all="true"
                     data-show-export="true"
-                    data-sortable="true"
   
                     {% if never %}
                     data-toolbar="#toolbar"
@@ -250,12 +249,11 @@
                         } 
                         deleteFromCache('unicorn', '{% url 'viz_data' viz.id %}');
                           $('#table').bootstrapTable('destroy');
+                          for(const i of res.columns) {i.sortable=true;}
                           $('#table').bootstrapTable({
                             columns: res.columns,
                             data: res.rows,
-                            height: 600,
-                            sortable: true,
-                            showExport: true
+                            height: 600
                           });
                         });"
                         {#unicorn:partial.id="previewDataModalBody{{vid}}"#}
