@@ -11,10 +11,10 @@ register = template.Library()
 ui_map = {
     'DATA_COL_FILTER': 'Filter: custom criteria',
     'DATA_COL_FILTER_MISSING': 'Filter: missing values',
-    'DATA_COL_FILTER_TEXT_NOTEQUAL': 'Filter: text is',
-    'DATA_COL_FILTER_TEXT_EQUAL': 'Filter: text is not',
-    'DATA_COL_FILTER_NUM_NOTEQUAL': 'Filter: num is',
-    'DATA_COL_FILTER_NUM_EQUAL': 'Filter: num is not',
+    'DATA_COL_FILTER_TEXT_NOTEQUAL': 'Filter: text is not',
+    'DATA_COL_FILTER_TEXT_EQUAL': 'Filter: text is',
+    'DATA_COL_FILTER_NUM_NOTEQUAL': 'Filter: num is not',
+    'DATA_COL_FILTER_NUM_EQUAL': 'Filter: num is',
     'DATA_COL_FORMAT_ADD_PREFIX': 'Transform col: add prefix',
     'DATA_COL_FORMAT_ADD_SUFFIX': 'Transform col: add suffix',
     'DATA_COL_FORMAT_FILL_DOWN': 'Transform col: fill down',
@@ -91,12 +91,12 @@ ui_map = {
 }
 
 ui_map_summary = {
-    'DATA_COL_FILTER': "'{}' {}", 
-    'DATA_COL_FILTER_MISSING': "'{}' is not missing",
-    'DATA_COL_FILTER_TEXT_NOTEQUAL': "'{}' is not '{}'",
-    'DATA_COL_FILTER_TEXT_EQUAL': "'{}' is '{}'",
-    'DATA_COL_FILTER_NUM_NOTEQUAL': "'{}' is not '{}'",
-    'DATA_COL_FILTER_NUM_EQUAL': "'{}' is '{}'",
+    'DATA_COL_FILTER': "{0}", 
+    'DATA_COL_FILTER_MISSING': "{0} is not missing",
+    'DATA_COL_FILTER_TEXT_NOTEQUAL': "Is not '{1}'",
+    'DATA_COL_FILTER_TEXT_EQUAL': "Is '{1}'",
+    'DATA_COL_FILTER_NUM_NOTEQUAL': "Is not {1}",
+    'DATA_COL_FILTER_NUM_EQUAL': "Is {1}",
     'DATA_COL_FORMAT_ADD_PREFIX': 'Transform col: add prefix',
     'DATA_COL_FORMAT_ADD_SUFFIX': 'Transform col: add suffix',
     'DATA_COL_FORMAT_FILL_DOWN': 'Transform col: fill down',
@@ -121,8 +121,8 @@ ui_map_summary = {
     'DATA_COL_TRANSFORM_FLOORDIV': 'Transform col: floor division',
     'DATA_COL_TRANSFORM_MODULUS': 'Transform col: modulus',
     'DATA_COL_ADD_INDEX': 'Add col: index',
-    'DATA_COL_ADD_INDEX_FROM_0': 'Add col: index from 0',
-    'DATA_COL_ADD_INDEX_FROM_1': 'Add col: index from 1',
+    'DATA_COL_ADD_INDEX_FROM_0': "New index column '{0}'",
+    'DATA_COL_ADD_INDEX_FROM_1': "New index column '{0}'",
     'DATA_COL_ADD_CONCATENATE': 'Add col: concatenate',
     'DATA_COL_ADD_DUPLICATE': 'Add col: duplicate',
     'DATA_COL_ADD_EXTRACT_BEFORE': 'Add col: extract before',
@@ -168,7 +168,7 @@ def for_ui_summary(lookup_key, str_params):
     try:
         return ui_map_summary[lookup_key].format(*str_params)
     except:
-        return lookup_key
+        return ui_map_summary[lookup_key].format('...', '...', '...', '...',)
 
 @register.filter()
 def field_name_to_label(value):

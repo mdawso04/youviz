@@ -36,6 +36,7 @@ import json
 import string  # for string constants
 import random  # for generating random strings
 from collections.abc import MutableMapping
+import functools, inspect
 
 #non-standard libraries
 import pandas as pd
@@ -43,6 +44,9 @@ import plotly.io as pio
 from datetime import datetime
 from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
+
+import plotly.express as px
+import plotly.graph_objects as go
 
 
 
@@ -85,6 +89,56 @@ def read(self):
     return pd.read_csv(s)
 
 pp.io.SimpleCsvExcelReader.read = read
+
+
+'''
+Patch for pp.App.call
+
+
+def call(self, df=None, viz=None, last_index=None, return_df=True):
+    #logger.debug('pp.App > call start')
+    if not self._isvalid():
+        #exception
+        return "ERROR"
+    service_list = self._service_helper(return_type='service_callable', filter_read=False)  
+    result, results = None, []
+    #logger.debug('Calling Todos: {}'.format(len(self.todos)))
+    for item in self.todos[:last_index]:
+        fn = service_list[item['service']].fn
+        s = inspect.signature(fn)
+        if 'df' in s.parameters:
+            if 'options' in item.keys() and item['options'] is not None:
+                result = fn(df=df, **item['options'])
+            else:
+                result = fn(df=df)
+        elif 'viz' in s.parameters:
+            if 'options' in item.keys() and item['options'] is not None:
+                result = fn(viz=viz, **item['options'])
+            else:
+                result = fn(viz=viz)
+        else:
+            if 'options' in item.keys() and item['options'] is not None:
+                result = fn(**item['options'])
+            else:
+                result = fn()
+        if isinstance(result, pd.DataFrame):
+            df = result.convert_dtypes() #apply conversion to ensure numbers are numbers
+            print(df.dtypes)
+        else:
+            if isinstance(result, go.Figure):
+                viz = result
+            results.append(result)
+        #logger.debug('Called Todo: {} ({})'.format(item['service'], item['name']))
+    results.append(df)
+    #logger.debug('Called Todos: {}'.format(len(self.todos)))
+    #logger.debug('Generated results: {}'.format(len(results)))
+    #logger.debug('pp.App > call end')
+    if return_df:
+        return results[-1]
+    return results
+
+pp.App.call = call
+'''
 
 '''
 Patch for data
@@ -163,6 +217,21 @@ def DATA_COL_FILTER_NUM_EQUAL(df, column=None, matches=None):
     else:
         logger.debug('pp.data > Filter columns skipped')
         return df
+    
+
+def DATA_COL_FORMAT_TYPE(df, columns=None, typ='str'):
+    '''Format specified columns as specfied type'''
+    max = 1 if columns is None else None
+    columns = colHelper(df, columns, max=max)
+    if isinstance(typ, str):
+        converter = {c:t for c,t in zip(columns, [typ for i in range(0, len(columns))])}
+    else: #array
+        converter = {c:t for c,t in zip(columns, typ)}
+    df = df.astype(converter)
+    logger.debug('pp.data > Changed column type to {} for these columns: {}'.format(typ, columns))
+    return df
+
+pp.data.DATA_COL_FORMAT_TYPE = DATA_COL_FORMAT_TYPE
 
 
 '''
@@ -232,7 +301,7 @@ class BaseModel(models.Model):
         for property in self.cached_properties:
             try:
                 del self.__dict__[property]
-                print('**************deleted cache '+property)
+                #print('**************deleted cache '+property)
             except KeyError:
                 pass
     
@@ -672,7 +741,11 @@ class Datasource(BaseModel):
     def datatable(self):
         io = StringIO(self.datastream.current_version())
         df = pd.read_csv(io)
+        #replace missing to easy jsonification
+        df = df.astype(object).where(df.notnull(), other=None)
+        df = df.convert_dtypes()
         result = df.to_dict(orient='tight')
+        result['dtypes'] = df.dtypes.astype(str).to_list()
         io.close()
         del io
         del df
@@ -682,7 +755,11 @@ class Datasource(BaseModel):
     def datatable_preview(self):
         io = StringIO(self.datastream.current_version())
         df = pd.read_csv(io)
-        result = df[:200].to_dict(orient='tight')
+        #replace missing to easy jsonification
+        df = df.astype(object).where(df.notnull(), other=None)
+        df = df.convert_dtypes()
+        result = df.to_dict(orient='tight')
+        result['dtypes'] =  df.dtypes.astype(str).to_list()
         io.close()
         del io
         del df
@@ -868,7 +945,7 @@ def baseobject_perms_helper(users_with_perms, bobj, **kwargs):
         perms_to_remove = list(set(user_perms) - set(needed_perms))
     
         for p in perms_to_assign:
-            print(p)
+            #print(p)
             assign_perm(p, u, bobj)
         for p in perms_to_remove:
             remove_perm(p, u, bobj)
@@ -1159,7 +1236,11 @@ class Viz(BaseModel):
         io = StringIO(self.datasource.datastream.current_version())
         a.todos[0]['options']['src'] = io
         df = a.call(return_df=True)
+        #replace missing to easy jsonification
+        df = df.astype(object).where(df.notnull(), other=None)
+        df = df.convert_dtypes()
         result = df.to_dict(orient='tight')
+        result['dtypes'] = df.dtypes.astype(str).to_list()
         io.close()
         del io
         del df
@@ -1172,7 +1253,11 @@ class Viz(BaseModel):
         io = StringIO(self.datasource.datastream.current_version())
         a.todos[0]['options']['src'] = io
         df = a.call(return_df=True)
+        #replace missing to easy jsonification
+        df = df.astype(object).where(df.notnull(), other=None)
+        df = df.convert_dtypes()
         result = df[:1000].to_dict(orient='tight')
+        result['dtypes'] =  df.dtypes.astype(str).to_list()
         io.close()
         del io
         del df
