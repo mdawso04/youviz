@@ -132,13 +132,13 @@ def viz_data(request, pk = None):
     
     #return render(request, 'projects/data.json', context)
     
-    cols = [{"title": c, "field": c} for c in viz.datatable_preview["columns"]]
-    dtypes = viz.datatable_preview["dtypes"]
-    
+    cols = [{"title": c} for c in viz.datatable_preview["columns"]]
+    dtypes = [{"title": dt, "field": c, "switchableLabel": c } for c, dt in zip(viz.datatable_preview["columns"], viz.datatable_preview["dtypes"])]
+   
     #replace Nan with None to prevent JSON decode error in client browser
     rows = [{k: v for k, v in zip(viz.datatable_preview["columns"], r)} for r in viz.datatable_preview["data"]]
-    #res = {"columns": [cols, dtypes], "rows": rows}
-    res = {"columns": cols, "rows": rows}
+    res = {"columns": [cols, dtypes], "rows": rows}
+    #res = {"columns": cols, "rows": rows}
     return JsonResponse(res)
 
 

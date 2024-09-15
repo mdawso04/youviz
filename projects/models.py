@@ -1034,6 +1034,16 @@ class Viz(BaseModel):
             'outside',
             'inside',
         ],
+        'xaxis_rangemode': [
+            'normal',
+            'tozero',
+            'nonnegative',
+        ],
+        'xaxis_autorange': [
+            True,
+            False,
+            'reversed',
+        ],
         'xaxis_showgrid': [
             True,
             False,
@@ -1056,6 +1066,16 @@ class Viz(BaseModel):
         'yaxis_ticks': [
             'outside',
             'inside',
+        ],
+        'yaxis_rangemode': [
+            'normal',
+            'tozero',
+            'nonnegative',
+        ],
+        'yaxis_autorange': [
+            True,
+            False,
+            'reversed',
         ],
         'yaxis_showgrid': [
             True,
