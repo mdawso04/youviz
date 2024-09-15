@@ -230,6 +230,58 @@ def DATA_COL_FILTER_TEXT_CONTAINS(df, column=None, matches=None):
         return df
     
 @registerService(
+    column=OPTION_FIELD_SINGLE_COL_STRING,
+    matches=FIELD_STRING,
+)
+def DATA_COL_FILTER_TEXT_NOTSTARTWITH(df, column=None, matches=None):
+    '''Keeps rows with specified filter criteria'''
+    column = colHelper(df, column, max=1, type='object')
+    column = column[0] if isinstance(column, list) else column
+    matches = matches if isinstance(matches, str) else None 
+    if column is not None and matches is not None:
+        matches = 'not `{}`.str.startswith("{}")'.format(column, matches)
+        logger.debug('pp.data > Filtered columns by: {}'.format(matches))
+        return DATA_COL_FILTER(df, matches)
+    else:
+        logger.debug('pp.data > Filter columns skipped')
+        return df
+
+@registerService(
+    column=OPTION_FIELD_SINGLE_COL_STRING,
+    matches=FIELD_STRING,
+)
+def DATA_COL_FILTER_TEXT_NOTENDWITH(df, column=None, matches=None):
+    '''Keeps rows with specified filter criteria'''
+    column = colHelper(df, column, max=1, type='object')
+    column = column[0] if isinstance(column, list) else column
+    matches = matches if isinstance(matches, str) else None 
+    if column is not None and matches is not None:
+        matches = 'not `{}`.str.endswith("{}")'.format(column, matches)
+        logger.debug('pp.data > Filtered columns by: {}'.format(matches))
+        return DATA_COL_FILTER(df, matches)
+    else:
+        logger.debug('pp.data > Filter columns skipped')
+        return df
+
+@registerService(
+    column=OPTION_FIELD_SINGLE_COL_STRING,
+    matches=FIELD_STRING,
+)
+def DATA_COL_FILTER_TEXT_NOTCONTAIN(df, column=None, matches=None):
+    '''Keeps rows with specified filter criteria'''
+    column = colHelper(df, column, max=1, type='object')
+    column = column[0] if isinstance(column, list) else column
+    matches = matches if isinstance(matches, str) else None 
+    if column is not None and matches is not None:
+        matches = 'not `{}`.str.contains("{}")'.format(column, matches)
+        logger.debug('pp.data > Filtered columns by: {}'.format(matches))
+        return DATA_COL_FILTER(df, matches)
+    else:
+        logger.debug('pp.data > Filter columns skipped')
+        return df
+
+    
+@registerService(
     column=OPTION_FIELD_SINGLE_COL_NUMBER,
     matches=FIELD_NUMBER,
 )
