@@ -71,8 +71,8 @@
                                 aria-label="Viz Service Select"
                                 {#onchange="document.getElementById('filter-service-preview-{{forloop.counter0}}').value=this.options[this.selectedIndex].text;"#}>
                             <option value="None" {% if d.service.saved == 'None' %} selected{% endif %}>Select type</option>
-                            {% for o in d.service.available.data %}
-                                <option {% if o == d.service.saved %}selected {% endif %}value="{{o}}">{{o|for_ui}}</option>
+                            {% for n, o in d.service.available.data|for_ui_sorted %}
+                                <option {% if o == d.service.saved %}selected {% endif %}value="{{o}}">{{n}}</option>
                             {% endfor %}
                         </select>
                     </div>
