@@ -351,6 +351,10 @@ class AppView(UnicornView):
         if 'user.profile' in name:
             if not self.request.user.has_perm('projects.change_profile'):
                 raise Http404
+        elif 'datastream.' in name:
+            #TODO - update to datastream perms check
+            if not self.request.user.has_perm('projects.change_datasource', self.datasource):
+                raise Http404
         elif 'datasource.' in name:
             if not self.request.user.has_perm('projects.change_datasource', self.datasource):
                 raise Http404
@@ -360,9 +364,12 @@ class AppView(UnicornView):
         #logger.debug('AppView > updated start')
         if 'user.profile' in name:
             self.request.user.profile.save()
+        elif 'datastream.' in name:
+            self.datasource.datastream.save()
+            print("saved datastream!")
         elif 'datasource.' in name:
             self.datasource.save()
-            print(self.datasource.name)
+            #print(self.datasource.name)
         #logger.debug('AppView > updated end')
         
 #ACTIONS
