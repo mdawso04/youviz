@@ -7,6 +7,7 @@ class DatasourceSitemap(Sitemap):
     
     #changefreq = "never"
     priority = 0.5
+    protocol = 'https'
     list_urls = ['list',]
     
     def items(self):
