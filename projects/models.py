@@ -725,7 +725,7 @@ class Profile(BaseModel):
     default_profile_properties = {'profile_color': '#93e3fd',}
     
     owner = models.OneToOneField(User,on_delete=models.CASCADE, primary_key=True,)
-        
+    
     @classmethod
     def extra_kwargs(cls, *args, **kwargs):
         k = super(Profile, cls).extra_kwargs(*args, **kwargs)
@@ -862,6 +862,16 @@ class Datasource(BaseModel):
     class Meta:
         default_related_name = 'datasources'
         permissions = [('view_published_datasource', 'Can view published datasource')]
+        
+    @cached_property
+    def seo(self):
+        return {
+            'title': self.name,
+            'description': "{} viz/s based on the datasource '{}'. Last updated on {}".format(self.vizs.count(), self.datastream.name, self.last_updated.strftime("%d %b %Y")), 
+            #'keywords': None, 
+            'author': self.owner.username, 
+            #'h1': self.name,
+        }
         
     use_object_permissions = True
        
