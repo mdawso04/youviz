@@ -376,6 +376,18 @@ def DATA_COL_FORMAT_TYPE(df, columns=None, typ='str'):
 pp.data.DATA_COL_FORMAT_TYPE = DATA_COL_FORMAT_TYPE
 
 
+@registerService(
+    columns=OPTION_FIELD_SINGLE_COL_STRING,
+    before=FIELD_STRING,
+    after=FIELD_STRING,
+)
+def DATA_COL_FORMAT_REPLACE_TEXT(df, columns=None, before='', after=''):
+    '''Round numerical column values to specified decimal'''
+    eval_string = 'cell.replace("{}","{}")'.format(str(before), str(after))
+    df = pp.data._DATA_COL_FORMAT_CUSTOM(df=df, columns=columns, eval_string=eval_string)
+    return df
+
+
 '''
 End patch
 '''
@@ -765,8 +777,34 @@ class Datastream(BaseModel):
     managers = models.ManyToManyField(User, blank=True, related_name='datastream_managers')
     collaborators = models.ManyToManyField(User, blank=True, related_name='datastream_collaborators')
     
+    use_object_permissions = True
+    
     class Meta:
         default_related_name = 'datastreams'
+        permissions = [('view_published_datastream', 'Can view published datastream')]
+        
+    @cached_property
+    def perms_req_by_owners(self):
+         return [p.codename for p in Group.objects.get(name='datastream_owners').permissions.all()] 
+    
+    @cached_property
+    def perms_req_by_managers(self):
+         return [p.codename for p in Group.objects.get(name='datastream_managers').permissions.all()] 
+        
+    @cached_property
+    def perms_req_by_collaborators(self):
+         return [p.codename for p in Group.objects.get(name='datastream_collaborators').permissions.all()] 
+        
+    @cached_property
+    def perms_req_by_anonymous(self):
+        return [p.codename for p in Group.objects.get(name='datastream_anonymous').permissions.all()] 
+    
+    cached_properties = [
+        'perms_req_by_owners',
+        'perms_req_by_managers',
+        'perms_req_by_collaborators',
+        'perms_req_by_anonymous',
+    ]
         
     def save(self, *args, **kwargs):
         a = pp.App()
@@ -1098,6 +1136,7 @@ def managers_changed(sender, **kwargs):
         baseobject_perms_helper(get_users_with_perms(bobj), bobj)
 
 m2m_changed.connect(managers_changed, sender=Datasource.managers.through)
+m2m_changed.connect(managers_changed, sender=Datastream.managers.through)
 
 def collaborators_changed(sender, **kwargs):
     bobj, pk_set, action = kwargs['instance'], kwargs['pk_set'], kwargs['action']
@@ -1105,6 +1144,7 @@ def collaborators_changed(sender, **kwargs):
         baseobject_perms_helper(get_users_with_perms(bobj), bobj)
 
 m2m_changed.connect(collaborators_changed, sender=Datasource.collaborators.through)
+m2m_changed.connect(collaborators_changed, sender=Datastream.collaborators.through)
 
 def group_permissions_changed(sender, **kwargs):
     group, action = kwargs['instance'], kwargs['action']
@@ -1138,13 +1178,6 @@ def group_permissions_changed(sender, **kwargs):
 
 m2m_changed.connect(group_permissions_changed, sender=Group.permissions.through)
 
-
-
-
-
-
-
-
     
 class Viz(BaseModel):
     #relations
@@ -1157,6 +1190,10 @@ class Viz(BaseModel):
     json = models.JSONField(blank=True, null=True)
     
     layout_options: dict = {
+        #'showlegend': [
+        #    True,
+        #    False,
+        #],
         'xaxis_categoryorder': [
             'trace',
             'category ascending',

@@ -353,7 +353,7 @@ class AppView(UnicornView):
                 raise Http404
         elif 'datastream.' in name:
             #TODO - update to datastream perms check
-            if not self.request.user.has_perm('projects.change_datasource', self.datasource):
+            if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
                 raise Http404
         elif 'datasource.' in name:
             if not self.request.user.has_perm('projects.change_datasource', self.datasource):

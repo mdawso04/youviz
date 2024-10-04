@@ -16,6 +16,9 @@ def initialise(sender, **kwargs):
     datasource_owners, _ = Group.objects.get_or_create(name='datasource_owners')
     datasource_managers, _ = Group.objects.get_or_create(name='datasource_managers')
     datasource_collaborators, _ = Group.objects.get_or_create(name='datasource_collaborators')
+    datastream_owners, _ = Group.objects.get_or_create(name='datastream_owners')
+    datastream_managers, _ = Group.objects.get_or_create(name='datastream_managers')
+    datastream_collaborators, _ = Group.objects.get_or_create(name='datastream_collaborators')
     comment_owners, _ = Group.objects.get_or_create(name='comment_owners')
     
     #perms
@@ -23,9 +26,17 @@ def initialise(sender, **kwargs):
     view_datasource_perm = Permission.objects.get(codename='view_datasource')
     change_datasource_perm = Permission.objects.get(codename='change_datasource')
     delete_datasource_perm = Permission.objects.get(codename='delete_datasource')
+    
+    view_published_datastream_perm = Permission.objects.get(codename='view_published_datastream')
+    view_datastream_perm = Permission.objects.get(codename='view_datastream')
+    change_datastream_perm = Permission.objects.get(codename='change_datastream')
+    delete_datastream_perm = Permission.objects.get(codename='delete_datastream')
+    
     change_activity_perm = Permission.objects.get(codename='change_activity')
+    
     view_profile_perm = Permission.objects.get(codename='view_profile')
     change_profile_perm = Permission.objects.get(codename='change_profile')
+    
     add_datasource_perm = Permission.objects.get(codename='add_datasource')
     add_datastream_perm = Permission.objects.get(codename='add_datastream')
     
@@ -45,6 +56,7 @@ def initialise(sender, **kwargs):
         change_profile_perm.pk,
         add_datasource_perm.pk,
         add_comment_perm.pk,
+        view_published_datastream_perm.pk,
     )
     site_powerusers.permissions.add(
         add_datastream_perm.pk
@@ -62,6 +74,20 @@ def initialise(sender, **kwargs):
     datasource_collaborators.permissions.add(
         view_datasource_perm.pk,
         change_datasource_perm.pk,
+    )
+    datastream_owners.permissions.add(
+        view_datastream_perm.pk,
+        change_datastream_perm.pk,
+        delete_datastream_perm.pk,
+    )
+    datastream_managers.permissions.add(
+        view_datastream_perm.pk,
+        change_datastream_perm.pk,
+        delete_datastream_perm.pk,
+    )
+    datastream_collaborators.permissions.add(
+        view_datastream_perm.pk,
+        change_datastream_perm.pk,
     )
     comment_owners.permissions.add(
         change_comment_perm.pk,
@@ -195,4 +221,16 @@ from django.contrib.staticfiles.apps import StaticFilesConfig
 
 class ProjectsStaticFilesConfig(StaticFilesConfig):
     ignore_patterns = ['CVS', '.*', '*~', 'projects/src/*',]  # your custom ignore list
+    
+    
+    
+def refresh_datasources():
+    from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings, Cover, Comment
+
+    datastreams_to_refresh = Datastream.list(properties__refresh=True)
+    if datastreams_to_refresh:
+        for d in datastreams_to_refresh:
+            d.refresh()
+    else:
+        print('No ds to refresh!')
     

@@ -112,7 +112,7 @@ CACHES = {
 if DEBUG:
     #http://localhost:8000
     SITE_ID = 3
-    SITE_DOMAIN_NAME = 'http://localhost:8000'
+    SITE_DOMAIN_NAME = 'localhost:8000'
     INSTALLED_APPS += ['debug_toolbar','pympler',]
     MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware',]
     CACHES = {
@@ -124,7 +124,7 @@ if DEBUG:
 else:
     #https://prod
     SITE_ID = 2
-    SITE_DOMAIN_NAME = 'https://youviz.app'
+    SITE_DOMAIN_NAME = 'youviz.app'
     #ALLOWED_HOSTS = ["youviz.app"]
     CSRF_TRUSTED_ORIGINS = ["https://www.youviz.app", "https://youviz.app"]
     #CSRF_ALLOWED_ORIGINS = ["https://youviz.app"]
