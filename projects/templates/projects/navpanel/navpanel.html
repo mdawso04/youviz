@@ -6,7 +6,9 @@
 {% load socialaccount %}
 {% load guardian_tags %}
 {% get_obj_perms request.user for datasource as "datasource_perms" %}
-{% get_obj_perms request.user for datasource.datastream as "datastream_perms" %}
+{% with datastream=datasource.datastream %}
+{% get_obj_perms request.user for datastream as "datastream_perms" %}
+{% endwith %}
 
 <!-- NAVPANEL -->
 <div class="bg-light border-none test-nav" id="navbar" aria-labelledby="TBD">
