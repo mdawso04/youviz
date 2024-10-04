@@ -435,6 +435,7 @@ class AppView(UnicornView):
                 datasource=self.datasource,
                 description=self.add_comment_text,
             )
+            self.datasource.last_updated = datetime.now()
             self.add_comment_text = None
         self.load_table()
         

@@ -11,7 +11,7 @@
             style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{{ item.name }}</h6>
         <p class="text-secondary small" style="">
             {% block stats %}
-            {{ item.last_updated|naturalday|capfirst }}
+            {{ item.created_at|naturalday|capfirst }}
             {% endblock %}
         </p>
     </div>
