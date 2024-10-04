@@ -867,7 +867,12 @@ class Datasource(BaseModel):
     def seo(self):
         return {
             'title': self.name,
-            'description': "{} viz/s based on the datasource '{}'. Last updated on {}".format(self.vizs.count(), self.datastream.name, self.last_updated.strftime("%d %b %Y")), 
+            'description': "{} viz(s) based on the datasource '{}'. Last updated on {}. {}".format(
+                self.vizs.count(), 
+                self.datastream.name, 
+                self.last_updated.strftime("%d %b %Y"),
+                self.vizs.first().description,
+            ), 
             #'keywords': None, 
             'author': self.owner.username, 
             #'h1': self.name,
