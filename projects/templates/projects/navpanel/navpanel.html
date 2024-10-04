@@ -5,10 +5,10 @@
 {% load humanize %}
 {% load socialaccount %}
 {% load guardian_tags %}
+{% if datasource %}
+{% get_obj_perms request.user for datasource.datastream as "datastream_perms" %}
 {% get_obj_perms request.user for datasource as "datasource_perms" %}
-{% with datastream=datasource.datastream %}
-{% get_obj_perms request.user for datastream as "datastream_perms" %}
-{% endwith %}
+{% endif %}
 
 <!-- NAVPANEL -->
 <div class="bg-light border-none test-nav" id="navbar" aria-labelledby="TBD">
