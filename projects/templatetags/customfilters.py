@@ -2,7 +2,7 @@ from django import template
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 
-from projects.models import Activity, Profile
+from projects.models import Activity, Profile, ItemView
 
 register = template.Library()
 
@@ -325,3 +325,11 @@ def saved_value(cache_dict, option_name):
         if option_name in cache_dict:
             return cache_dict[option_name]
     return ''
+
+@register.simple_tag
+def datasource_views_for_user(user):
+    try:
+        count = ItemView.objects.filter(datasource__owner=user).count()
+    except:
+        count = ''
+    return count

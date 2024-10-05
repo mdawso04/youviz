@@ -111,11 +111,18 @@
          id="offcanvasUserContentList">
         <h6 class="text-muted">Activity</h6>
         
+        <div class="card-body mb-1">
+            <div class="d-flex align-items-start">
+                <div>
+                    <p class="small">Your vizs have a total of combined {% datasource_views_for_user request.user %} views</p>
+                </div>
+            </div>
+        </div>
+        
         <div class="card-body pt-1 mb-1">
             <a class="btn btn-primary position-relative" href="{% url 'user' request.user.profile.slug %}" role="button">
                 My Vizs <span class="badge bg-danger">{{request.user.datasources.count }}</span>
             </a>
-            
         </div>
     </div>
     {% endif %}
