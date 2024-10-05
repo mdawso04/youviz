@@ -111,18 +111,34 @@
          id="offcanvasUserContentList">
         <h6 class="text-muted">Activity</h6>
         
-        <div class="card-body mb-1">
-            <div class="d-flex align-items-start">
-                <div>
-                    <p class="small">Your vizs have a total of combined {% datasource_views_for_user request.user %} views</p>
-                </div>
-            </div>
-        </div>
-        
         <div class="card-body pt-1 mb-1">
             <a class="btn btn-primary position-relative" href="{% url 'user' request.user.profile.slug %}" role="button">
                 My Vizs <span class="badge bg-danger">{{request.user.datasources.count }}</span>
             </a>
+            
+            <a class="btn btn-secondary position-relative" data-bs-toggle="modal" data-bs-target="#viewsModal" role="button">
+                My Views <span class="badge bg-danger">{% datasource_views_for_user request.user %}</span>
+            </a>
+            
+            <!-- Views MODAL -->
+            <div id="viewsModal" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
+                 tabindex="-1" aria-hidden="true" aria-labelledby="viewsModalLabel" data-nosnippet>
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">My Views</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Your vizs have a combined total of {% datasource_views_for_user request.user %} unique views.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Done</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
     {% endif %}
@@ -137,7 +153,7 @@
         
         <!-- ABOUT MODAL -->
         <div id="aboutModal" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
-             tabindex="-1" aria-hidden="true" aria-labelledby="aboutModalLabel">
+             tabindex="-1" aria-hidden="true" aria-labelledby="aboutModalLabel" data-nosnippet>
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -157,7 +173,7 @@
         
         <!-- Terms of Use MODAL -->
         <div id="termsModal" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
-             tabindex="-1" aria-hidden="true" aria-labelledby="termsModalLabel">
+             tabindex="-1" aria-hidden="true" aria-labelledby="termsModalLabel" data-nosnippet>
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
