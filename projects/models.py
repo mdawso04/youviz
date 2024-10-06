@@ -730,9 +730,10 @@ class Profile(BaseModel):
     def seo(self):
         return {
             'title': '{}'.format(self.name),
-            'description': "List of all {} public viz(s) shared by '{}'.".format(
-                self.owner.vizs.count(), 
+            'description': "List of {} public viz(s) shared by '{}'. Most recent viz is '{}'.".format(
+                self.owner.datasources.filter(is_published=True).count(), 
                 self.name,
+                self.owner.datasources.filter(is_published=True).last().name,
             ), 
             #'keywords': None, 
             'author': self.name, 
@@ -1613,6 +1614,8 @@ class ItemView(models.Model):
     session = models.CharField(null=True, max_length=40)
     datasource = models.ForeignKey(Datasource, null=True, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, null=True, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
     
     class Meta:
         default_related_name = 'itemviews'

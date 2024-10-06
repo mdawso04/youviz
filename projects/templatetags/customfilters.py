@@ -2,6 +2,8 @@ from django import template
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 
+from datetime import date, timedelta
+
 from projects.models import Activity, Profile, ItemView
 
 register = template.Library()
@@ -327,9 +329,17 @@ def saved_value(cache_dict, option_name):
     return ''
 
 @register.simple_tag
-def datasource_views_for_user(user):
+def datasource_views_for_user(user, timeframe='all'):
+    delta = {
+        'day': 1,
+        'week': 7,
+        'month': 30,
+        'year': 365,
+        'all': 9999,
+    }
+    date_filter = date.today() - timedelta(days=delta.get(timeframe, 9999))    
     try:
-        count = ItemView.objects.filter(datasource__owner=user).count()
+        count = ItemView.objects.filter(datasource__owner=user, created_at__gte=date_filter).count()
     except:
         count = ''
     return count

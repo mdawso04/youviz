@@ -130,7 +130,11 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            Your vizs have a combined total of {% datasource_views_for_user request.user %} unique views.
+                            <p>Your vizs have combined total views: </p>
+                            <p>Past 24hrs: {% datasource_views_for_user request.user 'day' %}</p>
+                            <p>Past week: {% datasource_views_for_user request.user 'week' %}</p>
+                            <p>Past month: {% datasource_views_for_user request.user 'month' %}</p>
+                            <p>All time: {% datasource_views_for_user request.user 'all' %}</p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Done</button>
