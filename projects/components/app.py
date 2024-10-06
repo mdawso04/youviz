@@ -126,6 +126,7 @@ class AppView(UnicornView):
                     unpublished_ds = get_objects_for_user(current_user, ('view_datasource'), Datasource.list(query=query, owner=owner_pk, is_published=False))
                     self.datasources = list((published_ds | unpublished_ds).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1])
                     self.ads = Notification.objects.filter(position=Notification.USER_AD).order_by('?')[:4]
+                    self.meta_object = self.siteuser.profile
                 
                 elif mode == 'list':
                     if search:

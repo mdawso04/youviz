@@ -726,6 +726,19 @@ class Profile(BaseModel):
     
     owner = models.OneToOneField(User,on_delete=models.CASCADE, primary_key=True,)
     
+    @cached_property
+    def seo(self):
+        return {
+            'title': '{}'.format(self.name),
+            'description': "List of all {} public viz(s) shared by '{}'.".format(
+                self.owner.vizs.count(), 
+                self.name,
+            ), 
+            #'keywords': None, 
+            'author': self.name, 
+            #'h1': self.name,
+        }
+    
     @classmethod
     def extra_kwargs(cls, *args, **kwargs):
         k = super(Profile, cls).extra_kwargs(*args, **kwargs)
