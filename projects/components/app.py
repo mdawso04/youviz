@@ -212,8 +212,7 @@ class AppView(UnicornView):
                     else:
                         ip = request.META.get('REMOTE_ADDR')
                     return ip
-                ItemView.objects.get_or_create(IPAddress=get_client_ip(self.request), datasource=self.datasource)
-                
+                ItemView.objects.get_or_create(IPAddress=get_client_ip(self.request), datasource=self.datasource, session=self.request.session._session_key)
                 
                 #if hasattr(self.datasource, 'reports'):
                 #    self.report = self.datasource.reports.last()

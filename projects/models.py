@@ -1597,6 +1597,7 @@ class Cover(BaseModel):
     
 class ItemView(models.Model):
     IPAddress = models.GenericIPAddressField(default='45.243.82.169')
+    session = models.CharField(null=True, max_length=40)
     datasource = models.ForeignKey(Datasource, null=True, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, null=True, on_delete=models.CASCADE)
     
