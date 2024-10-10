@@ -1,0 +1,32 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+<a class="small link-secondary pe-1" data-bs-toggle="modal" data-bs-target="#{{ label|slugify }}-modal">
+    {{ label }}
+</a>
+
+<!-- {{ label }} modal -->
+<div id="{{ label|slugify }}-modal" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
+     tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">{{ label }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ message }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" unicorn:click.discard="cancel" 
+                        data-bs-dismiss="modal">Done</button>
+            </div>
+        </div>
+    </div>
+</div>

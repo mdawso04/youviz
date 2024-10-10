@@ -1,0 +1,26 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+{% if model and label %}
+<div class="col">
+    <div class="input-group input-group-sm">
+        <span class="input-group-text" id="{{ label|slugify }}-label">{{ label }}</span>
+        <textarea rows="4" class="form-control"
+            id="{{ label|slugify }}" 
+            unicorn:key="{{ label|slugify }}"
+            unicorn:model.lazy="{{ model }}"
+            {% if partial %}unicorn:partial="{{ partial }}"{% else %}unicorn:partial="{{ label|slugify }}-label"{% endif %}
+            {% if partialid %}unicorn:partial.id="{{ partialid }}"{% endif %}
+            {% if partialkey %}unicorn:partial.key="{{ partialkey }}"{% endif %}
+            aria-label="{{ label|slugify }}">{{ modelvalue }}</textarea>
+    </div>
+</div>
+{% else %}
+Error generating input
+{% endif %}

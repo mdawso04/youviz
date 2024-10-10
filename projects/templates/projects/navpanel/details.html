@@ -54,7 +54,8 @@
     <div class="comments mb-2 p-3 position-relative rounded-3 bg-white" 
          id="nav-comments-summary"
          style="cursor: pointer;" 
-         onclick="Handler.showTab('#navpane-pills-comments-tab');">
+         onclick="Handler.showTab('#navpane-pills-comments-tab');"
+         data-nosnippet>
         <h3 class="small text-muted">Comments<span class="badge rounded-pill bg-light text-dark">{{ datasource.comments.all|length }}</span></h3> 
         
         <div class="comments mb-1 p-2 rounded-3 bg-light small"
@@ -65,13 +66,13 @@
     
     <!-- ad1 -->
     {% if settings.ads.view_1 and ads.0.html %}
-        <div class="notification py-2 rounded-3 bg-light" style="">
+        <div class="notification py-2 rounded-3 bg-light" style="" data-nosnippet>
             {{ ads.0.html|safe }}
         </div>
     {% endif %}
     
     <!-- ds -->
-    <div class="comments mb-2 p-3 position-relative rounded-3 bg-white" id="datasource-summary-label">
+    <div class="comments mb-2 p-3 position-relative rounded-3 bg-white" id="datasource-summary-label" data-nosnippet>
         <h3 class="small text-muted">Datasource</h3>
         <p class="h6" style="">{{ datasource.datastream.name }}</p>
         {#<p class="text-muted small lh-sm">{{ datasource.datastream.description }}</p>#}
@@ -81,7 +82,7 @@
     
     <!-- ad2 -->
     {% if settings.ads.view_2 and ads.1.html %}
-        <div class="notification py-2 rounded-3 bg-light" style="">
+        <div class="notification py-2 rounded-3 bg-light" style="" data-nosnippet>
             {{ ads.1.html|safe }}
         </div>
     {% endif %}
@@ -108,7 +109,7 @@
     
     <!-- ad3 -->
     {% if settings.ads.view_3 and ads.2.html %}
-        <div class="notification py-2 rounded-3 bg-light" style="">
+        <div class="notification py-2 rounded-3 bg-light" style="" data-nosnippet>
             {{ ads.2.html|safe }}
         </div>
     {% endif %}
@@ -116,7 +117,7 @@
     <!-- related -->
     <div class="d-flex justify-content-center"><h3 class="h6 text-muted mt-2">Related Vizs</h3></div>
     {% for page in related_items_paginated %}
-    <div class="row row-cols-1 g-2 pb-2" id="page-{{ forloop.counter }}" unicorn:key="page-{{ forloop.counter }}">
+    <div class="row row-cols-1 g-2 pb-2" id="page-{{ forloop.counter }}" unicorn:key="page-{{ forloop.counter }}" data-nosnippet>
         {% if forloop.counter <= related_page_no  %}
         {% for i in page %}
             <div class="col">

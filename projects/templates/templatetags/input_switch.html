@@ -1,0 +1,26 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+{% if model and label %}
+<div class="col">
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" 
+               id="{{ label|slugify }}" 
+               unicorn:key="{{ label|slugify }}"
+               unicorn:model="{{ model }}"
+               {% if partial %}unicorn:partial="{{ partial }}"{% else %}unicorn:partial="{{ label|slugify }}-label"{% endif %}
+               {% if partialid %}unicorn:partial.id="{{ partialid }}"{% endif %}
+               {% if partialkey %}unicorn:partial.key="{{ partialkey }}"{% endif %}
+               {% if modelvalue %}checked{% endif %}>
+        <label class="form-check-label" for="{{ label|slugify }}" id="{{ label|slugify }}-label">{{ label }}</label>
+    </div>
+</div>
+{% else %}
+Error generating input
+{% endif %}

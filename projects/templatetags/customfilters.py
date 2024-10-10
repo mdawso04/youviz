@@ -343,3 +343,42 @@ def datasource_views_for_user(user, timeframe='all'):
     except:
         count = ''
     return count
+
+@register.inclusion_tag("templatetags/datasource_form.html", takes_context=True)
+def datasource_form(context):
+    return context
+
+@register.inclusion_tag("templatetags/input_switch.html", takes_context=True)
+def input_switch(context, **kwargs):
+    '''
+    model, modelvalue, label, partial, partialid, partialkey
+    '''
+    return kwargs
+
+@register.inclusion_tag("templatetags/input_text.html", takes_context=True)
+def input_text(context, **kwargs):
+    '''
+    model, modelvalue, label, partial, partialid, partialkey
+    '''
+    return kwargs
+
+@register.inclusion_tag("templatetags/input_textarea.html", takes_context=True)
+def input_textarea(context, **kwargs):
+    '''
+    model, modelvalue, label, partial, partialid, partialkey
+    '''
+    return kwargs
+
+@register.inclusion_tag("templatetags/modal_ok_cancel.html", takes_context=True)
+def modal_ok_cancel(context, **kwargs):
+    '''
+    model, modelvalue, label, partial, partialid, partialkey
+    '''
+    return kwargs
+
+@register.inclusion_tag("templatetags/modal_link.html", takes_context=True)
+def modal_link(context, **kwargs):
+    '''
+    model, modelvalue, label, partial, partialid, partialkey
+    '''
+    return kwargs
