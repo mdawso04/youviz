@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 from datetime import date, timedelta
 
 from projects.models import Activity, Profile, ItemView
+from django.urls import reverse
 
 register = template.Library()
 
@@ -396,3 +397,60 @@ def input_select(context, **kwargs):
     model, modelvalue, label, partial, partialid, partialkey, options
     '''
     return kwargs
+
+@register.inclusion_tag("templatetags/bnav_button.html", takes_context=True)
+def bnav_button(context, **kwargs):
+    '''
+    model, modelvalue, label, partial, partialid, partialkey, options
+    '''
+    mode = context['context']['mode']
+    config = {
+        'home': {
+            'label': 'Home',
+            'icon': 'bi-house',
+            'on': mode in ('list',),
+            'disabled': mode in ('list',),
+            'onclick': {
+                'view': "window.location.href='{}';".format(reverse('list')),
+                'new': "window.location.href='{}';".format(reverse('list')),
+                'user': "window.location.href='{}';".format(reverse('list')),
+            }.get(mode),
+        },
+        'view': {
+            'label': 'View',
+            'icon': 'bi-book',
+            'on': mode in ('view',),
+            'disabled': mode in ('list', 'view', 'new', 'user',),
+            'onclick': {}.get(mode),
+        },
+        'new': {
+            'label': {
+                'list': 'New',
+                'user': 'New',
+                'view': 'New',
+                'new': 'Cancel',
+            }.get(mode),
+            'icon': {
+                'list': 'bi-plus-circle',
+                'user': 'bi-plus-circle',
+                'view': 'bi-plus-circle',
+                'new': 'bi-x-circle',
+            }.get(mode),
+            'on': False,
+            'disabled': False,
+            'onclick': {
+                'list': "window.location.href='{}?o=datamenu';".format(reverse('new')),
+                'user': "window.location.href='{}?o=datamenu';".format(reverse('new')),
+                'view': "window.location.href='{}?o=datamenu';".format(reverse('new')),
+                'new': "history.back();",
+            }.get(mode)
+        },
+        'copy': {
+            'label': 'Copy',
+            'icon': 'bi-copy',
+            'on': False,
+            'disabled': False,
+            'onclick': "Unicorn.call('app', 'copy_datasource', {});".format(getattr(context.get('datasource'), 'pk', None)),
+        },
+    }
+    return config[kwargs['button']] | kwargs

@@ -1,0 +1,22 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+{% if icon and label %}
+<button type="button" 
+        id="{{ label|slugify }}" 
+        class="nav-btn {% if on %}on{% endif %}" 
+        onclick="{{ onclick }}"
+        {% if disabled %} disabled{% endif %}>
+    <i class="{{ icon }}">
+        <span>{{ label }}</span>
+    </i>
+</button>
+{% else %}
+Error generating input
+{% endif %}

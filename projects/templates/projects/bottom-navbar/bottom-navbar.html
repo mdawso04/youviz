@@ -2,7 +2,7 @@
 {% load humanize %} 
 {% load socialaccount %}
 {% load guardian_tags %}
-
+{% load customfilters %}
 
 <!-- BOTTOM NAVBAR -->
 
@@ -36,69 +36,11 @@
 <nav class="bottom-nav" id="bottom-navbar" style="z-index: 1046 !important;">
     <div data-nosnippet class="bottom-nav-inner">
 
-        <!-- HOME BTN -->
-        <button type="button" 
-                class=
-                    {% if context.mode == 'list' %}"nav-btn on"
-                    {% else %}"nav-btn"{% endif %} 
-                onclick=
-                    {% if context.mode == 'list' %}""
-                    {% else %}"window.location.href='{% url 'list' %}';"{% endif %}
-                id="homeButton" 
-                {% if context.mode == 'list' %}disabled{% endif %}>
-            <i class="bi-house">
-                <span>Home</span>
-            </i>
-        </button>
-
-        <!-- VIEW BTN -->
-        <button type="button" 
-                class=
-                    {% if context.mode == 'list' or context.mode == 'user' %}"nav-btn"
-                    {% elif context.mode == 'view' %}"nav-btn on"
-                    {% elif context.mode == 'new' %}"nav-btn"{% endif %} 
-                onclick=
-                    {% if context.mode == 'list' or context.mode == 'user' %}""
-                    {% elif context.mode == 'view' %}""
-                    {% elif context.mode == 'new' %}""{% endif %}
-                id="viewButton" 
-                {% if context.mode == 'list' or context.mode == 'user' %}disabled
-                {% elif context.mode == 'view' %}disabled
-                {% elif context.mode == 'new' %}disabled{% endif %}>
-            <i class="bi-book">
-                <span>View</span>
-            </i>
-        </button>
-
+        {% bnav_button button='home' %}
+        {% bnav_button button='view' %}
         {% if 'projects.add_datasource' in perms %}
-        <!-- NEW BTN -->
-        <button type="button" 
-                class=
-                    {% if context.mode == 'list' or context.mode == 'user' %}"nav-btn"
-                    {% elif context.mode == 'view' %}"nav-btn"
-                    {% elif context.mode == 'new' %}"nav-btn"{% endif %} 
-                onclick=
-                    {% if context.mode == 'list' or context.mode == 'user' or context.mode == 'view' %}"window.location.href='{% url 'new' %}?o=datamenu';"
-                    {#{% elif context.mode == 'view' %}"window.location.href='{% url 'new' %}?o=vizmenu&datasource={{datasource.pk}}';"#}
-                    {% elif context.mode == 'new' %}"history.back()"{% endif %}
-                id="newVizListButton" 
-                {% if context.mode == 'list' or context.mode == 'user' %}
-                {% elif context.mode == 'view' %}
-                {% elif context.mode == 'new' %}{% endif %}>
-            <i class=
-                {% if context.mode == 'list' or context.mode == 'user' %}"bi-plus-circle"
-                {% elif context.mode == 'view' %}"bi-plus-circle"
-                {% elif context.mode == 'new' %}"bi-x-circle"{% endif %}>
-                <span>
-                    {% if context.mode == 'list' or context.mode == 'user' %}New
-                    {% elif context.mode == 'view' %}New
-                    {% elif context.mode == 'new' %}Cancel{% endif %}
-                </span>
-            </i>
-        </button>
-
+        {% bnav_button button='new' %}
         {% else %}
-
         <!-- Allauth button starts here -->
         <form class="d-inline" action="{% provider_login_url 'google' %}" method="post">
             {% csrf_token %}
@@ -107,25 +49,10 @@
             </button>
         </form>
         <!-- Allauth button ends here -->
-
         {% endif %}
         
         {% if context.mode == 'view' and 'projects.add_datasource' in perms %}
-        <!-- COPY BTN -->
-        <button type="button" 
-                class=
-                    "nav-btn"
-                onclick=
-                    "Unicorn.call('app', 'copy_datasource', {{ datasource.pk }});"
-                id="copyVizButton" >
-            <i class=
-                "bi-copy">
-                <span>
-                   Copy
-                </span>
-            </i>
-        </button>
-
+        {% bnav_button button='copy' %}
         {% endif %}
 
         <!-- TO DELETE -->
@@ -153,6 +80,9 @@
                 </button>    
             </div>
         </div>
+        
+        
+        
 
     </div>
 </nav>
