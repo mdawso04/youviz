@@ -1,0 +1,31 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+{% if model and label %}
+<div class="col">
+    <div class="input-group input-group-sm">
+        <span class="input-group-text" id="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-label">{{ label }}</span>
+        <select class="form-select" 
+                id="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}" 
+                unicorn:key="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}"
+                unicorn:model="{{ model }}" 
+                {% if partial %}unicorn:partial="{{ partial }}"{% else %}unicorn:partial="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-label"{% endif %}
+                {% if partialid %}unicorn:partial.id="{{ partialid }}"{% endif %}
+                {% if partialkey %}unicorn:partial.key="{{ partialkey }}"{% endif %}
+                aria-label="{{ label|slugify }}">
+            <option value="Auto" {% if modelvalue == 'None' %} selected{% endif %}>Auto</option>
+            {% for o in options %}
+            <option {% if o == modelvalue %}selected {% endif %}value="{{o}}">{{o|for_ui|title}}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+{% else %}
+Error generating input
+{% endif %}

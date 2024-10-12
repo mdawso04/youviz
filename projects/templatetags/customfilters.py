@@ -362,6 +362,13 @@ def input_text(context, **kwargs):
     '''
     return kwargs
 
+@register.inclusion_tag("templatetags/input_text_custom.html", takes_context=True)
+def input_text_custom(context, **kwargs):
+    '''
+    model, modelvalue, partial, partialid, partialkey
+    '''
+    return kwargs
+
 @register.inclusion_tag("templatetags/input_textarea.html", takes_context=True)
 def input_textarea(context, **kwargs):
     '''
@@ -380,5 +387,12 @@ def modal_ok_cancel(context, **kwargs):
 def modal_link(context, **kwargs):
     '''
     model, modelvalue, label, partial, partialid, partialkey
+    '''
+    return kwargs
+
+@register.inclusion_tag("templatetags/input_select.html", takes_context=True)
+def input_select(context, **kwargs):
+    '''
+    model, modelvalue, label, partial, partialid, partialkey, options
     '''
     return kwargs

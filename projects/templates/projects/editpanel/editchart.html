@@ -20,6 +20,7 @@
 <div class="offcanvas-body test-edit-inner p-3 pt-0" style="overflow-x: hidden;" id="switch" unicorn:key="setting-row-top-{{vid}}">
     
     <div class="row row-cols-1 g-2 pb-3" unicorn:key="setting-row-01-{{vid}}">
+        {% if never %}
         <div class="col">
             <!-- SELECT {{forloop.counter}} -->
             <div class="input-group input-group-sm">
@@ -50,8 +51,12 @@
                 </select>
             </div>
         </div>  
-
+        {% endif %}
+        {% input_textarea model='viz.description' modelvalue=viz.description label='About' partial='floatingTextarea2'|add:vid partialkey='viz-no-update'|add:vid %}
+        {% input_select model='cache.viz.service.saved' modelvalue=cache.viz.service.saved label='Type' partial='outerPlotBox-'|add:vid partialkey='setting-row-01-'|add:vid options=cache.viz.service.available.viz%}
+        
         {% for key, value in cache.viz.options.available.items %}
+        {% if never %}
         <div class="col">
             <div class="input-group input-group-sm">
                 <span class="input-group-text" id="viz-settings-{{forloop.counter0}}">{{key|for_ui|title}}</span>
@@ -69,6 +74,8 @@
                 </select>
             </div>
         </div>
+        {% endif %}
+        {% input_select model='cache.viz.options.saved.'|add:key modelvalue=cache.viz.options.saved.key label=key partial='outerPlotBox-'|add:vid options=value %}
         {% endfor %}
     </div>
 
@@ -106,6 +113,7 @@
     </div>
     {% if custom_required %}
     {% custom_selected cache.viz.layout.available cache.viz.layout.saved key as custom_selected %}
+    {% if never %}
     <div class="input-group input-group-sm pb-2
                 {% if custom_selected %}d-flex{% else %}d-none{% endif %}" 
          id="customLayoutInput{{vid}}{{key}}"
@@ -121,6 +129,8 @@
                 unicorn:partial.key="customLayoutInput{{vid}}{{key}}"
                 aria-label="{{key|title}} Select">
     </div>
+    {% endif %}
+    {% input_text_custom model='cache.viz.layout.saved.'|add:key modelvalue=cache.viz.layout.saved.key display=custom_selected id='customLayoutInput'|add:vid|add:key partial='layoutInput'|add:vid|add:key partialid='outerPlotBox-'|add:vid partialkey='customLayoutInput'|add:vid|add:key %}
     {% endif %}
     {% endfor %}
     

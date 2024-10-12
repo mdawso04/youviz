@@ -7,13 +7,16 @@
 {% load customfilters %}
 {% load guardian_tags %}
 
-{% if model and label %}
+{% if model %}
 <div class="col">
-    <div class="input-group input-group-sm">
-        <span class="input-group-text" id="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-label">{{ label }}</span>
-        <input class="form-control" type="text"
-            id="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}" 
-            unicorn:key="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}"
+    <div class="input-group input-group-sm pb-2 {% if display %}d-flex{% else %}d-none{% endif %}"
+         id="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}"
+         unicorn:key="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}">
+        <span class="input-group-text d-none" id="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-label">{{ label }}</span>
+        <input class="form-control" 
+            type="text"
+            id="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-input" 
+            unicorn:key="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-input"
             unicorn:model.lazy="{{ model }}"
             {% if partial %}unicorn:partial="{{ partial }}"{% else %}unicorn:partial="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-label"{% endif %}
             {% if partialid %}unicorn:partial.id="{{ partialid }}"{% endif %}

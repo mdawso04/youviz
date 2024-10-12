@@ -7,13 +7,13 @@
 {% load customfilters %}
 {% load guardian_tags %}
 
-<button type="button" class="btn btn-secondary" id="{{ label|slugify }}-modal-button" 
-        data-bs-toggle="modal" data-bs-target="#{{ label|slugify }}-modal">
+<button type="button" class="btn btn-secondary" id="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-modal-button" 
+        data-bs-toggle="modal" data-bs-target="#{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-modal">
     {{ label }}
 </button>
 
 <!-- {{ label }} modal -->
-<div id="{{ label|slugify }}-modal" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
+<div id="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-modal" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
      tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
@@ -28,8 +28,8 @@
                 <button type="button" class="btn btn-secondary" 
                         data-bs-dismiss="modal">Cancel</button>
                 <button type="button" 
-                        id="{{ label|slugify }}-modal-cancel-button" 
-                        onclick="Modal.getInstance('#{{ label|slugify }}-modal').hide();{% if ok %}{{ ok }}{% endif %}"
+                        id="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-modal-cancel-button" 
+                        onclick="Modal.getInstance('#{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-modal').hide();{% if ok %}{{ ok }}{% endif %}"
                         class="btn btn-primary">OK</button>
             </div>
         </div>
