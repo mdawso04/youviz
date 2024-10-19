@@ -5,7 +5,7 @@ from project.sitemaps import DatasourceSitemap
 from . import views
 
 urlpatterns = [
-    path('', views.list, name="list"),
+    path('', views.top_list, name="list"),
     path('search/', views.search, name="search"),
     #path('view/<int:pk>/', views.view, name="view_pk"),
     path('user/<slug:slug>/', views.user, name="user"),
@@ -20,6 +20,7 @@ urlpatterns = [
     path('datasource/<int:pk>/<hash_k>/', views.dataframe, name="dataframe"),
     #path('datasource/<int:pk>/<hash_k>/viewmode/', DataframeView.as_view(), {'context': {'mode': 'view'}}, name="ds_viewmode"),
     path('datasource/<int:pk>/<hash_k>/viewmode/', views.dataframe_viewmode, name="ds_viewmode"),
+    path('api/<int:key>/<int:token>/<int:api_id>/', views.api, name="api"),
     #path('report/<int:pk>/<hash_k>/', VizreportView.as_view(), name="vizreport"),
     path("upload/", views.model_form_upload, name="model_form_upload"),
     #path('youviz_js', views.youviz_js, name="youviz_js"),
@@ -29,3 +30,8 @@ urlpatterns = [
     #path('login/', views.login, name = 'login'),
     path("sitemap.xml", cache_page(60 * 15)(sitemap), {"sitemaps": {'viz': DatasourceSitemap}}, name="django.contrib.sitemaps.views.sitemap")
 ]
+
+#sentry debug
+def trigger_error(request):
+    division_by_zero = 1 / 0
+urlpatterns.append(path('sentry-debug/', trigger_error))

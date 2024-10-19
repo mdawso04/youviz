@@ -130,6 +130,18 @@ else:
     #CSRF_ALLOWED_ORIGINS = ["https://youviz.app"]
     #CORS_ORIGINS_WHITELIST = ["https://youviz.app"]
     #SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
+    import sentry_sdk
+    sentry_sdk.init(
+        dsn="https://959b0b0d53d2705c6a09b29b945588b6@o4508148174225408.ingest.us.sentry.io/4508148182548480",
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for tracing.
+        traces_sample_rate=1.0,
+        # Set profiles_sample_rate to 1.0 to profile 100%
+        # of sampled transactions.
+        # We recommend adjusting this value in production.
+        profiles_sample_rate=1.0,
+    )
 
 
 SITE_DISPLAY_NAME = SITE_DOMAIN_NAME

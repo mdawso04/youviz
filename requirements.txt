@@ -14,3 +14,4 @@ openpyxl
 django-htmlmin
 django-guardian
 django-bmemcached
+sentry-sdk[django]
