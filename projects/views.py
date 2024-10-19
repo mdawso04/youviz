@@ -21,7 +21,7 @@ import os
 
 default_template = 'projects/app_top.html'
 
-def list(request, search=False):    
+def top_list(request, search=False):    
     context = {
         'context': {
             'mode': 'list',
@@ -57,6 +57,38 @@ def view(request, slug):
         }
     }
     return render(request, default_template, context)
+
+
+
+
+import csv
+from django.http import StreamingHttpResponse
+
+class Echo:
+    """An object that implements just the write method of the file-like
+    interface.
+    """
+
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
+
+def api(request, key, token, api_id):
+    """A view that streams a large CSV file."""
+    # Generate a sequence of rows. The range is based on the maximum number of
+    # rows that can be handled by a single sheet in most spreadsheet
+    # applications.
+    vizs = Viz.list()
+    header_row = (['datasource_slug', 'datasource_name'],)
+    data_rows = ([v.datasource.slug, v.datasource.name] for v in vizs)
+    rows = tuple(list(header_row) + list(data_rows))
+    pseudo_buffer = Echo()
+    writer = csv.writer(pseudo_buffer)
+    return StreamingHttpResponse(
+        (writer.writerow(row) for row in rows),
+        content_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="somefilename.csv"'},
+    )
     
 def new(request):
     '''
