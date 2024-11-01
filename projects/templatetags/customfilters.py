@@ -819,7 +819,8 @@ def list(context, **kwargs):
 def user_preferences(context, **kwargs):
     
     user_preferences = context['settings'].get('available_user_preferences')
-    for i in user_preferences:
-        i['current_value'] = context['settings'].get(i['name'])
-    context['user_preferences'] = user_preferences
+    if user_preferences:
+        for i in user_preferences:
+            i['current_value'] = context['settings'].get(i['name'])
+        context['user_preferences'] = user_preferences
     return context
