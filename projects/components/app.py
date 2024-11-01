@@ -6,6 +6,8 @@ from projects.middleware import redirect as force_redirect
 from guardian.shortcuts import get_perms, get_user_perms, get_users_with_perms, get_objects_for_user, get_perms_for_model
 from django.http import Http404
 from guardian.core import ObjectPermissionChecker
+from guardian.backends import ObjectPermissionBackend
+from guardian.shortcuts import get_perms
 
 from django.core.files.base import ContentFile
 from django.shortcuts import render, redirect
@@ -25,6 +27,8 @@ import os
 import copy
 from io import BufferedIOBase
 from datetime import datetime
+
+
 
 #non-standard libraries
 #from memory_profile import profile
@@ -60,9 +64,13 @@ class AppView(UnicornView):
     
     add_comment_text: str = None
     
+    app_perms: list = None
+    #datasource_perms: list = None
+    #datastream_perms: list = None
+    
     class Meta:
         javascript_exclude = ('datasources', 'datasource', 'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
-                              'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'related_datasources', 'related_items_paginated') 
+                              'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'related_datasources', 'related_items_paginated', 'app_perms',) 
     
     #def __init__(self, *args, **kwargs):
     #    super().__init__(**kwargs)  # calling super is required
@@ -88,18 +96,28 @@ class AppView(UnicornView):
             if 'context' in self.component_kwargs:
                 self.context = self.component_kwargs['context']
                 
-            self.settings = Settings.all()
-            
             mode = self.context['mode']
             query = self.context['query'] if 'query' in self.context else None
             page = self.context['page'] if 'page' in self.context else None
             search = self.context['search'] if 'search' in self.context else None
             
             current_user = self.request.user
+            self.app_perms = [p.split('.', 1)[1] for p in list(current_user.get_all_permissions())]
+            
+            current_user_custom_settings = None
+            if hasattr(self.request.user, 'profile'):
+                current_user_custom_settings = self.request.user.profile.properties
+                #print(current_user_custom_settings)
+            if current_user_custom_settings:
+                self.settings = Settings.all() | current_user_custom_settings
+            else:
+                self.settings = Settings.all()
+            #print(self.settings)
             
             is_get = True if self.request.method == 'GET' else False
             
             #checker = ObjectPermissionChecker(current_user)
+            
             
             '''
             if hasattr(self.request, '_body'):
@@ -112,7 +130,7 @@ class AppView(UnicornView):
                 #logger.debug('PK FROM KWARGS: ' + str(pk))
             
             '''
-            if mode in ('list', 'user'):
+            if mode in ('list', 'user'): # use app perms
                 
                 if self.page_no == 1:
                     self.list_items_paginated, self.displayed_item_ids = [], []
@@ -172,10 +190,13 @@ class AppView(UnicornView):
                 
                 #pad out remainder of list
                 self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
+                
+                #if self.settings.get('test_pref'):
+                #    self.call('handlerAlias', 'toggleEdit')
                                     
                 return #do nothing
             
-            elif mode == 'view':
+            elif mode == 'view': # use obj perms
                 
                 if is_get:
                     self.related_datasources = None
@@ -188,15 +209,26 @@ class AppView(UnicornView):
                     ds = Datasource.item(pk=self.context['pk'])
                 elif self.context['slug']:
                     ds = Datasource.item(slug=self.context['slug'])
-                    
+                
+                self.app_perms.extend(get_perms(current_user, ds))
+                self.app_perms.extend(get_perms(current_user, ds.datastream))
+                
                 #obj perms
+                '''
                 if ds.is_published:
                     if not any({current_user.has_perm('projects.view_published_datasource', ds), current_user.has_perm('projects.view_datasource', ds)}):
                         redirect('/')
                 else:
                     if not current_user.has_perm('projects.view_datasource', ds):
                         redirect('/')
-
+                '''
+                if ds.is_published:
+                    if not any({('view_published_datasource' in self.app_perms), ('view_datasource' in self.app_perms)}):
+                        redirect('/')
+                else:
+                    if not 'view_datasource' in self.app_perms:
+                        redirect('/')
+                
                 self.datasource = ds
                 
                 self.meta_object = self.datasource
@@ -220,10 +252,16 @@ class AppView(UnicornView):
                 #if not self.report:
                 #    self.addReport()
             
-            elif mode == 'new':  
+            elif mode == 'new':  # use app perms
                 if page in ('new.datamenu', 'new.datasource'):
+                    '''
                     if not current_user.has_perm('projects.add_datasource'):
                         redirect('/')
+                    '''
+                    if not 'add_datasource' in self.app_perms:
+                        redirect('/')
+                    
+                    
                     
                     if page == 'new.datamenu':
                         
@@ -316,7 +354,7 @@ class AppView(UnicornView):
                         }
                 
                 elif page == 'new.datastream':
-                    if not current_user.has_perm('projects.add_datastream'):
+                    if not 'add_datastream' in self.app_perms:
                         redirect('/')
                     kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('url',)}
                     if len(kwargs) == 1:
@@ -363,14 +401,22 @@ class AppView(UnicornView):
     def updated(self, name, value):
         #logger.debug('AppView > updated start')
         if 'user.profile' in name:
+            if 'profile.properties' in name:
+                if value == 'true':
+                    value = True
+                elif value == 'false':
+                    value = False
+                n = name.split('properties.')[-1]
+                self.request.user.profile.properties[n] = value
             self.request.user.profile.save()
         elif 'datastream.' in name:
             self.datasource.datastream.save()
-            print("saved datastream!")
+            #print("saved datastream!")
         elif 'datasource.' in name:
             self.datasource.save()
             #print(self.datasource.name)
         #logger.debug('AppView > updated end')
+        self.load_table()
         
 #ACTIONS
 
@@ -459,7 +505,12 @@ class AppView(UnicornView):
         self.load_table()
     
     def toggle_activity(self, ds):
+        '''
         if not self.request.user.has_perm('projects.change_activity'):
+            return redirect('/')
+        '''
+        
+        if not 'change_activity' in self.app_perms:
             return redirect('/')
         
         p=None
@@ -567,6 +618,19 @@ class AppView(UnicornView):
             if self.related_page_no < len(self.related_items_paginated):
                 self.related_page_no += 1
                 self.load_table()
+                
+    def set_user_properties(self, item):
+        if hasattr(self.request.user, 'profile'):
+            import ast
+            item = ast.literal_eval(item)
+            print(item)
+            for k, v in item.items():
+                print(k)
+                print(v)
+                self.request.user.profile.properties[k] = v
+                print(self.request.user.profile.properties)
+            self.request.user.profile.save()    
+            #self.load_table()
     
     '''
     def addReport(self, name='NewReport'):

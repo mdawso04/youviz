@@ -1,0 +1,26 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+{% if not never %}
+<!-- ads -->
+{% if settings.ads.list_1 and ads %}
+<div class="bg-white border-none px-2 px-md-3 py-2 py-md-3 noscroll" style="overflow-x: auto;">
+    <div class="row row-cols-1 g-2 pb-2">
+        {% for ad in ads %}
+            <div class="col">
+                {{ ad.html|safe }}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+Error generating input
+{% endif %}

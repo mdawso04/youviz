@@ -18,8 +18,16 @@
         </div>
     </div>
     
+    <!-- EDITPANEL - MASTER -->
+    
+    
     {% if "change_datasource" in datasource_perms %}
-        {% include '../projects/editpanel/editpanel.html' %}
+    <div class="bg-light border-none test-edit" id="editpanel" aria-labelledby="TBD">
+        <div class="position-relative">
+            {#{% include '../projects/editpanel/editpanel.html' %}#}
+            {% tabpane name='editpanel' %}
+        </div>
+    </div>
     {% endif %}
     
     <div class="position-relative pt-1 mx-2 viz-text-area text-secondary ts-6"

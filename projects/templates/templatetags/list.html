@@ -1,15 +1,23 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
 {% load humanize %}
+{% load socialaccount %}
 {% load customfilters %}
+{% load guardian_tags %}
+
+{% if not never %}
 
 <!-- CONTENT - LIST -->
-<div class="container-fluid px-1 h-100 bg-light overflow-auto content-container" style="transition: 0.2s; z-index: 0;" id="page-container">
+<div class="container-fluid px-1 h-100 bg-light overflow-auto content-container" style="transition: 0.2s; z-index: 0; " id="page-container">
     <script>
         document.querySelector(':root').style.setProperty('--top-nav', document.getElementById("top-nav").offsetHeight + 'px');
     </script>
     
     <div class="row h-100 g-0 g-lg-1">
         
-        <div class="col-12 {% if settings.ads.list_1 and ads.0.html %}col-lg-10{% endif %}">  
+        <div class="col-12">  
             {% for page in list_items_paginated %}
             <div class="row row-cols-1 row-cols-md-4 g-2 pb-2" id="page-{{ forloop.counter }}" unicorn:key="page-{{ forloop.counter }}">
                 {% if forloop.counter <= page_no and page  %}
@@ -18,12 +26,8 @@
                             <div class="card rounded-3 p-1 position-relative {% if not i.is_published %}border border-warning border-3 {% endif %}"  
                                  style="{% if i.is_published %}border-color: rgba(0, 0, 0, 0.07);{% endif %} 
                                         opacity: 0; animation: fadeIn 1s ease-in both; animation-delay: {{ forloop.counter|divide:4 }}s;">
-                                {% block item_content %}
-                                    {% include './list_item_content.html' with item=i%}
-                                {% endblock %}
-                                {% block item_info %}
-                                    {% include './list_item_info.html' with item=i %}
-                                {% endblock %}
+                                {% include item_content with item=i%}
+                                {% include item_info with item=i %}
                             </div>
                         </div>
                     {% endfor %}
@@ -42,19 +46,10 @@
             {% endfor %}
             <div class="row row-cols-1 row-cols-md-4 g-2 pb-2"><div class="col" style="min-height:200px;"></div></div>
         </div>
-    
-    
-        {% if settings.ads.list_1 and ads %}
-        <div class="col-2 d-none d-lg-block bg-white border-none px-2 px-md-3 py-2 py-md-3 noscroll" style="overflow-x: auto;">
-            <div class="row row-cols-1 g-2 pb-2">
-                {% for ad in ads %}
-                    <div class="col">
-                        {{ ad.html|safe }}
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
     </div>
 </div>
 
+
+{% else %}
+Error generating input
+{% endif %}

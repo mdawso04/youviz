@@ -4,58 +4,35 @@
 {% load analytical %}
 {% load humanize %}
 {% load socialaccount %}
-<!-- TOP NAVBAR -->
-<!--<nav class="navbar fixed-top bg-white border-0" id="top-nav">-->
-<nav class="top-nav" id="top-nav">
-    <form class="container-fluid pe-1" action="/search/">
-        <div class="row g-2 w-100 row-cols-1">
-            <div class="col input-group">
-                <button class="btn border-0 ps-0 py-0" type="button" onclick="window.location.href='/'">
-                    <img src="/static/projects/img/icons/yvlogo-full.png" alt="Logo" width="85" height="40" class="d-inline-block align-text-top">
-                </button>
-                <span class="input-group-text bg-light text-secondary border-0 py-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
-                {% block search_field %}
-                    {% include './search_field/base_search_field.html' %}
-                {% endblock %}
-                {% if perms.projects.view_profile %}
-                <div class="d-flex align-items-center">
-                    <button id="off-canvas-button" 
-                            type="button" data-bs-toggle="offcanvas" 
-                            data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample"
-                            class="border-0 rounded-circle p-2 ms-2" 
-                            style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
-                                       background-color: {{request.user.profile.properties.profile_color|default:'#0dcaf0'}} !important">
-                        {{ request.user.profile.name | first | upper}}
-                    </button>
-                </div>
-                {% else %}
+<form class="container-fluid pe-1" action="/search/">
+    <div class="row g-2 w-100 row-cols-1">
+        <div class="col input-group">
+            <button class="btn border-0 ps-0 py-0" type="button" onclick="window.location.href='/'">
+                <img src="/static/projects/img/icons/yvlogo-full.png" alt="Logo" width="85" height="40" class="d-inline-block align-text-top">
+            </button>
+            <span class="input-group-text bg-light text-secondary border-0 py-0"><i class="bi bi-search" style="font-size: 1.2rem;"></i></span>
+            {% block search_field %}
+                {% include './base_search_field.html' %}
+            {% endblock %}
+            {% if perms.projects.view_profile %}
+            <div class="d-flex align-items-center">
                 <button id="off-canvas-button" 
                         type="button" data-bs-toggle="offcanvas" 
                         data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample"
-                        class="btn border-0 text-secondary">
-                    <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
+                        class="border-0 rounded-circle p-2 ms-2" 
+                        style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
+                                   background-color: {{request.user.profile.properties.profile_color|default:'#0dcaf0'}} !important">
+                    {{ request.user.profile.name | first | upper}}
                 </button>
-                {% endif %}
             </div>
-            {% block notification_area %}
-                {% if notification %}
-                    {% include './notification_area/notification_area.html' %}
-                {% endif %}
-            {% endblock %}
-            {% block content_header_area %}
-                {% if context.mode == "list" %} 
-                    {% include './content_header_area/content_header_area_list.html' %}
-                {% elif context.mode == "user" %} 
-                    {% include './content_header_area/content_header_area_user.html' %}
-                {% elif context.mode == "new" and page == 'new.datamenu' %} 
-                    {% include './content_header_area/content_header_area_list.html' %}
-                {% endif %}
-            {% endblock %}
+            {% else %}
+            <button id="off-canvas-button" 
+                    type="button" data-bs-toggle="offcanvas" 
+                    data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample"
+                    class="btn border-0 text-secondary">
+                <i class="bi bi-gear-fill" style="font-size: 1.5rem;"></i>
+            </button>
+            {% endif %}
         </div>
-
-    </form>
-</nav>
-
-
-
-
+    </div>
+</form>

@@ -7,6 +7,13 @@ from datetime import date, timedelta
 from projects.models import Activity, Profile, ItemView
 from django.urls import reverse
 
+from operator import attrgetter
+
+from contextlib import suppress
+
+from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings, Cover, Comment
+settings = Settings.all()
+
 register = template.Library()
 
 #filters
@@ -454,3 +461,365 @@ def bnav_button(context, **kwargs):
         },
     }
     return config[kwargs['button']] | kwargs
+
+@register.inclusion_tag("templatetags/tabpane.html", takes_context=True)
+def tabpane(context, **kwargs):
+    
+    context = context.flatten() | kwargs
+    mode = context['context']['mode']
+    
+    config = {
+        'navpanel': {
+            'tabs': [
+                        {
+                            'label': 'details',                    
+                            'required_perm': None,
+                            'template': None,
+                            'detailpane': 
+                                {
+                                    'label': 'viz details',
+                                    'onclick': 'Handler.navigator.toggleNav();',
+                                    'dismiss': None,
+                                    'tabs': [
+                                                {
+                                                    'label': 'info',
+                                                    'background': 'bg-white',
+                                                    'counter': None,
+                                                    'onclick': "Handler.showTab('#tabpane-navpanel-edit-tab');",
+                                                    'onclick_perm': 'change_datasource',
+                                                    'display_perm': None,
+                                                    'display_setting': None,
+                                                    'onclick_icon': 'bi-pen',
+                                                    'name': (lambda: getattr(context['datasource'],'name', None)),
+                                                    'description': None,
+                                                    'preview': None,
+                                                    'html': None,
+                                                    'include': None,
+                                                    'related': None,
+                                                    'author': None,
+                                                    'badge': (lambda: {
+                                                        True: ('Published', True,),
+                                                        False: ('Unpublished', False,),
+                                                    }.get(getattr(context['datasource'], 'is_published', None))),
+                                                },
+                                                {
+                                                    'label': 'comments',
+                                                    'background': 'bg-white',
+                                                    'counter': None,
+                                                    'onclick': "Handler.showTab('#tabpane-navpanel-comments-tab');",
+                                                    'onclick_perm': None,
+                                                    'display_perm': None,
+                                                    'display_setting': None,
+                                                    'onclick_icon': None,
+                                                    'name': None,
+                                                    'description': None,
+                                                    'preview': None,
+                                                    'html': None,
+                                                    'include': None,
+                                                    'related': None,
+                                                    'author': None,
+                                                    'badge': None,
+                                                },
+                                                {
+                                                    'label': None,
+                                                    'background': 'bg-white',
+                                                    'counter': None,
+                                                    'onclick': None,
+                                                    'onclick_perm': None,
+                                                    'display_perm': None,
+                                                    'display_setting': False,
+                                                    'onclick_icon': None,
+                                                    'name': None,
+                                                    'description': None,
+                                                    'preview': None,
+                                                    'html': (lambda: getattr(context['ads'], 'html', None)),
+                                                    'include': None,
+                                                    'related': None,
+                                                    'author': None,
+                                                    'badge': None,
+                                                },
+                                                {
+                                                    'label': 'datasource',
+                                                    'background': 'bg-white',
+                                                    'counter': None,
+                                                    'onclick': "Handler.showTab('#tabpane-navpanel-related-tab');",
+                                                    'onclick_perm': None,
+                                                    'display_perm': None,
+                                                    'display_setting': None,
+                                                    'onclick_icon': None,
+                                                    'name': (lambda: getattr(context['datasource'],'datastream', None)),
+                                                    'description': None,
+                                                    'preview': None,
+                                                    'html': None,
+                                                    'include': None,
+                                                    'related': None,
+                                                    'author': None,
+                                                    'badge': None,
+                                                },
+                                                {
+                                                    'label': None,
+                                                    'background': 'bg-white',
+                                                    'counter': None,
+                                                    'onclick': None,
+                                                    'onclick_perm': None,
+                                                    'display_perm': None,
+                                                    'display_setting': None,
+                                                    'onclick_icon': None,
+                                                    'name': None,
+                                                    'description': None,
+                                                    'preview': None,
+                                                    'html': None,
+                                                    'include': None,
+                                                    'related': None,
+                                                    'author': 'author', #TODO
+                                                    'badge': None,
+                                                },
+                                                {
+                                                    'label': None,
+                                                    'background': 'bg-white',
+                                                    'counter': None,
+                                                    'onclick': None,
+                                                    'onclick_perm': None,
+                                                    'display_perm': None,
+                                                    'display_setting': None,
+                                                    'onclick_icon': None,
+                                                    'name': None,
+                                                    'description': None,
+                                                    'preview': None,
+                                                    'html': None,
+                                                    'include': None,
+                                                    'related': 'related', #TODO
+                                                    'author': None,
+                                                    'badge': None,
+                                                },
+                                            ],
+                                },
+                        },
+                        {
+                            'label': 'edit',
+                            'required_perm': 'change_datasource',
+                            'template': 'projects/navpanel/edit.html',
+                            'detailpane': None,
+                        },
+                        {
+                            'label': 'comments',
+                            'required_perm': None,
+                            'template': 'projects/navpanel/comments.html',
+                            'detailpane': None,
+                        },
+                        {
+                            'label': 'related',
+                            'required_perm': None,
+                            'template': 'projects/navpanel/related.html',
+                            'detailpane': None,
+                        },
+                    ],
+        },
+        'editpanel': {
+            'tabs': [
+                        {
+                            'label': 'details',                    
+                            'required_perm': None,
+                            'template': None,
+                            'detailpane': 
+                                {
+                                    'label': 'page settingsz',
+                                    'onclick': 'Handler.navigator.toggleEdit();',
+                                    'dismiss': None,
+                                    'tabs': [
+                                                {
+                                                    'label': 'chart data',
+                                                    'background': 'bg-white',
+                                                    'counter': None,
+                                                    'onclick': "Handler.showTab('#tabpane-editpanel-editfilters-tab');",
+                                                    'onclick_perm': None,
+                                                    'display_perm': None,
+                                                    'display_setting': None,
+                                                    'onclick_icon': 'bi-pen',
+                                                    'name': None,
+                                                    'description': 'Click to edit the input data for this chart',
+                                                    'preview': None,
+                                                    'html': None,
+                                                    'include': None,
+                                                    'related': None,
+                                                    'author': None,
+                                                    'badge':None,
+                                                },
+                                                {
+                                                    'label': 'chartz',
+                                                    'background': 'bg-white',
+                                                    'counter': None,
+                                                    'onclick': "Handler.showTab('#tabpane-editpanel-editchart-tab');",
+                                                    'onclick_perm': None,
+                                                    'display_perm': None,
+                                                    'display_setting': None,
+                                                    'onclick_icon': 'bi-pen',
+                                                    'name': None,
+                                                    'description': 'Click to edit the settings for this chart',
+                                                    'preview': None,
+                                                    'html': None,
+                                                    'include': None,
+                                                    'related': None,
+                                                    'author': None,
+                                                    'badge':None,
+                                                },
+                                            ],
+                                },
+                        },
+                        {
+                            'label': 'editfilters',
+                            'required_perm': None,
+                            'template': 'projects/editpanel/editfilters.html',
+                            'detailpane': None,
+                        },
+                        {
+                            'label': 'editchart',
+                            'required_perm': None,
+                            'template': 'projects/editpanel/editchart.html',
+                            'detailpane': None,
+                        },
+                        {
+                            'label': 'editdrawings',
+                            'required_perm': None,
+                            'template': 'projects/editpanel/editdrawings.html',
+                            'detailpane': None,
+                        },
+                    ],
+        },
+        'list': {
+            'tabs': [
+                        {
+                            'label': 'list',                    
+                            'required_perm': None,
+                            'template': None,
+                            'detailpane': 
+                                {
+                                    'label': 'List menu',
+                                    'onclick': 'Handler.navigator.toggleNav();',
+                                    'dismiss': None,
+                                    'tabs': [
+                                                {
+                                                    'label': 'something',
+                                                    'background': 'bg-white',
+                                                    'counter': None,
+                                                    'onclick': None,
+                                                    'onclick_perm': None,
+                                                    'display_perm': None,
+                                                    'display_setting': None,
+                                                    'onclick_icon': None,
+                                                    'name': 'Something',
+                                                    'description': None,
+                                                    'preview': None,
+                                                    'html': None,
+                                                    'include': None,
+                                                    'related': None,
+                                                    'author': None,
+                                                    'badge': None,
+                                                },
+                                                {
+                                                    'label': 'more',
+                                                    'background': 'bg-white',
+                                                    'counter': None,
+                                                    'onclick': None,
+                                                    'onclick_perm': None,
+                                                    'display_perm': None,
+                                                    'display_setting': None,
+                                                    'onclick_icon': None,
+                                                    'name': 'More',
+                                                    'description': None,
+                                                    'preview': None,
+                                                    'html': None,
+                                                    'include': None,
+                                                    'related': None,
+                                                    'author': None,
+                                                    'badge': None,
+                                                },
+                                            ],
+                                },
+                        },
+                    ],
+        },
+        'offcanvas': {
+            'tabs': [
+                {
+                    'label': 'details',
+                    'required_perm': None,
+                    'template': 'projects/offcanvas/details.html',
+                    'detailpane': None,
+                },
+                {
+                    'label': 'edit',                    
+                    'required_perm': 'change_profile',
+                    'template': 'projects/offcanvas/edit.html',
+                    'detailpane': None,
+                },
+            ],
+        },
+    }
+    filtered_config = config[context['name']]
+    #guardian_perms = [v for k, v in context.items() if k in ('datasource_perms', 'datastream_perms', 'profile_perms') and v is not None]
+    #guardian_perms = [j for i in guardian_perms for j in i]
+    filtered_config['tabs'] = [t for t in filtered_config['tabs'] if t['required_perm'] is None or t['required_perm'] in context['app_perms']]
+    return context | filtered_config
+
+@register.inclusion_tag("templatetags/detailpane.html", takes_context=True)
+def detailpane(context, **kwargs):
+    
+    return context.flatten() | kwargs
+
+@register.inclusion_tag("templatetags/related.html", takes_context=True)
+def related(context, **kwargs):
+    '''
+    model, modelvalue, label, partial, partialid, partialkey, options
+    '''
+    return context.flatten() | kwargs
+
+@register.inclusion_tag("templatetags/author.html", takes_context=True)
+def author(context, **kwargs):
+    '''
+    model, modelvalue, label, partial, partialid, partialkey, options
+    '''
+    return context.flatten() | kwargs
+
+@register.inclusion_tag("templatetags/button_refreshapp.html", takes_context=True)
+def button_refreshapp(context, **kwargs):
+    '''
+    '''
+    return kwargs
+
+@register.inclusion_tag("templatetags/button_sociallogin.html", takes_context=True)
+def button_sociallogin(context, **kwargs):
+    '''
+    '''
+    return kwargs
+
+@register.inclusion_tag("templatetags/ads.html", takes_context=True)
+def ads(context, **kwargs):
+    '''
+    '''
+    return context
+
+@register.inclusion_tag("templatetags/list.html", takes_context=True)
+def list(context, **kwargs):
+    
+    config = {
+        'list': {
+            'item_content': 'projects/content/list/list_item_content.html',
+            'item_info': 'projects/content/list/list_item_info.html',
+        },
+        'new': {
+            'item_content': 'projects/content/new/list_item_content.html',
+            'item_info': 'projects/content/new/list_item_info.html',
+        },
+    }
+    filtered_config = config[kwargs['name']]
+    return context.flatten() | filtered_config
+
+@register.inclusion_tag("templatetags/user_preferences.html", takes_context=True)
+def user_preferences(context, **kwargs):
+    
+    user_preferences = context['settings']['available_user_preferences']
+    for i in user_preferences:
+        i['current_value'] = context['settings'].get(i['name'])
+    context['user_preferences'] = user_preferences
+    return context

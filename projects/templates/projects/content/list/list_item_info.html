@@ -1,11 +1,24 @@
-{% extends "../base/list_item_info.html" %}
 {% load humanize %}
 {% load customfilters %}
 
-{% block stats %}
-{#{{ item.vizs.count }} vizs・#}{{ item.created_at|naturalday|capfirst }}・{{ item.itemviews.count }} view{{ item.itemviews.count|pluralize }}
-{% endblock %}
-
-{% block stretched_link %}
-<a href="{% url 'view' slug=item.slug %}" class="stretched-link"/>
-{% endblock %}
+<div class="d-flex align-items-start pt-1 pe-5 position-relative" style="min-height: 85px;">
+    <button class="border-0 rounded-circle p-2 ms-1 ms-md-2 me-2 mt-1" 
+            style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
+                   background-color: {{item.owner.profile.properties.profile_color|default:'#0dcaf0'}} !important"
+            data-bs-toggle="tooltip" data-bs-placement="top" title="Vizualized by {{ item.owner.profile.name }}">{{ item.owner.profile.name | first | upper}}</button>
+    <div>
+        <h6 class="text-decoration-none mb-1 fs-6 lh-sm" 
+            style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{{ item.name }}</h6>
+        <p class="text-secondary small" style="">
+            {% block stats %}
+            {{ item.created_at|naturalday|capfirst }}
+            {% endblock %}
+        </p>
+    </div>
+    {% block stretched_link %}
+    <a href="{% url 'view' slug=item.slug %}" class="stretched-link"/>
+    {% endblock %}
+    {% block favourite %}
+    {% include 'projects/common/activity_toggle_top_right.html' with item=item%}
+    {% endblock %}
+</div>

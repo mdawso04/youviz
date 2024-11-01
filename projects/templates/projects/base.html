@@ -4,6 +4,8 @@
 {% load analytical %}
 {% load humanize %}
 {% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -38,21 +40,109 @@
         {% csrf_token %}
         
         <div unicorn:view class="app-top" id="appTop">
-        
-            {% block top_navbar %}
-            {% endblock %}
             
-            {% block offcanvas %}
-            {% endblock %}
+            <script>
+                function handlerAlias(fname){
+                    if (typeof window['Handler']['navigator'][fname] == "function"  ) {
+                        window['Handler']['navigator'][fname](); 
+                    }
+                }
+            </script>
             
-            {% block navpanel %}
-            {% endblock %}
+            <!-- TOP NAVBAR -->
+            <nav class="top-nav" id="top-nav">
+                {% block top_navbar %}
+                {% endblock %}
+                
+                <!-- NOTIFICATION -->
+                {% block notification_area %}
+                {% endblock %}
+
+                <!-- CONTENT HEADER -->
+                {% block content_header_area %}
+                {% endblock %}
+            </nav>
+            
+            <!-- OFFCANVAS --> 
+            <div data-nosnippet class="offcanvas offcanvas-end" tabindex="-1" id="OFFCANVAS" aria-labelledby="offcanvasExampleLabel" 
+                 style="padding-right: calc(var(--bs-gutter-x) * .5); padding-left: calc(var(--bs-gutter-x) * .5);">
+                {% block offcanvas %}
+                {% endblock %}
+            </div>
+            
+            <!-- NAVPANEL -->
+            <div class="bg-light border-none test-nav {% if settings.test_pref %}open{% endif %}" id="navbar" aria-labelledby="TBD">
+                <div class="position-relative">
+                {% block navpanel %}
+                {% endblock %}
+                </div>
+            </div>
+            
+            <input
+              class="d-none"
+              id="nameId"
+              unicorn:key="nameKey"
+              unicorn:model="request.user.profile.properties.test_pref"
+              unicorn:partial="nameKey"
+              unicorn:partial.id="user-preferences"
+            />
+            <script>
+            {% if settings.test_pref %}
+            window.addEventListener("load", (event) => {
+                Handler.navigator.showNav = true;
+            })
+            {% endif %}
+            document.addEventListener('navToggled', (e) => {
+                switch(e.detail.name) {
+                    case "navToggled":
+                        document.getElementById("nameId").value = e.detail.showNav;
+                        Unicorn.trigger('app', 'nameKey');
+                        break;
+                }
+            });
+            </script>
     
-            {% block content %}
-            {% endblock %}
+            <!-- EDITPANEL - MASTER -->
+            <div class="bg-light border-none test-edit" id="editpanel" aria-labelledby="TBD">
+                <div class="position-relative">
+                {% block editpanel %}
+                {% endblock %}
+                </div>
+            </div>
             
-            {% block bottom-navbar %}
-            {% endblock %}
+            <!-- CONTENT -->
+            <div class="row h-100" style="margin-top: var(--top-nav);">
+                <div class="col d-flex">
+                    <!-- LEFT PANEL -->
+                    <div class="side-panel">
+                        <div class="collapse collapse-horizontal {% if settings.test_pref %}show{% endif %}" id="leftPanel">
+                            <div style="min-width: var(--large-edit-width); max-width: var(--large-edit-width);">
+                                <br/>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- MID PANEL -->
+                    <div class="mid-panel" id="midPanel">
+                        {% block content %}
+                        {% endblock %}
+                    </div>
+                    <!-- RIGHT PANEL -->
+                    <div class="side-panel">
+                        <div class="collapse collapse-horizontal" id="rightPanel">
+                            <div style="min-width: var(--large-edit-width); max-width: var(--large-edit-width);">
+                                <br/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="bottom-nav" id="bottom-navbar" style="z-index: 1046 !important;">
+                <div data-nosnippet class="bottom-nav-inner">
+                    {% block bottom-navbar %}
+                    {% endblock %}
+                </div>
+            </nav>
             
         </div>
         {% analytical_body_bottom %}

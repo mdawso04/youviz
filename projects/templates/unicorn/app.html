@@ -1,5 +1,13 @@
 {% extends "../projects/base.html" %}
+{% load unicorn %} 
+{% load pwa %}
 {% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
 {% block title %}{% if meta_object %}{{meta_object.seo.title}} - {{settings.sitename}}{% else %}{{settings.sitename}}{% endif %}{% endblock %}
 {% block description %}{% if meta_object %}{{meta_object.seo.description}}{% else %}{{settings.sitedesc}}{% endif %}{% endblock %}
 {% block keywords %}Free web app, open data, visualization, insights, histograms, box plots, scatter plots, line plots, bar charts{% endblock %}
@@ -13,31 +21,53 @@
     {% include 'projects/top_navbar/top_navbar.html' %}
 {% endblock %}
 
+{% block notification_area %}
+    {% if notification %}
+        {% include 'projects/top_navbar/notification_area.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block content_header_area %}
+    {% if context.mode == "list" %} 
+        {% include 'projects/top_navbar/content_header_area_list.html' %}
+    {% elif context.mode == "user" %} 
+        {% include 'projects/top_navbar/content_header_area_user.html' %}
+    {% elif context.mode == "new" and page == 'new.datamenu' %} 
+        {% include 'projects/top_navbar/content_header_area_list.html' %}
+    {% endif %}
+{% endblock %}
+
 {% block offcanvas %}
-    {% include 'projects/offcanvas/offcanvas.html' %}
+    {% tabpane name='offcanvas' %}
+{% endblock %}
+
+{% block navpanel %}
+    {% if context.mode == "list" %} 
+        {% tabpane name='list' %}
+    {% elif context.mode == "view" %} 
+        {% tabpane name='navpanel' %}
+    {% endif %}
+{% endblock %}
+
+{% block editpanel %}
+    {% if context.mode == "list" %} 
+        {% ads %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% if context.mode == "list" %}
+        {% list name='list' %}
+    {% elif context.mode == "user" %} 
+        {% list name='list' %}
+    {% elif context.mode == "new" %}
+        {% list name='new' %}
+    {% elif context.mode == "view" %} 
+        {% include 'projects/content/view/view.html' %}
+    {% endif %}
 {% endblock %}
 
 {% block bottom-navbar %}
     {% include 'projects/bottom-navbar/bottom-navbar.html' %}
 {% endblock %}
 
-{% block navpanel %}
-    {% include 'projects/navpanel/navpanel.html' %}
-{% endblock %}
-
-{% block content %}
-    {% if context.mode == "list" %} 
-        {% include 'projects/content/list/list.html' %}
-    {% elif context.mode == "user" %} 
-        {% include 'projects/content/list/list.html' %}
-    {% elif context.mode == "new" %}
-        {% if page == 'new.vizmenu' %} {% include 'projects/content/new/viz/list.html' %}
-        {% elif page == 'new.viz.complete' %} {% include 'projects/content/new/viz/new_viz_complete.html' %}
-        {% elif page == 'new.datamenu' %} {% include 'projects/content/new/data/list.html' %} 
-        {% elif page == 'new.datasource.complete' %} {% include 'projects/content/new/data/new_datasource_complete.html' %}
-        {% endif %}
-    {% elif context.mode == "view" %} 
-        {% include 'projects/content/view/view.html' %}
-        {#{% include 'projects/content/view/payload.html' %}#}
-    {% endif %}
-{% endblock %}

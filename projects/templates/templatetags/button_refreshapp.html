@@ -1,0 +1,18 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+{% if not never %}
+<button type="button" class="btn btn-secondary ms-1" id="refreshAppButton"
+        onclick="caches.keys().then(cacheNames => {cacheNames.forEach(cacheName => {caches.delete(cacheName);});});
+                 location.reload();">
+    Refresh app
+</button> 
+{% else %}
+Error generating input
+{% endif %}

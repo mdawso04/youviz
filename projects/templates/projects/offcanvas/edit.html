@@ -7,7 +7,7 @@
         <input class="form-check-input" type="checkbox" role="switch" id="maximize"
                onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
     </div>-->
-    <button type="button" class="border-0 bg-transparent" style="padding: 0px; " onclick="Handler.showTab('#offcanvas-pills-details-tab');" aria-label="Close">
+    <button type="button" class="border-0 bg-transparent" style="padding: 0px; " onclick="Handler.showTab('#tabpane-offcanvas-details-tab');" aria-label="Close">
         <i class="bi-arrow-left" style="width: 24px; height: 24px;"></i>
     </button>
 
@@ -36,6 +36,7 @@
                        aria-label="Profile Description">{{request.user.profile.description}}</textarea>
             </div>
         </div>
+        {% if never %}
         <div class="col">
             <label for="exampleColorInput" class="form-label">Color</label>
             <input type="color" class="form-control form-control-color" id="exampleColorInput" title="Choose your color"
@@ -45,5 +46,7 @@
                    value="{{ request.user.profile.properties.profile_color }}"
                    unicorn:model.lazy="request.user.profile.properties.profile_color" />
         </div>
+        {% endif %}
+        {% user_preferences %}
     </div>
 </div>

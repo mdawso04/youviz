@@ -32,6 +32,7 @@ class VizView(UnicornView):
     
     viz: Viz = None
     cache: dict = {}
+    context: dict = None
     
     class Meta:
         exclude = ()
@@ -52,11 +53,13 @@ class VizView(UnicornView):
             b = json.loads(self.request._body)
             pk = b['data']['viz']['pk']
             logger.debug('PK FROM BODY: ' + str(pk))
+            #TODO for unicorn version: self.context = self.kwargs['context']['context']
         
         #GET
         elif hasattr(self, 'kwargs'):
             pk = self.kwargs['pk']
             logger.debug('PK FROM KWARGS: ' + str(pk))
+            self.context = self.kwargs['context']['context']
         
         v = Viz.item(pk=pk)
         

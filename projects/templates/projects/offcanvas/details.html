@@ -18,7 +18,7 @@
          id="offcanvasUserDesc">
          
         
-        {% if 'projects.view_profile' in perms %}
+        {% if 'view_profile' in app_perms %}
         <h6 class="text-muted">Hey {{ user.username | title }}!</h6>
         <div class="card-body mb-1">
             <div class="d-flex align-items-start">
@@ -28,34 +28,19 @@
                 </div>
             </div>
         </div>
-
         {% modal_ok_cancel label='Logout' message='Do you want to log out?' ok="caches.delete('unicorn'); Unicorn.call('app', 'logout');" %}
-
         {% else %}
-        <!-- Allauth button starts here -->
-        <form class="d-inline" action="{% provider_login_url 'google' %}" method="post">
-            {% csrf_token %}
-            <button class="btn btn-primary d-inline" type="submit">
-                <i class="bi bi-google"></i>
-                <span>Login with Google</span>
-            </button>
-        </form>
-        <!-- Allauth button ends here -->
+        {% button_sociallogin provider='google' %}   
         {% endif %}
-        
-        <button type="button" class="btn btn-secondary ms-1" id="refreshAppButton"
-                onclick="caches.keys().then(cacheNames => {cacheNames.forEach(cacheName => {caches.delete(cacheName);});});
-                         location.reload();">
-            Refresh app
-        </button>    
+        {% button_refreshapp %}   
         
         
     </div>
     
-    {% if perms.projects.view_profile %}
+    {% if 'view_profile' in app_perms %}
     <div class="comments mb-2 p-3 position-relative rounded-3 bg-light" 
          style="cursor: pointer;"
-         onclick="Handler.showTab('#offcanvas-pills-edit-tab');"
+         onclick="Handler.showTab('#tabpane-offcanvas-edit-tab');"
          id="offcanvasProfileDesc">
         <h6 class="text-muted">Preferences</h6>
         <div class="d-flex align-items-start">
@@ -76,7 +61,7 @@
     </div>
     {% endif %}
     
-    {% if 'projects.view_profile' in perms %}
+    {% if 'view_profile' in app_perms %}
     <div class="mb-2 p-3 position-relative rounded-3 bg-light" 
          style="" 
          id="offcanvasUserContentList">

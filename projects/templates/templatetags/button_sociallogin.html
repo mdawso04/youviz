@@ -1,0 +1,21 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+{% if provider %}
+<!-- Allauth button starts here -->
+<form class="d-inline" action="{% provider_login_url provider %}" method="post">
+    {% csrf_token %}
+    <button class="btn btn-primary d-inline" type="submit">
+        <i class="bi bi-google"></i>
+        <span>Login with {{ provider|title }}</span>
+    </button>
+</form>
+{% else %}
+Error generating input
+{% endif %}

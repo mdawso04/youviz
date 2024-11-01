@@ -1,0 +1,48 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+{% if not never %}
+<!-- ads -->
+<div class="col" id="user-preferences">
+    {% for s in user_preferences %}
+        {% if s.input_type == 'color' %}
+        <div class="col">
+            <label for="exampleColorInput" class="form-label">{{ s.name|title }}</label>
+            <input type="color" class="form-control form-control-color" 
+                   id="exampleColorInput" 
+                   title="Choose your color"
+                   unicorn:key="user-profile-color"
+                   unicorn:partial="offcanvasProfileDesc"
+                   unicorn:partial.key="user-profile-color"
+                   value="{% if s.current_value %}{{ s.current_value }}{% else %}{{ s.default_value }}{% endif %}"
+                   unicorn:model.lazy="request.user.profile.properties.{{ s.name }}" />
+        </div>
+        {% elif s.input_type == 'switch' %}
+        <div class="col">
+            <div class="form-check form-switch">
+                <input class="form-check-input" 
+                       type="checkbox" 
+                       role="switch" 
+                       id="{{ s.name|slugify }}-switch" 
+                       unicorn:key="{{ s.name|slugify }}-switch"
+                       unicorn:model="request.user.profile.properties.{{ s.name }}"
+                       {% if partial %}unicorn:partial="{{ partial }}"{% else %}unicorn:partial="{% if id %}{{ id }}{% else %}{{ s.name|slugify }}{% endif %}-label"{% endif %}
+                       {% if partialid %}unicorn:partial.id="{{ partialid }}"{% endif %}
+                       {% if partialkey %}unicorn:partial.key="{{ partialkey }}"{% endif %}
+                       {% if s.current_value %}checked{% endif %}>
+                <label class="form-check-label" for="{{ s.name|slugify }}-switch" id="{{ s.name|slugify }}-label">{{ s.name|title }}</label>
+            </div>
+        </div>
+        {% endif %}
+{% endfor %}
+</div>
+
+{% else %}
+Error generating input
+{% endif %}

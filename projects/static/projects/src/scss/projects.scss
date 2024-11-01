@@ -182,7 +182,7 @@ $bootstrap-icons-font-dir: "../../../../node_modules/bootstrap-icons/font/fonts"
 /* list calc */
 
 .content-container {
-    margin-top: calc(var(--top-nav));
+    //margin-top: calc(var(--top-nav));
     padding-bottom: calc(var(--top-nav) + var(--bottom-nav));
     /* webkit repaint hack */
     transform: translateZ(0);

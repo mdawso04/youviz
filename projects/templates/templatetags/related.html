@@ -1,0 +1,42 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+{% if not never %}
+<!-- related -->
+<div class="d-flex justify-content-center"><h3 class="h6 text-muted mt-2">Related Vizs</h3></div>
+{% for page in related_items_paginated %}
+<div class="row row-cols-1 g-2 pb-2" id="page-{{ forloop.counter }}" unicorn:key="page-{{ forloop.counter }}" data-nosnippet>
+    {% if forloop.counter <= related_page_no  %}
+    {% for i in page %}
+        <div class="col">
+            <div class="card rounded-3 p-1 position-relative {% if not i.is_published %}border border-warning border-3 {% endif %}"  
+                 style="{% if i.is_published %}border-color: rgba(0, 0, 0, 0.07);{% endif %} 
+                        opacity: 0; animation: fadeIn 1s ease-in both; animation-delay: {{ forloop.counter|divide:4 }}s;">
+                {% block item_content %}
+                    {% include 'projects/content/list/list_item_content.html' with item=i%}
+                {% endblock %}
+                {% block item_info %}
+                    {% include 'projects/content/list/list_item_info.html' with item=i %}
+                {% endblock %}
+            </div>
+        </div>
+    {% endfor %}
+    {% elif forloop.counter == related_page_no|add:"1" %}
+    <div id="page-{{ forloop.counter }}-trigger" 
+         unicorn:visible.debounce-1000.threshold-100="more_related" 
+         unicorn:partial.id="page-{{ forloop.counter }}" 
+         unicorn:partial.key="page-{{ forloop.counter|add:'1' }}">
+        Grabbing more now...
+    </div>
+    {% endif  %}
+</div>
+{% endfor %}
+{% else %}
+Error generating input
+{% endif %}

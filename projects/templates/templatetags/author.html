@@ -1,0 +1,25 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+{% if not never %}
+<div class="gallery d-flex align-items-center position-relative bg-transparent mb-2" style="">
+    <button class="border-0 rounded-circle p-2 me-2 mt-1" 
+        style="font-size: 0.7rem; min-height: 30px; max-height: 30px; min-width: 30px; min-width: 30px; 
+               background-color: {{datasource.owner.profile.properties.profile_color|default:'#0dcaf0'}} !important"
+        data-bs-toggle="tooltip" data-bs-placement="top" title="Vizualized by {{ datasource.owner.profile.name }}">{{ datasource.owner.profile.name | first | upper}}
+    </button>
+    <div>
+        <p class="text-body text-decoration-none mb-0 h6" style="">{{ datasource.owner.profile.name }} 
+            <span class="text-muted small lh-sm" style="">{{ datasource.owner.datasources.count }} viz{{ datasource.owner.datasources.count|pluralize }}</span>
+        </p>
+    </div>
+</div>
+{% else %}
+Error generating input
+{% endif %}

@@ -33,56 +33,49 @@
 }
 </style>
 
-<nav class="bottom-nav" id="bottom-navbar" style="z-index: 1046 !important;">
-    <div data-nosnippet class="bottom-nav-inner">
 
-        {% bnav_button button='home' %}
-        {% bnav_button button='view' %}
-        {% if 'projects.add_datasource' in perms %}
-        {% bnav_button button='new' %}
-        {% else %}
-        <!-- Allauth button starts here -->
-        <form class="d-inline" action="{% provider_login_url 'google' %}" method="post">
-            {% csrf_token %}
-            <button class="nav-btn" type="submit">
-                <i class="bi bi-google" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">Signin</span></i>
+{% bnav_button button='home' %}
+{% bnav_button button='view' %}
+{% if 'projects.add_datasource' in perms %}
+{% bnav_button button='new' %}
+{% else %}
+<!-- Allauth button starts here -->
+<form class="d-inline" action="{% provider_login_url 'google' %}" method="post">
+    {% csrf_token %}
+    <button class="nav-btn" type="submit">
+        <i class="bi bi-google" style="font-size: 1.5rem;"><span class="d-block" style="font-size: 0.8rem; min-width:62px;">Signin</span></i>
+    </button>
+</form>
+<!-- Allauth button ends here -->
+{% endif %}
+
+{% if context.mode == 'view' and 'projects.add_datasource' in perms %}
+{% bnav_button button='copy' %}
+{% endif %}
+
+<!-- TO DELETE -->
+<div class="btn-toolbar d-flex d-none w-100 justify-content-evenly button-toolbar" role="toolbar" 
+     aria-label="Toolbar with button groups">
+    <div class="btn-group d-flex flex-grow-1 me-2 d-none" role="group" aria-label="button group">
+        <button type="button" class="btn btn-primary d-none d-lg-block" onclick="Handler.navigator.back();">
+            <i class="bi bi-caret-left-fill" style="font-size: 1.2rem;"></i>
+        </button>
+        <div class="btn-group nav dropup d-flex w-100" role="group tablist" aria-label="button group">
+            <button id="btnGroupDrop1" type="button"
+                    class="btn btn-primary dropdown-toggle w-100 text-start edgy-left-element" 
+                    data-bs-toggle="dropdown" aria-expanded="false">Loading... 
+                <span class="badge rounded-pill bg-warning text-dark ps-2" id="vizCount"></span>
             </button>
-        </form>
-        <!-- Allauth button ends here -->
-        {% endif %}
-        
-        {% if context.mode == 'view' and 'projects.add_datasource' in perms %}
-        {% bnav_button button='copy' %}
-        {% endif %}
-
-        <!-- TO DELETE -->
-        <div class="btn-toolbar d-flex d-none w-100 justify-content-evenly button-toolbar" role="toolbar" 
-             aria-label="Toolbar with button groups">
-            <div class="btn-group d-flex flex-grow-1 me-2 d-none" role="group" aria-label="button group">
-                <button type="button" class="btn btn-primary d-none d-lg-block" onclick="Handler.navigator.back();">
-                    <i class="bi bi-caret-left-fill" style="font-size: 1.2rem;"></i>
-                </button>
-                <div class="btn-group nav dropup d-flex w-100" role="group tablist" aria-label="button group">
-                    <button id="btnGroupDrop1" type="button"
-                            class="btn btn-primary dropdown-toggle w-100 text-start edgy-left-element" 
-                            data-bs-toggle="dropdown" aria-expanded="false">Loading... 
-                        <span class="badge rounded-pill bg-warning text-dark ps-2" id="vizCount"></span>
-                    </button>
-                        <ul class="dropdown-menu" id="tabButtons" aria-labelledby="btnGroupDrop1">
-                            <li><h6 class="dropdown-header">Select viz</h6></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><h6 class="dropdown-header">Add viz</h6></li>
-                            <li><a class="dropdown-item" onclick="Unicorn.call('app', 'addViz');" href="#">New</a></li>
-                        </ul>    
-                </div> 
-                <button type="button" class="btn btn-primary d-none d-lg-block" onclick="Handler.navigator.forward();">
-                    <i class="bi bi-caret-right-fill" style="font-size: 1.2rem;"></i>
-                </button>    
-            </div>
-        </div>
-        
-        
-        
-
+                <ul class="dropdown-menu" id="tabButtons" aria-labelledby="btnGroupDrop1">
+                    <li><h6 class="dropdown-header">Select viz</h6></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><h6 class="dropdown-header">Add viz</h6></li>
+                    <li><a class="dropdown-item" onclick="Unicorn.call('app', 'addViz');" href="#">New</a></li>
+                </ul>    
+        </div> 
+        <button type="button" class="btn btn-primary d-none d-lg-block" onclick="Handler.navigator.forward();">
+            <i class="bi bi-caret-right-fill" style="font-size: 1.2rem;"></i>
+        </button>    
     </div>
-</nav>
+</div>
+ 

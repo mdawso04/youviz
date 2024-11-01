@@ -1,65 +1,36 @@
 {% load humanize %}
-<!-- CONTENT - VIEW -->
-    <!-- DATASOURCE INFO -->
-    <div class="row h-100 pt-5 mt-4">
-        <div class="col d-flex">
-            
-            <!-- LEFT PANEL -->
-            <div class="side-panel">
-                <div class="collapse collapse-horizontal" id="leftPanel">
-                    <div style="min-width: var(--large-edit-width); max-width: var(--large-edit-width);">
-                        <br/>
+
+ <div class="mid-panel-content">
+    <!-- TAB CONTENTS -->
+    <div class="col tab-content" id="myTabContent">
+        {% for v in datasource.vizs.all %}
+            {% with vids=v.pk|stringformat:"s" %}
+            {% with vid="viz-"|add:vids %}
+                <div class="tab-pane yv fade" id="{{vid}}" 
+                     role="tabpanel" aria-labelledby="{{vid}}-tab">
+                    <div class="yv-component viz" id="yv-component-viz-{{ v.pk }}"
+                         data-yv-component="viz"
+                         data-yv-id="{{ v.pk }}"
+                         data-yv-link="{% if context.mode == 'view' %}{{ v.get_absolute_url_viewmode }}{% else %}{{ v.get_absolute_url }}{% endif %}"
+                         data-yv-button="#showVizOffcanvas"
+                         data-yv-init="vizInit">
                     </div>
                 </div>
-            </div>
-            
-            <!-- MID PANEL -->
-            
-            <div class="mid-panel" id="midPanel">
-                <div class="mid-panel-content">
-                    
-                    <!-- TAB CONTENTS -->
-                    <div class="col tab-content" id="myTabContent">
-                        {% for v in datasource.vizs.all %}
-                            {% with vids=v.pk|stringformat:"s" %}
-                            {% with vid="viz-"|add:vids %}
-                                <div class="tab-pane yv fade" id="{{vid}}" 
-                                     role="tabpanel" aria-labelledby="{{vid}}-tab">
-                                    <div class="yv-component viz" id="yv-component-viz-{{ v.pk }}"
-                                         data-yv-component="viz"
-                                         data-yv-id="{{ v.pk }}"
-                                         data-yv-link="{% if context.mode == 'view' %}{{ v.get_absolute_url_viewmode }}{% else %}{{ v.get_absolute_url }}{% endif %}"
-                                         data-yv-button="#showVizOffcanvas"
-                                         data-yv-init="vizInit">
-                                    </div>
-                                </div>
-                            {% endwith %}
-                            {% endwith %}
-                            {% if forloop.last %}
-                                <div class="tab-pane yv fade" id="last" 
-                                     role="tabpanel" aria-labelledby="last-tab">
-                                    <div class="h-100 w-100 bg-light">
-                                        More...
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+            {% endwith %}
+            {% endwith %}
+            {% if forloop.last %}
+                <div class="tab-pane yv fade" id="last" 
+                     role="tabpanel" aria-labelledby="last-tab">
+                    <div class="h-100 w-100 bg-light">
+                        More...
                     </div>
                 </div>
-                <div class="mid-panel-infobar">
-                    <div class="container-fluid">
-                        {% include './datasource_info_large/datasource_info_large.html' with datasource=datasource %}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- RIGHT PANEL -->
-            <div class="side-panel">
-                <div class="collapse collapse-horizontal" id="rightPanel">
-                    <div style="min-width: var(--large-edit-width); max-width: var(--large-edit-width);">
-                        <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
+            {% endif %}
+        {% endfor %}
     </div>
+</div>
+<div class="mid-panel-infobar">
+    <div class="container-fluid">
+        {% include './datasource_info_large.html' with datasource=datasource %}
+    </div>
+</div>
