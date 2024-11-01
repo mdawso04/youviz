@@ -6,8 +6,10 @@
     <div class="d-flex flex-row no-scroll-fix overflow-scroll" 
          style="-ms-overflow-style: none; scrollbar-width: none;"
          id="cover-button-row">
+        {% if never %}
         <button class="btn btn-secondary" onclick="Handler.navigator.toggleNav(); event.preventDefault();">Nav</button>
         <button class="btn btn-secondary" onclick="Handler.navigator.toggleEdit(); event.preventDefault();">Edit</button>
+        {% endif %}
         {% for c in covers %}
             <button type="button" 
                 class="btn btn-outline-secondary btn me-2 opacity-75 {% if c.pk == cover.pk %}active{% endif %}"
