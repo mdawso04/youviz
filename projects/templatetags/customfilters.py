@@ -818,7 +818,7 @@ def list(context, **kwargs):
 @register.inclusion_tag("templatetags/user_preferences.html", takes_context=True)
 def user_preferences(context, **kwargs):
     
-    user_preferences = context['settings']['available_user_preferences']
+    user_preferences = context['settings'].get('available_user_preferences')
     for i in user_preferences:
         i['current_value'] = context['settings'].get(i['name'])
     context['user_preferences'] = user_preferences
