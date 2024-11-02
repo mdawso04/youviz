@@ -112,7 +112,7 @@
             
             <!-- CONTENT -->
             <div class="row h-100" style="margin-top: var(--top-nav);">
-                <div class="col d-flex">
+                <div class="col d-flex h-100">
                     <!-- LEFT PANEL -->
                     <div class="side-panel">
                         <div class="collapse collapse-horizontal {% if settings.test_pref %}show{% endif %}" id="leftPanel">
@@ -122,7 +122,7 @@
                         </div>
                     </div>
                     <!-- MID PANEL -->
-                    <div class="mid-panel" id="midPanel">
+                    <div class="mid-panel h-100" id="midPanel">
                         {% block content %}
                         {% endblock %}
                     </div>
