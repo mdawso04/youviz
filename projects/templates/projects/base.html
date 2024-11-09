@@ -78,6 +78,7 @@
                 </div>
             </div>
             
+            {% if 'change_profile' in app_perms %}
             <input
               class="d-none"
               id="nameId"
@@ -101,6 +102,7 @@
                 }
             });
             </script>
+            {% endif %}
     
             <!-- EDITPANEL - MASTER -->
             <div class="bg-light border-none test-edit" id="editpanel" aria-labelledby="TBD">

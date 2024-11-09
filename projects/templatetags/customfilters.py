@@ -694,7 +694,7 @@ def tabpane(context, **kwargs):
                             'template': None,
                             'detailpane': 
                                 {
-                                    'label': 'List menu',
+                                    'label': 'Quick Menu',
                                     'onclick': 'Handler.navigator.toggleNav();',
                                     'dismiss': None,
                                     'tabs': [

@@ -7,28 +7,54 @@
 {% load customfilters %}
 {% load guardian_tags %}
 
-<div class="offcanvas-body test-edit-inner p-3 pt-0" style="overflow-x: hidden;">
+<style>
+.noscroll {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+.noscroll::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+</style>
 
-    {% if 'change_datastream' in datastream_perms %}
-    <div class="row row-cols-1 g-3 pb-3" id="fileInfo">
+
+<div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" style="overflow-x: hidden;">
+
+    {% if 'change_datastream' in app_perms %}
+    <div class="row row-cols-1 g-2 pb-3" id="fileInfo">
         {% input_textarea model='datasource.datastream.name' modelvalue=datasource.datastream.name label='Name' %}
         {% input_textarea model='datasource.datastream.description' modelvalue=datasource.datastream.description label='Description' %}
         {% input_text model='datasource.datastream.properties.source' modelvalue=datasource.datastream.properties.source label='Source' %}
+        {% input_text model='datasource.datastream.properties.sourceurl' modelvalue=datasource.datastream.properties.sourceurl label='Source URL' %}
         {% input_text model='datasource.datastream.properties.licence' modelvalue=datasource.datastream.properties.licence label='Licence' %}
-        {% input_switch model='datasource.datastream.properties.refresh' modelvalue=datasource.datastream.properties.refresh label='Keep datasource refreshed' partial='infoLargeTitle' %}
+    </div>
+    <div class="row row-cols-auto g-3 pb-3">
         <div class="col">
-            <div class="comments mb-2 p-3 position-relative rounded-3 bg-white" >
-                <h3 class="small text-muted">Info</h3>
-                <p class="text-muted small lh-sm">{{ datasource.datastream.url }}</p>
-                <p class="text-muted small lh-sm">{{ datasource.datastream.last_cached }}</p>
-            </div>
+            <h6 class="card-subtitle text-muted">Data Connection</h6>
         </div>
+    </div>
+    <div class="row row-cols-1 g-2 pb-3" id="fileInfo2">
+        {% input_textarea model='datasource.datastream.url' modelvalue=datasource.datastream.url label='URL' %}
+        {% input_textarea model='datasource.datastream.properties.post_header_1' modelvalue=datasource.datastream.properties.post_header_1 label='Header 1' %}
+        {% input_textarea model='datasource.datastream.properties.post_header_2' modelvalue=datasource.datastream.properties.post_header_2 label='Header 2' %}
+        {% input_textarea model='datasource.datastream.properties.post_body_1' modelvalue=datasource.datastream.properties.post_body_1 label='Body 1' %}
+        {% input_textarea model='datasource.datastream.properties.post_body_2' modelvalue=datasource.datastream.properties.post_body_2 label='Body 2' %}
+        {% input_switch model='datasource.datastream.properties.refresh' modelvalue=datasource.datastream.properties.refresh label='Keep datasource refreshed' partial='infoLargeTitle' %}
+        <p class="text-muted small lh-sm">Last refreshed {{ datasource.datastream.last_cached }}</p>
     </div>
     {% else %}
     <div class="comments mb-2 p-3 position-relative rounded-3 bg-white" >
         <h3 class="small text-muted">Info</h3>
-        <p class="h6" style="">{{ datasource.datastream.name }}</p>
-        <p class="text-muted small lh-sm">{{ datasource.datastream.description }}</p>
+        <p class="h6" style="">{{ datasource.datastream.name }} - <span class="text-muted small">{{ datasource.datastream.description }}</span></p>
+        
+        <h3 class="small text-muted">Original Source</h3>
+        <p class="text-muted small lh-sm">{{ datasource.datastream.properties.source }}</p>
+        <h3 class="small text-muted">Licence</h3>    
+        <p class="text-muted small lh-sm">{{ datasource.datastream.properties.licence }}</p>
+        <p class="text-muted small lh-sm">
+            {% if datasource.datastream.properties.refresh %}This datasource is refreshed automatically.{% endif %}
+            Last refreshed {{ datasource.datastream.last_cached }}
+        </p>
     </div>
     {% endif %}
     
