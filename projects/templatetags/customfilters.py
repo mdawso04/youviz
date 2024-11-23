@@ -623,12 +623,12 @@ def tabpane(context, **kwargs):
                             'template': None,
                             'detailpane': 
                                 {
-                                    'label': 'page settingsz',
+                                    'label': 'page settings',
                                     'onclick': 'Handler.navigator.toggleEdit();',
                                     'dismiss': None,
                                     'tabs': [
                                                 {
-                                                    'label': 'chart data',
+                                                    'label': None,
                                                     'background': 'bg-white',
                                                     'counter': None,
                                                     'onclick': "Handler.showTab('#tabpane-editpanel-editfilters-tab');",
@@ -636,7 +636,7 @@ def tabpane(context, **kwargs):
                                                     'display_perm': None,
                                                     'display_setting': None,
                                                     'onclick_icon': 'bi-pen',
-                                                    'name': None,
+                                                    'name': 'Chart Data',
                                                     'description': 'Click to edit the input data for this chart',
                                                     'preview': None,
                                                     'html': None,
@@ -646,7 +646,7 @@ def tabpane(context, **kwargs):
                                                     'badge':None,
                                                 },
                                                 {
-                                                    'label': 'chartz',
+                                                    'label': None,
                                                     'background': 'bg-white',
                                                     'counter': None,
                                                     'onclick': "Handler.showTab('#tabpane-editpanel-editchart-tab');",
@@ -654,7 +654,7 @@ def tabpane(context, **kwargs):
                                                     'display_perm': None,
                                                     'display_setting': None,
                                                     'onclick_icon': 'bi-pen',
-                                                    'name': None,
+                                                    'name': 'Chart',
                                                     'description': 'Click to edit the settings for this chart',
                                                     'preview': None,
                                                     'html': None,
