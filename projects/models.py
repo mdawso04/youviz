@@ -786,6 +786,17 @@ class Datastream(BaseModel):
     json = models.JSONField(blank=True, null=True)
     last_cached = models.DateTimeField(auto_now_add=False, auto_now=False, null=True, blank=True)
     
+    CSV = 'C'
+    EXCEL = 'E'
+    CKAN = 'K'
+    DATASTREAM_TYPES = (
+        (CSV, 'CSV'),
+        (EXCEL, 'Excel'),
+        (CKAN, 'CKAN'),
+    )
+    
+    datastream_type = models.CharField(max_length=1, choices=DATASTREAM_TYPES, default=CSV)
+    
     #prefetch = ('datapods', )
     
     managers = models.ManyToManyField(User, blank=True, related_name='datastream_managers')
@@ -822,7 +833,12 @@ class Datastream(BaseModel):
         
     def save(self, *args, **kwargs):
         a = pp.App()
-        a.add('READ_CSV', {'src': self.url})
+        if self.datastream_type == self.CKAN:
+            a.add('READ_CKAN', {'src': self.url})
+        elif self.datastream_type == self.CSV:
+            a.add('READ_CSV', {'src': self.url})
+        elif self.datastream_type == self.EXCEL:
+            a.add('READ_CSV', {'src': self.url})
         self.json = a.todos
         super(Datastream, self).save(*args, **kwargs)
         if not self.last_cached:
@@ -835,8 +851,23 @@ class Datastream(BaseModel):
     
     @classmethod
     def fetch(cls, *args, **kwargs):
-        a = pp.App(kwargs['datastream'].json)
-        df = a.call()
+        ds = kwargs['datastream']
+        if ds.datastream_type == Datastream.CKAN:
+            import urllib.request
+            url = ds.url  
+            fileobj = urllib.request.urlopen(url)
+            import numpy as np
+            import pandas as pd
+            import requests
+            import json
+            
+            JSONContent = requests.get(ds.url).json()
+            content = json.dumps(JSONContent, indent = 4, sort_keys=True)
+            df = pd.read_json(content, thousands=',')
+            df = pd.json_normalize(df['result']['records'])
+        else:
+            a = pp.App(ds.json)
+            df = a.call()
         return df.to_csv(index=False)
         
     def refresh(self, *args, **kwargs):
