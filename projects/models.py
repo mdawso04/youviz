@@ -18,6 +18,10 @@ from django.dispatch import receiver
 from django.http import Http404
 
 from project import settings
+
+import urllib.request
+import numpy as np
+import requests
  
 
 # pp
@@ -853,13 +857,8 @@ class Datastream(BaseModel):
     def fetch(cls, *args, **kwargs):
         ds = kwargs['datastream']
         if ds.datastream_type == Datastream.CKAN:
-            import urllib.request
             url = ds.url  
             fileobj = urllib.request.urlopen(url)
-            import numpy as np
-            import pandas as pd
-            import requests
-            import json
             
             JSONContent = requests.get(ds.url).json()
             content = json.dumps(JSONContent, indent = 4, sort_keys=True)
