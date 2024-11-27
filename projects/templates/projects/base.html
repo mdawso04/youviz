@@ -90,7 +90,7 @@
               unicorn:partial.id="user-preferences"
             />
             <script>
-            {% if value %}
+            {% if value === true %}
             window.addEventListener("load", (event) => {
                 Handler.navigator.showNav = true;
             })
@@ -105,6 +105,9 @@
             });
             </script>
             {% endif %}
+            
+            {% endwith %}
+             {% endwith %}
             
     
             <!-- EDITPANEL - MASTER -->
@@ -144,15 +147,10 @@
             
             <nav class="bottom-nav" id="bottom-navbar" style="z-index: 1046 !important;">
                 <div data-nosnippet class="bottom-nav-inner">
-                    {{settings}}
-                    {{key}}
-                    {{value}}
                     {% block bottom-navbar %}
                     {% endblock %}
                 </div>
             </nav>
-            {% endwith %}
-             {% endwith %}
             
         </div>
         {% analytical_body_bottom %}
