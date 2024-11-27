@@ -65,7 +65,7 @@
   <div class="carousel-inner">
     {% for v in datasource.vizs.all %}       
     <div class="carousel-item{% if forloop.first %} active{% endif %}">
-        <div class="card-img-top d-block w-100" style="height: 230px;">
+        <div class="card-img-top d-block w-100" style="height: 200px;">
             <div id="outerOuterPlotBox-dsthumb-{{v.pk}}" class="yv-dsthumb">
                 <div id="outerPlotBox-list-{{v.pk}}">
                     <script type="application/json" id="youviz:data:dsthumb-outerOuterPlotBox-dsthumb-{{v.pk}}">

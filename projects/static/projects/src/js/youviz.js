@@ -802,10 +802,10 @@ Handler.dsThumbInit = function (node) {
         const plot_div_outer_el = thumb.parentElement;
         layout.width = plot_div_outer_el.clientWidth;
         //layout.height = plot_div_outer_el.clientHeight;
-        layout.height = 250;
-        layout.margin.t = 15;
-        layout.margin.b = 68;
-        layout.margin.r = 10;
+        //layout.height = 250;
+        //layout.margin.t = 15;
+        //layout.margin.b = 68;
+        //layout.margin.r = 10;
         layout.showlegend = false;
         //if(layout.xaxis.visible) layout.xaxis.visible = false; 
         if(layout.xaxis.showticklabels){
