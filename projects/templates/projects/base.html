@@ -71,7 +71,9 @@
             </div>
             
             <!-- NAVPANEL -->
-            <div class="bg-light border-none test-nav {% if settings.test_pref %}open{% endif %}" id="navbar" aria-labelledby="TBD">
+            {% with key='nav_open_'|add:context.mode %}
+            {% with value=settings|keyvalue:key %}
+            <div class="bg-light border-none test-nav {% if value %}open{% endif %}" id="navbar" aria-labelledby="TBD">
                 <div class="position-relative">
                 {% block navpanel %}
                 {% endblock %}
@@ -83,12 +85,12 @@
               class="d-none"
               id="nameId"
               unicorn:key="nameKey"
-              unicorn:model="request.user.profile.properties.test_pref"
+              unicorn:model="request.user.profile.properties.{{key}}"
               unicorn:partial="nameKey"
               unicorn:partial.id="user-preferences"
             />
             <script>
-            {% if settings.test_pref %}
+            {% if value %}
             window.addEventListener("load", (event) => {
                 Handler.navigator.showNav = true;
             })
@@ -103,6 +105,7 @@
             });
             </script>
             {% endif %}
+            
     
             <!-- EDITPANEL - MASTER -->
             <div class="bg-light border-none test-edit" id="editpanel" aria-labelledby="TBD">
@@ -141,10 +144,15 @@
             
             <nav class="bottom-nav" id="bottom-navbar" style="z-index: 1046 !important;">
                 <div data-nosnippet class="bottom-nav-inner">
+                    {{settings}}
+                    {{key}}
+                    {{value}}
                     {% block bottom-navbar %}
                     {% endblock %}
                 </div>
             </nav>
+            {% endwith %}
+             {% endwith %}
             
         </div>
         {% analytical_body_bottom %}

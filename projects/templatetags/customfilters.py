@@ -195,6 +195,10 @@ def for_ui(value):
     except:
         return value
     
+@register.filter
+def keyvalue(dic, key):    
+    return dic.get(key, False)
+    
 @register.simple_tag
 def for_ui_summary(lookup_key, str_params):
     try:
