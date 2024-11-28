@@ -34,7 +34,7 @@ def top_list(request, search=False):
     return render(request, default_template, context)
 
 def search(request):    
-    return list(request, search=True)
+    return top_list(request, search=True)
 
 def user(request, slug):
     context = {

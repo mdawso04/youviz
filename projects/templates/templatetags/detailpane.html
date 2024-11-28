@@ -29,53 +29,55 @@
 <div class="offcanvas-body test-edit-inner px-2 px-md-3 pb-2 pb-md-3 noscroll" style="overflow-x: auto;">
     
     {% for t in detailpane.tabs %}
-    <!-- name & desc -->
-    <div class="mb-2 p-3 position-relative rounded-3 {{ t.background }}" 
-         id="detailpane-{{ t.label|slugify }}">
-        {% if t.label %}
-        <h3 class="small text-muted">{{ t.label|title }}{% if t.counter %}<span class="badge rounded-pill bg-light text-dark">{{ t.counter }}</span>{% endif %}</h3>
-        {% endif %}
-        {% if t.name %}
-        <p class="h6" style="">{{ t.name }}</p>
-        {% endif %}
-        {% if t.description %}
-        <p class="text-muted small lh-sm">{{ t.description }}</p>
-        {% endif %}
-        {% if t.badge and t.badge.1 %}
-        <span class="badge bg-success bg-opacity-75">{{ t.badge.0 }}</span>
-        {% elif t.badge and not t.badge.1 %}
-        <span class="badge bg-warning text-dark bg-opacity-75">{{ t.badge.0 }}</span>
-        {% endif %}
-        {% if t.preview %}
-        <div class="comments mb-1 p-2 rounded-3 bg-light small"
-             style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">
-            {{ datasource.comments.last.description }}
+        {% if t.display_setting %}
+        <!-- name & desc -->
+        <div class="mb-2 p-3 position-relative rounded-3 {{ t.background }}" 
+             id="detailpane-{{ t.label|slugify }}">
+            {% if t.label %}
+            <h3 class="small text-muted">{{ t.label|title }}{% if t.counter %}<span class="badge rounded-pill bg-light text-dark">{{ t.counter }}</span>{% endif %}</h3>
+            {% endif %}
+            {% if t.name %}
+            <p class="h6" style="">{{ t.name }}</p>
+            {% endif %}
+            {% if t.description %}
+            <p class="text-muted small lh-sm">{{ t.description }}</p>
+            {% endif %}
+            {% if t.badge and t.badge.1 %}
+            <span class="badge bg-success bg-opacity-75">{{ t.badge.0 }}</span>
+            {% elif t.badge and not t.badge.1 %}
+            <span class="badge bg-warning text-dark bg-opacity-75">{{ t.badge.0 }}</span>
+            {% endif %}
+            {% if t.preview %}
+            <div class="comments mb-1 p-2 rounded-3 bg-light small"
+                 style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">
+                {{ datasource.comments.last.description }}
+            </div>
+            {% endif %}
+            {% if t.html %}
+                <div class="notification py-2 rounded-3 bg-light" style="" data-nosnippet>
+                    {{ t.html|safe }}
+                </div>
+            {% endif %}
+            {% if t.include %}
+            {% include t.include %}
+            {% endif %}
+            {% if t.related %}
+            {% related %}
+            {% endif %}
+            {% if t.author %}
+            {% author %}
+            {% endif %}
+            {% if t.onclick and t.onclick_perm is None or t.onclick_perm in app_perms %}
+            <a href="#" class="stretched-link" onclick="{{ t.onclick }}"></a>
+                {% if t.onclick_icon %}
+                <button class="bg-transparent border-0 mx-1 my-2 position-absolute top-0 end-0" 
+                        style="z-index: 1020;"> 
+                        <i class="bi bi-pen text-black-50"></i>
+                </button>
+                {% endif %}
+            {% endif %}
         </div>
         {% endif %}
-        {% if t.html %}
-            <div class="notification py-2 rounded-3 bg-light" style="" data-nosnippet>
-                {{ t.html|safe }}
-            </div>
-        {% endif %}
-        {% if t.include %}
-        {% include t.include %}
-        {% endif %}
-        {% if t.related %}
-        {% related %}
-        {% endif %}
-        {% if t.author %}
-        {% author %}
-        {% endif %}
-        {% if t.onclick and t.onclick_perm is None or t.onclick_perm in app_perms %}
-        <a href="#" class="stretched-link" onclick="{{ t.onclick }}"></a>
-            {% if t.onclick_icon %}
-            <button class="bg-transparent border-0 mx-1 my-2 position-absolute top-0 end-0" 
-                    style="z-index: 1020;"> 
-                    <i class="bi bi-pen text-black-50"></i>
-            </button>
-            {% endif %}
-        {% endif %}
-    </div>
     {% endfor %}
 </div>
 
