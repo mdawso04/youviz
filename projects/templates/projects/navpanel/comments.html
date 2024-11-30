@@ -25,11 +25,11 @@
     <div class="input-group input-group-sm mb-2" id="add_comment_input">
         <span class="input-group-text" id="comment-input">Comment</span>
         <input class="form-control"
-                value=""
-                  type="text"
-                  unicorn:model.defer="add_comment_text"
+               value="{% if add_comment_text %}{{ add_comment_text }}{% endif %}"
+               type="text"
+               unicorn:model.defer="add_comment_text"
                onkeypress="if(event.key === 'Enter'){event.preventDefault(); document.getElementById('add_comment_button').click();}"
-                  aria-label="Comment"/>
+               aria-label="Comment"/>
         <button class="btn btn-outline-secondary"
                 id="add_comment_button"
                 type="button" 

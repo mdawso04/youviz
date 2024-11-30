@@ -32,12 +32,12 @@
         {% if t.display_setting %}
         <!-- name & desc -->
         <div class="mb-2 {% if t.padding %}p-3 {% endif %}position-relative rounded-3 {{ t.background }}" 
-             id="detailpane-{{ t.label|slugify }}">
+             id="{{ detailpane.name|slugify }}-{{ t.name|slugify }}">
             {% if t.label %}
             <h3 class="small text-muted">{{ t.label|title }}{% if t.counter %}<span class="badge rounded-pill bg-light text-dark ms-1">{{ t.counter }}</span>{% endif %}</h3>
             {% endif %}
-            {% if t.name %}
-            <p class="h6" style="">{{ t.name }}</p>
+            {% if t.title %}
+            <p class="h6" style="">{{ t.title }}</p>
             {% endif %}
             {% if t.description %}
             <p class="text-muted small lh-sm">{{ t.description }}</p>

@@ -45,7 +45,6 @@
                           aria-label="File Name">{{ datasource.name }}</textarea>
             </div>
         </div>
-        {% comment %}
         <div class="col">
             <div class="input-group input-group-sm">
                 <span class="input-group-text" id="file-description-input">About</span>    
@@ -55,12 +54,11 @@
                           id="fileDescText"
                           unicorn:key="fileDescText"
                           unicorn:model.lazy="datasource.description"
-                          unicorn:partial="navTitleDesc"
-                          {#unicorn:partial.id="fileInfo" #}
+                          unicorn:partial="viz-details-info"
+                          unicorn:partial.id="file-description-input"
                           aria-label="File Description">{{ datasource.description }}</textarea>
             </div>
         </div>
-        {% endcomment %}
         <div class="col">
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" 

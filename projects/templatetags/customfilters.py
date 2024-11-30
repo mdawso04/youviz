@@ -481,11 +481,13 @@ def tabpane(context, **kwargs):
                             'template': None,
                             'detailpane': 
                                 {
+                                    'name': 'viz details',
                                     'label': 'viz details',
                                     'onclick': 'Handler.navigator.toggleNav();',
                                     'dismiss': None,
                                     'tabs': [
                                                 {
+                                                    'name': 'info',
                                                     'label': None,
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -496,7 +498,7 @@ def tabpane(context, **kwargs):
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': 'bi-pen',
-                                                    'name': (lambda: getattr(context['datasource'],'name', None)),
+                                                    'title': (lambda: getattr(context['datasource'],'name', None)),
                                                     'description': (lambda: getattr(context['datasource'],'description', None)),
                                                     'preview': None,
                                                     'html': None,
@@ -509,6 +511,7 @@ def tabpane(context, **kwargs):
                                                     }.get(getattr(context['datasource'], 'is_published', None)) if 'change_datasource' in context['app_perms'] else None),
                                                 },
                                                 {
+                                                    'name': None,
                                                     'label': 'comments',
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -519,7 +522,7 @@ def tabpane(context, **kwargs):
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': None,
-                                                    'name': None,
+                                                    'title': None,
                                                     'description': None,
                                                     'preview': True,
                                                     'html': None,
@@ -529,6 +532,7 @@ def tabpane(context, **kwargs):
                                                     'badge': None,
                                                 },
                                                 {
+                                                    'name': None,
                                                     'label': None,
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -539,7 +543,7 @@ def tabpane(context, **kwargs):
                                                     'display_perm': None,
                                                     'display_setting': False,
                                                     'onclick_icon': None,
-                                                    'name': None,
+                                                    'title': None,
                                                     'description': None,
                                                     'preview': None,
                                                     'html': (lambda: getattr(context['ads'], 'html', None)),
@@ -549,6 +553,7 @@ def tabpane(context, **kwargs):
                                                     'badge': None,
                                                 },
                                                 {
+                                                    'name': None,
                                                     'label': 'datasource',
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -559,7 +564,7 @@ def tabpane(context, **kwargs):
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': None,
-                                                    'name': (lambda: getattr(context['datasource'],'datastream', None)),
+                                                    'title': (lambda: getattr(context['datasource'],'datastream', None)),
                                                     'description': None,
                                                     'preview': None,
                                                     'html': None,
@@ -569,6 +574,7 @@ def tabpane(context, **kwargs):
                                                     'badge': None,
                                                 },
                                                 {
+                                                    'name': None,
                                                     'label': None,
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -579,7 +585,7 @@ def tabpane(context, **kwargs):
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': None,
-                                                    'name': None,
+                                                    'title': None,
                                                     'description': None,
                                                     'preview': None,
                                                     'html': None,
@@ -589,6 +595,7 @@ def tabpane(context, **kwargs):
                                                     'badge': None,
                                                 },
                                                 {
+                                                    'name': None,
                                                     'label': None,
                                                     'background': 'bg-light',
                                                     'padding': False,
@@ -599,7 +606,7 @@ def tabpane(context, **kwargs):
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': None,
-                                                    'name': None,
+                                                    'title': None,
                                                     'description': None,
                                                     'preview': None,
                                                     'html': None,
@@ -639,11 +646,13 @@ def tabpane(context, **kwargs):
                             'template': None,
                             'detailpane': 
                                 {
+                                    'name': 'page settings',
                                     'label': 'page settings',
                                     'onclick': 'Handler.navigator.toggleEdit();',
                                     'dismiss': None,
                                     'tabs': [
                                                 {
+                                                    'name': None,
                                                     'label': None,
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -654,7 +663,7 @@ def tabpane(context, **kwargs):
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': 'bi-pen',
-                                                    'name': 'Chart Data',
+                                                    'title': 'Chart Data',
                                                     'description': 'Click to edit the input data for this chart',
                                                     'preview': None,
                                                     'html': None,
@@ -664,6 +673,7 @@ def tabpane(context, **kwargs):
                                                     'badge':None,
                                                 },
                                                 {
+                                                    'name': None,
                                                     'label': None,
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -674,7 +684,7 @@ def tabpane(context, **kwargs):
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': 'bi-pen',
-                                                    'name': 'Chart',
+                                                    'title': 'Chart',
                                                     'description': 'Click to edit the settings for this chart',
                                                     'preview': None,
                                                     'html': None,
@@ -714,11 +724,13 @@ def tabpane(context, **kwargs):
                             'template': None,
                             'detailpane': 
                                 {
+                                    'name': 'Quick Menu',
                                     'label': 'Quick Menu',
                                     'onclick': 'Handler.navigator.toggleNav();',
                                     'dismiss': None,
                                     'tabs': [
                                                 {
+                                                    'name': None,
                                                     'label': 'something',
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -729,7 +741,7 @@ def tabpane(context, **kwargs):
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': None,
-                                                    'name': 'Something',
+                                                    'title': 'Something',
                                                     'description': None,
                                                     'preview': None,
                                                     'html': None,
@@ -739,6 +751,7 @@ def tabpane(context, **kwargs):
                                                     'badge': None,
                                                 },
                                                 {
+                                                    'name': None,
                                                     'label': 'more',
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -749,7 +762,7 @@ def tabpane(context, **kwargs):
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': None,
-                                                    'name': 'More',
+                                                    'title': 'More',
                                                     'description': None,
                                                     'preview': None,
                                                     'html': None,

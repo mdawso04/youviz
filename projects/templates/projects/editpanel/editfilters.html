@@ -28,7 +28,7 @@
                        class="form-control bg-white text-dark" 
                        {#onclick="Collapse.getOrCreateInstance('#data-modal{{forloop.counter0}}').toggle();"#}
                        value="{% for_ui_summary d.service.saved d.options.saved.values %}"/>
-                <button class="btn btn-secondary bg-white text-dark border-light" 
+                <button class="btn btn-secondary bg-white text-dark border-secondary-subtle" 
                         data-bs-toggle="collapse"
                         data-bs-target="#data-modal{{forloop.counter0}}"
                         data-bs-title="Edit" 
@@ -142,7 +142,7 @@
                     class="btn btn-secondary btn-sm" 
                     data-bs-toggle="modal" 
                     data-bs-target="#previewDataModal{{vid}}">
-                Preview data
+                Preview chart data
             </button>
         </div>
     </div>
@@ -171,7 +171,7 @@
              role="document">
             <div class="modal-content">
                 <div class="modal-header border-0">
-                    <h3>Data</h3>
+                    <h3>Chart Data</h3>
                     <!-- TAB BUTTONS END-->
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
