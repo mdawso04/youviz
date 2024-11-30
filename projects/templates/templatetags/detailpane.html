@@ -31,10 +31,10 @@
     {% for t in detailpane.tabs %}
         {% if t.display_setting %}
         <!-- name & desc -->
-        <div class="mb-2 p-3 position-relative rounded-3 {{ t.background }}" 
+        <div class="mb-2 {% if t.padding %}p-3 {% endif %}position-relative rounded-3 {{ t.background }}" 
              id="detailpane-{{ t.label|slugify }}">
             {% if t.label %}
-            <h3 class="small text-muted">{{ t.label|title }}{% if t.counter %}<span class="badge rounded-pill bg-light text-dark">{{ t.counter }}</span>{% endif %}</h3>
+            <h3 class="small text-muted">{{ t.label|title }}{% if t.counter %}<span class="badge rounded-pill bg-light text-dark ms-1">{{ t.counter }}</span>{% endif %}</h3>
             {% endif %}
             {% if t.name %}
             <p class="h6" style="">{{ t.name }}</p>
@@ -50,7 +50,7 @@
             {% if t.preview %}
             <div class="comments mb-1 p-2 rounded-3 bg-light small"
                  style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">
-                {{ datasource.comments.last.description }}
+                {% if datasource.comments.last %}{{ datasource.comments.last.description }}{% else %}Waiting for comments!{% endif %}
             </div>
             {% endif %}
             {% if t.html %}
@@ -67,15 +67,15 @@
             {% if t.author %}
             {% author %}
             {% endif %}
-            {% if t.onclick and t.onclick_perm is None or t.onclick_perm in app_perms %}
-            <a href="#" class="stretched-link" onclick="{{ t.onclick }}"></a>
+            {% if t.onclick_url or t.onclick %}{% if t.onclick_perm is None or t.onclick_perm in app_perms %}
+            <a href="{% if t.onclick_url %}{{ t.onclick_url }}{% else %}#{% endif %}" class="stretched-link" onclick="{% if not t.onclick_url %}{{ t.onclick }}{% endif %}"></a>
                 {% if t.onclick_icon %}
                 <button class="bg-transparent border-0 mx-1 my-2 position-absolute top-0 end-0" 
                         style="z-index: 1020;"> 
                         <i class="bi bi-pen text-black-50"></i>
                 </button>
                 {% endif %}
-            {% endif %}
+            {% endif %}{% endif %}
         </div>
         {% endif %}
     {% endfor %}
