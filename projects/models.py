@@ -381,14 +381,15 @@ pp.data.DATA_COL_FORMAT_TYPE = DATA_COL_FORMAT_TYPE
 
 
 @registerService(
-    columns=OPTION_FIELD_SINGLE_COL_STRING,
+    #columns=OPTION_FIELD_SINGLE_COL_STRING,
     before=FIELD_STRING,
     after=FIELD_STRING,
 )
 def DATA_COL_FORMAT_REPLACE_TEXT(df, columns=None, before='', after=''):
     '''Round numerical column values to specified decimal'''
-    eval_string = 'cell.replace("{}","{}")'.format(str(before), str(after))
-    df = pp.data._DATA_COL_FORMAT_CUSTOM(df=df, columns=columns, eval_string=eval_string)
+    #eval_string = 'cell.replace("{}","{}", regex=True)'.format(str(before), str(after))
+    #df = pp.data._DATA_COL_FORMAT_CUSTOM(df=df, columns=columns, eval_string=eval_string)
+    df = df.replace(before, after, regex=True)
     return df
 
 
