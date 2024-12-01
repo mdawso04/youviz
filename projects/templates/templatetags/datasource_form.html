@@ -47,13 +47,17 @@
         <p class="h6" style="">{{ datasource.datastream.name }}</p>
         <p class="text-muted small lh-sm">{{ datasource.datastream.description }}</p>
         
+        {% if datasource.datastream.properties.source %}
         <h3 class="small text-muted">Original Source</h3>
         <p class="text-muted small lh-sm">{{ datasource.datastream.properties.source }}</p>
+        {% endif %}
+        {% if datasource.datastream.properties.licence %}
         <h3 class="small text-muted">Licence</h3>    
         <p class="text-muted small lh-sm">{{ datasource.datastream.properties.licence }}</p>
+        {% endif %}
         <p class="text-muted small lh-sm">
             {% if datasource.datastream.properties.refresh %}This datasource is refreshed automatically.{% endif %}
-            Last refreshed {{ datasource.datastream.last_cached }}
+            Last refreshed {{ datasource.datastream.last_cached|naturalday|capfirst }}
         </p>
     </div>
     {% endif %}
