@@ -392,6 +392,17 @@ def DATA_COL_FORMAT_REPLACE_TEXT(df, columns=None, before='', after=''):
     df = df.replace(before, after, regex=True)
     return df
 
+@registerService(
+    columns=OPTION_FIELD_SINGLE_COL_STRING,
+)
+def DATA_UNPIVOT(df, columns=None):
+    columns = colHelper(df, columns)
+    df = pd.melt(df, id_vars=columns)
+    logger.debug('pp.data > Unpivot dataframe')
+    return df
+
+pp.data.DATA_UNPIVOT = DATA_UNPIVOT
+
 
 '''
 End patch

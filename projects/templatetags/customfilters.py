@@ -85,7 +85,7 @@ ui_map = {
     #'DATA_GROUP': 'Table: group',
     #'DATA_MERGE': 'Table: merge',
     #'DATA_TRANSPOSE': 'Table: transpose',
-    #'DATA_UNPIVOT': 'Table: unpivot',
+    'DATA_UNPIVOT': 'Unpivot',
     #'DATA_PIVOT': 'Table: pivot',
     'VIZ_AREA': 'Area',
     'VIZ_BAR': 'Bar',
@@ -180,7 +180,7 @@ ui_map_summary = {
     'DATA_GROUP': 'Table: group',
     'DATA_MERGE': 'Table: merge',
     'DATA_TRANSPOSE': 'Table: transpose',
-    'DATA_UNPIVOT': 'Table: unpivot',
+    'DATA_UNPIVOT': 'Unpivot',
     'DATA_PIVOT': 'Table: pivot',
     
     

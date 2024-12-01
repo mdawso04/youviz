@@ -35,3 +35,5 @@ urlpatterns = [
 def trigger_error(request):
     division_by_zero = 1 / 0
 urlpatterns.append(path('sentry-debug/', trigger_error))
+
+handler404 = views.handler404

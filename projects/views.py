@@ -238,3 +238,6 @@ def login(request):
     else:
         form = AuthenticationForm()
         return render(request, 'projects/landing_new.html', {'form':form})
+    
+def handler404(request, exception):
+    return render(request, 'projects/handler404.html')
