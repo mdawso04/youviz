@@ -477,6 +477,7 @@ def tabpane(context, **kwargs):
             'tabs': [
                         {
                             'label': 'details',                    
+                            'nosnippet': False, 
                             'required_perm': None,
                             'template': None,
                             'detailpane': 
@@ -488,6 +489,7 @@ def tabpane(context, **kwargs):
                                     'tabs': [
                                                 {
                                                     'name': 'info',
+                                                    'nosnippet': False, 
                                                     'label': None,
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -512,6 +514,7 @@ def tabpane(context, **kwargs):
                                                 },
                                                 {
                                                     'name': None,
+                                                    'nosnippet': True, 
                                                     'label': 'comments',
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -533,6 +536,7 @@ def tabpane(context, **kwargs):
                                                 },
                                                 {
                                                     'name': None,
+                                                    'nosnippet': True, 
                                                     'label': None,
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -554,6 +558,7 @@ def tabpane(context, **kwargs):
                                                 },
                                                 {
                                                     'name': None,
+                                                    'nosnippet': False, 
                                                     'label': 'datasource',
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -575,6 +580,7 @@ def tabpane(context, **kwargs):
                                                 },
                                                 {
                                                     'name': None,
+                                                    'nosnippet': False, 
                                                     'label': None,
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -596,6 +602,7 @@ def tabpane(context, **kwargs):
                                                 },
                                                 {
                                                     'name': None,
+                                                    'nosnippet': True, 
                                                     'label': None,
                                                     'background': 'bg-light',
                                                     'padding': False,
@@ -620,18 +627,21 @@ def tabpane(context, **kwargs):
                         },
                         {
                             'label': 'edit',
+                            'nosnippet': True, 
                             'required_perm': 'change_datasource',
                             'template': 'projects/navpanel/edit.html',
                             'detailpane': None,
                         },
                         {
                             'label': 'comments',
+                            'nosnippet': True, 
                             'required_perm': None,
                             'template': 'projects/navpanel/comments.html',
                             'detailpane': None,
                         },
                         {
                             'label': 'related',
+                            'nosnippet': True, 
                             'required_perm': None,
                             'template': 'projects/navpanel/related.html',
                             'detailpane': None,
@@ -642,6 +652,7 @@ def tabpane(context, **kwargs):
             'tabs': [
                         {
                             'label': 'details',                    
+                            'nosnippet': True, 
                             'required_perm': None,
                             'template': None,
                             'detailpane': 
@@ -653,6 +664,7 @@ def tabpane(context, **kwargs):
                                     'tabs': [
                                                 {
                                                     'name': None,
+                                                    'nosnippet': False, 
                                                     'label': None,
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -674,6 +686,7 @@ def tabpane(context, **kwargs):
                                                 },
                                                 {
                                                     'name': None,
+                                                    'nosnippet': False, 
                                                     'label': None,
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -698,18 +711,21 @@ def tabpane(context, **kwargs):
                         },
                         {
                             'label': 'editfilters',
+                            'nosnippet': True, 
                             'required_perm': None,
                             'template': 'projects/editpanel/editfilters.html',
                             'detailpane': None,
                         },
                         {
                             'label': 'editchart',
+                            'nosnippet': True, 
                             'required_perm': None,
                             'template': 'projects/editpanel/editchart.html',
                             'detailpane': None,
                         },
                         {
                             'label': 'editdrawings',
+                            'nosnippet': True, 
                             'required_perm': None,
                             'template': 'projects/editpanel/editdrawings.html',
                             'detailpane': None,
@@ -720,6 +736,7 @@ def tabpane(context, **kwargs):
             'tabs': [
                         {
                             'label': 'list',                    
+                            'nosnippet': True, 
                             'required_perm': None,
                             'template': None,
                             'detailpane': 
@@ -731,6 +748,7 @@ def tabpane(context, **kwargs):
                                     'tabs': [
                                                 {
                                                     'name': None,
+                                                    'nosnippet': False, 
                                                     'label': 'something',
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -752,6 +770,7 @@ def tabpane(context, **kwargs):
                                                 },
                                                 {
                                                     'name': None,
+                                                    'nosnippet': False, 
                                                     'label': 'more',
                                                     'background': 'bg-white',
                                                     'padding': True,
@@ -780,12 +799,14 @@ def tabpane(context, **kwargs):
             'tabs': [
                 {
                     'label': 'details',
+                    'nosnippet': True, 
                     'required_perm': None,
                     'template': 'projects/offcanvas/details.html',
                     'detailpane': None,
                 },
                 {
                     'label': 'edit',                    
+                    'nosnippet': True, 
                     'required_perm': 'change_profile',
                     'template': 'projects/offcanvas/edit.html',
                     'detailpane': None,

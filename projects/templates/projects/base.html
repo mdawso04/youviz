@@ -50,7 +50,7 @@
             </script>
             
             <!-- TOP NAVBAR -->
-            <nav class="top-nav" id="top-nav">
+            <nav class="top-nav" id="top-nav" data-nosnippet>
                 {% block top_navbar %}
                 {% endblock %}
                 
@@ -88,6 +88,7 @@
               unicorn:model="request.user.profile.properties.{{key}}"
               unicorn:partial="nameKey"
               unicorn:partial.id="user-preferences"
+              data-nosnippet
             />
             <script>
             {% if value %}
@@ -110,7 +111,7 @@
             
     
             <!-- EDITPANEL - MASTER -->
-            <div class="bg-light border-none test-edit" id="editpanel" aria-labelledby="TBD">
+            <div class="bg-light border-none test-edit" id="editpanel" aria-labelledby="TBD" data-nosnippet>
                 <div class="position-relative">
                 {% block editpanel %}
                 {% endblock %}

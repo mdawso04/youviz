@@ -32,7 +32,7 @@
         {% if t.display_setting %}
         <!-- name & desc -->
         <div class="mb-2 {% if t.padding %}p-3 {% endif %}position-relative rounded-3 {{ t.background }}" 
-             id="{{ detailpane.name|slugify }}-{{ t.name|slugify }}">
+             id="{{ detailpane.name|slugify }}-{{ t.name|slugify }} {% if t.nosnippet %}data-nosnippet{% endif %}">
             {% if t.label %}
             <h3 class="small text-muted">{{ t.label|title }}{% if t.counter %}<span class="badge rounded-pill bg-light text-dark ms-1">{{ t.counter }}</span>{% endif %}</h3>
             {% endif %}
@@ -54,7 +54,7 @@
             </div>
             {% endif %}
             {% if t.html %}
-                <div class="notification py-2 rounded-3 bg-light" style="" data-nosnippet>
+                <div class="notification py-2 rounded-3 bg-light" style="">
                     {{ t.html|safe }}
                 </div>
             {% endif %}
