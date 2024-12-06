@@ -795,6 +795,47 @@ def tabpane(context, **kwargs):
                         },
                     ],
         },
+        'new': {
+            'tabs': [
+                        {
+                            'label': 'new',                    
+                            'nosnippet': True, 
+                            'required_perm': 'add_datastream',
+                            'template': None,
+                            'detailpane': 
+                                {
+                                    'name': 'Add Datasource',
+                                    'label': 'Add Datasource',
+                                    'onclick': 'Handler.navigator.toggleNav();',
+                                    'dismiss': None,
+                                    'tabs': [
+                                                {
+                                                    'name': None,
+                                                    'nosnippet': False, 
+                                                    'label': None,
+                                                    'background': 'bg-white',
+                                                    'padding': True,
+                                                    'counter': None,
+                                                    'onclick_url': None,
+                                                    'onclick': 'alert("add something!")',
+                                                    'onclick_perm': None,
+                                                    'display_perm': None,
+                                                    'display_setting': True,
+                                                    'onclick_icon': None,
+                                                    'title': 'Enter Manually',
+                                                    'description': 'Add a new datasource manually',
+                                                    'preview': None,
+                                                    'html': None,
+                                                    'include': None,
+                                                    'related': None,
+                                                    'author': None,
+                                                    'badge': None,
+                                                },
+                                            ],
+                                },
+                        },
+                    ],
+        },
         'offcanvas': {
             'tabs': [
                 {

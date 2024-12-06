@@ -44,6 +44,8 @@
 {% block navpanel %}
     {% if context.mode == "list" %} 
         {% tabpane name='list' %}
+    {% elif context.mode == "new" %} 
+        {% tabpane name='new' %}
     {% elif context.mode == "view" %} 
         {% tabpane name='navpanel' %}
     {% endif %}
