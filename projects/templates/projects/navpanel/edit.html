@@ -40,7 +40,7 @@
                           unicorn:key="fileNameText"
                           unicorn:model.lazy="datasource.name"
                           {#unicorn:partial.id="fileInfo" #}
-                          unicorn:partial="navTitleDesc"
+                          unicorn:partial="viz-details-info"
                           unicorn:partial.id="infoLargeTitle"
                           aria-label="File Name">{{ datasource.name }}</textarea>
             </div>
@@ -64,7 +64,7 @@
                 <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" 
                        unicorn:model="datasource.is_published"
                        unicorn:partial.id="infoLargeTitle"
-                       unicorn:partial="navTitleDesc"
+                       unicorn:partial="viz-details-info"
                        {% if datasource.is_published %}checked{% endif %}>
                 <label class="form-check-label" for="flexSwitchCheckDefault">Publish</label>
             </div>

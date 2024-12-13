@@ -81,7 +81,7 @@
             
             {# if we are to display nav #}
             {% if nav_display_perm in app_perms %}
-            <div class="bg-light border-none test-nav {% if value %}open{% endif %}" id="navbar" aria-labelledby="TBD">
+            <div class="bg-light border-none test-nav {% if nav_open %}open{% endif %}" id="navbar" aria-labelledby="TBD">
                 <div class="position-relative">
                 {% block navpanel %}
                 {% endblock %}
@@ -134,7 +134,7 @@
                     {% if nav_display_perm in app_perms %}
                     <!-- LEFT PANEL -->
                     <div class="side-panel">
-                        <div class="collapse collapse-horizontal {% if value %}show{% endif %}" id="leftPanel">
+                        <div class="collapse collapse-horizontal {% if nav_open %}show{% endif %}" id="leftPanel">
                             <div style="min-width: var(--large-edit-width); max-width: var(--large-edit-width);">
                                 <br/>
                             </div>
@@ -143,7 +143,7 @@
                     {% endif %}
                     
                     <!-- MID PANEL -->
-                    <div class="mid-panel h-100" id="midPanel">
+                    <div class="mid-panel h-100" id="midPanel">                
                         {% block content %}
                         {% endblock %}
                     </div>
