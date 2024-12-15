@@ -14,12 +14,12 @@
         {% for t in tabs %}
         <li class="nav-item" role="presentation">
             <button class="nav-link {% if forloop.first %}active{% endif %}" 
-                    id="tabpane-{{ name }}-{{ t.label }}-tab" 
+                    id="tabpane-{{ name }}-{{ t.name }}-tab" 
                     data-bs-toggle="pill" 
-                    data-bs-target="#tabpane-{{ name }}-{{ t.label }}" 
+                    data-bs-target="#tabpane-{{ name }}-{{ t.name }}" 
                     type="button" 
                     role="tab" 
-                    aria-controls="tabpane-{{ name }}-{{ t.label }}" 
+                    aria-controls="tabpane-{{ name }}-{{ t.name }}" 
                     aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
                 {{ t.label|title }}
             </button>
@@ -31,10 +31,30 @@
      id="tabpane-{{ name }}-content">
     {% for t in tabs %}
     <div class="tab-pane fade position-relative {% if forloop.first %}active show{% endif %}" 
-         id="tabpane-{{ name }}-{{ t.label }}" 
+         id="tabpane-{{ name }}-{{ t.name }}" 
          role="tabpanel" 
-         aria-labelledby="tabpane-{{ name }}-{{ t.label }}-tab"
+         aria-labelledby="tabpane-{{ name }}-{{ t.name }}-tab"
          {% if t.nosnippet %}data-nosnippet{% endif %}>
+        
+        <style>
+        .noscroll {
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .noscroll::-webkit-scrollbar { 
+            display: none;  /* Safari and Chrome */
+        }
+        </style>
+
+        <div class="d-flex offcanvas-header p-3">
+            <h2 class="offcanvas-title me-auto h4" id="offcanvasBottomLabel">{{ t.label|title }}</h2>
+            <button type="button" class="{% if t.icon %}border-0 bg-transparent p-0{% else %}btn-close text-reset{% endif %}" 
+                    {% if t.onclick %}onclick="{{ t.onclick }}"{% elif t.dismiss %}data-bs-dismiss="{{ t.dismiss }}"{% endif %}  
+                    aria-label="Close">
+                {% if t.icon %}<i class="bi-{{ t.icon }}" style="width: 24px; height: 24px;"></i>{% endif %}
+            </button>
+        </div>
+        
         {% if t.detailpane %}
         {#{% detailpane name=t.detailpane perms=datasource_perms %}#}
         {% detailpane detailpane=t.detailpane %}

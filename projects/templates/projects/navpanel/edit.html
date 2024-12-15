@@ -3,6 +3,8 @@
 {% load guardian_tags %}
 {% get_obj_perms request.user for datasource as "datasource_perms" %}
 
+{% if never %}
+
 <style>
 .noscroll {
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
@@ -12,7 +14,6 @@
     display: none;  /* Safari and Chrome */
 }
 </style>
-
 
 
 <div class="d-flex offcanvas-header p-3">
@@ -27,6 +28,7 @@
 
 
 </div>
+{% endif %}
 
 <div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" style="overflow-x: hidden;" id="switch">
     <div class="row row-cols-1 g-3 pb-3" id="fileInfo">

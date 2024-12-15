@@ -476,16 +476,16 @@ def tabpane(context, **kwargs):
         'navpanel': {
             'tabs': [
                         {
-                            'label': 'details',                    
+                            'name': 'details',
+                            'label': 'viz details',
+                            'onclick': 'Handler.navigator.toggleNav();',
+                            'dismiss': None,
+                            'icon': None,
                             'nosnippet': False, 
                             'required_perm': None,
                             'template': None,
                             'detailpane': 
                                 {
-                                    'name': 'viz details',
-                                    'label': 'viz details',
-                                    'onclick': 'Handler.navigator.toggleNav();',
-                                    'dismiss': None,
                                     'tabs': [
                                                 {
                                                     'name': 'info',
@@ -626,21 +626,33 @@ def tabpane(context, **kwargs):
                                 },
                         },
                         {
-                            'label': 'edit',
+                            'name': 'edit',
+                            'label': 'Edit Viz Details',
+                            'onclick': "Handler.showTab('#tabpane-navpanel-details-tab');",
+                            'dismiss': None,
+                            'icon': 'arrow-left',
                             'nosnippet': True, 
                             'required_perm': 'change_datasource',
                             'template': 'projects/navpanel/edit.html',
                             'detailpane': None,
                         },
                         {
+                            'name': 'comments',
                             'label': 'comments',
+                            'onclick': "Handler.showTab('#tabpane-navpanel-details-tab');",
+                            'dismiss': None,
+                            'icon': 'arrow-left',
                             'nosnippet': True, 
                             'required_perm': None,
                             'template': 'projects/navpanel/comments.html',
                             'detailpane': None,
                         },
                         {
-                            'label': 'related',
+                            'name': 'related',
+                            'label': 'Datasource Details',
+                            'onclick': "Handler.showTab('#tabpane-navpanel-details-tab');",
+                            'dismiss': None,
+                            'icon': 'arrow-left',
                             'nosnippet': True, 
                             'required_perm': None,
                             'template': 'projects/navpanel/related.html',
@@ -651,16 +663,16 @@ def tabpane(context, **kwargs):
         'editpanel': {
             'tabs': [
                         {
-                            'label': 'details',                    
+                            'name': 'details',
+                            'label': 'page settings',
+                            'onclick': 'Handler.navigator.toggleEdit();',
+                            'dismiss': None,
+                            'icon': None,
                             'nosnippet': True, 
                             'required_perm': None,
                             'template': None,
                             'detailpane': 
                                 {
-                                    'name': 'page settings',
-                                    'label': 'page settings',
-                                    'onclick': 'Handler.navigator.toggleEdit();',
-                                    'dismiss': None,
                                     'tabs': [
                                                 {
                                                     'name': None,
@@ -710,21 +722,33 @@ def tabpane(context, **kwargs):
                                 },
                         },
                         {
-                            'label': 'editfilters',
+                            'name': 'editfilters',
+                            'label': 'Edit Chart Data',
+                            'onclick': "Handler.showTab('#tabpane-editpanel-details-tab');",
+                            'dismiss': None,
+                            'icon': 'arrow-left',
                             'nosnippet': True, 
                             'required_perm': None,
                             'template': 'projects/editpanel/editfilters.html',
                             'detailpane': None,
                         },
                         {
-                            'label': 'editchart',
+                            'name': 'editchart',
+                            'label': 'Edit Chart',
+                            'onclick': "Handler.showTab('#tabpane-editpanel-details-tab');",
+                            'dismiss': None,
+                            'icon': 'arrow-left',
                             'nosnippet': True, 
                             'required_perm': None,
                             'template': 'projects/editpanel/editchart.html',
                             'detailpane': None,
                         },
                         {
-                            'label': 'editdrawings',
+                            'name': 'editdrawings',
+                            'label': 'Edit Chart Annotations',
+                            'onclick': "Handler.showTab('#tabpane-editpanel-details-tab');",
+                            'dismiss': None,
+                            'icon': 'arrow-left',
                             'nosnippet': True, 
                             'required_perm': None,
                             'template': 'projects/editpanel/editdrawings.html',
@@ -735,16 +759,16 @@ def tabpane(context, **kwargs):
         'list': {
             'tabs': [
                         {
-                            'label': 'list',                    
+                            'name': 'Quick Menu',
+                            'label': 'Quick Menu',
+                            'onclick': 'Handler.navigator.toggleNav();',
+                            'dismiss': None,
+                            'icon': None,
                             'nosnippet': True, 
                             'required_perm': None,
                             'template': None,
                             'detailpane': 
                                 {
-                                    'name': 'Quick Menu',
-                                    'label': 'Quick Menu',
-                                    'onclick': 'Handler.navigator.toggleNav();',
-                                    'dismiss': None,
                                     'tabs': [
                                                 {
                                                     'name': None,
@@ -798,16 +822,16 @@ def tabpane(context, **kwargs):
         'new': {
             'tabs': [
                         {
-                            'label': 'new',                    
+                            'name': 'Add Datasource',
+                            'label': 'Add Datasource',
+                            'onclick': 'Handler.navigator.toggleNav();',
+                            'dismiss': None,
+                            'icon': None,
                             'nosnippet': True, 
                             'required_perm': 'add_datastream',
                             'template': None,
                             'detailpane': 
                                 {
-                                    'name': 'Add Datasource',
-                                    'label': 'Add Datasource',
-                                    'onclick': 'Handler.navigator.toggleNav();',
-                                    'dismiss': None,
                                     'tabs': [
                                                 {
                                                     'name': None,
@@ -835,7 +859,11 @@ def tabpane(context, **kwargs):
                                 },
                         },
                         {
+                            'name': 'related',
                             'label': 'related',
+                            'onclick': "Handler.showTab('#tabpane-new-related-tab');",
+                            'dismiss': None,
+                            'icon': 'arrow-left',
                             'nosnippet': True, 
                             'required_perm': None,
                             'template': 'projects/navpanel/related.html',
@@ -846,14 +874,22 @@ def tabpane(context, **kwargs):
         'offcanvas': {
             'tabs': [
                 {
-                    'label': 'details',
+                    'name': 'details',
+                    'label': 'My Settings',
+                    'onclick': None,
+                    'dismiss': 'offcanvas',
+                    'icon': None,
                     'nosnippet': True, 
                     'required_perm': None,
                     'template': 'projects/offcanvas/details.html',
                     'detailpane': None,
                 },
                 {
-                    'label': 'edit',                    
+                    'name': 'edit',
+                    'label': 'Edit My Settings',
+                    'onclick': "Handler.showTab('#tabpane-offcanvas-details-tab');",
+                    'dismiss': None,
+                    'icon': 'arrow-left',
                     'nosnippet': True, 
                     'required_perm': 'change_profile',
                     'template': 'projects/offcanvas/edit.html',

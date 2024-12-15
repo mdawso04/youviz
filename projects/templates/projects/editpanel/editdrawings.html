@@ -5,6 +5,7 @@
 {% load humanize %}
 {% load socialaccount %}
 
+{% if never %}
 <div class="d-flex offcanvas-header p-3">
     <h5 class="offcanvas-title me-auto flex-grow-1 h4" id="offcanvasBottomLabel">Edit Annotations</h5>
     <!--<div class="form-check form-switch">
@@ -15,6 +16,7 @@
         <i class="bi-arrow-left" style="width: 24px; height: 24px;"></i>
     </button>
 </div>
+{% endif %}
 
 <div class="offcanvas-body test-edit-inner p-3 pt-0" style="overflow-x: hidden;" id="switch">
     

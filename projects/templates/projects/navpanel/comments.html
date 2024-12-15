@@ -1,6 +1,7 @@
 {% load humanize %}
 {% load customfilters %}
 
+{% if never %}
 <style>
 .noscroll {
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
@@ -17,6 +18,8 @@
         <i class="bi-arrow-left" style="width: 24px; height: 24px;"></i>
     </button>
 </div>
+
+{% endif %}
                 
 <div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" 
      id="comment-form"

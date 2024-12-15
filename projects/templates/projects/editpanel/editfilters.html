@@ -6,6 +6,7 @@
 {% load socialaccount %}
 {% load customfilters %}
 
+{% if never %}
 <div class="d-flex offcanvas-header p-3">
     <h5 class="offcanvas-title me-auto flex-grow-1 h4" id="offcanvasBottomLabel">Edit Chart Data</h5>
     <!--<div class="form-check form-switch">
@@ -16,6 +17,7 @@
         <i class="bi-arrow-left" style="width: 24px; height: 24px;"></i>
     </button>
 </div>
+{% endif %}
 
 <div class="offcanvas-body test-edit-inner p-3 pt-0" style="overflow-x: hidden;" id="switch">
     <div class="row row-cols-1 g-2 pb-2" unicorn:key="filter-row-01-{{vid}}" id="filter-row-01-{{vid}}">

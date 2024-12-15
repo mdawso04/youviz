@@ -8,23 +8,6 @@
 {% load guardian_tags %}
 
 {% if detailpane %}
-
-<style>
-.noscroll {
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-    scrollbar-width: none;  /* Firefox */
-}
-.noscroll::-webkit-scrollbar { 
-    display: none;  /* Safari and Chrome */
-}
-</style>
-
-<div class="d-flex offcanvas-header p-3">
-    <h2 class="offcanvas-title me-auto h4" id="offcanvasBottomLabel">{{ detailpane.label|title }}</h2>
-    <button type="button" class="btn-close text-reset" 
-            {% if detailpane.onclick %}onclick="{{ detailpane.onclick }}"{% elif detailpane.dismiss %}data-bs-dismiss="{{ detailpane.dismiss }}"{% endif %}  
-            aria-label="Close"></button>
-</div>
                 
 <div class="offcanvas-body test-edit-inner px-2 px-md-3 pb-2 pb-md-3 noscroll" style="overflow-x: auto;">
     
