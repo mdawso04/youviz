@@ -1,3 +1,12 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
 <!--base_search_field.html-->
 <input class="form-control bg-light border-0 py-0" 
        type="search" 
@@ -10,13 +19,5 @@
        id="viz_count" 
        value="" />
 {% if context.mode == "view" or context.mode == "app" %}
-    <button id="navbar-button-share" 
-            class="btn border-0 text-secondary py-0" 
-            type="button" 
-            data-url="{% url 'view' slug=datasource.slug %}" 
-            data-text="{{ datasource.name }}">
-        <i class="bi bi-box-arrow-up" 
-           style="font-size: 1.5rem;">
-        </i>
-    </button>
+   {% modal label='Share' size='md' message='test' cancellbl='Done' icon='box-arrow-up' form='form_share'%}
 {% endif %}

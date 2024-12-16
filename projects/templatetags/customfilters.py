@@ -395,6 +395,14 @@ def modal_ok_cancel(context, **kwargs):
     '''
     return kwargs
 
+@register.inclusion_tag("templatetags/modal.html", takes_context=True)
+def modal(context, **kwargs):
+    '''
+    model, modelvalue, label, partial, partialid, partialkey
+    '''
+    return context.flatten() | kwargs
+
+
 @register.inclusion_tag("templatetags/modal_link.html", takes_context=True)
 def modal_link(context, **kwargs):
     '''
@@ -931,6 +939,12 @@ def button_refreshapp(context, **kwargs):
 
 @register.inclusion_tag("templatetags/button_sociallogin.html", takes_context=True)
 def button_sociallogin(context, **kwargs):
+    '''
+    '''
+    return kwargs
+
+@register.inclusion_tag("templatetags/form_share.html", takes_context=True)
+def form_share(context, **kwargs):
     '''
     '''
     return kwargs
