@@ -1,0 +1,57 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+{% if never %}
+id - opt. unique identifier str
+label - modal title str
+size - opt. sm, md, lg, xlg
+template or message
+cancellbl - opt. text for cancel button
+oklbl - opt. text/trigger for ok button
+ok - opt. javascript to call on ok.
+{% endif %}
+
+<button type="button" class="btn border-0 text-secondary py-0" id="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-modal-button" 
+        data-bs-toggle="modal" data-bs-target="#{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-modal">
+    {% if icon %}<i class="bi bi-{{ icon }}" 
+                    style="font-size: 1.5rem;"></i>{% else %}{{ label }}{% endif %}
+</button>
+
+<!-- {{ label }} modal -->
+<div id="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-modal" class="modal fade yvmodal" data-bs-backdrop="static" data-bs-keyboard="false" 
+     tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-{% if size %}{{ size }}{% else %}sm{% endif %}">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">{{ label }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {#{% if template %}{% include template %}{% else %}{{ message }}{% endif %}#}
+                <button id="navbar-button-share" 
+                            class="btn btn-primary" 
+                            type="button" 
+                            data-url="{% url 'view' slug=datasource.slug %}" 
+                            data-text="{{ datasource.name }}">
+                        Share!
+                    </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" 
+                        data-bs-dismiss="modal">{% if cancellbl %}{{ cancellbl }}{% else %}Cancel{% endif %}</button>
+                {% if oklbl %}
+                <button type="button" 
+                        id="{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-modal-ok-button" 
+                        onclick="Modal.getInstance('#{% if id %}{{ id }}{% else %}{{ label|slugify }}{% endif %}-modal').hide();{% if ok %}{{ ok }}{% endif %}"
+                        class="btn btn-primary">OK</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
