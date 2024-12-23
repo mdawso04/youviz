@@ -20,7 +20,6 @@
 
 <div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" style="overflow-x: hidden;">
 
-    {% if 'change_datastream' in app_perms %}
     <div class="row row-cols-1 g-2 pb-3" id="fileInfo">
         {% input_textarea model='datasource.datastream.name' modelvalue=datasource.datastream.name label='Name' %}
         {% input_textarea model='datasource.datastream.description' modelvalue=datasource.datastream.description label='Description' %}
@@ -42,24 +41,9 @@
         {% input_switch model='datasource.datastream.properties.refresh' modelvalue=datasource.datastream.properties.refresh label='Keep datasource refreshed' partial='infoLargeTitle' %}
         <p class="text-muted small lh-sm">Last refreshed {{ datasource.datastream.last_cached }}</p>
     </div>
-    {% else %}
-    <div class="comments mb-2 p-3 position-relative rounded-3 bg-white" >
-        <p class="h6" style="">{{ datasource.datastream.name }}</p>
-        <p class="text-muted small lh-sm">{{ datasource.datastream.description }}</p>
-        
-        {% if datasource.datastream.properties.source %}
-        <h3 class="small text-muted">Original Source</h3>
-        <p class="text-muted small lh-sm">{{ datasource.datastream.properties.source }}</p>
-        {% endif %}
-        {% if datasource.datastream.properties.licence %}
-        <h3 class="small text-muted">Licence</h3>    
-        <p class="text-muted small lh-sm">{{ datasource.datastream.properties.licence }}</p>
-        {% endif %}
-        <p class="text-muted small lh-sm">
-            {% if datasource.datastream.properties.refresh %}This datasource is refreshed automatically.{% endif %}
-            Last refreshed {{ datasource.datastream.last_cached|naturalday|capfirst }}
-        </p>
-    </div>
+    
+    {% if create_button %}
+    {% button label='Create datasource' onclick="alert('Create!')" %}
     {% endif %}
     
 </div>

@@ -10,16 +10,16 @@
 {% if tabs %}
 <div class="pt-1 d-none">
     <!-- <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Datasource Settings</h5> -->
-    <ul class="nav nav-pills" id="tabpane-{{ name }}-pills" role="tablist" data-nosnippet>
+    <ul class="nav nav-pills" id="tabpane-{{ name|slugify }}-pills" role="tablist" data-nosnippet>
         {% for t in tabs %}
         <li class="nav-item" role="presentation">
             <button class="nav-link {% if forloop.first %}active{% endif %}" 
-                    id="tabpane-{{ name }}-{{ t.name }}-tab" 
+                    id="tabpane-{{ name|slugify }}-{{ t.name|slugify }}-tab" 
                     data-bs-toggle="pill" 
-                    data-bs-target="#tabpane-{{ name }}-{{ t.name }}" 
+                    data-bs-target="#tabpane-{{ name|slugify }}-{{ t.name|slugify }}" 
                     type="button" 
                     role="tab" 
-                    aria-controls="tabpane-{{ name }}-{{ t.name }}" 
+                    aria-controls="tabpane-{{ name|slugify }}-{{ t.name|slugify }}" 
                     aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
                 {{ t.label|title }}
             </button>
@@ -28,12 +28,12 @@
     </ul>
 </div>
 <div class="tab-content" 
-     id="tabpane-{{ name }}-content">
+     id="tabpane-{{ name|slugify }}-content">
     {% for t in tabs %}
     <div class="tab-pane fade position-relative {% if forloop.first %}active show{% endif %}" 
-         id="tabpane-{{ name }}-{{ t.name }}" 
+         id="tabpane-{{ name|slugify }}-{{ t.name|slugify }}" 
          role="tabpanel" 
-         aria-labelledby="tabpane-{{ name }}-{{ t.name }}-tab"
+         aria-labelledby="tabpane-{{ name|slugify }}-{{ t.name|slugify }}-tab"
          {% if t.nosnippet %}data-nosnippet{% endif %}>
         
         <style>

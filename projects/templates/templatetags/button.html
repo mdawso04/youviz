@@ -1,0 +1,17 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+{% if not never %}
+<button type="button" class="btn {% if class %}{{ class }}{% else %}btn-secondary {% endif %} ms-1" {% if id %}id="{{ id }}"{% endif %}
+        {% if onclick %}onclick="{{ onclick }}"{% endif %}>
+    {% if label %}{{ label }} {% endif %}
+</button> 
+{% else %}
+Error generating input
+{% endif %}

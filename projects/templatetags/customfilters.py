@@ -357,8 +357,8 @@ def datasource_views_for_user(user, timeframe='all'):
     return count
 
 @register.inclusion_tag("templatetags/datasource_form.html", takes_context=True)
-def datasource_form(context):
-    return context
+def datasource_form(context, **kwargs):
+    return context.flatten() | kwargs
 
 @register.inclusion_tag("templatetags/input_switch.html", takes_context=True)
 def input_switch(context, **kwargs):
@@ -572,7 +572,7 @@ def tabpane(context, **kwargs):
                                                     'padding': True,
                                                     'counter': None,
                                                     'onclick_url': None,
-                                                    'onclick': "Handler.showTab('#tabpane-navpanel-related-tab');",
+                                                    'onclick': "Handler.showTab('#tabpane-navpanel-datasource-tab');",
                                                     'onclick_perm': None,
                                                     'display_perm': None,
                                                     'display_setting': True,
@@ -656,14 +656,54 @@ def tabpane(context, **kwargs):
                             'detailpane': None,
                         },
                         {
-                            'name': 'related',
+                            'name': 'datasource',
                             'label': 'Datasource Details',
                             'onclick': "Handler.showTab('#tabpane-navpanel-details-tab');",
                             'dismiss': None,
                             'icon': 'arrow-left',
                             'nosnippet': True, 
                             'required_perm': None,
-                            'template': 'projects/navpanel/related.html',
+                            'template': None,
+                            'detailpane': 
+                                {
+                                    'tabs': [
+                                                {
+                                                    'name': None,
+                                                    'nosnippet': False, 
+                                                    'label': None,
+                                                    'background': 'bg-white',
+                                                    'padding': True,
+                                                    'counter': None,
+                                                    'onclick_url': None,
+                                                    'onclick': "Handler.showTab('#tabpane-navpanel-edit-datasource-tab');",
+                                                    'onclick_perm': 'change_datasource',
+                                                    'display_perm': None,
+                                                    'display_setting': True,
+                                                    'onclick_icon': 'bi-pen',
+                                                    'title': (lambda: getattr(context['datasource'],'name', None)),
+                                                    'description': (lambda: getattr(context['datasource'],'description', None)),
+                                                    'preview': None,
+                                                    'html': None,
+                                                    'include': None,
+                                                    'related': None,
+                                                    'author': None,
+                                                    'badge': (lambda: {
+                                                        True: ('Published', True,),
+                                                        False: ('Unpublished', False,),
+                                                    }.get(getattr(context['datasource'], 'is_published', None)) if 'change_datasource' in context['app_perms'] else None),
+                                                },
+                                    ]
+                            },
+                        },
+                        {
+                            'name': 'edit datasource',
+                            'label': 'edit datasource details',
+                            'onclick': "Handler.showTab('#tabpane-navpanel-datasource-tab');",
+                            'dismiss': None,
+                            'icon': 'arrow-left',
+                            'nosnippet': True, 
+                            'required_perm': None,
+                            'template': 'projects/navpanel/edit-datasource.html',
                             'detailpane': None,
                         },
                     ],
@@ -830,7 +870,7 @@ def tabpane(context, **kwargs):
         'new': {
             'tabs': [
                         {
-                            'name': 'Add Datasource',
+                            'name': 'add datasource',
                             'label': 'Add Datasource',
                             'onclick': 'Handler.navigator.toggleNav();',
                             'dismiss': None,
@@ -849,7 +889,7 @@ def tabpane(context, **kwargs):
                                                     'padding': True,
                                                     'counter': None,
                                                     'onclick_url': None,
-                                                    'onclick': "Handler.showTab('#tabpane-new-related-tab');",
+                                                    'onclick': "Handler.showTab('#tabpane-new-manual-tab');",
                                                     'onclick_perm': None,
                                                     'display_perm': None,
                                                     'display_setting': True,
@@ -867,14 +907,14 @@ def tabpane(context, **kwargs):
                                 },
                         },
                         {
-                            'name': 'related',
-                            'label': 'related',
-                            'onclick': "Handler.showTab('#tabpane-new-related-tab');",
+                            'name': 'manual',
+                            'label': 'Add Datasource Manually',
+                            'onclick': "Handler.showTab('#tabpane-new-add-datasource-tab');",
                             'dismiss': None,
                             'icon': 'arrow-left',
                             'nosnippet': True, 
                             'required_perm': None,
-                            'template': 'projects/navpanel/related.html',
+                            'template': 'projects/navpanel/new-datasource.html',
                             'detailpane': None,
                         },
                     ],
@@ -980,3 +1020,9 @@ def user_preferences(context, **kwargs):
             i['current_value'] = context['settings'].get(i['name'])
         context['user_preferences'] = user_preferences
     return context
+
+@register.inclusion_tag("templatetags/button.html", takes_context=True)
+def button(context, **kwargs):
+    '''
+    '''
+    return kwargs
