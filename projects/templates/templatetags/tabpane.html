@@ -57,7 +57,7 @@
         
         {% if t.detailpane %}
         {#{% detailpane name=t.detailpane perms=datasource_perms %}#}
-        {% detailpane detailpane=t.detailpane %}
+        {% detailpane detailpane=t.detailpane name=t.name %}
         {% else %}
         {% include t.template %}
         {% endif %}
