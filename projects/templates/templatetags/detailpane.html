@@ -48,7 +48,7 @@
             {% related %}
             {% endif %}
             {% if t.author %}
-            {% author %}
+            {% author baseobject=t.author %}
             {% endif %}
             {% if t.onclick_url or t.onclick %}{% if t.onclick_perm is None or t.onclick_perm in app_perms %}
             <a href="{% if t.onclick_url %}{{ t.onclick_url }}{% else %}#{% endif %}" class="stretched-link" onclick="{% if not t.onclick_url %}{{ t.onclick }}{% endif %}"></a>
