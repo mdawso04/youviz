@@ -605,7 +605,7 @@ def tabpane(context, **kwargs):
                                                     'html': None,
                                                     'include': None,
                                                     'related': None,
-                                                    'author': context['datasource'] if context['datasource'] else None,
+                                                    'author': (lambda: context['datasource'] if 'datasource' in context else None),
                                                     'badge': None,
                                                 },
                                                 {
@@ -711,7 +711,7 @@ def tabpane(context, **kwargs):
                                                     'html': None,
                                                     'include': None,
                                                     'related': None,
-                                                    'author': context['datasource'].datastream if context['datasource'] else None,
+                                                    'author': (lambda: context['datasource'].datastream if hasattr(context, 'datasource') and hasattr(context['datasource'], 'datastream') else None),
                                                     'badge': None,
                                                 },
                                     ]
