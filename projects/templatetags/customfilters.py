@@ -676,7 +676,7 @@ def tabpane(context, **kwargs):
                                                     'counter': None,
                                                     'onclick_url': None,
                                                     'onclick': "Handler.showTab('#tabpane-navpanel-edit-datasource-tab');",
-                                                    'onclick_perm': 'change_datasource',
+                                                    'onclick_perm': 'change_datastream',
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': 'bi-pen',
