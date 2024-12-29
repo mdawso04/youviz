@@ -690,7 +690,7 @@ def tabpane(context, **kwargs):
                                                     'badge': (lambda: {
                                                         True: ('Published', True,),
                                                         False: ('Unpublished', False,),
-                                                    }.get(getattr(context['datasource'], 'is_published', None)) if 'change_datasource' in context['app_perms'] else None),
+                                                    }.get(getattr(context['datasource'].datastream, 'is_published', None)) if 'change_datastream' in context['app_perms'] else None),
                                                 },
                                                 {
                                                     'name': None,

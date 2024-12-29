@@ -16,6 +16,7 @@ from django.urls import reverse
 from project import settings
 from django.db.models import Q
 from django.db.models import Case, When
+from django.core.exceptions import ValidationError
 #from django.contrib import messages
 
 # pp
@@ -62,7 +63,7 @@ class AppView(UnicornView):
     related_items_paginated: list = None
     related_page_no: int = 1
     
-    #datastream_shell: Datastream = None
+    datastream_shell: Datastream = None
     
     add_comment_text: str = None
     
@@ -71,7 +72,7 @@ class AppView(UnicornView):
     #datastream_perms: list = None
     
     class Meta:
-        javascript_exclude = ('datasources', 'datasource', 'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
+        javascript_exclude = ('datasources', 'datasource', 'datastream_shell', 'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
                               'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'related_datasources', 'related_items_paginated', 'app_perms',) 
     
     #def __init__(self, *args, **kwargs):
@@ -476,6 +477,15 @@ class AppView(UnicornView):
         v.delete()
         self.load_table()
         
+    def addDatastream(self):
+        if not self.request.user.has_perm('projects.add_datastream', self.datastream_shell):
+            return redirect('/')
+        
+        if True:
+            raise ValidationError({"datastream_shell.name": "Enter a Datasource title"}, code="required")
+        
+        self.load_table()
+        
     def add_comment(self):
         if not self.request.user.has_perm('projects.add_comment'):
             return redirect('/')
@@ -746,8 +756,8 @@ class AppView(UnicornView):
         if self.meta_object:
             del self.meta_object
             
-        #if self.datastream_shell:
-        #    del self.datastream_shell
+        if self.datastream_shell:
+            del self.datastream_shell
         
         if self.message:
             del self.message
