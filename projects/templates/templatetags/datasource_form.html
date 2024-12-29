@@ -17,15 +17,14 @@
 }
 </style>
 
-
 <div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" style="overflow-x: hidden;">
 
     <div class="row row-cols-1 g-2 pb-3" id="fileInfo">
-        {% input_textarea model='datasource.datastream.name' modelvalue=datasource.datastream.name label='Name' %}
-        {% input_textarea model='datasource.datastream.description' modelvalue=datasource.datastream.description label='Description' %}
-        {% input_text model='datasource.datastream.properties.source' modelvalue=datasource.datastream.properties.source label='Source' %}
-        {% input_text model='datasource.datastream.properties.sourceurl' modelvalue=datasource.datastream.properties.sourceurl label='Source URL' %}
-        {% input_text model='datasource.datastream.properties.licence' modelvalue=datasource.datastream.properties.licence label='Licence' %}
+        {% input_textarea model=dsmodel|add:'.name' modelvalue=dsmodelvalue.name label='Name' partial='datasource-details' %}
+        {% input_textarea model=dsmodel|add:'.description' modelvalue=dsmodelvalue.description label='Description' partial='datasource-details' %}
+        {% input_text model=dsmodel|add:'.properties.source' modelvalue=dsmodelvalue.properties.source label='Source' %}
+        {% input_text model=dsmodel|add:'.properties.sourceurl' modelvalue=dsmodelvalue.properties.sourceurl label='Source URL' %}
+        {% input_text model=dsmodel|add:'.properties.licence' modelvalue=dsmodelvalue.properties.licence label='Licence' %}
     </div>
     <div class="row row-cols-auto g-3 pb-3">
         <div class="col">
@@ -33,17 +32,17 @@
         </div>
     </div>
     <div class="row row-cols-1 g-2 pb-3" id="fileInfo2">
-        {% input_textarea model='datasource.datastream.url' modelvalue=datasource.datastream.url label='URL' %}
-        {% input_textarea model='datasource.datastream.properties.post_header_1' modelvalue=datasource.datastream.properties.post_header_1 label='Header 1' %}
-        {% input_textarea model='datasource.datastream.properties.post_header_2' modelvalue=datasource.datastream.properties.post_header_2 label='Header 2' %}
-        {% input_textarea model='datasource.datastream.properties.post_body_1' modelvalue=datasource.datastream.properties.post_body_1 label='Body 1' %}
-        {% input_textarea model='datasource.datastream.properties.post_body_2' modelvalue=datasource.datastream.properties.post_body_2 label='Body 2' %}
-        {% input_switch model='datasource.datastream.properties.refresh' modelvalue=datasource.datastream.properties.refresh label='Keep datasource refreshed' partial='infoLargeTitle' %}
-        <p class="text-muted small lh-sm">Last refreshed {{ datasource.datastream.last_cached }}</p>
+        {% input_textarea model=dsmodel|add:'.url' modelvalue=dsmodelvalue.url label='URL' %}
+        {% input_textarea model=dsmodel|add:'.properties.post_header_1' modelvalue=dsmodelvalue.properties.post_header_1 label='Header 1' %}
+        {% input_textarea model=dsmodel|add:'.properties.post_header_2' modelvalue=dsmodelvalue.properties.post_header_2 label='Header 2' %}
+        {% input_textarea model=dsmodel|add:'.properties.post_body_1' modelvalue=dsmodelvalue.properties.post_body_1 label='Body 1' %}
+        {% input_textarea model=dsmodel|add:'.properties.post_body_2' modelvalue=dsmodelvalue.properties.post_body_2 label='Body 2' %}
+        {% input_switch model=dsmodel|add:'.properties.refresh' modelvalue=dsmodelvalue.properties.refresh label='Keep datasource refreshed' partial='infoLargeTitle' %}
+        <p class="text-muted small lh-sm">Last refreshed {{ dsmodelvalue.last_cached }}</p>
     </div>
     
     {% if create_button %}
-    {% button label='Create datasource' onclick="alert('Create!')" %}
+    {% button label='Create datasource' onclick="alert('{{ dsmodel }}')" %}
     {% endif %}
     
 </div>

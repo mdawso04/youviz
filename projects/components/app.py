@@ -62,6 +62,8 @@ class AppView(UnicornView):
     related_items_paginated: list = None
     related_page_no: int = 1
     
+    #datastream_shell: Datastream = None
+    
     add_comment_text: str = None
     
     app_perms: list = None
@@ -299,6 +301,7 @@ class AppView(UnicornView):
                         #pad out remainder of list
                         self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
                         
+                        self.datastream_shell = Datastream()
                         
                         self.page = 'new.datamenu'
                         self.message = {
@@ -393,6 +396,7 @@ class AppView(UnicornView):
             #TODO - update to datastream perms check
             if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
                 raise Http404
+            print('datastream updating')
         elif 'datasource.' in name:
             if not self.request.user.has_perm('projects.change_datasource', self.datasource):
                 raise Http404
@@ -411,7 +415,7 @@ class AppView(UnicornView):
             self.request.user.profile.save()
         elif 'datastream.' in name:
             self.datasource.datastream.save()
-            #print("saved datastream!")
+            print("saved datastream!")
         elif 'datasource.' in name:
             self.datasource.save()
             #print(self.datasource.name)
@@ -741,7 +745,9 @@ class AppView(UnicornView):
         
         if self.meta_object:
             del self.meta_object
-        
+            
+        #if self.datastream_shell:
+        #    del self.datastream_shell
         
         if self.message:
             del self.message

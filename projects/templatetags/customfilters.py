@@ -668,7 +668,7 @@ def tabpane(context, **kwargs):
                                 {
                                     'tabs': [
                                                 {
-                                                    'name': None,
+                                                    'name': 'details',
                                                     'nosnippet': False, 
                                                     'label': None,
                                                     'background': 'bg-white',
@@ -680,8 +680,8 @@ def tabpane(context, **kwargs):
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': 'bi-pen',
-                                                    'title': (lambda: getattr(context['datasource'],'name', None)),
-                                                    'description': (lambda: getattr(context['datasource'],'description', None)),
+                                                    'title': (lambda: getattr(context['datasource'].datastream,'name', None)),
+                                                    'description': (lambda: getattr(context['datasource'].datastream,'description', None)),
                                                     'preview': None,
                                                     'html': None,
                                                     'include': None,
@@ -711,7 +711,7 @@ def tabpane(context, **kwargs):
                                                     'html': None,
                                                     'include': None,
                                                     'related': None,
-                                                    'author': (lambda: context['datasource'].datastream if hasattr(context, 'datasource') and hasattr(context['datasource'], 'datastream') else None),
+                                                    'author': (lambda: context['datasource'].datastream if 'datasource' in context else None),
                                                     'badge': None,
                                                 },
                                     ]
