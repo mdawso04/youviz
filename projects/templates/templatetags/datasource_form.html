@@ -27,8 +27,9 @@
   </style>
 
 <div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" style="overflow-x: hidden;">
-
-    <div class="row row-cols-1 g-2 pb-3" id="fileInfo">
+    
+    {% if never %}
+    <div class="row row-cols-1 g-2 pb-3" id="fileInfo">    
         {% input_textarea model=dsmodel|add:'.name' modelvalue=dsmodelvalue.name label='Name' partial=partial %}
         {% input_textarea model=dsmodel|add:'.description' modelvalue=dsmodelvalue.description label='Description' partial=partial %}
         {% input_text model=dsmodel|add:'.properties.source' modelvalue=dsmodelvalue.properties.source label='Source' %}
@@ -49,9 +50,14 @@
         {% input_switch model=dsmodel|add:'.properties.refresh' modelvalue=dsmodelvalue.properties.refresh label='Keep datasource refreshed' partial='infoLargeTitle' %}
         <p class="text-muted small lh-sm">Last refreshed {{ dsmodelvalue.last_cached }}</p>
     </div>
+    {% endif %}
+    
+    <div class="row row-cols-1 g-2 pb-3" id="fileInfo">
+        {{ datastream_form }}
+    </div>
     
     {% if create_button %}
-    {% button label='Create datasource' onclick="Unicorn.call('app', 'addDatastream');" %}
+    {% button label='Create datasource' uonclick='addDatastream' partial='fileInfo' %}
     {% endif %}
     
 </div>

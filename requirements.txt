@@ -7,6 +7,7 @@ django_heroku
 django-unicorn
 django-auditlog
 django-analytical
+django-entangled
 redis
 hiredis
 pandas-plotly==0.2.4

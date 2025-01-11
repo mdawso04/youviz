@@ -699,7 +699,7 @@ def tabpane(context, **kwargs):
                                                     'background': 'bg-white',
                                                     'padding': True,
                                                     'counter': None,
-                                                    'onclick_url': (lambda : reverse('user', args=[context['datasource'].datastream.owner.profile.slug]) if context['datasource'] else None),
+                                                    'onclick_url': None,
                                                     'onclick': None,
                                                     'onclick_perm': None,
                                                     'display_perm': None,

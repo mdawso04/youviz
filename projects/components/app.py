@@ -1,6 +1,7 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
 from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings, Cover, Comment
+from projects.forms import DatastreamForm
 from django.contrib.auth.models import User
 from projects.middleware import redirect as force_redirect
 from guardian.shortcuts import get_perms, get_user_perms, get_users_with_perms, get_objects_for_user, get_perms_for_model
@@ -64,6 +65,7 @@ class AppView(UnicornView):
     related_page_no: int = 1
     
     datastream_shell: Datastream = None
+    datastream_form: DatastreamForm = None
     
     add_comment_text: str = None
     
@@ -72,7 +74,7 @@ class AppView(UnicornView):
     #datastream_perms: list = None
     
     class Meta:
-        javascript_exclude = ('datasources', 'datasource', 'datastream_shell', 'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
+        javascript_exclude = ('datasources', 'datasource', 'datastream_shell', 'datastream_form','vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
                               'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'related_datasources', 'related_items_paginated', 'app_perms',) 
     
     #def __init__(self, *args, **kwargs):
@@ -215,6 +217,7 @@ class AppView(UnicornView):
                 
                 self.app_perms.extend(get_perms(current_user, ds))
                 self.app_perms.extend(get_perms(current_user, ds.datastream))
+                print(get_perms(current_user, ds.datastream))
                 
                 #obj perms
                 '''
@@ -233,6 +236,23 @@ class AppView(UnicornView):
                         redirect('/')
                 
                 self.datasource = ds
+                
+                #from django.forms.models import model_to_dict
+                #ds_dict = model_to_dict(self.datasource.datastream)
+                #from django.core import serializers
+                #ds_dict = serializers.serialize("xml", SomeModel.objects.all())
+                #print(type(ds_dict['json']))
+                #print(ds_dict['json'])
+                #cleaner = DatastreamForm(instance=self.datasource.datastream, mode=True)
+                #print(cleaner.initial)
+                #print(cleaner['json'].value())
+                #print(cleaner.data)
+                #print (cleaner.data.get('json'))
+                self.datastream_form = DatastreamForm(
+                    instance=self.datasource.datastream, 
+                    data={k:v for k, v in self.datasource.datastream.__dict__.items() if k != 'json'}, 
+                    mode=True)
+                self.datastream_form.is_valid()
                 
                 self.meta_object = self.datasource
                 self.ads = Notification.objects.filter(position=Notification.VIEW_AD).order_by('?')[:4]
@@ -394,10 +414,13 @@ class AppView(UnicornView):
             if not self.request.user.has_perm('projects.change_profile'):
                 raise Http404
         elif 'datastream.' in name:
-            #TODO - update to datastream perms check
-            if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
+            #if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
+            if not 'change_datastream' in self.app_perms:
+                #print(self.app_perms)
+                #print(self.meta_object)
+                #print(get_perms(self.request.user, self.datasource.datastream))
                 raise Http404
-            print('datastream updating')
+            #print('datastream updating')
         elif 'datasource.' in name:
             if not self.request.user.has_perm('projects.change_datasource', self.datasource):
                 raise Http404
@@ -415,8 +438,15 @@ class AppView(UnicornView):
                 self.request.user.profile.properties[n] = value
             self.request.user.profile.save()
         elif 'datastream.' in name:
-            self.datasource.datastream.save()
-            print("saved datastream!")
+            self.datastream_form = DatastreamForm(
+                    instance=self.datasource.datastream, 
+                    data={k:v for k, v in self.datasource.datastream.__dict__.items() if k != 'json'}, 
+                    mode=True)
+            if self.datastream_form.is_valid():
+                print('valid ds form!')
+                self.datasource.datastream.save()
+            else:
+                print("Nonvalid ds form!")
         elif 'datasource.' in name:
             self.datasource.save()
             #print(self.datasource.name)
@@ -478,12 +508,12 @@ class AppView(UnicornView):
         self.load_table()
         
     def addDatastream(self):
-        if not self.request.user.has_perm('projects.add_datastream', self.datastream_shell):
+        #print(self.app_perms)
+        #if not self.request.user.has_perm('projects.add_datastream', self.datastream_shell):
+        #    return redirect('/')
+        if not 'add_datastream' in self.app_perms:
             return redirect('/')
-        
-        if True:
-            raise ValidationError({"datastream_shell.name": "Enter a Datasource title"}, code="required")
-        
+        raise ValidationError({"datastream_shell.name": "Enter a Datasource title"}, code="required")
         self.load_table()
         
     def add_comment(self):

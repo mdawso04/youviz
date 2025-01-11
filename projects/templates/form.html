@@ -1,0 +1,33 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+
+<style>
+    .error {
+      border: 1px solid red !important;
+    }
+    .required {
+      border: 1px solid red !important;
+    }
+</style>
+
+<div class="col">
+    {{ form.non_field_errors }}
+</div>
+{% for field in form %}
+<div class="col {{ field.css_classes }}">
+    <div class="input-group input-group-sm">
+        <span class="input-group-text" id="{{ field.id_for_label }}">{{ field.label }}</span>
+        {{ field }}
+    </div>
+    {% if field.help_text %}
+    <label for="basic-url" class="form-label help small" id="{{ field.auto_id }}_helptext">{{ field.help_text|safe }}</label>
+    {% endif %}
+    {% if field.errors %}
+        {{ field.errors }}
+    {% endif %}
+</div>      
+{% endfor %}

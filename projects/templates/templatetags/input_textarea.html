@@ -19,7 +19,6 @@
             {% if partialid %}unicorn:partial.id="{{ partialid }}"{% endif %}
             {% if partialkey %}unicorn:partial.key="{{ partialkey }}"{% endif %}
             aria-label="{{ label|slugify }}">{{ modelvalue }}</textarea>
-        <span class="error">{{ unicorn.errors.model.0.message }}</span>
     </div>
 </div>
 {% else %}
