@@ -3,7 +3,7 @@ from django.forms import fields, models
 from django.utils.translation import gettext_lazy as _
 from .models import BaseModel, Datastream
 from django.core.exceptions import ValidationError
-from entangled.forms import EntangledModelForm
+from entangled.forms import EntangledModelForm, EntangledModelFormMixin
 
 '''
 My workaround was to register a custom pickle handler for the django.forms.renderers.
@@ -20,10 +20,11 @@ copyreg.pickle(DjangoTemplates, pickle_django_templates)
 
 #end
 
-class BaseForm(EntangledModelForm):
+class BaseForm(ModelForm):
     template_name = "form.html" #blank is ok - customisation is at widget level
+    form_id = None
     error_css_class = "error"
-    required_css_class = "required"
+    #required_css_class = "required"
     
     class Meta:
         model = BaseModel
@@ -75,15 +76,14 @@ class BaseForm(EntangledModelForm):
         
     def clean_name(self):
         data = self.cleaned_data["name"]
-        print('cleaning name')
-        if True:
-            raise ValidationError("You have forgotten about Fred!")
+        if data and 'z' in data:
+            raise ValidationError("Invalid name: remove z")
         return data
     
     def clean_description(self):
         data = self.cleaned_data["description"]
-        if False:
-            raise ValidationError("You have forgotten about Fred!")
+        if data and 'z' in data:
+            raise ValidationError("Invalid name: remove z")
         return data
     
     def clean(self):
@@ -91,12 +91,10 @@ class BaseForm(EntangledModelForm):
         name = self.cleaned_data.get("name")
         description = self.cleaned_data.get("description")
         
-        if True: #name and description:
-            # Only do something if both fields are valid so far.
-            if True:
-                raise ValidationError(
-                    "Name and description don't match"
-                )
+        if name and description and name != description: #name and description:
+            raise ValidationError(
+                "Name and description don't match"
+            )
         '''        
         if cc_myself and subject and "help" not in subject:
             msg = "Must put 'help' in subject when cc'ing yourself."
@@ -104,42 +102,48 @@ class BaseForm(EntangledModelForm):
             self.add_error("subject", msg)
         '''
         
-class DatastreamForm(BaseForm):
-    source = fields.CharField()
+class DatastreamForm(EntangledModelFormMixin, BaseForm):
+    source = fields.CharField(
+        max_length=200,
+        required=False,
+        help_text="Some useful help text.",
+        label=_("source"),
+    )
     
     def __init__(self, *args, **kwargs):
         mode = kwargs.pop('mode', None)
+        self.form_id = kwargs.pop('form_id', None)
         super(DatastreamForm, self).__init__(*args, **kwargs)
         if mode:
             self.fields['name'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model': 'datasource.datastream.name',
-                'unicorn:partial': 'id_name',
+                'unicorn:model.lazy': 'datasource.datastream.name',
+                'unicorn:partial': 'datastream_form',
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
             })
             self.fields['description'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model': 'datasource.datastream.description',
-                'unicorn:partial': 'id_description',
-                #'unicorn:partial.id': 'test',
+                'unicorn:model.lazy': 'datasource.datastream.description',
+                'unicorn:partial': 'datastream_form',
+                #'unicorn:partial.id': 'fileInfo',
                 #'unicorn:partial.key': 'test',
             })
             self.fields['datastream_type'].widget.attrs.update({
                 'class': 'form-select',
                 #'unicorn:key': 'test',
-                'unicorn:model': 'datasource.datastream.datastream_type',
-                'unicorn:partial': 'id_name',
-                #'unicorn:partial.id': 'test',
+                'unicorn:model.lazy': 'datasource.datastream.datastream_type',
+                'unicorn:partial': 'datastream_form',
+                #'unicorn:partial.id': 'fileInfo',
                 #'unicorn:partial.key': 'test',
             })
             self.fields['url'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model': 'datasource.datastream.url',
-                'unicorn:partial': 'id_url',
+                'unicorn:model.lazy': 'datasource.datastream.url',
+                'unicorn:partial': 'datastream_form',
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
                 'style': 'word-break: break-all;',
@@ -147,8 +151,8 @@ class DatastreamForm(BaseForm):
             self.fields['json'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model': 'datasource.datastream.json',
-                'unicorn:partial': 'id_json',
+                'unicorn:model.lazy': 'datasource.datastream.json',
+                'unicorn:partial': 'datastream_form',
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
                 'style': 'word-break: break-all;',
@@ -156,8 +160,8 @@ class DatastreamForm(BaseForm):
             self.fields['source'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model': 'datasource.datastream.properties.source',
-                'unicorn:partial': 'id_source',
+                'unicorn:model.lazy': 'datasource.datastream.properties.source',
+                'unicorn:partial': 'datastream_form',
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
             })
@@ -165,9 +169,9 @@ class DatastreamForm(BaseForm):
     
     class Meta:
         model = Datastream
-        fields = BaseForm.Meta.fields + ('datastream_type', "url", "json",)
-        untangledfields = BaseForm.Meta.fields + ('datastream_type', "url", "json",)
-        entangledfields = {'properties': ['source', ]}
+        fields = BaseForm.Meta.fields + ('datastream_type', "url", "json", 'source',)
+        entangled_fields = {'properties': ['source', ]}
+        #untangled_fields = BaseForm.Meta.fields + ('datastream_type', "url", "json",)
         widgets = BaseForm.Meta.widgets | {
             "url": Textarea(
                 #template_name="widget.html", #input group
@@ -183,10 +187,12 @@ class DatastreamForm(BaseForm):
             ),
         }
         labels = BaseForm.Meta.labels | {
+            "datastream_type": _('datastream_type'),
             "url": _('url'),
             "json": _('json'),
         }
         help_texts = BaseForm.Meta.help_texts | {
+            "datastream_type": _("Some useful help text."),
             "url": _("Some useful help text."),
             "json": _("Some useful help text."),
         }
@@ -199,29 +205,42 @@ class DatastreamForm(BaseForm):
             },
         }
         
+    def clean_datastream_type(self):
+        data = self.cleaned_data["datastream_type"]
+        if False:
+            raise ValidationError("Invalid type")
+        return data
+    
+    def clean_url(self):
+        data = self.cleaned_data["url"]
+        if False:
+            raise ValidationError("Invalid url")
+        return data
+    
     def clean_json(self):
         data = self.cleaned_data["json"]
-        if True:
-            raise ValidationError("Bad json!")
+        if False:
+            raise ValidationError("Invalid json")
         return data
     
     def clean_source(self):
         data = self.cleaned_data["source"]
+        print('cleaning source field')
         if False:
-            raise ValidationError("You have forgotten about source!")
+            raise ValidationError("Invalid source")
         return data
     
     def clean(self):
         super().clean()
-        name = self.cleaned_data.get("source")
-        #description = self.cleaned_data.get("description")
+        source = self.cleaned_data.get("source")
+        description = self.cleaned_data.get("description")
+        #print('cleaning form....heres the clean data')
+        #print(self.cleaned_data)
         
-        if True: #name and description:
-            # Only do something if both fields are valid so far.
-            if True:
-                raise ValidationError(
-                    "Source problem!"
-                )
+        if source and source != description: #name and description:
+            raise ValidationError(
+                "Source and description don't match"
+            )
                 
             
 from django import forms

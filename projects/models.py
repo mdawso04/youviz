@@ -444,6 +444,13 @@ class BaseModel(models.Model):
             #'h1': self.name,
         }
     
+    #@cached_property
+    def field_data(self):
+        return {
+            'name': self.name,
+            'description': self.description,
+        }
+    
     @cached_property
     def perms_req_by_owners(self):
          return None
@@ -824,6 +831,15 @@ class Datastream(BaseModel):
         default_related_name = 'datastreams'
         permissions = [('view_published_datastream', 'Can view published datastream')]
         
+    #@cached_property
+    def field_data(self):
+        return super().field_data() | {
+            'url': self.url,
+            'json': self.json,
+            'datastream_type': self.datastream_type,
+            'source': self.properties.get('source', None),
+        }
+    
     @cached_property
     def perms_req_by_owners(self):
          return [p.codename for p in Group.objects.get(name='datastream_owners').permissions.all()] 

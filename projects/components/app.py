@@ -27,6 +27,7 @@ from pp.log import logger
 #python standard libraries
 import os
 import copy
+import json
 from io import BufferedIOBase
 from datetime import datetime
 
@@ -248,11 +249,19 @@ class AppView(UnicornView):
                 #print(cleaner['json'].value())
                 #print(cleaner.data)
                 #print (cleaner.data.get('json'))
+                print('Loading from db')
+                instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.datastream.field_data().items()}
+                print(instance_data)
                 self.datastream_form = DatastreamForm(
                     instance=self.datasource.datastream, 
-                    data={k:v for k, v in self.datasource.datastream.__dict__.items() if k != 'json'}, 
+                    form_id='datastream_form',
+                    data=instance_data, 
                     mode=True)
+                print('Checking if form is bound')
+                print(self.datastream_form.is_bound)
                 self.datastream_form.is_valid()
+                print('Form errors')
+                print(self.datastream_form.errors)
                 
                 self.meta_object = self.datasource
                 self.ads = Notification.objects.filter(position=Notification.VIEW_AD).order_by('?')[:4]
@@ -416,9 +425,6 @@ class AppView(UnicornView):
         elif 'datastream.' in name:
             #if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
             if not 'change_datastream' in self.app_perms:
-                #print(self.app_perms)
-                #print(self.meta_object)
-                #print(get_perms(self.request.user, self.datasource.datastream))
                 raise Http404
             #print('datastream updating')
         elif 'datasource.' in name:
@@ -438,19 +444,26 @@ class AppView(UnicornView):
                 self.request.user.profile.properties[n] = value
             self.request.user.profile.save()
         elif 'datastream.' in name:
+            instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.datastream.field_data().items()}
+            print('Heres the data to save')
+            print(instance_data)
             self.datastream_form = DatastreamForm(
                     instance=self.datasource.datastream, 
-                    data={k:v for k, v in self.datasource.datastream.__dict__.items() if k != 'json'}, 
+                    data=instance_data, 
                     mode=True)
             if self.datastream_form.is_valid():
                 print('valid ds form!')
+                print('Saving data')
                 self.datasource.datastream.save()
             else:
                 print("Nonvalid ds form!")
+                print('Saving data as is for now')
+                self.datasource.datastream.save()
         elif 'datasource.' in name:
             self.datasource.save()
             #print(self.datasource.name)
         #logger.debug('AppView > updated end')
+        print('reloading')
         self.load_table()
         
 #ACTIONS

@@ -52,9 +52,7 @@
     </div>
     {% endif %}
     
-    <div class="row row-cols-1 g-2 pb-3" id="fileInfo">
-        {{ datastream_form }}
-    </div>
+    {{ datastream_form }}
     
     {% if create_button %}
     {% button label='Create datasource' uonclick='addDatastream' partial='fileInfo' %}

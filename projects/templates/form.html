@@ -14,20 +14,22 @@
     }
 </style>
 
-<div class="col">
-    {{ form.non_field_errors }}
-</div>
-{% for field in form %}
-<div class="col {{ field.css_classes }}">
-    <div class="input-group input-group-sm">
-        <span class="input-group-text" id="{{ field.id_for_label }}">{{ field.label }}</span>
-        {{ field }}
+<div class="row row-cols-1 g-2 pb-3" id="{{ form.form_id }}">
+    <div class="col">
+        {{ form.non_field_errors }}
     </div>
-    {% if field.help_text %}
-    <label for="basic-url" class="form-label help small" id="{{ field.auto_id }}_helptext">{{ field.help_text|safe }}</label>
-    {% endif %}
-    {% if field.errors %}
-        {{ field.errors }}
-    {% endif %}
-</div>      
-{% endfor %}
+    {% for field in form %}
+    <div class="col {{ field.css_classes }}">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text" id="{{ field.id_for_label }}">{{ field.label }}</span>
+            {{ field }}
+        </div>
+        {% if field.help_text %}
+        <label for="basic-url" class="form-label help small" id="{{ field.auto_id }}_helptext">{{ field.help_text|safe }}</label>
+        {% endif %}
+        {% if field.errors %}
+            {{ field.errors }}
+        {% endif %}
+    </div> 
+    {% endfor %}
+</div>
