@@ -21,7 +21,7 @@
     {% for field in form %}
     <div class="col {{ field.css_classes }}">
         <div class="input-group input-group-sm">
-            <span class="input-group-text" id="{{ field.id_for_label }}">{{ field.label }}</span>
+            {% if not field.is_hidden %}<span class="input-group-text" id="{{ field.id_for_label }}">{{ field.label }}</span>{% endif %}
             {{ field }}
         </div>
         {% if field.help_text %}
