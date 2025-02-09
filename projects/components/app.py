@@ -91,11 +91,11 @@ class AppView(UnicornView):
 #LOAD/UPDATE
     
     def mount(self):
-        print('mounted!')
+        #print('mounted!')
         self.load_table()
         
     def hydrate(self):
-        print('hydrating')
+        #print('hydrating')
         #print(self.__dict__)
         if self.datasource:
             print(self.datasource.datastream.name)
@@ -111,7 +111,7 @@ class AppView(UnicornView):
         
         if self.request:
             # collect various params
-            print('starting load table')
+            #print('starting load table')
             if 'context' in self.component_kwargs:
                 self.context = self.component_kwargs['context']
                 
@@ -250,31 +250,12 @@ class AppView(UnicornView):
                         redirect('/')
                 
                 self.datasource = ds
-                
-                #from django.forms.models import model_to_dict
-                #ds_dict = model_to_dict(self.datasource.datastream)
-                #from django.core import serializers
-                #ds_dict = serializers.serialize("xml", SomeModel.objects.all())
-                #print(type(ds_dict['json']))
-                #print(ds_dict['json'])
-                #cleaner = DatastreamForm(instance=self.datasource.datastream, mode=True)
-                #print(cleaner.initial)
-                #print(cleaner['json'].value())
-                #print(cleaner.data)
-                #print (cleaner.data.get('json'))
-                print('Loading from db')
                 instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.datastream.field_data().items()}
-                print(instance_data)
                 self.datastream_form = DatastreamForm(
                     instance=self.datasource.datastream, 
                     form_id='datastream_form',
                     data=instance_data, 
                     mode=True)
-                #print('Checking if form is bound')
-                #print(self.datastream_form.is_bound)
-                #self.datastream_form.is_valid()
-                #print('Form errors')
-                #print(self.datastream_form.errors)
                 
                 self.meta_object = self.datasource
                 self.ads = Notification.objects.filter(position=Notification.VIEW_AD).order_by('?')[:4]
@@ -432,7 +413,7 @@ class AppView(UnicornView):
 
     def updating(self, name, value):
         #logger.debug('AppView > updating start')
-        print('updating!')
+        #print('updating!')
         if 'user.profile' in name:
             if not self.request.user.has_perm('projects.change_profile'):
                 raise Http404
@@ -440,13 +421,9 @@ class AppView(UnicornView):
             #if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
             if not 'change_datastream' in self.app_perms:
                 raise Http404
-            #print('starting with this instance data')
-            #print(self.datasource.datastream.name)
-            #print(self.datasource.datastream.description)
             c = cache.get('self.datasource.datastream')
             if c:
                 self.datasource.datastream.set_field_data(c)
-            #print('datastream updating')
         elif 'datasource.' in name:
             if not self.request.user.has_perm('projects.change_datasource', self.datasource):
                 raise Http404
@@ -454,7 +431,7 @@ class AppView(UnicornView):
     
     def updated(self, name, value):
         #logger.debug('AppView > updated start')
-        print('Updated!')
+        #print('Updated!')
         if 'user.profile' in name:
             if 'profile.properties' in name:
                 if value == 'true':
@@ -466,34 +443,22 @@ class AppView(UnicornView):
             self.request.user.profile.save()
         elif 'datastream.' in name:
             instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.datastream.field_data().items()}
-            #print('Heres the data to save')
-            #print(name)
-            #print(value)
-            #print(instance_data)
             self.datastream_form = DatastreamForm(
                     instance=self.datasource.datastream, 
                     form_id='datastream_form',
                     data=instance_data, 
                     mode=True)
             if self.datastream_form.is_valid():
-                #print('valid ds form!')
-                #print('Saving data')
                 self.datasource.datastream.save()
                 cache.delete('self.datasource.datastream')
                 return
             else:
-                #print("Nonvalid ds form!")
-                #print('Not saving data as is for now')
-                #print(self.datasource.datastream.name)
-                #print(self.datasource.datastream.description)
                 cache.set('self.datasource.datastream', self.datasource.datastream.field_data())
                 return
-                #self.datasource.datastream.save()
         elif 'datasource.' in name:
             self.datasource.save()
-            #print(self.datasource.name)
         #logger.debug('AppView > updated end')
-        print('reloading')
+        #print('reloading')
         self.load_table()
         
 #ACTIONS

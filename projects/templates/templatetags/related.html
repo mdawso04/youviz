@@ -32,7 +32,9 @@
          unicorn:visible.debounce-1000.threshold-100="more_related" 
          unicorn:partial.id="page-{{ forloop.counter }}" 
          unicorn:partial.key="page-{{ forloop.counter|add:'1' }}">
-        Grabbing more now...
+        <div class="spinner-border spinner-border-sm text-secondary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
     </div>
     {% endif  %}
 </div>

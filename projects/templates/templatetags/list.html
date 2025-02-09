@@ -38,7 +38,9 @@
                          unicorn:visible.debounce-500="more" 
                          unicorn:partial.id="page-{{ forloop.counter }}" 
                          unicorn:partial.key="page-{{ forloop.counter|add:'1' }}">
-                        ...
+                        <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                          <span class="visually-hidden">Loading...</span>
+                        </div>
                     </div>
                 {% else %}
                 {% endif  %}

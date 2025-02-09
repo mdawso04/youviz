@@ -80,14 +80,14 @@ class BaseForm(ModelForm):
         
     def clean_name(self):
         data = self.cleaned_data["name"]
-        if data and 'z' in data:
-            raise ValidationError("Invalid name: remove z")
+        if data and len(data) < 5:
+            raise ValidationError("Enter more than 5 characters")
         return data
     
     def clean_description(self):
         data = self.cleaned_data["description"]
-        if data and 'z' in data:
-            raise ValidationError("Invalid name: remove z")
+        if data and len(data) < 5:
+            raise ValidationError("Enter more than 5 characters")
         return data
     
     def clean(self):
@@ -95,11 +95,11 @@ class BaseForm(ModelForm):
         name = self.cleaned_data.get("name")
         description = self.cleaned_data.get("description")
         
-        if name and description and name != description: #name and description:
+        '''        
+        if name and description and name != description:
             raise ValidationError(
                 "Name and description don't match"
             )
-        '''        
         if cc_myself and subject and "help" not in subject:
             msg = "Must put 'help' in subject when cc'ing yourself."
             self.add_error("cc_myself", msg)
@@ -179,13 +179,11 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
         #untangled_fields = BaseForm.Meta.fields + ('datastream_type', "url", "json",)
         widgets = BaseForm.Meta.widgets | {
             "url": Textarea(
-                #template_name="widget.html", #input group
                 attrs={
                     "rows": 6,
                 }
             ),
             "json": Textarea(
-                #template_name="widget.html", #input group
                 attrs={
                     "rows": 6,
                 }
@@ -230,7 +228,6 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
     
     def clean_source(self):
         data = self.cleaned_data["source"]
-        print('cleaning source field')
         if False:
             raise ValidationError("Invalid source")
         return data
@@ -239,13 +236,13 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
         super().clean()
         source = self.cleaned_data.get("source")
         description = self.cleaned_data.get("description")
-        #print('cleaning form....heres the clean data')
-        #print(self.cleaned_data)
         
+        '''
         if source and source != description: #name and description:
             raise ValidationError(
                 "Source and description don't match"
             )
+        '''
                 
             
 from django import forms
