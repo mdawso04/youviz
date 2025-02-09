@@ -18,7 +18,11 @@ from project import settings
 from django.db.models import Q
 from django.db.models import Case, When
 from django.core.exceptions import ValidationError
+from django.core.cache import cache
 #from django.contrib import messages
+
+from django_unicorn.components.unicorn_view import constructed_views_cache
+from django_unicorn.cacher import cache_full_tree, restore_from_cache
 
 # pp
 import pp
@@ -28,6 +32,7 @@ from pp.log import logger
 import os
 import copy
 import json
+import traceback
 from io import BufferedIOBase
 from datetime import datetime
 
@@ -86,10 +91,17 @@ class AppView(UnicornView):
 #LOAD/UPDATE
     
     def mount(self):
+        print('mounted!')
         self.load_table()
         
     def hydrate(self):
-        pass
+        print('hydrating')
+        #print(self.__dict__)
+        if self.datasource:
+            print(self.datasource.datastream.name)
+            print(self.datasource.datastream.description)
+        else:
+            print('no datasource to print!')
     
     def load_table(self):
         
@@ -99,6 +111,7 @@ class AppView(UnicornView):
         
         if self.request:
             # collect various params
+            print('starting load table')
             if 'context' in self.component_kwargs:
                 self.context = self.component_kwargs['context']
                 
@@ -257,11 +270,11 @@ class AppView(UnicornView):
                     form_id='datastream_form',
                     data=instance_data, 
                     mode=True)
-                print('Checking if form is bound')
-                print(self.datastream_form.is_bound)
-                self.datastream_form.is_valid()
-                print('Form errors')
-                print(self.datastream_form.errors)
+                #print('Checking if form is bound')
+                #print(self.datastream_form.is_bound)
+                #self.datastream_form.is_valid()
+                #print('Form errors')
+                #print(self.datastream_form.errors)
                 
                 self.meta_object = self.datasource
                 self.ads = Notification.objects.filter(position=Notification.VIEW_AD).order_by('?')[:4]
@@ -419,6 +432,7 @@ class AppView(UnicornView):
 
     def updating(self, name, value):
         #logger.debug('AppView > updating start')
+        print('updating!')
         if 'user.profile' in name:
             if not self.request.user.has_perm('projects.change_profile'):
                 raise Http404
@@ -426,6 +440,12 @@ class AppView(UnicornView):
             #if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
             if not 'change_datastream' in self.app_perms:
                 raise Http404
+            #print('starting with this instance data')
+            #print(self.datasource.datastream.name)
+            #print(self.datasource.datastream.description)
+            c = cache.get('self.datasource.datastream')
+            if c:
+                self.datasource.datastream.set_field_data(c)
             #print('datastream updating')
         elif 'datasource.' in name:
             if not self.request.user.has_perm('projects.change_datasource', self.datasource):
@@ -434,6 +454,7 @@ class AppView(UnicornView):
     
     def updated(self, name, value):
         #logger.debug('AppView > updated start')
+        print('Updated!')
         if 'user.profile' in name:
             if 'profile.properties' in name:
                 if value == 'true':
@@ -445,20 +466,29 @@ class AppView(UnicornView):
             self.request.user.profile.save()
         elif 'datastream.' in name:
             instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.datastream.field_data().items()}
-            print('Heres the data to save')
-            print(instance_data)
+            #print('Heres the data to save')
+            #print(name)
+            #print(value)
+            #print(instance_data)
             self.datastream_form = DatastreamForm(
                     instance=self.datasource.datastream, 
+                    form_id='datastream_form',
                     data=instance_data, 
                     mode=True)
             if self.datastream_form.is_valid():
-                print('valid ds form!')
-                print('Saving data')
+                #print('valid ds form!')
+                #print('Saving data')
                 self.datasource.datastream.save()
+                cache.delete('self.datasource.datastream')
+                return
             else:
-                print("Nonvalid ds form!")
-                print('Saving data as is for now')
-                self.datasource.datastream.save()
+                #print("Nonvalid ds form!")
+                #print('Not saving data as is for now')
+                #print(self.datasource.datastream.name)
+                #print(self.datasource.datastream.description)
+                cache.set('self.datasource.datastream', self.datasource.datastream.field_data())
+                return
+                #self.datasource.datastream.save()
         elif 'datasource.' in name:
             self.datasource.save()
             #print(self.datasource.name)
@@ -738,7 +768,7 @@ class AppView(UnicornView):
             
     def complete(self):
         #logger.debug('AppView > complete start')
-        logger.debug('AppView > complete end')
+        print('complete!')
 
 #RENDER
 
@@ -815,7 +845,28 @@ class AppView(UnicornView):
         if self.cover:
             del self.cover
         
+        print('rendered!')
+        if self.datasource:
+            print(self.datasource.datastream.name)
+            print(self.datasource.datastream.description)
+        else:
+            print('no datasource to print!')
+            
+        #check = constructed_views_cache[self.component_id]
+        #constructed_views_cache['unicorn:component:app01'] = self
+        #cache_full_tree(self)
+        #check = restore_from_cache('unicorn:component:app01')
+        #if check and check.datasource and check.datasource.datastream:
+        #    print(check.datasource.datastream.__dict__)
+        #else:
+        #    print('no cached component')
+        
         #logger.debug('AppView > rendered end')
+        
+    def _cache_component(self, *, parent=None, component_args=None, **kwargs):
+        print('caching component')
+        #traceback.print_stack()
+        super()._cache_component(parent=parent, component_args=component_args, kwargs=kwargs)
     
     def parent_rendered(self, html):
         #logger.debug('AppView > parent_rendered start')

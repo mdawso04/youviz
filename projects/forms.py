@@ -26,6 +26,10 @@ class BaseForm(ModelForm):
     error_css_class = "error"
     #required_css_class = "required"
     
+    def __init__(self, *args, **kwargs):
+        self.form_id = kwargs.pop('form_id', None)
+        super(BaseForm, self).__init__(*args, **kwargs)
+    
     class Meta:
         model = BaseModel
         fields = ("name", "description",)
@@ -119,7 +123,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 'class': 'form-control',
                 #'unicorn:key': 'test',
                 'unicorn:model.lazy': 'datasource.datastream.name',
-                'unicorn:partial': 'datastream_form',
+                'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
             })
@@ -127,15 +131,16 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 'class': 'form-control',
                 #'unicorn:key': 'test',
                 'unicorn:model.lazy': 'datasource.datastream.description',
-                'unicorn:partial': 'datastream_form',
+                'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'fileInfo',
                 #'unicorn:partial.key': 'test',
+                #'unicorn:dirty.attr': 'readonly', 
             })
             self.fields['datastream_type'].widget.attrs.update({
                 'class': 'form-select',
                 #'unicorn:key': 'test',
                 'unicorn:model.lazy': 'datasource.datastream.datastream_type',
-                'unicorn:partial': 'datastream_form',
+                'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'fileInfo',
                 #'unicorn:partial.key': 'test',
             })
@@ -143,7 +148,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 'class': 'form-control',
                 #'unicorn:key': 'test',
                 'unicorn:model.lazy': 'datasource.datastream.url',
-                'unicorn:partial': 'datastream_form',
+                'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
                 'style': 'word-break: break-all;',
@@ -152,7 +157,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 'class': 'form-control',
                 #'unicorn:key': 'test',
                 'unicorn:model.lazy': 'datasource.datastream.json',
-                'unicorn:partial': 'datastream_form',
+                'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
                 'style': 'word-break: break-all;',
@@ -161,7 +166,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 'class': 'form-control',
                 #'unicorn:key': 'test',
                 'unicorn:model.lazy': 'datasource.datastream.properties.source',
-                'unicorn:partial': 'datastream_form',
+                'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
             })

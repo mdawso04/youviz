@@ -451,6 +451,12 @@ class BaseModel(models.Model):
             'description': self.description,
         }
     
+    def set_field_data(self, data):
+        if 'name' in data:
+            self.name = data['name']
+        if 'description' in data:
+            self.description = data['description']
+    
     @cached_property
     def perms_req_by_owners(self):
          return None
@@ -839,6 +845,18 @@ class Datastream(BaseModel):
             'datastream_type': self.datastream_type,
             'source': self.properties.get('source', None),
         }
+    
+        
+    def set_field_data(self, data):
+        super().set_field_data(data)
+        if 'url' in data:
+            self.url = data['url']
+        if 'json' in data:
+            self.json = data['json']
+        if 'datastream_type' in data:
+            self.datastream_type = data['datastream_type']
+        if 'source' in data:
+            self.properties['source'] = data['source']
     
     @cached_property
     def perms_req_by_owners(self):

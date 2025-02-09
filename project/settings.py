@@ -472,4 +472,20 @@ PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'projects', 'templates', 'proje
 
 GOOGLE_ANALYTICS_GTAG_PROPERTY_ID = 'G-LDHFFBL5TS'
 
+UNICORN = {
+    #"APPS": ["unicorn",],
+    #"CACHE_ALIAS": "default",
+    #"MINIFY_HTML": False,
+    "MINIFIED": True,
+    "SERIAL": {
+        "ENABLED": True,
+        "TIMEOUT": 60,
+    },
+    #"SCRIPT_LOCATION": "after",
+    #"MORPHER": {
+    #    "NAME": "morphdom",
+    #    "RELOAD_SCRIPT_ELEMENTS": False,
+    #},
+}
+
 
