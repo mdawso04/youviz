@@ -893,7 +893,7 @@ def tabpane(context, **kwargs):
             'tabs': [
                         {
                             'name': 'add datasource',
-                            'label': 'Add Datasource',
+                            'label': 'Manage Datasources',
                             'onclick': 'Handler.navigator.toggleNav();',
                             'dismiss': None,
                             'icon': None,
@@ -916,7 +916,7 @@ def tabpane(context, **kwargs):
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': None,
-                                                    'title': 'Enter Manually',
+                                                    'title': 'Add Manually',
                                                     'description': 'Add a new datasource manually',
                                                     'preview': None,
                                                     'html': None,

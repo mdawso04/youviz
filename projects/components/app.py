@@ -70,8 +70,9 @@ class AppView(UnicornView):
     related_items_paginated: list = None
     related_page_no: int = 1
     
-    datastream_shell: Datastream = None
     datastream_form: DatastreamForm = None
+    new_datastream: Datastream = None
+    new_datastream_form: DatastreamForm = None
     
     add_comment_text: str = None
     
@@ -80,7 +81,7 @@ class AppView(UnicornView):
     #datastream_perms: list = None
     
     class Meta:
-        javascript_exclude = ('datasources', 'datasource', 'datastream_shell', 'datastream_form','vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
+        javascript_exclude = ('datasources', 'datasource', 'datastream_form','new_datastream', 'new_datastream_form', 'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
                               'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'related_datasources', 'related_items_paginated', 'app_perms',) 
     
     #def __init__(self, *args, **kwargs):
@@ -254,6 +255,7 @@ class AppView(UnicornView):
                 self.datastream_form = DatastreamForm(
                     instance=self.datasource.datastream, 
                     form_id='datastream_form',
+                    unicorn_model='datasource.datastream',
                     data=instance_data, 
                     mode=True)
                 
@@ -325,7 +327,14 @@ class AppView(UnicornView):
                         #pad out remainder of list
                         self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
                         
-                        self.datastream_shell = Datastream()
+                        self.new_datastream = Datastream()
+                        instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.new_datastream.field_data().items()}
+                        self.new_datastream_form = DatastreamForm(
+                            instance=self.new_datastream, 
+                            form_id='new_datastream_form',
+                            unicorn_model='new_datastream',
+                            data=instance_data, 
+                            mode=True)
                         
                         self.page = 'new.datamenu'
                         self.message = {
@@ -413,10 +422,17 @@ class AppView(UnicornView):
 
     def updating(self, name, value):
         #logger.debug('AppView > updating start')
-        #print('updating!')
+        #print(self.app_perms)
         if 'user.profile' in name:
             if not self.request.user.has_perm('projects.change_profile'):
                 raise Http404
+        elif 'new_datastream' in name:
+            #if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
+            if not 'add_datastream' in self.app_perms:
+                raise Http404
+            c = cache.get('self.new_datastream')
+            if c:
+                self.new_datastream.set_field_data(c)
         elif 'datastream.' in name:
             #if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
             if not 'change_datastream' in self.app_perms:
@@ -441,11 +457,24 @@ class AppView(UnicornView):
                 n = name.split('properties.')[-1]
                 self.request.user.profile.properties[n] = value
             self.request.user.profile.save()
+        elif 'new_datastream' in name:
+            # Validate form and leave db save for add_datastream action
+            instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.new_datastream.field_data().items()}
+            self.new_datastream_form = DatastreamForm(
+                    instance=self.new_datastream, 
+                    form_id='new_datastream_form',
+                    unicorn_model='new_datastream',
+                    data=instance_data, 
+                    mode=True)
+            self.new_datastream_form.is_valid()
+            cache.set('self.new_datastream', self.new_datastream.field_data())
+            return
         elif 'datastream.' in name:
             instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.datastream.field_data().items()}
             self.datastream_form = DatastreamForm(
                     instance=self.datasource.datastream, 
                     form_id='datastream_form',
+                    unicorn_model='datasource.datastream',
                     data=instance_data, 
                     mode=True)
             if self.datastream_form.is_valid():
@@ -515,14 +544,28 @@ class AppView(UnicornView):
         v.delete()
         self.load_table()
         
-    def addDatastream(self):
-        #print(self.app_perms)
-        #if not self.request.user.has_perm('projects.add_datastream', self.datastream_shell):
-        #    return redirect('/')
+    def add_datastream(self):
         if not 'add_datastream' in self.app_perms:
-            return redirect('/')
-        raise ValidationError({"datastream_shell.name": "Enter a Datasource title"}, code="required")
-        self.load_table()
+            raise Http404
+        c = cache.get('self.new_datastream')
+        if c:
+            self.new_datastream.set_field_data(c)
+        
+        instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.new_datastream.field_data().items()}
+        self.new_datastream_form = DatastreamForm(
+                instance=self.new_datastream, 
+                form_id='new_datastream_form',
+                unicorn_model='new_datastream',
+                data=instance_data, 
+                mode=True)
+        if self.new_datastream_form.is_valid():
+            o = self.new_datastream_form.save(commit=False)
+            o.owner = self.request.user
+            o.save()
+            cache.delete('self.new_datastream')
+            return redirect(reverse('new') + '?o=datamenu')
+        else:
+            return False
         
     def add_comment(self):
         if not self.request.user.has_perm('projects.add_comment'):
@@ -794,8 +837,10 @@ class AppView(UnicornView):
         if self.meta_object:
             del self.meta_object
             
-        if self.datastream_shell:
-            del self.datastream_shell
+        if self.new_datastream:
+            del self.new_datastream
+        if self.new_datastream_form:
+            del self.new_datastream_form
         
         if self.message:
             del self.message

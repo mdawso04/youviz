@@ -843,7 +843,7 @@ class Datastream(BaseModel):
             'url': self.url,
             'json': self.json,
             'datastream_type': self.datastream_type,
-            'source': self.properties.get('source', None),
+            'source': self.properties.get('source', None) if self.properties else None,
         }
     
         
@@ -856,7 +856,8 @@ class Datastream(BaseModel):
         if 'datastream_type' in data:
             self.datastream_type = data['datastream_type']
         if 'source' in data:
-            self.properties['source'] = data['source']
+            if self.properties and 'source' in self.properties: 
+                self.properties['source'] = data['source']
     
     @cached_property
     def perms_req_by_owners(self):

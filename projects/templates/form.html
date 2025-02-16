@@ -4,6 +4,8 @@
 {% load analytical %}
 {% load humanize %}
 {% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
 
 <style>
     .error {
@@ -32,4 +34,10 @@
         {% endif %}
     </div> 
     {% endfor %}
+    {% if form.Meta.ok %}
+    {% button label=form.Meta.ok.label uonclick=form.Meta.ok.uonclick disabled=form.errors %}
+    {% endif %}
+    {% if form.Meta.cancel %}
+    {% button label=form.Meta.cancel.label uonclick=form.Meta.cancel.uonclick %}
+    {% endif %}
 </div>

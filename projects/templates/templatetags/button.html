@@ -11,7 +11,8 @@
 <button type="button" class="btn {% if class %}{{ class }}{% else %}btn-secondary {% endif %} ms-1" {% if id %}id="{{ id }}"{% endif %}
         {% if onclick %}onclick="{{ onclick }}"
         {% elif uonclick %}unicorn:click="{{ uonclick }}"{% endif %}
-        {% if partial %}unicorn:partial="{{ partial }}"{% endif %}>
+        {% if partial %}unicorn:partial="{{ partial }}"{% endif %}
+        {% if disabled %}disabled {% endif %}>
     {% if label %}{{ label }} {% endif %}
 </button> 
 {% else %}

@@ -28,6 +28,7 @@ class BaseForm(ModelForm):
     
     def __init__(self, *args, **kwargs):
         self.form_id = kwargs.pop('form_id', None)
+        self.unicorn_model = kwargs.pop('unicorn_model', None)
         super(BaseForm, self).__init__(*args, **kwargs)
     
     class Meta:
@@ -62,6 +63,14 @@ class BaseForm(ModelForm):
             "description": {
                 "max_length": _("This writer's name is too long."),
             },
+        }
+        ok = {
+            "label": _("OK"),
+            "uonclick": None,
+        }
+        cancel = {
+            "label": _("Cancel"),
+            "uonclick": None,
         }
         
         '''
@@ -116,13 +125,12 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
     
     def __init__(self, *args, **kwargs):
         mode = kwargs.pop('mode', None)
-        self.form_id = kwargs.pop('form_id', None)
         super(DatastreamForm, self).__init__(*args, **kwargs)
         if mode:
             self.fields['name'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model.lazy': 'datasource.datastream.name',
+                'unicorn:model.lazy': f'{self.unicorn_model}.name',
                 'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
@@ -130,7 +138,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             self.fields['description'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model.lazy': 'datasource.datastream.description',
+                'unicorn:model.lazy': f'{self.unicorn_model}.description',
                 'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'fileInfo',
                 #'unicorn:partial.key': 'test',
@@ -139,7 +147,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             self.fields['datastream_type'].widget.attrs.update({
                 'class': 'form-select',
                 #'unicorn:key': 'test',
-                'unicorn:model.lazy': 'datasource.datastream.datastream_type',
+                'unicorn:model.lazy': f'{self.unicorn_model}.datastream_type',
                 'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'fileInfo',
                 #'unicorn:partial.key': 'test',
@@ -147,7 +155,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             self.fields['url'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model.lazy': 'datasource.datastream.url',
+                'unicorn:model.lazy': f'{self.unicorn_model}.url',
                 'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
@@ -156,7 +164,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             self.fields['json'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model.lazy': 'datasource.datastream.json',
+                'unicorn:model.lazy': f'{self.unicorn_model}.json',
                 'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
@@ -165,7 +173,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             self.fields['source'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model.lazy': 'datasource.datastream.properties.source',
+                'unicorn:model.lazy': f'{self.unicorn_model}.properties.source',
                 'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
@@ -207,6 +215,10 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 "max_length": _("This writer's name is too long."),
             },
         }
+        ok = BaseForm.Meta.ok | {
+            "uonclick": 'add_datastream',
+        }
+        cancel = None
         
     def clean_datastream_type(self):
         data = self.cleaned_data["datastream_type"]
