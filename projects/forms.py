@@ -24,11 +24,16 @@ class BaseForm(ModelForm):
     template_name = "form.html" #blank is ok - customisation is at widget level
     form_id = None
     error_css_class = "error"
+    use_ok = False
+    use_cancel = False
+    
     #required_css_class = "required"
     
     def __init__(self, *args, **kwargs):
         self.form_id = kwargs.pop('form_id', None)
         self.unicorn_model = kwargs.pop('unicorn_model', None)
+        self.use_ok = kwargs.pop('use_ok', False)
+        self.use_cancel = kwargs.pop('use_cancel', False)
         super(BaseForm, self).__init__(*args, **kwargs)
     
     class Meta:
@@ -218,7 +223,9 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
         ok = BaseForm.Meta.ok | {
             "uonclick": 'add_datastream',
         }
-        cancel = None
+        cancel = BaseForm.Meta.cancel | {
+            "uonclick": None,
+        }
         
     def clean_datastream_type(self):
         data = self.cleaned_data["datastream_type"]

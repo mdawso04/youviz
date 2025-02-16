@@ -332,6 +332,7 @@ class AppView(UnicornView):
                         self.new_datastream_form = DatastreamForm(
                             instance=self.new_datastream, 
                             form_id='new_datastream_form',
+                            use_ok=True,
                             unicorn_model='new_datastream',
                             data=instance_data, 
                             mode=True)
@@ -463,6 +464,7 @@ class AppView(UnicornView):
             self.new_datastream_form = DatastreamForm(
                     instance=self.new_datastream, 
                     form_id='new_datastream_form',
+                    use_ok=True,
                     unicorn_model='new_datastream',
                     data=instance_data, 
                     mode=True)
@@ -555,6 +557,7 @@ class AppView(UnicornView):
         self.new_datastream_form = DatastreamForm(
                 instance=self.new_datastream, 
                 form_id='new_datastream_form',
+                use_ok=True,
                 unicorn_model='new_datastream',
                 data=instance_data, 
                 mode=True)
@@ -718,7 +721,7 @@ class AppView(UnicornView):
         if hasattr(self.request.user, 'profile'):
             import ast
             item = ast.literal_eval(item)
-            print(item)
+            #print(item)
             for k, v in item.items():
                 print(k)
                 print(v)
@@ -776,7 +779,8 @@ class AppView(UnicornView):
             
     def complete(self):
         #logger.debug('AppView > complete start')
-        print('complete!')
+        pass
+        #print('complete!')
 
 #RENDER
 
@@ -855,12 +859,7 @@ class AppView(UnicornView):
         if self.cover:
             del self.cover
         
-        print('rendered!')
-        if self.datasource:
-            print(self.datasource.datastream.name)
-            print(self.datasource.datastream.description)
-        else:
-            print('no datasource to print!')
+        #print('rendered!')
             
         #check = constructed_views_cache[self.component_id]
         #constructed_views_cache['unicorn:component:app01'] = self
@@ -874,7 +873,7 @@ class AppView(UnicornView):
         #logger.debug('AppView > rendered end')
         
     def _cache_component(self, *, parent=None, component_args=None, **kwargs):
-        print('caching component')
+        #print('caching component')
         #traceback.print_stack()
         super()._cache_component(parent=parent, component_args=component_args, kwargs=kwargs)
     

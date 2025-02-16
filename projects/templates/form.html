@@ -34,10 +34,10 @@
         {% endif %}
     </div> 
     {% endfor %}
-    {% if form.Meta.ok %}
+    {% if form.use_ok %}
     {% button label=form.Meta.ok.label uonclick=form.Meta.ok.uonclick disabled=form.errors %}
     {% endif %}
-    {% if form.Meta.cancel %}
+    {% if form.use_cancel %}
     {% button label=form.Meta.cancel.label uonclick=form.Meta.cancel.uonclick %}
     {% endif %}
 </div>
