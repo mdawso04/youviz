@@ -6,18 +6,27 @@
     <div class="d-flex flex-row no-scroll-fix overflow-scroll" 
          style="-ms-overflow-style: none; scrollbar-width: none;"
          id="cover-button-row">
+        
         {% with key1='nav_display_perm_'|add:context.mode %}
         {% with nav_display_perm=settings|keyvalue:key1 %}  
         {% if nav_display_perm in app_perms %}
         <button class="btn btn-outline-secondary btn-sm me-2 opacity-75" onclick="Handler.navigator.toggleNav(); event.preventDefault();">
+            <i class="bi bi-signpost" style="font-size: 1rem;"></i>
+        </button>
+        {% endif %}
+        {% endwith %}
+        {% endwith %}
+        
+        {% with key='edit_display_perm_'|add:context.mode %}
+        {% with edit_display_perm=settings|keyvalue:key %}  
+        {% if edit_display_perm in app_perms %}
+        <button class="btn btn-outline-secondary btn-sm me-2 opacity-75" onclick="Handler.navigator.toggleEdit(); event.preventDefault();">
             <i class="bi bi-list" style="font-size: 1rem;"></i>
         </button>
         {% endif %}
         {% endwith %}
         {% endwith %}
-        {% if never %}
-        <button class="btn btn-secondary" onclick="Handler.navigator.toggleEdit(); event.preventDefault();">Edit</button>
-        {% endif %}
+        
         {% for c in covers %}
             <button type="button" 
                 class="btn btn-outline-secondary btn-sm me-2 opacity-75 {% if c.pk == cover.pk %}active{% endif %}"

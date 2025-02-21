@@ -71,15 +71,15 @@
             </div>
             
             <!-- NAVPANEL -->
-            {# check what perm required to show nav#}
+            {# retrieve from settings name of perm required to show nav#}
             {% with key1='nav_display_perm_'|add:context.mode %}
             {% with nav_display_perm=settings|keyvalue:key1 %}
             
-            {# check saved user state #}
+            {# retrieve any saved nav state #}
             {% with key='nav_open_'|add:context.mode %}
             {% with nav_open=settings|keyvalue:key %}
             
-            {# if we are to display nav #}
+            {# if we have perms to display nav #}
             {% if nav_display_perm in app_perms %}
             <div class="bg-light border-none test-nav {% if nav_open %}open{% endif %}" id="navbar" aria-labelledby="TBD">
                 <div class="position-relative">
@@ -88,7 +88,7 @@
                 </div>
             </div>
             
-            {# if user is allowed to save state #}
+            {# if we have perms to save state #}
             {% if 'change_profile' in app_perms %}
             <input
               class="d-none"
@@ -115,18 +115,56 @@
             });
             </script>
             {% endif %}
-            
             {% endif %}
             
             
     
             <!-- EDITPANEL - MASTER -->
+            {# retrieve from settings name of perm required to show editpanel #}
+            {% with key2='edit_display_perm_'|add:context.mode %}
+            {% with edit_display_perm=settings|keyvalue:key2 %}
+            
+            {# retrieve any saved editpanel state #}
+            {% with key3='edit_open_'|add:context.mode %}
+            {% with edit_open=settings|keyvalue:key3 %}
+            
+            {# if we have perms to display editpanel #}
+            {% if edit_display_perm in app_perms %}
             <div class="bg-light border-none test-edit" id="editpanel" aria-labelledby="TBD" data-nosnippet>
                 <div class="position-relative">
                 {% block editpanel %}
                 {% endblock %}
                 </div>
             </div>
+            
+            {# if we have perms to save state #}
+            {% if 'change_profile' in app_perms %}
+            <input
+              class="d-none"
+              id="editTriggerId"
+              unicorn:key="editTriggerKey"
+              unicorn:model="request.user.profile.properties.{{key3}}"
+              unicorn:partial="editTriggerKey"
+              unicorn:partial.id="user-preferences"
+              data-nosnippet
+            />
+            <script>
+            {% if edit_open %}
+            window.addEventListener("load", (event) => {
+                Handler.navigator.showEdit = true;
+            })
+            {% endif %}
+            document.addEventListener('editToggled', (e) => {
+                switch(e.detail.name) {
+                    case "editToggled":
+                        document.getElementById("editTriggerId").value = e.detail.showEdit;
+                        Unicorn.trigger('app', 'editTriggerKey');
+                        break;
+                }
+            });
+            </script>
+            {% endif %}
+            {% endif %}
             
             <!-- CONTENT -->
             <div class="row h-100" style="margin-top: var(--top-nav);">
@@ -148,14 +186,16 @@
                         {% endblock %}
                     </div>
                     
+                    {% if edit_display_perm in app_perms %}
                     <!-- RIGHT PANEL -->
                     <div class="side-panel">
-                        <div class="collapse collapse-horizontal" id="rightPanel">
+                        <div class="collapse collapse-horizontal {% if edit_open %}show{% endif %}" id="rightPanel">
                             <div style="min-width: var(--large-edit-width); max-width: var(--large-edit-width);">
                                 <br/>
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
             
@@ -166,6 +206,8 @@
                 </div>
             </nav>
             
+            {% endwith %}{% endwith %}
+            {% endwith %}{% endwith %}
             {% endwith %}{% endwith %}
             {% endwith %}{% endwith %}
             

@@ -232,7 +232,7 @@ class AppView(UnicornView):
                 
                 self.app_perms.extend(get_perms(current_user, ds))
                 self.app_perms.extend(get_perms(current_user, ds.datastream))
-                print(get_perms(current_user, ds.datastream))
+                #print(get_perms(current_user, ds.datastream))
                 
                 #obj perms
                 '''
