@@ -320,9 +320,6 @@ class AppView(UnicornView):
                     if not current_user.has_perm('projects.add_datasource'):
                         redirect('/')
                     '''
-                    if not 'add_datasource' in self.app_perms:
-                        redirect('/')
-                    
                     
                     
                     if page == 'new.datamenu':
@@ -345,10 +342,16 @@ class AppView(UnicornView):
                         for v in cover_search_terms[1:]:
                             q = q | Q(name__icontains=v)
                         
-                        self.datastreams = Datastream.list(q)
-                        
                         self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context)
                         
+                        if not 'add_datasource' in self.app_perms:
+                            raise Http404
+                        
+                        self.datastreams = Datastream.list(q)
+                        
+
+                    
+                    
                         
                         #if items on current page, add them to cache
                         if len(self.datastreams[:self.items_per_page]) > 0:
@@ -378,8 +381,6 @@ class AppView(UnicornView):
                             'class': 'alert-info',
                             'content': 'Select below to add a new item'
                         }
-                        
-                        self.refresh_settings_and_perms()
                     
                     elif page == 'new.datasource':
                         kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('datastream',)}
