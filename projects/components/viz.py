@@ -77,8 +77,8 @@ class VizView(UnicornView):
         
         self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, objs=(v.datasource,))
         
-        print(self.app_perms)
-        print(self.settings)
+        #print(self.app_perms)
+        #print(self.settings)
         
         #obj perms
         print(self.app_perms)
