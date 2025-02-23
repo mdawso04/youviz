@@ -1,9 +1,11 @@
 # django/unicorn/project
 from django_unicorn.components import UnicornView
 from projects.models import Datasource
+from projects.util import get_perms_and_settings
 from project import settings
 from django.shortcuts import render, redirect
 from django.utils.decorators import classonlymethod
+from django.http import Http404
 
 
 # pp
@@ -20,9 +22,12 @@ import shortuuid
 
 class DataframeView(UnicornView):
     datasource: Datasource = None
+    context: dict = None
+    settings: dict = None 
+    app_perms: list = None
     
     class Meta:
-        javascript_exclude = ('datasource', ) 
+        javascript_exclude = ('datasource', 'context', 'settings', 'app_perms', ) 
     
 #LOAD/UPDATE
     
@@ -39,8 +44,28 @@ class DataframeView(UnicornView):
             pk = b['data']['dataframe']['pk']
         elif hasattr(self, 'kwargs'):
             pk = self.kwargs['pk']
+            self.context = self.kwargs['context']['context']
         #self.datasource = Datasource.objects.filter(pk=pk).last()
-        self.datasource = Datasource.item(pk=pk)
+        
+        ds = Datasource.item(pk=pk)
+        
+        mode = self.context['mode']
+        query = self.context['query'] if 'query' in self.context else None
+        page = self.context['page'] if 'page' in self.context else None
+        search = self.context['search'] if 'search' in self.context else None
+        current_user = self.request.user
+        
+        self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, objs=(ds,))
+        
+        #obj perms
+        if ds.is_published:
+            if not 'view_published_datasource' in self.app_perms:
+                raise Http404
+        else:
+            if not 'view_datasource' in self.app_perms:
+                raise Http404
+        
+        self.datasource = ds
         #logger.debug('df pk:' + str(pk))
     
     def hydrate(self):

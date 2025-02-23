@@ -51,11 +51,17 @@
     {% endif %}
 {% endblock %}
 
+{% comment %}
 {% block editpanel %}
     {% if context.mode == "list" %} 
         {% ads %}
+    {% elif context.mode == "view" %} 
+        {% tabpane name='editpanel' %}
+    {% elif context.mode == "new" %} 
+        Stuff for edit panel
     {% endif %}
 {% endblock %}
+{% endcomment %}
 
 {% block content %}
     {% if context.mode == "list" %}

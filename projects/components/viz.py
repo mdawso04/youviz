@@ -1,6 +1,7 @@
 # django/unicorn/project
 from django_unicorn.components import UnicornView
 from projects.models import Viz
+from projects.util import get_perms_and_settings
 from django.shortcuts import render,redirect
 from django.utils.functional import cached_property
 from django.utils.decorators import classonlymethod
@@ -33,9 +34,11 @@ class VizView(UnicornView):
     viz: Viz = None
     cache: dict = {}
     context: dict = None
+    settings: dict = None 
+    app_perms: list = None
     
     class Meta:
-        exclude = ()
+        javascript_exclude = ('cache', 'context', 'settings', 'app_perms',) 
         
 #LOAD/UPDATE
 
@@ -46,7 +49,7 @@ class VizView(UnicornView):
         #logger.debug('VizView > load_viz start')
         
         pk = None
-        current_user = self.request.user
+        #current_user = self.request.user
         
         #unicorn
         if hasattr(self.request, '_body'):
@@ -63,15 +66,31 @@ class VizView(UnicornView):
         
         v = Viz.item(pk=pk)
         
+        #if 'context' in self.component_kwargs:
+        #    self.context = self.component_kwargs['context']
+
+        mode = self.context['mode']
+        query = self.context['query'] if 'query' in self.context else None
+        page = self.context['page'] if 'page' in self.context else None
+        search = self.context['search'] if 'search' in self.context else None
+        current_user = self.request.user
+        
+        self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, objs=(v.datasource,))
+        
+        print(self.app_perms)
+        print(self.settings)
+        
         #obj perms
-        if v.is_published:
-            if not current_user.has_perm('view_published_viz', v):
-                redirect('/')
+        print(self.app_perms)
+        if v.datasource.is_published:
+            if not 'view_published_datasource' in self.app_perms:
+                raise Http404
         else:
-            if not current_user.has_perm('view_viz', v):
-                redirect('/')
+            if not 'view_datasource' in self.app_perms:
+                raise Http404
         
         self.viz = v
+        
         
         #self.viz.can_view_or_404(self.request.user)
         #if not self.request.user.has_perm('projects.view_viz', self.viz):
@@ -80,6 +99,7 @@ class VizView(UnicornView):
         self.cache = self.viz.viz_cache
         #print(self.cache['viz']['options']['saved'])
         #print(self.cache['viz']['layout']['saved'])
+        
         
         #logger.debug('VizView > load_viz end')
         

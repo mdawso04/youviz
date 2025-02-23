@@ -2,6 +2,7 @@
 from django_unicorn.components import QuerySetType, UnicornView
 from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings, Cover, Comment
 from projects.forms import DatastreamForm
+from projects.util import get_perms_and_settings
 from django.contrib.auth.models import User
 from projects.middleware import redirect as force_redirect
 from guardian.shortcuts import get_perms, get_user_perms, get_users_with_perms, get_objects_for_user, get_perms_for_model
@@ -73,6 +74,8 @@ class AppView(UnicornView):
     datastream_form: DatastreamForm = None
     new_datastream: Datastream = None
     new_datastream_form: DatastreamForm = None
+    selected_datastream: Datastream = None
+    selected_datastream_form: DatastreamForm = None
     
     add_comment_text: str = None
     
@@ -81,7 +84,8 @@ class AppView(UnicornView):
     #datastream_perms: list = None
     
     class Meta:
-        javascript_exclude = ('datasources', 'datasource', 'datastream_form','new_datastream', 'new_datastream_form', 'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
+        javascript_exclude = ('datasources', 'datasource', 'datastream_form','new_datastream', 'new_datastream_form', 'selected_datastream', 'selected_datastream_form', 
+                              'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
                               'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'related_datasources', 'related_items_paginated', 'app_perms',) 
     
     #def __init__(self, *args, **kwargs):
@@ -104,6 +108,28 @@ class AppView(UnicornView):
         else:
             print('no datasource to print!')
     
+    '''
+    def refresh_settings_and_perms(self):
+        mode = self.context['mode']
+        
+        edit_display_perm = self.settings.get(f'edit_display_perm_{mode}', None)
+        nav_display_perm = self.settings.get(f'nav_display_perm_{mode}', None)
+        if edit_display_perm in self.app_perms:
+            self.app_perms.append('display_edit_panel')
+        if nav_display_perm in self.app_perms:
+            self.app_perms.append('display_nav_panel')    
+
+        edit_open = self.settings.get(f'edit_open_{mode}', None)
+        nav_open = self.settings.get(f'nav_open_{mode}', None)
+        if edit_open:
+            self.settings['edit_open'] = edit_open
+        if nav_open:
+            self.settings['nav_open'] = nav_open
+            
+        print(self.settings)
+        print(self.app_perms)
+    '''
+    
     def load_table(self):
         
         #from pympler import tracker
@@ -120,8 +146,9 @@ class AppView(UnicornView):
             query = self.context['query'] if 'query' in self.context else None
             page = self.context['page'] if 'page' in self.context else None
             search = self.context['search'] if 'search' in self.context else None
-            
             current_user = self.request.user
+            
+            '''
             self.app_perms = [p.split('.', 1)[1] for p in list(current_user.get_all_permissions())]
             
             current_user_custom_settings = None
@@ -132,7 +159,10 @@ class AppView(UnicornView):
                 self.settings = Settings.all() | current_user_custom_settings
             else:
                 self.settings = Settings.all()
-            #print(self.settings)
+            '''
+            
+                
+            #call refresh_settings_and_perms inside each modality
             
             is_get = True if self.request.method == 'GET' else False
             
@@ -163,6 +193,7 @@ class AppView(UnicornView):
                     published_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(query=query, owner=owner_pk, is_published=True))
                     unpublished_ds = get_objects_for_user(current_user, ('view_datasource'), Datasource.list(query=query, owner=owner_pk, is_published=False))
                     self.datasources = list((published_ds | unpublished_ds).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1])
+                    self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context)
                     self.ads = Notification.objects.filter(position=Notification.USER_AD).order_by('?')[:4]
                     self.meta_object = self.siteuser.profile
                 
@@ -195,7 +226,8 @@ class AppView(UnicornView):
                         published_descmatch_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(q1, is_published=True))
                         
                         self.datasources = list((published_namematch_ds | published_descmatch_ds).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1])
-                        
+                    
+                    self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context)
                     self.ads = Notification.objects.filter(position=Notification.LIST_AD).order_by('?')[:4]
                     
                 #if items on current page, add them to cache
@@ -230,9 +262,11 @@ class AppView(UnicornView):
                 elif self.context['slug']:
                     ds = Datasource.item(slug=self.context['slug'])
                 
-                self.app_perms.extend(get_perms(current_user, ds))
-                self.app_perms.extend(get_perms(current_user, ds.datastream))
-                #print(get_perms(current_user, ds.datastream))
+                self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, objs=(ds, ds.datastream,))
+                
+                #self.app_perms.extend(get_perms(current_user, ds))
+                #self.app_perms.extend(get_perms(current_user, ds.datastream))
+                #self.refresh_settings_and_perms()
                 
                 #obj perms
                 '''
@@ -313,6 +347,8 @@ class AppView(UnicornView):
                         
                         self.datastreams = Datastream.list(q)
                         
+                        self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context)
+                        
                         
                         #if items on current page, add them to cache
                         if len(self.datastreams[:self.items_per_page]) > 0:
@@ -342,6 +378,8 @@ class AppView(UnicornView):
                             'class': 'alert-info',
                             'content': 'Select below to add a new item'
                         }
+                        
+                        self.refresh_settings_and_perms()
                     
                     elif page == 'new.datasource':
                         kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('datastream',)}
@@ -420,6 +458,7 @@ class AppView(UnicornView):
                 self.datasources = Datasource.objects.none()
                 self.datasource = None
                 self.vizs = Viz.objects.none()
+                
 
     def updating(self, name, value):
         #logger.debug('AppView > updating start')
@@ -491,6 +530,9 @@ class AppView(UnicornView):
         #logger.debug('AppView > updated end')
         #print('reloading')
         self.load_table()
+        
+        
+    
         
 #ACTIONS
 
@@ -569,6 +611,23 @@ class AppView(UnicornView):
             return redirect(reverse('new') + '?o=datamenu')
         else:
             return False
+        
+    def select_datastream(self, pk):
+        if not 'add_viz' in self.app_perms:
+            raise Http404
+        self.selected_datastream = Datastream.item(pk=pk)
+        cache.set('self.selected_datastream', ds)
+        
+        instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.selected_datastream.field_data().items()}
+        self.selected_datastream_form = DatastreamForm(
+                instance=self.seleected_datastream, 
+                form_id='selected_datastream_form',
+                use_ok=True,
+                unicorn_model='selected_datastream',
+                data=instance_data, 
+                mode=True)
+        self.selected_datastream_form.is_valid()
+        
         
     def add_comment(self):
         if not self.request.user.has_perm('projects.add_comment'):

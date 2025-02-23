@@ -19,12 +19,9 @@
     </div>
     
     <!-- EDITPANEL - MASTER -->
-    
-    
-    {% if "change_datasource" in datasource_perms %}
-    <div class="bg-light border-none test-edit" id="editpanel" aria-labelledby="TBD">
+    {% if 'display_edit_panel' in app_perms %}
+    <div class="bg-light border-none test-edit {% if settings.edit_open %}open{% endif %}" id="editpanel" aria-labelledby="TBD">
         <div class="position-relative">
-            {#{% include '../projects/editpanel/editpanel.html' %}#}
             {% tabpane name='editpanel' %}
         </div>
     </div>

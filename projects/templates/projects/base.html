@@ -71,17 +71,9 @@
             </div>
             
             <!-- NAVPANEL -->
-            {# retrieve from settings name of perm required to show nav#}
-            {% with key1='nav_display_perm_'|add:context.mode %}
-            {% with nav_display_perm=settings|keyvalue:key1 %}
-            
-            {# retrieve any saved nav state #}
-            {% with key='nav_open_'|add:context.mode %}
-            {% with nav_open=settings|keyvalue:key %}
-            
             {# if we have perms to display nav #}
-            {% if nav_display_perm in app_perms %}
-            <div class="bg-light border-none test-nav {% if nav_open %}open{% endif %}" id="navbar" aria-labelledby="TBD">
+            {% if 'display_nav_panel' in app_perms %}
+            <div class="bg-light border-none test-nav {% if settings.nav_open %}open{% endif %}" id="navbar" aria-labelledby="TBD">
                 <div class="position-relative">
                 {% block navpanel %}
                 {% endblock %}
@@ -94,13 +86,13 @@
               class="d-none"
               id="nameId"
               unicorn:key="nameKey"
-              unicorn:model="request.user.profile.properties.{{key}}"
+              unicorn:model="request.user.profile.properties.nav_open_{{context.mode}}"
               unicorn:partial="nameKey"
               unicorn:partial.id="user-preferences"
               data-nosnippet
             />
             <script>
-            {% if nav_open %}
+            {% if settings.nav_open %}
             window.addEventListener("load", (event) => {
                 Handler.navigator.showNav = true;
             })
@@ -118,24 +110,20 @@
             {% endif %}
             
             
-    
-            <!-- EDITPANEL - MASTER -->
-            {# retrieve from settings name of perm required to show editpanel #}
-            {% with key2='edit_display_perm_'|add:context.mode %}
-            {% with edit_display_perm=settings|keyvalue:key2 %}
-            
-            {# retrieve any saved editpanel state #}
-            {% with key3='edit_open_'|add:context.mode %}
-            {% with edit_open=settings|keyvalue:key3 %}
-            
             {# if we have perms to display editpanel #}
-            {% if edit_display_perm in app_perms %}
+            {% if 'display_edit_panel' in app_perms %}
+            <!-- EDITPANEL - MASTER -->
+            
+            
+            {# ON HOLD - each component to handle locally #}
+            {% if never %}
             <div class="bg-light border-none test-edit" id="editpanel" aria-labelledby="TBD" data-nosnippet>
                 <div class="position-relative">
                 {% block editpanel %}
                 {% endblock %}
                 </div>
             </div>
+            {% endif %}
             
             {# if we have perms to save state #}
             {% if 'change_profile' in app_perms %}
@@ -143,13 +131,13 @@
               class="d-none"
               id="editTriggerId"
               unicorn:key="editTriggerKey"
-              unicorn:model="request.user.profile.properties.{{key3}}"
+              unicorn:model="request.user.profile.properties.edit_open_{{context.mode}}"
               unicorn:partial="editTriggerKey"
               unicorn:partial.id="user-preferences"
               data-nosnippet
             />
             <script>
-            {% if edit_open %}
+            {% if settings.edit_open %}
             window.addEventListener("load", (event) => {
                 Handler.navigator.showEdit = true;
             })
@@ -169,10 +157,10 @@
             <!-- CONTENT -->
             <div class="row h-100" style="margin-top: var(--top-nav);">
                 <div class="col d-flex h-100">
-                    {% if nav_display_perm in app_perms %}
+                    {% if 'display_nav_panel' in app_perms %}
                     <!-- LEFT PANEL -->
                     <div class="side-panel">
-                        <div class="collapse collapse-horizontal {% if nav_open %}show{% endif %}" id="leftPanel">
+                        <div class="collapse collapse-horizontal {% if settings.nav_open %}show{% endif %}" id="leftPanel">
                             <div style="min-width: var(--large-edit-width); max-width: var(--large-edit-width);">
                                 <br/>
                             </div>
@@ -186,10 +174,10 @@
                         {% endblock %}
                     </div>
                     
-                    {% if edit_display_perm in app_perms %}
+                    {% if 'display_edit_panel' in app_perms %}
                     <!-- RIGHT PANEL -->
                     <div class="side-panel">
-                        <div class="collapse collapse-horizontal {% if edit_open %}show{% endif %}" id="rightPanel">
+                        <div class="collapse collapse-horizontal {% if settings.edit_open %}show{% endif %}" id="rightPanel">
                             <div style="min-width: var(--large-edit-width); max-width: var(--large-edit-width);">
                                 <br/>
                             </div>
@@ -205,11 +193,6 @@
                     {% endblock %}
                 </div>
             </nav>
-            
-            {% endwith %}{% endwith %}
-            {% endwith %}{% endwith %}
-            {% endwith %}{% endwith %}
-            {% endwith %}{% endwith %}
             
         </div>
         {% analytical_body_bottom %}

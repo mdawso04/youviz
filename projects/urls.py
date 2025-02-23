@@ -15,6 +15,7 @@ urlpatterns = [
     path('viz/<int:pk>/data/', views.viz_data, name="viz_data"),
     path('viz/<int:pk>/<hash_k>/', views.viz, name="viz"),
     #path('viz/<int:pk>/<hash_k>/viewmode/', VizView.as_view(), {'context': {'mode': 'view'}}, name="viz_viewmode"),
+    #path('viz/<int:pk>/<hash_k>/viewmode/<session_salt>/', views.viz_viewmode, name="viz_viewmode"),
     path('viz/<int:pk>/<hash_k>/viewmode/', views.viz_viewmode, name="viz_viewmode"),
     #path('datasource/<int:pk>/<hash_k>/', DataframeView.as_view(), {'context': {'mode': 'app'}}, name="dataframe"),
     path('datasource/<int:pk>/<hash_k>/', views.dataframe, name="dataframe"),
