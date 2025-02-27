@@ -4,6 +4,7 @@
 {% load analytical %}
 {% load humanize %}
 {% load socialaccount %}
+{% load customfilters %}
 <form class="container-fluid pe-1" action="/search/">
     <div class="row g-2 w-100 row-cols-1">
         <div class="col input-group">
@@ -21,7 +22,7 @@
                         data-bs-target="#OFFCANVAS" aria-controls="offcanvasExample"
                         class="border-0 rounded-circle p-2 ms-2" 
                         style="font-size: 0.9rem; min-height: 40px; max-height: 40px; min-width: 40px; min-width: 40px; 
-                                   background-color: {{request.user.profile.properties.profile_color|default:'#0dcaf0'}} !important">
+                                   background-color:{% user_profile_color %} !important">
                     {{ request.user.profile.name | first | upper}}
                 </button>
             </div>

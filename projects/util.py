@@ -50,4 +50,10 @@ def get_perms_and_settings(*args, **kwargs):
     request.session.save()
     settings['session_salt'] = str(request.session.session_key)[-11:-1] + '/'
     
+    
+    if hasattr(request.user, 'profile'):
+        settings['user_profile_color'] = request.user.profile.properties['profile_color']
+    else:
+        settings['user_profile_color'] = '#0dcaf0'
+    
     return app_perms, settings

@@ -417,6 +417,16 @@ def input_select(context, **kwargs):
     '''
     return kwargs
 
+@register.inclusion_tag("templatetags/user_profile_color.html", takes_context=True)
+def user_profile_color(context, **kwargs):
+    '''
+    format
+        class
+        css
+    '''
+    kwargs['color'] = context['settings'].get('user_profile_color')
+    return kwargs
+
 @register.inclusion_tag("templatetags/bnav_button.html", takes_context=True)
 def bnav_button(context, **kwargs):
     '''
