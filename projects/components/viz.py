@@ -63,7 +63,7 @@ class VizView(UnicornView):
             pk = self.kwargs['pk']
             logger.debug('PK FROM KWARGS: ' + str(pk))
             self.context = self.kwargs['context']['context']
-        
+            
         v = Viz.item(pk=pk)
         
         #if 'context' in self.component_kwargs:

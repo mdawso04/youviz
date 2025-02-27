@@ -11,7 +11,7 @@
                     <div class="yv-component viz" id="yv-component-viz-{{ v.pk }}"
                          data-yv-component="viz"
                          data-yv-id="{{ v.pk }}"
-                         data-yv-link="{% if context.mode == 'view' %}{{ v.get_absolute_url_viewmode }}{% else %}{{ v.get_absolute_url }}{% endif %}"
+                         data-yv-link="{% if context.mode == 'view' %}{{ v.get_absolute_url_viewmode }}{{ settings.session_salt }}{% else %}{{ v.get_absolute_url }}{% endif %}"
                          data-yv-button="#showVizOffcanvas"
                          data-yv-init="vizInit">
                     </div>

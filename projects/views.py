@@ -143,7 +143,7 @@ def viz(request, pk = None, hash_k = None):
     
     return VizView.as_view()(request, context=context, pk=pk, hash_k=hash_k)
 
-def viz_viewmode(request, pk = None, hash_k = None):
+def viz_viewmode(request, pk = None, hash_k = None, session_salt = None):
     context = {'context': {'mode': 'view'}}
     
     #ignore session_salt - its only to trigger client-side cache refresh

@@ -47,9 +47,7 @@ def get_perms_and_settings(*args, **kwargs):
         settings['nav_open'] = nav_open
         
     #session_salt to append to url for client-side cache refresh
-    if 'session_key' in request.session:
-        settings['session_salt'] = 'somesalt' + '/'
-    else:
-        settings['session_salt'] = None
+    request.session.save()
+    settings['session_salt'] = str(request.session.session_key)[-11:-1] + '/'
     
     return app_perms, settings
