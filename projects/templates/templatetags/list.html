@@ -23,8 +23,8 @@
                 {% if forloop.counter <= page_no and page  %}
                     {% for i in page %}
                         <div class="col">
-                            <div class="card rounded-3 p-1 position-relative {% if not i.is_published %}border border-warning border-3 {% endif %}"  
-                                 style="{% if i.is_published %}border-color: rgba(0, 0, 0, 0.07);{% endif %} 
+                            <div class="card rounded-3 p-1 position-relative {% if not i.is_published %}border border-3{% endif %}"  
+                                 style="border-color: {% if i.is_published %}rgba(0, 0, 0, 0.07);{% else %}{% user_profile_color %};{% endif %} 
                                         opacity: 0; animation: fadeIn 1s ease-in both; animation-delay: {{ forloop.counter|divide:4 }}s;">
                                 {% include item_content with item=i%}
                                 {% include item_info with item=i %}
