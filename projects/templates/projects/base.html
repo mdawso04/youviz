@@ -109,23 +109,21 @@
             {% endif %}
             {% endif %}
             
+            {# only enable when for list/new #}
+            {% if context.mode == "list" or context.mode == "user" or context.mode == "new" %}
             
-            {# if we have perms to display editpanel #}
+            <!-- EDITPANEL - MASTER 1 -->
+            
+            {# only for in-app items #}
             {% if 'display_edit_panel' in app_perms %}
-            <!-- EDITPANEL - MASTER -->
-            
-            
-            {# ON HOLD - each component to handle locally #}
-            {% if never %}
-            <div class="bg-light border-none test-edit" id="editpanel" aria-labelledby="TBD" data-nosnippet>
+            <div class="bg-light border-none test-edit {% if settings.edit_open %}open{% endif %}" id="editpanel" aria-labelledby="TBD" data-nosnippet>
                 <div class="position-relative">
                 {% block editpanel %}
                 {% endblock %}
                 </div>
             </div>
-            {% endif %}
             
-            {# if we have perms to save state #}
+            {# when we have perms to save state #}
             {% if 'change_profile' in app_perms %}
             <input
               class="d-none"
@@ -151,6 +149,7 @@
                 }
             });
             </script>
+            {% endif %}
             {% endif %}
             {% endif %}
             

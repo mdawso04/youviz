@@ -45,23 +45,21 @@
     {% if context.mode == "list" %} 
         {% tabpane name='list' %}
     {% elif context.mode == "new" %} 
-        {% tabpane name='new' %}
+        Not ready
     {% elif context.mode == "view" %} 
         {% tabpane name='navpanel' %}
     {% endif %}
 {% endblock %}
 
-{% comment %}
 {% block editpanel %}
     {% if context.mode == "list" %} 
-        {% ads %}
-    {% elif context.mode == "view" %} 
-        {% tabpane name='editpanel' %}
+        Ads
+    {% elif context.mode == "user" %} 
+        Ads
     {% elif context.mode == "new" %} 
-        Stuff for edit panel
+        {% tabpane name='new' %}
     {% endif %}
 {% endblock %}
-{% endcomment %}
 
 {% block content %}
     {% if context.mode == "list" %}
