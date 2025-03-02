@@ -1,0 +1,57 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+ 
+{% if formset %}
+
+{{ formset.management_form }}
+<!-- HIDDEN TAB PILLS -->
+<div class="d-none">
+    <!-- <h5 class="offcanvas-title me-auto" id="offcanvasBottomLabel">Datasource Settings</h5> -->
+    <ul class="nav nav-pills" id="formset-tabs-pills" role="tablist" data-nosnippet>
+        {% for form in formset %}
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if forloop.first %}active{% endif %}" 
+                    id="formset-pill-{{ form.id.auto_id }}" 
+                    data-bs-toggle="pill" 
+                    data-bs-target="#{{ form.id.auto_id }}" 
+                    type="button" 
+                    role="tab" 
+                    aria-controls="{{ form.id.auto_id }}" 
+                    aria-selected="">
+                {{ form_id }}
+            </button>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- TAB CONTENTS -->
+<div class="col tab-content" id="formset-tabs">
+    {% for form in formset %}
+        <div class="tab-pane yv fade {% if forloop.first %}show active{% endif %}" id="{{ form.id.auto_id }}" 
+             role="tabpanel" aria-labelledby="{{ form.id.auto_id }}-tab">
+
+            <div class="d-flex offcanvas-header p-3">
+                <h5 class="offcanvas-title me-auto flex-grow-1 h4" id="offcanvasBottomLabel">Formset</h5>
+                <!--<div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="maximize"
+                           onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
+                </div>-->
+                <button type="button" class="border-0 bg-transparent" style="padding: 0px; " onclick="Handler.showTab('#tabpane-navpanel-details-tab');" aria-label="Close">
+                    <i class="bi-arrow-left" style="width: 24px; height: 24px;"></i>
+                </button>
+            </div>
+            <div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" style="overflow-x: hidden;">
+                {{ form }}    
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
