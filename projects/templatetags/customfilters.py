@@ -1021,6 +1021,12 @@ def form_share(context, **kwargs):
     '''
     return kwargs
 
+@register.inclusion_tag("templatetags/formset.html", takes_context=True)
+def formset(context, **kwargs):
+    '''
+    '''
+    return kwargs
+
 @register.inclusion_tag("templatetags/ads.html", takes_context=True)
 def ads(context, **kwargs):
     '''

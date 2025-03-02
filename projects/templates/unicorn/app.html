@@ -57,7 +57,8 @@
     {% elif context.mode == "user" %} 
         Ads
     {% elif context.mode == "new" %} 
-        {% tabpane name='new' %}
+        {#{% tabpane name='new' %}#}
+        {% formset formset=datastream_formset %}
     {% endif %}
 {% endblock %}
 

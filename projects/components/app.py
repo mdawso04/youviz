@@ -20,6 +20,8 @@ from django.db.models import Q
 from django.db.models import Case, When
 from django.core.exceptions import ValidationError
 from django.core.cache import cache
+from django.forms import modelformset_factory
+from django.forms import BaseModelFormSet
 #from django.contrib import messages
 
 from django_unicorn.components.unicorn_view import constructed_views_cache
@@ -76,6 +78,7 @@ class AppView(UnicornView):
     new_datastream_form: DatastreamForm = None
     selected_datastream: Datastream = None
     selected_datastream_form: DatastreamForm = None
+    datastream_formset: BaseModelFormSet = None
     
     add_comment_text: str = None
     
@@ -85,7 +88,7 @@ class AppView(UnicornView):
     
     class Meta:
         javascript_exclude = ('datasources', 'datasource', 'datastream_form','new_datastream', 'new_datastream_form', 'selected_datastream', 'selected_datastream_form', 
-                              'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
+                              'datastream_formset', 'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
                               'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'related_datasources', 'related_items_paginated', 'app_perms',) 
     
     #def __init__(self, *args, **kwargs):
@@ -243,6 +246,8 @@ class AppView(UnicornView):
                 #pad out remainder of list
                 self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
                 
+
+                
                 #if self.settings.get('test_pref'):
                 #    self.call('handlerAlias', 'toggleEdit')
                                     
@@ -381,6 +386,13 @@ class AppView(UnicornView):
                             'class': 'alert-info',
                             'content': 'Select below to add a new item'
                         }
+                        
+                        
+                        #formset
+                        DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm)
+                        self.datastream_formset = DatastreamFormSet(queryset= self.datastreams)
+                        
+
                     
                     elif page == 'new.datasource':
                         kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('datastream',)}

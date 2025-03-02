@@ -21,7 +21,7 @@ copyreg.pickle(DjangoTemplates, pickle_django_templates)
 #end
 
 class BaseForm(ModelForm):
-    template_name = "form.html" #blank is ok - customisation is at widget level
+    template_name = "form.html"
     form_id = None
     error_css_class = "error"
     use_ok = False
@@ -129,7 +129,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
     )
     
     def __init__(self, *args, **kwargs):
-        mode = kwargs.pop('mode', None)
+        mode = kwargs.pop('mode', True)
         super(DatastreamForm, self).__init__(*args, **kwargs)
         if mode:
             self.fields['name'].widget.attrs.update({
