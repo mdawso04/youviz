@@ -23,6 +23,14 @@
         <button class="btn btn-outline-secondary btn-sm me-2 opacity-75" onclick="Handler.navigator.toggleEdit(); event.preventDefault();">
             <i class="bi bi-list" style="font-size: 1rem;"></i>
         </button>
+        
+        {% for form in datastream_formset %}
+        <button type="button" class="btn btn-outline-secondary btn-sm me-2 opacity-75" style="padding: 0px; " 
+                onclick="Handler.showTabInsideEdit('#form-{{ form.instance.slug }}-pill'); event.preventDefault();">
+            {{ form.instance.name|first }}
+        </button>
+        {% endfor %}
+        
         {% endif %}
         {% endwith %}
         {% endwith %}

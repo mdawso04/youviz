@@ -262,6 +262,20 @@ class Navigator {
         this._navToggled();
     }
     
+    openNavIfClosed() {
+        if(!this.showNav) {
+            this.showNav　= true;
+        this._navToggled();
+        }
+    }
+    
+    closeNavIfOpen() {
+        if(this.showNav) {
+            this.showNav　= false;
+        this._navToggled();
+        }
+    }
+    
     reset() {
         alert(this.targets.length > 0);
         if (this.targets.length > 0) {
@@ -284,6 +298,22 @@ class Navigator {
         this.showEdit = !this.showEdit;
         this._editToggled();
     }
+    
+    openEditIfClosed() {
+        if(!this.showEdit) {
+            this.showEdit　= true;
+        this._editToggled();
+        }
+    }
+    
+    closeEditIfOpen() {
+        if(this.showEdit) {
+            this.showEdit　= false;
+        this._editToggled();
+        }
+    }
+    
+   
     
     _editToggled() {
         const e = new CustomEvent('editToggled', {
@@ -481,6 +511,16 @@ Handler.mediaQuerySwitch = function(param) {
 Handler.showTab = function(query) {
     const t = document.querySelector(query);
     Tab.getOrCreateInstance(t).show();
+}
+
+Handler.showTabInsideEdit = function(query) {
+    Handler.showTab(query); 
+    Handler.navigator.openEditIfClosed();
+}
+
+Handler.showTabInsideNav = function(query) {
+    Handler.showTab(query); 
+    Handler.navigator.openNavIfClosed();
 }
 
 Handler.vizInit = function (node) {

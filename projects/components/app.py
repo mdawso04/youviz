@@ -390,7 +390,7 @@ class AppView(UnicornView):
                         
                         #formset
                         DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm)
-                        self.datastream_formset = DatastreamFormSet(queryset= self.datastreams)
+                        self.datastream_formset = DatastreamFormSet(queryset= self.datastreams, form_kwargs={"mode": True}, auto_id='id_for_%s')
                         
 
                     
