@@ -1025,7 +1025,7 @@ def form_share(context, **kwargs):
 def formset(context, **kwargs):
     '''
     '''
-    return kwargs
+    return context.flatten() | kwargs
 
 @register.inclusion_tag("templatetags/ads.html", takes_context=True)
 def ads(context, **kwargs):

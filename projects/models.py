@@ -451,6 +451,10 @@ class BaseModel(models.Model):
             'description': self.description,
         }
     
+    @cached_property
+    def cls_slug(self):
+        return '{}_{}_'.format(self.__class__.__name__, self.slug)
+    
     def set_field_data(self, data):
         if 'name' in data:
             self.name = data['name']

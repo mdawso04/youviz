@@ -5,7 +5,7 @@ def get_perms_and_settings(*args, **kwargs):
     
     request = kwargs['request']
     context = kwargs['context']
-    objs = kwargs.get('objs', None)
+    obs = kwargs.get('obs', None)
     
     mode = context['mode']
     query = context['query'] if 'query' in context else None
@@ -24,13 +24,13 @@ def get_perms_and_settings(*args, **kwargs):
     else:
         settings = Settings.all()
     
-    if objs:
-        for o in objs:
-            p = get_perms(current_user, o)
+    if obs:
+        for o in obs:
+            new_perms = get_perms(current_user, o)
+            new_perms_with_key = ['{}{}'.format(perm, o.slug) for perm in new_perms]
             #print(o)
-            #print(p)
-            app_perms.extend(p)
-        
+            app_perms.extend(new_perms_with_key)
+    
         
     edit_display_perm = settings.get(f'edit_display_perm_{mode}', None)
     nav_display_perm = settings.get(f'nav_display_perm_{mode}', None)

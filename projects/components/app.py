@@ -1,7 +1,7 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
 from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings, Cover, Comment
-from projects.forms import DatastreamForm
+from projects.forms import DatastreamForm, BaseDatastreamFormSet
 from projects.util import get_perms_and_settings
 from django.contrib.auth.models import User
 from projects.middleware import redirect as force_redirect
@@ -184,7 +184,7 @@ class AppView(UnicornView):
         list_object_container = list((published_objs | unpublished_objs).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1])
         
         #build perms, settings
-        self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context)
+        self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, obs=list_object_container)
         
         #build ads
         self.ads = Notification.objects.filter(position=ad_position).order_by('?')[:4]
@@ -471,8 +471,8 @@ class AppView(UnicornView):
                         }
                         
                         #formset
-                        DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm)
-                        self.datastream_formset = DatastreamFormSet(queryset= self.datastreams, form_kwargs={"mode": True}, auto_id='id_for_%s')
+                        DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm, formset=BaseDatastreamFormSet)
+                        self.datastream_formset = DatastreamFormSet(queryset=self.datastreams, auto_id='id_for_%s')
 
                     
                     elif page == 'new.datasource':

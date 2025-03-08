@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from .models import BaseModel, Datastream
 from django.core.exceptions import ValidationError
 from entangled.forms import EntangledModelForm, EntangledModelFormMixin
+from django.forms import BaseModelFormSet
 
 '''
 My workaround was to register a custom pickle handler for the django.forms.renderers.
@@ -262,6 +263,13 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 "Source and description don't match"
             )
         '''
+        
+class BaseDatastreamFormSet(BaseModelFormSet):
+    def get_form_kwargs(self, index):
+        kwargs = super().get_form_kwargs(index)
+        kwargs['mode'] = True
+        kwargs['unicorn_model'] = f'datastreams.{index}', 
+        return kwargs
                 
             
 from django import forms
