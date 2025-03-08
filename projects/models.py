@@ -580,10 +580,9 @@ class BaseModel(models.Model):
     @classmethod
     def list(cls, *args, **kwargs):
         p = cls.get_prefetch()
-        query = kwargs['query'] if 'query' in kwargs else ''
-        kwargs = {k: v for k, v in kwargs.items() if k not in ('query', )}
+        query = kwargs.pop('query', '')
         
-        if args:
+        if args and None not in args:
             if p:
                 return cls.objects.filter(*args, **kwargs).order_by('-id').prefetch_related(*p)
             else:

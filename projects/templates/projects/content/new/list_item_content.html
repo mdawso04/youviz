@@ -2,6 +2,12 @@
 {% load customfilters %}
 
 <div class="card-img-top d-block w-100 position-relative" style="height: 200px;">
-<i class="bi-database position-absolute top-50 start-50 translate-middle text-black-50" style="font-size: 8rem;">
-</i>
+    <i class="bi-database position-absolute top-50 start-50 translate-middle text-black-50" style="font-size: 8rem;"></i>
+    <div class="bg-transparent border-0 position-absolute ms-1 mb-2 top-0 end-0" style="z-index: 1020;">
+        <button class="bg-transparent border-0" 
+                style="z-index: 1020;"
+                onclick="Handler.showTabInsideEdit('#form-cover-{{ i.slug }}-pill'); event.preventDefault();">
+            <i id="fav_button_icon_{{item.pk}}" class="bi-three-dots-vertical text-black-50" style="font-size: 1.5rem;"></i>
+        </button>
+    </div>
 </div>

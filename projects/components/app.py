@@ -133,6 +133,80 @@ class AppView(UnicornView):
         print(self.app_perms)
     '''
     
+    def initialise_list(
+        self, 
+        current_user,
+        list_object_owner_user,
+        list_object_class,
+        list_object_container,
+        list_object_pub_perms,
+        list_object_unpub_perms,
+        list_object_name_query,
+        list_object_cover,
+        ad_position,
+        meta_object,
+    ):
+        
+        #pagination
+        if self.page_no == 1:
+            self.list_items_paginated, self.displayed_item_ids = [], []
+            
+        #build query params
+        pub_args, pub_kwargs, unpub_args, unpub_kwargs = [], {}, [], {}
+        
+        pub_kwargs.update(dict(is_published=True))
+        unpub_kwargs.update(dict(is_published=False))
+        
+        if list_object_cover:
+            cover_search_terms = list_object_cover.search_terms.split(',')
+            '''
+            q = Q(name__icontains=cover_search_terms[0])
+            for v in cover_search_terms[1:]:
+                q = q | Q(name__icontains=v)
+            '''
+            q1 = Q(description__icontains=cover_search_terms[0])
+            for v in cover_search_terms[1:]:
+                q1 = q1 | Q(description__icontains=v)
+                
+            pub_args.append(q1)
+            unpub_args.append(q1)
+        else:
+            pub_kwargs.update(query=list_object_name_query)
+            unpub_kwargs.update(query=list_object_name_query)
+                
+        if list_object_owner_user:
+            pub_kwargs.update(owner=list_object_owner_user.pk)
+            unpub_kwargs.update(owner=list_object_owner_user.pk)
+            
+        #list_objects
+        published_objs = get_objects_for_user(current_user, list_object_pub_perms, list_object_class.list(*pub_args, **pub_kwargs))
+        unpublished_objs = get_objects_for_user(current_user, list_object_unpub_perms, list_object_class.list(*unpub_args, **unpub_kwargs))
+        list_object_container = list((published_objs | unpublished_objs).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1])
+        
+        #build perms, settings
+        self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context)
+        
+        #build ads
+        self.ads = Notification.objects.filter(position=ad_position).order_by('?')[:4]
+        
+        #build meta
+        self.meta_object = meta_object
+        
+        #if items on current page, add them to cache
+        if len(list_object_container[:self.items_per_page]) > 0:
+            self.list_items_paginated = self.list_items_paginated[:self.page_no - 1] + [list_object_container[:self.items_per_page]]
+
+        self.displayed_item_ids = [i['pk'] if isinstance(i, dict) else i.pk for p in self.list_items_paginated[:self.page_no] for i in p] 
+
+        #if items on next page (spare), add them to cache
+        if len(list_object_container[self.items_per_page:]) > 0:
+            self.list_items_paginated = self.list_items_paginated[:self.page_no ] + [list_object_container[self.items_per_page:]]
+
+        #pad out remainder of list
+        self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
+
+        return
+    
     def load_table(self):
         
         #from pympler import tracker
@@ -237,6 +311,8 @@ class AppView(UnicornView):
                 if len(self.datasources[:self.items_per_page]) > 0:
                     self.list_items_paginated = self.list_items_paginated[:self.page_no - 1] + [self.datasources[:self.items_per_page]]
                     
+                print(self.list_items_paginated)
+                    
                 self.displayed_item_ids = [i['pk'] if isinstance(i, dict) else i.pk for p in self.list_items_paginated[:self.page_no] for i in p] 
                     
                 #if items on next page (spare), add them to cache
@@ -325,12 +401,7 @@ class AppView(UnicornView):
                     if not current_user.has_perm('projects.add_datasource'):
                         redirect('/')
                     '''
-                    
-                    
                     if page == 'new.datamenu':
-                        
-                        if self.page_no == 1:
-                            self.list_items_paginated, self.displayed_item_ids = [], []
                         
                         if not self.covers:
                             self.covers = Cover.list().order_by(
@@ -339,7 +410,21 @@ class AppView(UnicornView):
                             )
                         if not self.cover:
                             self.cover = self.covers.filter(name__startswith='_').first()
+                            
+                        self.initialise_list(
+                            current_user = self.request.user,
+                            list_object_owner_user = None,
+                            list_object_class = Datastream,
+                            list_object_container = self.datastreams,
+                            list_object_pub_perms = ('view_published_datastream',),
+                            list_object_unpub_perms = ('view_datastream',),
+                            list_object_name_query = '',
+                            list_object_cover = self.cover,
+                            ad_position = Notification.USER_AD,
+                            meta_object = None, 
+                        )
                         
+                        '''
                         # objs by perms
                         cover_search_terms = self.cover.search_terms.split(',') if self.cover else []
                         
@@ -354,10 +439,6 @@ class AppView(UnicornView):
                         
                         self.datastreams = Datastream.list(q)
                         
-
-                    
-                    
-                        
                         #if items on current page, add them to cache
                         if len(self.datastreams[:self.items_per_page]) > 0:
                             self.list_items_paginated = self.list_items_paginated[:self.page_no - 1] + [self.datastreams[:self.items_per_page]]
@@ -370,6 +451,8 @@ class AppView(UnicornView):
 
                         #pad out remainder of list
                         self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
+                        
+                        '''
                         
                         self.new_datastream = Datastream()
                         instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.new_datastream.field_data().items()}
@@ -387,11 +470,9 @@ class AppView(UnicornView):
                             'content': 'Select below to add a new item'
                         }
                         
-                        
                         #formset
                         DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm)
                         self.datastream_formset = DatastreamFormSet(queryset= self.datastreams, form_kwargs={"mode": True}, auto_id='id_for_%s')
-                        
 
                     
                     elif page == 'new.datasource':
@@ -472,6 +553,9 @@ class AppView(UnicornView):
                 self.datasource = None
                 self.vizs = Viz.objects.none()
                 
+                
+    
+                
 
     def updating(self, name, value):
         #logger.debug('AppView > updating start')
@@ -540,6 +624,7 @@ class AppView(UnicornView):
                 return
         elif 'datasource.' in name:
             self.datasource.save()
+            
         #logger.debug('AppView > updated end')
         #print('reloading')
         self.load_table()
@@ -795,10 +880,7 @@ class AppView(UnicornView):
             item = ast.literal_eval(item)
             #print(item)
             for k, v in item.items():
-                print(k)
-                print(v)
                 self.request.user.profile.properties[k] = v
-                print(self.request.user.profile.properties)
             self.request.user.profile.save()    
             #self.load_table()
     
