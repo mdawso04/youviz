@@ -75,7 +75,7 @@ class VizView(UnicornView):
         search = self.context['search'] if 'search' in self.context else None
         current_user = self.request.user
         
-        self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, objs=(v.datasource,))
+        self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, obs=(v.datasource,))
         
         #print(self.app_perms)
         #print(self.settings)

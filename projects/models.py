@@ -22,6 +22,7 @@ from project import settings
 import urllib.request
 import numpy as np
 import requests
+import uuid
  
 
 # pp
@@ -418,6 +419,7 @@ class BaseModel(models.Model):
     history = AuditlogHistoryField()
     properties = models.JSONField(blank=True, null=True)
     slug = models.SlugField(max_length=255, unique=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False) 
     is_published = models.BooleanField(default=False)
    
     #foreign keys

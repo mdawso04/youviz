@@ -219,6 +219,12 @@ def field_name_to_label(value):
     value = value.replace('_', ' ')
     return value.title()
 
+@register.filter()
+def obj(perm_name_string, obj):
+    return '{}_{}'.format(perm_name_string, obj.slug)
+
+#{% if 'change_datastream'|obj:form.instance in app_perms %}
+
 @register.filter
 def divide(value, arg):
     try:

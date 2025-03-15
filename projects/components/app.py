@@ -78,7 +78,7 @@ class AppView(UnicornView):
     new_datastream_form: DatastreamForm = None
     selected_datastream: Datastream = None
     selected_datastream_form: DatastreamForm = None
-    datastream_formset: BaseModelFormSet = None
+    datastream_formset: BaseDatastreamFormSet = None
     
     add_comment_text: str = None
     
@@ -88,7 +88,8 @@ class AppView(UnicornView):
     
     class Meta:
         javascript_exclude = ('datasources', 'datasource', 'datastream_form','new_datastream', 'new_datastream_form', 'selected_datastream', 'selected_datastream_form', 
-                              'datastream_formset', 'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
+                              'datastream_formset', 
+                              'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
                               'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'related_datasources', 'related_items_paginated', 'app_perms',) 
     
     #def __init__(self, *args, **kwargs):
@@ -181,7 +182,9 @@ class AppView(UnicornView):
         #list_objects
         published_objs = get_objects_for_user(current_user, list_object_pub_perms, list_object_class.list(*pub_args, **pub_kwargs))
         unpublished_objs = get_objects_for_user(current_user, list_object_unpub_perms, list_object_class.list(*unpub_args, **unpub_kwargs))
-        list_object_container = list((published_objs | unpublished_objs).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1])
+        #setattr(self, list_object_container, list((published_objs | unpublished_objs).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1]))
+        setattr(self, list_object_container, (published_objs | unpublished_objs).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1])
+        list_object_container = getattr(self, list_object_container)
         
         #build perms, settings
         self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, obs=list_object_container)
@@ -343,7 +346,7 @@ class AppView(UnicornView):
                 elif self.context['slug']:
                     ds = Datasource.item(slug=self.context['slug'])
                 
-                self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, objs=(ds, ds.datastream,))
+                self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, obs=(ds, ds.datastream,))
                 
                 #self.app_perms.extend(get_perms(current_user, ds))
                 #self.app_perms.extend(get_perms(current_user, ds.datastream))
@@ -394,6 +397,7 @@ class AppView(UnicornView):
                 #    self.report = self.datasource.reports.last()
                 #if not self.report:
                 #    self.addReport()
+                print(self.app_perms)
             
             elif mode == 'new':  # use app perms
                 if page in ('new.datamenu', 'new.datasource'):
@@ -415,7 +419,7 @@ class AppView(UnicornView):
                             current_user = self.request.user,
                             list_object_owner_user = None,
                             list_object_class = Datastream,
-                            list_object_container = self.datastreams,
+                            list_object_container = 'datastreams',
                             list_object_pub_perms = ('view_published_datastream',),
                             list_object_unpub_perms = ('view_datastream',),
                             list_object_name_query = '',
@@ -473,6 +477,7 @@ class AppView(UnicornView):
                         #formset
                         DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm, formset=BaseDatastreamFormSet)
                         self.datastream_formset = DatastreamFormSet(queryset=self.datastreams, auto_id='id_for_%s')
+                        #print(self.datastream_formset)
 
                     
                     elif page == 'new.datasource':
@@ -567,16 +572,29 @@ class AppView(UnicornView):
             #if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
             if not 'add_datastream' in self.app_perms:
                 raise Http404
-            c = cache.get('self.new_datastream')
+            c = cache.get('new_datastream')
             if c:
                 self.new_datastream.set_field_data(c)
         elif 'datastream.' in name:
             #if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
             if not 'change_datastream' in self.app_perms:
                 raise Http404
-            c = cache.get('self.datasource.datastream')
+            c = cache.get('datasource.datastream')
             if c:
                 self.datasource.datastream.set_field_data(c)
+        elif 'datastreams.' in name:
+            #if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
+            #print(name)
+            updated_instance_index = int(name.split('.')[1])
+            updated_instance = self.datastreams[updated_instance_index]
+            print(self.datastreams)
+            print(updated_instance_index)
+            print(updated_instance)
+            if not 'change_datastream{}'.format(updated_instance.slug) in self.app_perms:
+                raise Http404
+            c = cache.get('datastream{}'.format(updated_instance.slug))
+            if c:
+                updated_instance.set_field_data(c)
         elif 'datasource.' in name:
             if not self.request.user.has_perm('projects.change_datasource', self.datasource):
                 raise Http404
@@ -605,7 +623,7 @@ class AppView(UnicornView):
                     data=instance_data, 
                     mode=True)
             self.new_datastream_form.is_valid()
-            cache.set('self.new_datastream', self.new_datastream.field_data())
+            cache.set('new_datastream', self.new_datastream.field_data())
             return
         elif 'datastream.' in name:
             instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.datastream.field_data().items()}
@@ -617,10 +635,27 @@ class AppView(UnicornView):
                     mode=True)
             if self.datastream_form.is_valid():
                 self.datasource.datastream.save()
-                cache.delete('self.datasource.datastream')
+                cache.delete('datasource.datastream')
                 return
             else:
-                cache.set('self.datasource.datastream', self.datasource.datastream.field_data())
+                cache.set('datasource.datastream', self.datasource.datastream.field_data())
+                return
+        elif 'datastreams.' in name:                       
+            #instance data
+            updated_instance = self.datastreams[int(name.split('.')[1])]
+            instance_data = [{k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in instance.field_data().items()} for instance in self.datastreams]
+
+            #formset
+            DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm, formset=BaseDatastreamFormSet)
+            self.datastream_formset = DatastreamFormSet(queryset=self.datastreams, data=instance_data, auto_id='id_for_%s')
+            
+            #check
+            if self.datastream_formset.is_valid():
+                updated_instance.save()
+                cache.delete('datastream{}'.format(updated_instance.slug))
+                return
+            else:
+                cache.set('datastream{}'.format(updated_instance.slug), updated_instance.field_data())
                 return
         elif 'datasource.' in name:
             self.datasource.save()
@@ -1035,3 +1070,12 @@ class AppView(UnicornView):
         #logger.debug('AppView > parent_rendered start')
         pass
         #logger.debug('AppView > parent_rendered end')
+        
+    def __getstate__(self):
+        '''Patch to workaround pickle error on formset'''
+        state = self.__dict__.copy()
+        state.pop('datastream_formset', None)
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)

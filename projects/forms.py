@@ -136,15 +136,15 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             self.fields['name'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model.lazy': f'{self.unicorn_model}.name',
-                'unicorn:partial': self.form_id,
+                'unicorn:model.lazy': '{}.name'.format(*self.unicorn_model),
+                'unicorn:partial': 'form-content-{}'.format(self.instance.slug),
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
             })
             self.fields['description'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model.lazy': f'{self.unicorn_model}.description',
+                'unicorn:model.lazy': '{}.description'.format(*self.unicorn_model),
                 'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'fileInfo',
                 #'unicorn:partial.key': 'test',
@@ -153,7 +153,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             self.fields['datastream_type'].widget.attrs.update({
                 'class': 'form-select',
                 #'unicorn:key': 'test',
-                'unicorn:model.lazy': f'{self.unicorn_model}.datastream_type',
+                'unicorn:model.lazy': '{}.datastream_type'.format(*self.unicorn_model),
                 'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'fileInfo',
                 #'unicorn:partial.key': 'test',
@@ -161,7 +161,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             self.fields['url'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model.lazy': f'{self.unicorn_model}.url',
+                'unicorn:model.lazy': '{}.url'.format(*self.unicorn_model),
                 'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
@@ -170,7 +170,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             self.fields['json'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model.lazy': f'{self.unicorn_model}.json',
+                'unicorn:model.lazy': '{}.json'.format(*self.unicorn_model),
                 'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
@@ -179,7 +179,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             self.fields['source'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
-                'unicorn:model.lazy': f'{self.unicorn_model}.properties.source',
+                'unicorn:model.lazy': '{}.properties.source'.format(*self.unicorn_model),
                 'unicorn:partial': self.form_id,
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',

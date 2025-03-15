@@ -24,19 +24,23 @@ def get_perms_and_settings(*args, **kwargs):
     else:
         settings = Settings.all()
     
+    #app_perms_and_o_perms = {'app': app_perms, 'obj': {}}
+    
     if obs:
         for o in obs:
-            new_perms = get_perms(current_user, o)
-            new_perms_with_key = ['{}{}'.format(perm, o.slug) for perm in new_perms]
+            o_perms = get_perms(current_user, o)
+            #new_perms_with_key = ['{}{}'.format(perm, o.slug) for perm in new_perms]
+            # {% if 'change_datastream'|:form.instance.slug in app_perms %}
+            o_perms_with_slug = ['{}_{}'.format(p, o.slug) for p in o_perms]
             #print(o)
-            app_perms.extend(new_perms_with_key)
+            app_perms.extend(o_perms_with_slug)
     
         
     edit_display_perm = settings.get(f'edit_display_perm_{mode}', None)
     nav_display_perm = settings.get(f'nav_display_perm_{mode}', None)
-    if edit_display_perm in app_perms:
+    if edit_display_perm and any(edit_display_perm in s for s in app_perms):
         app_perms.append('display_edit_panel')
-    if nav_display_perm in app_perms:
+    if nav_display_perm and any(nav_display_perm in s for s in app_perms):
         app_perms.append('display_nav_panel')    
 
     edit_open = settings.get(f'edit_open_{mode}', None)
@@ -57,3 +61,15 @@ def get_perms_and_settings(*args, **kwargs):
         settings['user_profile_color'] = '#0dcaf0'
     
     return app_perms, settings
+
+
+#import copyreg
+
+#from django.forms.renderers import DjangoTemplates
+#DatastreamFormFormSet
+#from projects.components.app import AppView
+
+#def pickle_django_templates(instance):
+#    return AppView, ()
+
+#copyreg.pickle(AppView, pickle_django_templates)

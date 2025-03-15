@@ -28,7 +28,7 @@
                 {{ form_id }}
             </button>
         </li>
-        {% if 'change_datastream'|add:form.instance.slug in app_perms %}
+        {% if 'change_datastream'|obj:form.instance in app_perms %}
         <li class="nav-item" role="presentation">
             <button class="nav-link" 
                     id="form-{{ form.instance.slug }}-pill" 
@@ -67,7 +67,7 @@
                 {{ form.instance.name }}    
             </div>
         </div>
-     {% if 'change_datastream'|add:form.instance.slug in app_perms %}
+     {% if 'change_datastream'|obj:form.instance in app_perms %}
         <div class="tab-pane yv fade" id="form-{{ form.instance.slug }}" 
              role="tabpanel" aria-labelledby="form-{{ form.instance.slug }}-pill">
 
