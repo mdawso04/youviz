@@ -55,14 +55,14 @@ class DataframeView(UnicornView):
         search = self.context['search'] if 'search' in self.context else None
         current_user = self.request.user
         
-        self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, objs=(ds,))
+        self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, obs=(ds,))
         
         #obj perms
         if ds.is_published:
             if not 'view_published_datasource' in self.app_perms:
                 raise Http404
         else:
-            if not 'view_datasource' in self.app_perms:
+            if not 'view_datasource_{}'.format(ds.slug) in self.app_perms:
                 raise Http404
         
         self.datasource = ds

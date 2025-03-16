@@ -34,6 +34,8 @@ def get_perms_and_settings(*args, **kwargs):
             o_perms_with_slug = ['{}_{}'.format(p, o.slug) for p in o_perms]
             #print(o)
             app_perms.extend(o_perms_with_slug)
+            
+    #print(app_perms)
     
         
     edit_display_perm = settings.get(f'edit_display_perm_{mode}', None)

@@ -45,7 +45,8 @@ from datetime import datetime
 #from memory_profile import profile
 
 class AppView(UnicornView):
-    datasources: list = None
+    #datasources: list = None
+    datasources: QuerySetType[Datasource] = None
     datasource: Datasource = None
     vizs: QuerySetType[Viz] = None
     #report: Report = None
@@ -112,28 +113,6 @@ class AppView(UnicornView):
         else:
             print('no datasource to print!')
     
-    '''
-    def refresh_settings_and_perms(self):
-        mode = self.context['mode']
-        
-        edit_display_perm = self.settings.get(f'edit_display_perm_{mode}', None)
-        nav_display_perm = self.settings.get(f'nav_display_perm_{mode}', None)
-        if edit_display_perm in self.app_perms:
-            self.app_perms.append('display_edit_panel')
-        if nav_display_perm in self.app_perms:
-            self.app_perms.append('display_nav_panel')    
-
-        edit_open = self.settings.get(f'edit_open_{mode}', None)
-        nav_open = self.settings.get(f'nav_open_{mode}', None)
-        if edit_open:
-            self.settings['edit_open'] = edit_open
-        if nav_open:
-            self.settings['nav_open'] = nav_open
-            
-        print(self.settings)
-        print(self.app_perms)
-    '''
-    
     def initialise_list(
         self, 
         current_user,
@@ -143,10 +122,13 @@ class AppView(UnicornView):
         list_object_pub_perms,
         list_object_unpub_perms,
         list_object_name_query,
-        list_object_cover,
+        list_use_cover,
         ad_position,
         meta_object,
     ):
+        
+        if list_object_owner_user:
+            self.siteuser = list_object_owner_user
         
         #pagination
         if self.page_no == 1:
@@ -158,8 +140,16 @@ class AppView(UnicornView):
         pub_kwargs.update(dict(is_published=True))
         unpub_kwargs.update(dict(is_published=False))
         
-        if list_object_cover:
-            cover_search_terms = list_object_cover.search_terms.split(',')
+        if list_use_cover:
+            if not self.covers:
+                self.covers = Cover.list().order_by(
+                    Case(When(name__startswith='_', then=0), default=1),
+                    'name',
+                )
+            if not self.cover:
+                self.cover = self.covers.filter(name__startswith='_').first()
+                
+            cover_search_terms = self.cover.search_terms.split(',')
             '''
             q = Q(name__icontains=cover_search_terms[0])
             for v in cover_search_terms[1:]:
@@ -180,11 +170,13 @@ class AppView(UnicornView):
             unpub_kwargs.update(owner=list_object_owner_user.pk)
             
         #list_objects
-        published_objs = get_objects_for_user(current_user, list_object_pub_perms, list_object_class.list(*pub_args, **pub_kwargs))
-        unpublished_objs = get_objects_for_user(current_user, list_object_unpub_perms, list_object_class.list(*unpub_args, **unpub_kwargs))
+        published_obs = get_objects_for_user(current_user, list_object_pub_perms, list_object_class.list(*pub_args, **pub_kwargs))
+        #print(list_object_class.list(*pub_args, **pub_kwargs))
+        unpublished_obs = get_objects_for_user(current_user, list_object_unpub_perms, list_object_class.list(*unpub_args, **unpub_kwargs))
         #setattr(self, list_object_container, list((published_objs | unpublished_objs).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1]))
-        setattr(self, list_object_container, (published_objs | unpublished_objs).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1])
+        setattr(self, list_object_container, (published_obs | unpublished_obs).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1])
         list_object_container = getattr(self, list_object_container)
+        #print(list_object_container)
         
         #build perms, settings
         self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, obs=list_object_container)
@@ -228,26 +220,8 @@ class AppView(UnicornView):
             search = self.context['search'] if 'search' in self.context else None
             current_user = self.request.user
             
-            '''
-            self.app_perms = [p.split('.', 1)[1] for p in list(current_user.get_all_permissions())]
-            
-            current_user_custom_settings = None
-            if hasattr(self.request.user, 'profile'):
-                current_user_custom_settings = self.request.user.profile.properties
-                #print(current_user_custom_settings)
-            if current_user_custom_settings:
-                self.settings = Settings.all() | current_user_custom_settings
-            else:
-                self.settings = Settings.all()
-            '''
-            
-                
             #call refresh_settings_and_perms inside each modality
-            
             is_get = True if self.request.method == 'GET' else False
-            
-            #checker = ObjectPermissionChecker(current_user)
-            
             
             '''
             if hasattr(self.request, '_body'):
@@ -261,61 +235,69 @@ class AppView(UnicornView):
             
             '''
             if mode in ('list', 'user'): # use app perms
-                
-                if self.page_no == 1:
-                    self.list_items_paginated, self.displayed_item_ids = [], []
-                    
-                #owner_pk = None
                 if mode == 'user':
-                    self.siteuser = Profile.item(slug=self.context['slug']).owner
-                    owner_pk = self.siteuser.pk
-                    # objs by perms
-                    published_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(query=query, owner=owner_pk, is_published=True))
-                    unpublished_ds = get_objects_for_user(current_user, ('view_datasource'), Datasource.list(query=query, owner=owner_pk, is_published=False))
-                    self.datasources = list((published_ds | unpublished_ds).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1])
-                    self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context)
-                    self.ads = Notification.objects.filter(position=Notification.USER_AD).order_by('?')[:4]
-                    self.meta_object = self.siteuser.profile
-                
+                    list_object_owner_user = Profile.item(slug=self.context['slug']).owner
+                    self.initialise_list(
+                            current_user = self.request.user,
+                            list_object_owner_user = list_object_owner_user,
+                            list_object_class = Datasource,
+                            list_object_container = 'datasources',
+                            list_object_pub_perms = ('view_published_datasource',),
+                            list_object_unpub_perms = ('view_datasource',),
+                            list_object_name_query = '',
+                            list_use_cover = False,
+                            ad_position = Notification.USER_AD,
+                            meta_object = list_object_owner_user.profile, 
+                        )
+                    #print(self.datasources)
                 elif mode == 'list':
+                    '''
                     if search:
                         # objs by perms
                         published_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(query=query, is_published=True))
                         unpublished_ds = get_objects_for_user(current_user, ('view_datasource'), Datasource.list(query=query, is_published=False))
                         self.datasources = list((published_ds | unpublished_ds).distinct().exclude(id__in=self.displayed_item_ids)[:self.items_per_page + 1])
                     else:
-                        if not self.covers:
-                            self.covers = Cover.list().order_by(
-                                Case(When(name__startswith='_', then=0), default=1),
-                                'name',
-                            )
-                        if not self.cover:
-                            self.cover = self.covers.filter(name__startswith='_').first()
+                    '''
+                    '''
+                    # objs by perms
+                    cover_search_terms = self.cover.search_terms.split(',') if self.cover else []
+
+                    q = Q(name__icontains=cover_search_terms[0])
+                    for v in cover_search_terms[1:]:
+                        q = q | Q(name__icontains=v)
+                    published_namematch_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(q, is_published=True))
+
+                    q1 = Q(description__icontains=cover_search_terms[0])
+                    for v in cover_search_terms[1:]:
+                        q1 = q1 | Q(description__icontains=v)
+                    published_descmatch_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(q1, is_published=True))
+
+                    self.datasources = list((published_namematch_ds | published_descmatch_ds).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1])
+                    '''
                         
-                        # objs by perms
-                        cover_search_terms = self.cover.search_terms.split(',') if self.cover else []
-                        
-                        q = Q(name__icontains=cover_search_terms[0])
-                        for v in cover_search_terms[1:]:
-                            q = q | Q(name__icontains=v)
-                        published_namematch_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(q, is_published=True))
-                        
-                        q1 = Q(description__icontains=cover_search_terms[0])
-                        for v in cover_search_terms[1:]:
-                            q1 = q1 | Q(description__icontains=v)
-                        published_descmatch_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(q1, is_published=True))
-                        
-                        self.datasources = list((published_namematch_ds | published_descmatch_ds).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1])
+                    self.initialise_list(
+                        current_user = self.request.user,
+                        list_object_owner_user = None,
+                        list_object_class = Datasource,
+                        list_object_container = 'datasources',
+                        list_object_pub_perms = ('view_published_datasource',),
+                        list_object_unpub_perms = ('view_datasource',),
+                        list_object_name_query = query,
+                        list_use_cover = True,
+                        ad_position = Notification.USER_AD,
+                        meta_object = None, 
+                    )
                     
-                    self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context)
-                    self.ads = Notification.objects.filter(position=Notification.LIST_AD).order_by('?')[:4]
+                    #self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context)
+                    #self.ads = Notification.objects.filter(position=Notification.LIST_AD).order_by('?')[:4]
                     
+                '''
                 #if items on current page, add them to cache
                 if len(self.datasources[:self.items_per_page]) > 0:
                     self.list_items_paginated = self.list_items_paginated[:self.page_no - 1] + [self.datasources[:self.items_per_page]]
                     
                 print(self.list_items_paginated)
-                    
                 self.displayed_item_ids = [i['pk'] if isinstance(i, dict) else i.pk for p in self.list_items_paginated[:self.page_no] for i in p] 
                     
                 #if items on next page (spare), add them to cache
@@ -324,7 +306,7 @@ class AppView(UnicornView):
                 
                 #pad out remainder of list
                 self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
-                
+                '''
 
                 
                 #if self.settings.get('test_pref'):
@@ -397,7 +379,7 @@ class AppView(UnicornView):
                 #    self.report = self.datasource.reports.last()
                 #if not self.report:
                 #    self.addReport()
-                print(self.app_perms)
+                #print(self.app_perms)
             
             elif mode == 'new':  # use app perms
                 if page in ('new.datamenu', 'new.datasource'):
@@ -423,7 +405,7 @@ class AppView(UnicornView):
                             list_object_pub_perms = ('view_published_datastream',),
                             list_object_unpub_perms = ('view_datastream',),
                             list_object_name_query = '',
-                            list_object_cover = self.cover,
+                            list_use_cover = True,
                             ad_position = Notification.USER_AD,
                             meta_object = None, 
                         )
@@ -587,9 +569,9 @@ class AppView(UnicornView):
             #print(name)
             updated_instance_index = int(name.split('.')[1])
             updated_instance = self.datastreams[updated_instance_index]
-            print(self.datastreams)
-            print(updated_instance_index)
-            print(updated_instance)
+            #print(self.datastreams)
+            #print(updated_instance_index)
+            #print(updated_instance)
             if not 'change_datastream{}'.format(updated_instance.slug) in self.app_perms:
                 raise Http404
             c = cache.get('datastream{}'.format(updated_instance.slug))
@@ -689,7 +671,7 @@ class AppView(UnicornView):
         if not self.request.user.has_perm('projects.add_datasource'):
             return redirect('/')
         
-        print('copy '+ str(pk))
+        #print('copy '+ str(pk))
         new_datasource = Datasource.copy(pk=pk)['copy']
         return redirect(reverse('view', kwargs={'slug': new_datasource.slug}))
     

@@ -81,12 +81,12 @@ class VizView(UnicornView):
         #print(self.settings)
         
         #obj perms
-        print(self.app_perms)
+        #print(self.app_perms)
         if v.datasource.is_published:
             if not 'view_published_datasource' in self.app_perms:
                 raise Http404
         else:
-            if not 'view_datasource' in self.app_perms:
+            if not 'view_datasource_{}'.format(v.datasource.slug) in self.app_perms:
                 raise Http404
         
         self.viz = v

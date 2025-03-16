@@ -15,7 +15,7 @@
             {% block search_field %}
                 {% include './base_search_field.html' %}
             {% endblock %}
-            {% if perms.projects.view_profile %}
+            {% if 'view_profile' in app_perms %}
             <div class="d-flex align-items-center">
                 <button id="off-canvas-button" 
                         type="button" data-bs-toggle="offcanvas" 
