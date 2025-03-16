@@ -110,18 +110,18 @@
             {% endif %}
             
             {# only enable when for list/new #}
-            {% if context.mode == "list" or context.mode == "user" or context.mode == "new" %}
             
             <!-- EDITPANEL - MASTER 1 -->
-            
             {# only for in-app items #}
             {% if 'display_edit_panel' in app_perms %}
+            {% if context.mode == "list" or context.mode == "user" or context.mode == "new" %}
             <div class="bg-light border-none test-edit {% if settings.edit_open %}open{% endif %}" id="editpanel" aria-labelledby="TBD" data-nosnippet>
                 <div class="position-relative">
                 {% block editpanel %}
                 {% endblock %}
                 </div>
             </div>
+            {% endif %}
             
             {# when we have perms to save state #}
             {% if 'change_profile' in app_perms %}
@@ -149,7 +149,6 @@
                 }
             });
             </script>
-            {% endif %}
             {% endif %}
             {% endif %}
             
