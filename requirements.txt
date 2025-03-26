@@ -8,6 +8,7 @@ django-unicorn
 django-auditlog
 django-analytical
 django-entangled
+django-debug-toolbar
 redis
 hiredis
 pandas-plotly==0.2.4

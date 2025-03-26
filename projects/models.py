@@ -845,6 +845,7 @@ class Datastream(BaseModel):
     #@cached_property
     def field_data(self):
         return super().field_data() | {
+            'id': self.pk,
             'url': self.url,
             'json': self.json,
             'datastream_type': self.datastream_type,
@@ -854,6 +855,7 @@ class Datastream(BaseModel):
         
     def set_field_data(self, data):
         super().set_field_data(data)
+        #ignore id if it exists
         if 'url' in data:
             self.url = data['url']
         if 'json' in data:

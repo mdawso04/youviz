@@ -58,6 +58,7 @@ class AppView(UnicornView):
     items_per_page: int = 12
     
     datastreams: QuerySetType[Datastream] = None
+    formset_datastreams: QuerySetType[Datastream] = None
     services: list = None
     meta_object: BaseModel = None
     message: dict = None
@@ -90,7 +91,7 @@ class AppView(UnicornView):
     class Meta:
         javascript_exclude = ('datasources', 'datasource', 'datastream_form','new_datastream', 'new_datastream_form', 'selected_datastream', 'selected_datastream_form', 
                               'datastream_formset', 
-                              'vizs', 'list_items_paginated', 'datastreams', 'services', 'meta_object', 
+                              'vizs', 'list_items_paginated', 'formset_datastreams', 'datastreams', 'services', 'meta_object', 
                               'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'related_datasources', 'related_items_paginated', 'app_perms',) 
     
     #def __init__(self, *args, **kwargs):
@@ -98,7 +99,11 @@ class AppView(UnicornView):
     #    self.mode = kwargs.get('mode')
     #    self.pk = kwargs.get('pk')
     
-#LOAD/UPDATE
+
+
+    
+    
+    #LOAD/UPDATE
     
     def mount(self):
         #print('mounted!')
@@ -118,10 +123,11 @@ class AppView(UnicornView):
         current_user,
         list_object_owner_user,
         list_object_class,
-        list_object_container,
+        list_object_container_names,
         list_object_pub_perms,
         list_object_unpub_perms,
         list_object_name_query,
+        list_order,
         list_use_cover,
         ad_position,
         meta_object,
@@ -174,8 +180,8 @@ class AppView(UnicornView):
         #print(list_object_class.list(*pub_args, **pub_kwargs))
         unpublished_obs = get_objects_for_user(current_user, list_object_unpub_perms, list_object_class.list(*unpub_args, **unpub_kwargs))
         #setattr(self, list_object_container, list((published_objs | unpublished_objs).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1]))
-        setattr(self, list_object_container, (published_obs | unpublished_obs).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1])
-        list_object_container = getattr(self, list_object_container)
+        setattr(self, list_object_container_names[0], (published_obs | unpublished_obs).distinct().exclude(id__in=self.displayed_item_ids).order_by(list_order)[:self.items_per_page + 1])
+        list_object_container = getattr(self, list_object_container_names[0])
         #print(list_object_container)
         
         #build perms, settings
@@ -199,8 +205,13 @@ class AppView(UnicornView):
 
         #pad out remainder of list
         self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
+        
+        #replicate list_object_container for remainder of names
+        for n in list_object_container_names[1:]:
+            setattr(self, n, copy.deepcopy(list_object_container))
 
         return
+    
     
     def load_table(self):
         
@@ -241,10 +252,11 @@ class AppView(UnicornView):
                             current_user = self.request.user,
                             list_object_owner_user = list_object_owner_user,
                             list_object_class = Datasource,
-                            list_object_container = 'datasources',
+                            list_object_container_names = ('datasources',),
                             list_object_pub_perms = ('view_published_datasource',),
                             list_object_unpub_perms = ('view_datasource',),
                             list_object_name_query = '',
+                            list_order = '?',
                             list_use_cover = False,
                             ad_position = Notification.USER_AD,
                             meta_object = list_object_owner_user.profile, 
@@ -280,10 +292,11 @@ class AppView(UnicornView):
                         current_user = self.request.user,
                         list_object_owner_user = None,
                         list_object_class = Datasource,
-                        list_object_container = 'datasources',
+                        list_object_container_names = ('datasources',),
                         list_object_pub_perms = ('view_published_datasource',),
                         list_object_unpub_perms = ('view_datasource',),
                         list_object_name_query = query,
+                        list_order = '?',
                         list_use_cover = True,
                         ad_position = Notification.USER_AD,
                         meta_object = None, 
@@ -401,10 +414,11 @@ class AppView(UnicornView):
                             current_user = self.request.user,
                             list_object_owner_user = None,
                             list_object_class = Datastream,
-                            list_object_container = 'datastreams',
+                            list_object_container_names = ('formset_datastreams', 'datastreams', ),
                             list_object_pub_perms = ('view_published_datastream',),
                             list_object_unpub_perms = ('view_datastream',),
                             list_object_name_query = '',
+                            list_order = 'name',
                             list_use_cover = True,
                             ad_position = Notification.USER_AD,
                             meta_object = None, 
@@ -457,8 +471,8 @@ class AppView(UnicornView):
                         }
                         
                         #formset
-                        DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm, formset=BaseDatastreamFormSet)
-                        self.datastream_formset = DatastreamFormSet(queryset=self.datastreams, auto_id='id_for_%s')
+                        DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm, formset=BaseDatastreamFormSet, extra=0)
+                        self.datastream_formset = DatastreamFormSet(queryset=self.formset_datastreams or None, auto_id='id_for_%s')
                         #print(self.datastream_formset)
 
                     
@@ -548,7 +562,7 @@ class AppView(UnicornView):
         #logger.debug('AppView > updating start')
         #print(self.app_perms)
         if 'user.profile' in name:
-            if not self.request.user.has_perm('projects.change_profile'):
+            if not 'change_profile' in self.app_perms:
                 raise Http404
         elif 'new_datastream' in name:
             #if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
@@ -568,15 +582,17 @@ class AppView(UnicornView):
             #if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
             #print(name)
             updated_instance_index = int(name.split('.')[1])
-            updated_instance = self.datastreams[updated_instance_index]
+            updated_instance = self.formset_datastreams[updated_instance_index]
             #print(self.datastreams)
             #print(updated_instance_index)
             #print(updated_instance)
-            if not 'change_datastream{}'.format(updated_instance.slug) in self.app_perms:
+            #print(self.datastreams)
+            if not 'change_datastream_{}'.format(updated_instance.slug) in self.app_perms:
                 raise Http404
             c = cache.get('datastream{}'.format(updated_instance.slug))
             if c:
                 updated_instance.set_field_data(c)
+                
         elif 'datasource.' in name:
             if not self.request.user.has_perm('projects.change_datasource', self.datasource):
                 raise Http404
@@ -624,19 +640,41 @@ class AppView(UnicornView):
                 return
         elif 'datastreams.' in name:                       
             #instance data
-            updated_instance = self.datastreams[int(name.split('.')[1])]
-            instance_data = [{k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in instance.field_data().items()} for instance in self.datastreams]
+            updated_instance = self.formset_datastreams[int(name.split('.')[1])]
+            #print('name update is {}'.format(value))
+            #print('name is {}'.format(updated_instance.name))
+            #instance_data = [{k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in instance.field_data().items()} for instance in self.datastreams]
+            
+            management_form_config =  {
+                'form-TOTAL_FORMS': '{}'.format(len(self.formset_datastreams)), 
+                'form-INITIAL_FORMS': '{}'.format(len(self.formset_datastreams)), 
+            }
+            
+            instance_data = management_form_config | {
+                'form-{}-{}'.format(idx, k): v if k not in ('json', 'properties',) else json.dumps(v) 
+                for idx, instance in enumerate(self.formset_datastreams)
+                for k, v in instance.field_data().items() 
+            }
+            
+            #print(updated_instance.field_data())
+            
+            #print(instance_data)
 
             #formset
-            DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm, formset=BaseDatastreamFormSet)
-            self.datastream_formset = DatastreamFormSet(queryset=self.datastreams, data=instance_data, auto_id='id_for_%s')
+            DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm, formset=BaseDatastreamFormSet, extra=0)
+            self.datastream_formset = DatastreamFormSet(queryset=self.formset_datastreams, data=instance_data or None, auto_id='id_for_%s')
             
             #check
             if self.datastream_formset.is_valid():
+                #print('saving valid ds')
+                #print(updated_instance._state.__dict__)
                 updated_instance.save()
                 cache.delete('datastream{}'.format(updated_instance.slug))
-                return
+                self.load_table()
             else:
+                #print('not valid so cant save')
+                #print(self.datastream_formset.errors)
+                #print(self.datastream_formset.non_form_errors())
                 cache.set('datastream{}'.format(updated_instance.slug), updated_instance.field_data())
                 return
         elif 'datasource.' in name:
@@ -988,6 +1026,8 @@ class AppView(UnicornView):
         
         if self.datastreams:
             del self.datastreams
+        if self.formset_datastreams:
+            del self.formset_datastreams
         if self.services:
             del self.services
         if self.meta_object:

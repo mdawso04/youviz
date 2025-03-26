@@ -95,18 +95,18 @@ class BaseForm(ModelForm):
         
     def clean_name(self):
         data = self.cleaned_data["name"]
-        if data and len(data) < 5:
-            raise ValidationError("Enter more than 5 characters")
+        if data and len(data) < 4:
+            raise ValidationError("Enter more than 4 characters")
         return data
     
     def clean_description(self):
         data = self.cleaned_data["description"]
-        if data and len(data) < 5:
-            raise ValidationError("Enter more than 5 characters")
+        if data and len(data) < 4:
+            raise ValidationError("Enter more than 4 characters")
         return data
     
     def clean(self):
-        super().clean()
+        cleaned_data = super().clean()
         name = self.cleaned_data.get("name")
         description = self.cleaned_data.get("description")
         
@@ -120,6 +120,7 @@ class BaseForm(ModelForm):
             self.add_error("cc_myself", msg)
             self.add_error("subject", msg)
         '''
+        return cleaned_data
         
 class DatastreamForm(EntangledModelFormMixin, BaseForm):
     source = fields.CharField(
@@ -137,7 +138,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 'class': 'form-control',
                 #'unicorn:key': 'test',
                 'unicorn:model.lazy': '{}.name'.format(*self.unicorn_model),
-                'unicorn:partial': 'form-content-{}'.format(self.instance.slug),
+                #'unicorn:partial': 'form-content-{}'.format(self.instance.slug),
                 #'unicorn:partial.id': 'test',
                 #'unicorn:partial.key': 'test',
             })
@@ -167,6 +168,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 #'unicorn:partial.key': 'test',
                 'style': 'word-break: break-all;',
             })
+            self.fields['url'].is_required = False
             self.fields['json'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
@@ -199,7 +201,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             ),
             "json": Textarea(
                 attrs={
-                    "rows": 6,
+                    "rows": 6
                 }
             ),
         }
@@ -231,31 +233,40 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
     def clean_datastream_type(self):
         data = self.cleaned_data["datastream_type"]
         if False:
-            raise ValidationError("Invalid type")
+            raise ValidationError("datastream_type", "Please enter a valid type!")
         return data
     
     def clean_url(self):
+        #print('cleaning url')
         data = self.cleaned_data["url"]
+        #print(data)
         if False:
-            raise ValidationError("Invalid url")
+            raise ValidationError("url", "Please enter a valid url!")
         return data
     
     def clean_json(self):
         data = self.cleaned_data["json"]
         if False:
-            raise ValidationError("Invalid json")
+            raise ValidationError("json", "Please enter avalid json!")
         return data
     
     def clean_source(self):
         data = self.cleaned_data["source"]
         if False:
-            raise ValidationError("Invalid source")
+            raise ValidationError("source", "Please enter a valid source!")
         return data
     
     def clean(self):
-        super().clean()
-        source = self.cleaned_data.get("source")
-        description = self.cleaned_data.get("description")
+        #print('clearning form')
+        cleaned_data = super().clean()
+        #print(cleaned_data)
+        source = cleaned_data.get("source")
+        description = cleaned_data.get("description")
+        
+        #hack to workaround phantom url validation errors
+        #self.errors['url'] = self.error_class()
+        if 'url' in self.errors:
+            del self.errors['url']
         
         '''
         if source and source != description: #name and description:
@@ -268,8 +279,32 @@ class BaseDatastreamFormSet(BaseModelFormSet):
     def get_form_kwargs(self, index):
         kwargs = super().get_form_kwargs(index)
         kwargs['mode'] = True
-        kwargs['unicorn_model'] = f'datastreams.{index}', 
+        kwargs['unicorn_model'] = f'formset_datastreams.{index}', 
         return kwargs
+    
+    def clean(self):
+        """Checks that no two articles have the same title."""
+        #print('cleaning formset')
+        #print('found these form errors')
+        #for f in self.forms: 
+        #    print(f.errors.as_data())
+        #    print(f.non_field_errors())
+        #print('found these non form errors')
+        #print(self.non_form_errors())
+            
+        if any((self.errors, self.non_form_errors(),)):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+        '''
+        titles = set()
+        for form in self.forms:
+            if self.can_delete and self._should_delete_form(form):
+                continue
+            title = form.cleaned_data.get("title")
+            if title in titles:
+                raise ValidationError("Articles in a set must have distinct titles.")
+            titles.add(title)
+        '''
                 
             
 from django import forms
