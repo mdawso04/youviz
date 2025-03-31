@@ -10,9 +10,9 @@
 {% if not never %}
 <!-- related -->
 <div class="d-flex justify-content-center"><h3 class="h6 text-muted mt-2">Related Vizs</h3></div>
-{% for page in related_items_paginated %}
+{% for page in related_datasources_list_items_paginated %}
 <div class="row row-cols-1 g-2 pb-2" id="page-{{ forloop.counter }}" unicorn:key="page-{{ forloop.counter }}" data-nosnippet>
-    {% if forloop.counter <= related_page_no  %}
+    {% if forloop.counter <= related_datasources_list_page_no  %}
     {% for i in page %}
         <div class="col">
             <div class="card rounded-3 p-1 position-relative {% if not i.is_published %}border border-warning border-3 {% endif %}"  
@@ -27,7 +27,7 @@
             </div>
         </div>
     {% endfor %}
-    {% elif forloop.counter == related_page_no|add:"1" %}
+    {% elif forloop.counter == related_datasources_list_page_no|add:"1" %}
     <div id="page-{{ forloop.counter }}-trigger" 
          unicorn:visible.debounce-1000.threshold-100="more_related" 
          unicorn:partial.id="page-{{ forloop.counter }}" 

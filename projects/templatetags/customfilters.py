@@ -474,9 +474,9 @@ def bnav_button(context, **kwargs):
             'on': False,
             'disabled': False,
             'onclick': {
-                'list': "window.location.href='{}?o=datamenu';".format(reverse('new')),
-                'user': "window.location.href='{}?o=datamenu';".format(reverse('new')),
-                'view': "window.location.href='{}?o=datamenu';".format(reverse('new')),
+                'list': "window.location.href='{}';".format(reverse('new')),
+                'user': "window.location.href='{}';".format(reverse('new')),
+                'view': "window.location.href='{}';".format(reverse('new')),
                 'new': "history.back();",
             }.get(mode)
         },

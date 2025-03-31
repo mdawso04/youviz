@@ -45,20 +45,41 @@ from datetime import datetime
 #from memory_profile import profile
 
 class AppView(UnicornView):
-    #datasources: list = None
-    datasources: QuerySetType[Datasource] = None
-    datasource: Datasource = None
-    vizs: QuerySetType[Viz] = None
-    #report: Report = None
     
-    list_items_paginated: list = None
-    displayed_item_ids: list = None
-    page_no: int = 1
+    mode: str = None
     page_count: int = 10
     items_per_page: int = 12
+    list_items_paginated: list = None
+    page_no: int = 1
     
+    #datasources: list = None
+    #list / user
+    datasources: QuerySetType[Datasource] = None
+    datasources_list_items_paginated: list = None
+    datasources_list_page_no: int = 1
+    datasources_displayed_item_ids: list = None
+    
+    #view
+    datasource: Datasource = None
+    vizs: QuerySetType[Viz] = None
+    related_datasources: QuerySetType[Datasource] = None
+    related_datasources_list_items_paginated: list = None
+    related_datasources_list_page_no: int = 1
+    datastream_form: DatastreamForm = None
+    new_datastream: Datastream = None
+    new_datastream_form: DatastreamForm = None
+    selected_datastream: Datastream = None
+    selected_datastream_form: DatastreamForm = None
+    datastream_formset: BaseDatastreamFormSet = None
+    
+    
+    #new
     datastreams: QuerySetType[Datastream] = None
+    datastreams_list_items_paginated: list = None
+    datastreams_list_page_no: int = 1
+    datastreams_displayed_item_ids: list = None
     formset_datastreams: QuerySetType[Datastream] = None
+    
     services: list = None
     meta_object: BaseModel = None
     message: dict = None
@@ -70,38 +91,21 @@ class AppView(UnicornView):
     context: dict = None
     covers: QuerySetType[Cover] = None
     cover: Cover = None
-    
-    related_datasources: QuerySetType[Datasource] = None
-    related_items_paginated: list = None
-    related_page_no: int = 1
-    
-    datastream_form: DatastreamForm = None
-    new_datastream: Datastream = None
-    new_datastream_form: DatastreamForm = None
-    selected_datastream: Datastream = None
-    selected_datastream_form: DatastreamForm = None
-    datastream_formset: BaseDatastreamFormSet = None
-    
     add_comment_text: str = None
-    
     app_perms: list = None
-    #datasource_perms: list = None
-    #datastream_perms: list = None
     
     class Meta:
-        javascript_exclude = ('datasources', 'datasource', 'datastream_form','new_datastream', 'new_datastream_form', 'selected_datastream', 'selected_datastream_form', 
-                              'datastream_formset', 
-                              'vizs', 'list_items_paginated', 'formset_datastreams', 'datastreams', 'services', 'meta_object', 
-                              'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'related_datasources', 'related_items_paginated', 'app_perms',) 
+        javascript_exclude = ('mode', 'page_count', 'items_per_page', 'list_items_paginated', 'page_no',
+                              'datasources', 'datasources_list_items_paginated', 'datasources_list_page_no', 'datasources_displayed_item_ids', 
+                              'datasource', 'vizs', 'related_datasources', 'related_datasources_list_items_paginated', 'related_datasources_list_page_no', 'datastream_formset', 
+                              'datastream_form','new_datastream', 'new_datastream_form', 'selected_datastream', 'selected_datastream_form', 
+                              'datastreams', 'datastreams_list_items_paginated', 'datastreams_list_page_no', 'datastreams_displayed_item_ids', 'formset_datastreams', 
+                              'services', 'meta_object', 'message', 'page', 'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'add_comment_text', 'app_perms',) 
     
     #def __init__(self, *args, **kwargs):
     #    super().__init__(**kwargs)  # calling super is required
     #    self.mode = kwargs.get('mode')
     #    self.pk = kwargs.get('pk')
-    
-
-
-    
     
     #LOAD/UPDATE
     
@@ -112,11 +116,12 @@ class AppView(UnicornView):
     def hydrate(self):
         #print('hydrating')
         #print(self.__dict__)
-        if self.datasource:
-            print(self.datasource.datastream.name)
-            print(self.datasource.datastream.description)
-        else:
-            print('no datasource to print!')
+        #if self.datasource:
+        #    print(self.datasource.datastream.name)
+        #    print(self.datasource.datastream.description)
+        #else:
+        #    print('no datasource to print!')
+        pass
     
     def initialise_list(
         self, 
@@ -135,10 +140,22 @@ class AppView(UnicornView):
         
         if list_object_owner_user:
             self.siteuser = list_object_owner_user
-        
+            
         #pagination
-        if self.page_no == 1:
-            self.list_items_paginated, self.displayed_item_ids = [], []
+        items_per_page = getattr(self, 'items_per_page')
+        page_count = getattr(self, 'page_count')
+        
+        list_object_container_name_0 = list_object_container_names[0]
+        list_page_no_name = '{}_list_page_no'.format(list_object_container_name_0)
+        list_items_paginated_name = '{}_list_items_paginated'.format(list_object_container_name_0) 
+        displayed_item_ids_name = '{}_displayed_item_ids'.format(list_object_container_name_0) 
+        
+        list_page_no = getattr(self, list_page_no_name)
+        if list_page_no == 1:
+            setattr(self, list_items_paginated_name, []) 
+            setattr(self, displayed_item_ids_name, [])
+        list_items_paginated = getattr(self, list_items_paginated_name)
+        displayed_item_ids = getattr(self, displayed_item_ids_name)
             
         #build query params
         pub_args, pub_kwargs, unpub_args, unpub_kwargs = [], {}, [], {}
@@ -180,9 +197,8 @@ class AppView(UnicornView):
         #print(list_object_class.list(*pub_args, **pub_kwargs))
         unpublished_obs = get_objects_for_user(current_user, list_object_unpub_perms, list_object_class.list(*unpub_args, **unpub_kwargs))
         #setattr(self, list_object_container, list((published_objs | unpublished_objs).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1]))
-        setattr(self, list_object_container_names[0], (published_obs | unpublished_obs).distinct().exclude(id__in=self.displayed_item_ids).order_by(list_order)[:self.items_per_page + 1])
-        list_object_container = getattr(self, list_object_container_names[0])
-        #print(list_object_container)
+        setattr(self, list_object_container_names[0], (published_obs | unpublished_obs).distinct().exclude(id__in=displayed_item_ids).order_by(list_order)[:items_per_page + 1])
+        list_object_container = getattr(self, list_object_container_name_0)
         
         #build perms, settings
         self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, obs=list_object_container)
@@ -194,39 +210,38 @@ class AppView(UnicornView):
         self.meta_object = meta_object
         
         #if items on current page, add them to cache
-        if len(list_object_container[:self.items_per_page]) > 0:
-            self.list_items_paginated = self.list_items_paginated[:self.page_no - 1] + [list_object_container[:self.items_per_page]]
-
-        self.displayed_item_ids = [i['pk'] if isinstance(i, dict) else i.pk for p in self.list_items_paginated[:self.page_no] for i in p] 
+        if len(list_object_container[:items_per_page]) > 0:
+            setattr(self, list_items_paginated_name, getattr(self, list_items_paginated_name)[:list_page_no - 1] + [list_object_container[:items_per_page]])
+    
+        setattr(self, displayed_item_ids_name, [i['pk'] if isinstance(i, dict) else i.pk for p in getattr(self, list_items_paginated_name)[:list_page_no] if p is not None for i in p])
 
         #if items on next page (spare), add them to cache
-        if len(list_object_container[self.items_per_page:]) > 0:
-            self.list_items_paginated = self.list_items_paginated[:self.page_no ] + [list_object_container[self.items_per_page:]]
+        if len(list_object_container[items_per_page:]) > 0:
+            setattr(self, list_items_paginated_name, getattr(self, list_items_paginated_name)[:list_page_no] + [list_object_container[items_per_page:]])
 
         #pad out remainder of list
-        self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
+        setattr(self, list_items_paginated_name, getattr(self, list_items_paginated_name) + [None for i in range(page_count - len(getattr(self, list_items_paginated_name)))])
         
         #replicate list_object_container for remainder of names
         for n in list_object_container_names[1:]:
             setattr(self, n, copy.deepcopy(list_object_container))
 
+        #print(self.__dict__)
+        self.list_items_paginated = getattr(self, list_items_paginated_name)
+        self.page_no = list_page_no
+        
         return
     
     
     def load_table(self):
-        
-        #from pympler import tracker
-        #tr = tracker.SummaryTracker()
-        #tr.print_diff()
-        
         if self.request:
-            # collect various params
-            #print('starting load table')
+            # initialize
             if 'context' in self.component_kwargs:
                 self.context = self.component_kwargs['context']
                 
             mode = self.context['mode']
-            query = self.context['query'] if 'query' in self.context else None
+            self.mode = mode
+            query = self.context['query'] if 'query' in self.context else ''
             page = self.context['page'] if 'page' in self.context else None
             search = self.context['search'] if 'search' in self.context else None
             current_user = self.request.user
@@ -261,33 +276,7 @@ class AppView(UnicornView):
                             ad_position = Notification.USER_AD,
                             meta_object = list_object_owner_user.profile, 
                         )
-                    #print(self.datasources)
                 elif mode == 'list':
-                    '''
-                    if search:
-                        # objs by perms
-                        published_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(query=query, is_published=True))
-                        unpublished_ds = get_objects_for_user(current_user, ('view_datasource'), Datasource.list(query=query, is_published=False))
-                        self.datasources = list((published_ds | unpublished_ds).distinct().exclude(id__in=self.displayed_item_ids)[:self.items_per_page + 1])
-                    else:
-                    '''
-                    '''
-                    # objs by perms
-                    cover_search_terms = self.cover.search_terms.split(',') if self.cover else []
-
-                    q = Q(name__icontains=cover_search_terms[0])
-                    for v in cover_search_terms[1:]:
-                        q = q | Q(name__icontains=v)
-                    published_namematch_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(q, is_published=True))
-
-                    q1 = Q(description__icontains=cover_search_terms[0])
-                    for v in cover_search_terms[1:]:
-                        q1 = q1 | Q(description__icontains=v)
-                    published_descmatch_ds = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(q1, is_published=True))
-
-                    self.datasources = list((published_namematch_ds | published_descmatch_ds).distinct().exclude(id__in=self.displayed_item_ids).order_by('?')[:self.items_per_page + 1])
-                    '''
-                        
                     self.initialise_list(
                         current_user = self.request.user,
                         list_object_owner_user = None,
@@ -301,41 +290,11 @@ class AppView(UnicornView):
                         ad_position = Notification.USER_AD,
                         meta_object = None, 
                     )
-                    
-                    #self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context)
-                    #self.ads = Notification.objects.filter(position=Notification.LIST_AD).order_by('?')[:4]
-                    
-                '''
-                #if items on current page, add them to cache
-                if len(self.datasources[:self.items_per_page]) > 0:
-                    self.list_items_paginated = self.list_items_paginated[:self.page_no - 1] + [self.datasources[:self.items_per_page]]
-                    
-                print(self.list_items_paginated)
-                self.displayed_item_ids = [i['pk'] if isinstance(i, dict) else i.pk for p in self.list_items_paginated[:self.page_no] for i in p] 
-                    
-                #if items on next page (spare), add them to cache
-                if len(self.datasources[self.items_per_page:]) > 0:
-                    self.list_items_paginated = self.list_items_paginated[:self.page_no ] + [self.datasources[self.items_per_page:]]
-                
-                #pad out remainder of list
-                self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
-                '''
-
-                
-                #if self.settings.get('test_pref'):
-                #    self.call('handlerAlias', 'toggleEdit')
-                                    
                 return #do nothing
             
             elif mode == 'view': # use obj perms
-                
                 if is_get:
                     self.related_datasources = None
-                
-                # site perms
-                #if not current_user.has_perm('projects.view_published_datasource'):
-                #    redirect('/')
-
                 if self.context['pk']:
                     ds = Datasource.item(pk=self.context['pk'])
                 elif self.context['slug']:
@@ -343,19 +302,6 @@ class AppView(UnicornView):
                 
                 self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, obs=(ds, ds.datastream,))
                 
-                #self.app_perms.extend(get_perms(current_user, ds))
-                #self.app_perms.extend(get_perms(current_user, ds.datastream))
-                #self.refresh_settings_and_perms()
-                
-                #obj perms
-                '''
-                if ds.is_published:
-                    if not any({current_user.has_perm('projects.view_published_datasource', ds), current_user.has_perm('projects.view_datasource', ds)}):
-                        redirect('/')
-                else:
-                    if not current_user.has_perm('projects.view_datasource', ds):
-                        redirect('/')
-                '''
                 if ds.is_published:
                     if not any({('view_published_datasource' in self.app_perms), ('view_datasource' in self.app_perms)}):
                         redirect('/')
@@ -372,13 +318,21 @@ class AppView(UnicornView):
                     data=instance_data, 
                     mode=True)
                 
-                self.meta_object = self.datasource
-                self.ads = Notification.objects.filter(position=Notification.VIEW_AD).order_by('?')[:4]
-
-                if not self.related_datasources:
-                    self.related_datasources = get_objects_for_user(current_user, ('view_published_datasource'), Datasource.list(is_published=True)).exclude(pk=self.datasource.pk).order_by('?')[:20]
-                self.related_items_paginated = [self.related_datasources[i: i+5] for i in range(0, len(self.related_datasources), 5)]
-
+                #related_datasources
+                self.initialise_list(
+                    current_user = self.request.user,
+                    list_object_owner_user = None,
+                    list_object_class = Datasource,
+                    list_object_container_names = ('related_datasources',),
+                    list_object_pub_perms = ('view_published_datasource',),
+                    list_object_unpub_perms = ('view_datasource',),
+                    list_object_name_query = '',
+                    list_order = '?',
+                    list_use_cover = False,
+                    ad_position = Notification.VIEW_AD,
+                    meta_object = self.datasource, 
+                )
+                
                 def get_client_ip(request):
                     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
                     if x_forwarded_for:
@@ -387,176 +341,47 @@ class AppView(UnicornView):
                         ip = request.META.get('REMOTE_ADDR')
                     return ip
                 ItemView.objects.get_or_create(IPAddress=get_client_ip(self.request), datasource=self.datasource, session=self.request.session._session_key)
-                
-                #if hasattr(self.datasource, 'reports'):
-                #    self.report = self.datasource.reports.last()
-                #if not self.report:
-                #    self.addReport()
-                #print(self.app_perms)
             
             elif mode == 'new':  # use app perms
-                if page in ('new.datamenu', 'new.datasource'):
-                    '''
-                    if not current_user.has_perm('projects.add_datasource'):
-                        redirect('/')
-                    '''
-                    if page == 'new.datamenu':
-                        
-                        if not self.covers:
-                            self.covers = Cover.list().order_by(
-                                Case(When(name__startswith='_', then=0), default=1),
-                                'name',
-                            )
-                        if not self.cover:
-                            self.cover = self.covers.filter(name__startswith='_').first()
-                            
-                        self.initialise_list(
-                            current_user = self.request.user,
-                            list_object_owner_user = None,
-                            list_object_class = Datastream,
-                            list_object_container_names = ('formset_datastreams', 'datastreams', ),
-                            list_object_pub_perms = ('view_published_datastream',),
-                            list_object_unpub_perms = ('view_datastream',),
-                            list_object_name_query = '',
-                            list_order = 'name',
-                            list_use_cover = True,
-                            ad_position = Notification.USER_AD,
-                            meta_object = None, 
-                        )
-                        
-                        '''
-                        # objs by perms
-                        cover_search_terms = self.cover.search_terms.split(',') if self.cover else []
-                        
-                        q = Q(name__icontains=cover_search_terms[0])
-                        for v in cover_search_terms[1:]:
-                            q = q | Q(name__icontains=v)
-                        
-                        self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context)
-                        
-                        if not 'add_datasource' in self.app_perms:
-                            raise Http404
-                        
-                        self.datastreams = Datastream.list(q)
-                        
-                        #if items on current page, add them to cache
-                        if len(self.datastreams[:self.items_per_page]) > 0:
-                            self.list_items_paginated = self.list_items_paginated[:self.page_no - 1] + [self.datastreams[:self.items_per_page]]
+                self.initialise_list(
+                    current_user = self.request.user,
+                    list_object_owner_user = None,
+                    list_object_class = Datastream,
+                    list_object_container_names = ('datastreams', 'formset_datastreams', ),
+                    list_object_pub_perms = ('view_published_datastream',),
+                    list_object_unpub_perms = ('view_datastream',),
+                    list_object_name_query = '',
+                    list_order = 'name',
+                    list_use_cover = True,
+                    ad_position = Notification.USER_AD,
+                    meta_object = None, 
+                )
 
-                        self.displayed_item_ids = [i['pk'] if isinstance(i, dict) else i.pk for p in self.list_items_paginated[:self.page_no] for i in p] 
+                self.new_datastream = Datastream()
+                instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.new_datastream.field_data().items()}
+                self.new_datastream_form = DatastreamForm(
+                    instance=self.new_datastream, 
+                    form_id='new_datastream_form',
+                    use_ok=True,
+                    unicorn_model='new_datastream',
+                    data=instance_data, 
+                    mode=True)
 
-                        #if items on next page (spare), add them to cache
-                        if len(self.datastreams[self.items_per_page:]) > 0:
-                            self.list_items_paginated = self.list_items_paginated[:self.page_no ] + [self.datastreams[self.items_per_page:]]
+                self.page = 'new.datamenu'
+                self.message = {
+                    'class': 'alert-info',
+                    'content': 'Select below to add a new item'
+                }
 
-                        #pad out remainder of list
-                        self.list_items_paginated = self.list_items_paginated + [None for i in range(self.page_count - len(self.list_items_paginated))]
-                        
-                        '''
-                        
-                        self.new_datastream = Datastream()
-                        instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.new_datastream.field_data().items()}
-                        self.new_datastream_form = DatastreamForm(
-                            instance=self.new_datastream, 
-                            form_id='new_datastream_form',
-                            use_ok=True,
-                            unicorn_model='new_datastream',
-                            data=instance_data, 
-                            mode=True)
-                        
-                        self.page = 'new.datamenu'
-                        self.message = {
-                            'class': 'alert-info',
-                            'content': 'Select below to add a new item'
-                        }
-                        
-                        #formset
-                        DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm, formset=BaseDatastreamFormSet, extra=0)
-                        self.datastream_formset = DatastreamFormSet(queryset=self.formset_datastreams or None, auto_id='id_for_%s')
-                        #print(self.datastream_formset)
+                #formset
+                DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm, formset=BaseDatastreamFormSet, extra=0)
+                self.datastream_formset = DatastreamFormSet(queryset=self.formset_datastreams or None, auto_id='id_for_%s')
+                #print(self.datastream_formset)
 
-                    
-                    elif page == 'new.datasource':
-                        kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('datastream',)}
-                        if len(kwargs) == 1:
-                            self.datasource = self.add(
-                                cls=Datasource,
-                                datastream=Datastream.item(slug=kwargs['datastream'])
-                                #call_redirect='list'
-                            )
-                            self.add(
-                                cls=Viz,
-                                datasource=self.datasource,
-                                #call_redirect='list'
-                            )
-                        self.context['mode'] = 'view'
-                        self.context['pk'] = self.datasource.pk
-                        self.call("alert", "hello")
-                        self.load_table()
-                
-                elif page in ('new.vizmenu', 'new.viz'):
-                    if page == 'new.vizmenu':
-                        if not current_user.has_perm('projects.add_viz'):
-                            redirect('/')
-
-                        self.services = Viz.services()
-                        self.datasource = Datasource.item(slug=self.request.GET['datasource'])
-                        self.page = 'new.vizmenu'
-                        self.message = {
-                            'class': 'alert-info',
-                            'content': 'Select below to add a new item'
-                        }
-
-                    elif page == 'new.viz':
-                    #elif self.request.GET['o'] == 'viz':
-                        kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('datasource',)}
-                        if len(kwargs) == 1:
-                            self.datasource = Datasource.item(slug=kwargs['datasource'])
-                            self.add(
-                                cls=Viz,
-                                datasource=self.datasource,
-                                #call_redirect='list'
-                            )
-                        self.page = 'new.viz.complete'
-                        self.message = {
-                            'class': 'alert-info',
-                            'content': 'Viz added!'
-                        }
-                
-                elif page == 'new.datastream':
-                    if not 'add_datastream' in self.app_perms:
-                        redirect('/')
-                    kwargs = {k : v for (k, v) in self.request.GET.items() if k in ('url',)}
-                    if len(kwargs) == 1:
-                        self.datasource = self.add(
-                            cls=Datastream,
-                            **kwargs
-                            #call_redirect='list'
-                        )
-                        #self.page = 'new.datastream.complete'
-                        self.context['mode'] = 'view'
-                        self.load_table()
-                        
-                    #self.message = {
-                    #    'class': 'alert-info',
-                    #    'content': 'Datastream added!'
-                    #}
-                
-                else:
-                    self.page = 'new.error'
-                    self.message = {
-                        'class': 'alert-danger',
-                        'content': 'Oops! Something went wrong!'
-                    }
-                    
             else:
                 self.datasources = Datasource.objects.none()
                 self.datasource = None
                 self.vizs = Viz.objects.none()
-                
-                
-    
-                
 
     def updating(self, name, value):
         #logger.debug('AppView > updating start')
@@ -694,16 +519,22 @@ class AppView(UnicornView):
         pass
         #logger.debug('AppView > calling end')
     
-    '''
-    def addDatasource(self, datastream_pk, call_redirect=False):
-        if not self.request.user.has_perm('projects.add_datasource'):
-            return redirect('/')
-        
-        d = Datasource.new(
-                owner=self.request.user, 
-                datastream=Datastream.item(pk=datastream_pk)
-            )
-    '''
+
+    def addDatasource(self, datastream_slug):
+        self.datasource = self.add(
+            cls=Datasource,
+            datastream=Datastream.item(slug=datastream_slug)
+            #call_redirect='list'
+        )
+        self.add(
+            cls=Viz,
+            datasource=self.datasource,
+            #call_redirect='list'
+        )
+        self.context['mode'] = 'view'
+        self.context['pk'] = self.datasource.pk
+        #self.call("alert", "hello")
+        return redirect(reverse('view', kwargs={'slug': self.datasource.slug}))
     
     def copy_datasource(self, pk):
         if not self.request.user.has_perm('projects.add_datasource'):
@@ -918,15 +749,15 @@ class AppView(UnicornView):
         return redirect(reverse('list'))
         
     def more(self):
-        if self.list_items_paginated:
-            if self.page_no < len([i for i in self.list_items_paginated]):
-                self.page_no += 1
+        if self.datasources_list_items_paginated:
+            if self.datasources_list_page_no < len([i for i in self.datasources_list_items_paginated]):
+                self.datasources_list_page_no += 1
                 self.load_table()
             
     def more_related(self):
-        if self.related_items_paginated:
-            if self.related_page_no < len(self.related_items_paginated):
-                self.related_page_no += 1
+        if self.related_datasources_list_items_paginated:
+            if self.related_datasources_list_page_no < len(self.related_datasources_list_items_paginated):
+                self.related_datasources_list_page_no += 1
                 self.load_table()
                 
     def set_user_properties(self, item):
@@ -1021,8 +852,11 @@ class AppView(UnicornView):
             del self.vizs
         #report: Report = None
 
-        if self.list_items_paginated:
-            del self.list_items_paginated
+        if self.datasources_list_items_paginated:
+            del self.datasources_list_items_paginated
+            
+        if self.datastreams_list_items_paginated:
+            del self.datastreams_list_items_paginated
         
         if self.datastreams:
             del self.datastreams
@@ -1043,8 +877,8 @@ class AppView(UnicornView):
             del self.related_datasources
         
         
-        if self.related_items_paginated:
-            del self.related_items_paginated
+        if self.related_datasources_list_items_paginated:
+            del self.related_datasources_list_items_paginated
             
         if self.datasource:
             del self.datasource

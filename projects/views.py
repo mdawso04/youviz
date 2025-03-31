@@ -96,32 +96,10 @@ def new(request):
     '''
     context = {
         'context': {
-            'mode': 'new'
+            'mode': 'new',
         }
     }
-    
-    if request.GET['o'] == 'datamenu':
-        context['context']['page'] = 'new.datamenu'
-        return add_datamenu(request, context=context)
-
-    elif request.GET['o'] == 'vizmenu':
-        context['context']['page'] = 'new.vizmenu'
-        return add_vizmenu(request, context=context)
-
-    elif request.GET['o'] == 'datastream':
-        context['context']['page'] = 'new.datastream'
-        return add_datastream(request, context=context)
-        
-    elif request.GET['o'] == 'datasource':
-        context['context']['page'] = 'new.datasource'
-        return add_datasource(request, context=context)
-
-    elif request.GET['o'] == 'viz':
-        context['context']['page'] = 'new.viz'
-        return add_viz(request, context=context)
-
-    else:
-        return redirect('/')
+    return render(request, default_template, context)
 
 def add_datamenu(request, context):
     return render(request, default_template, context)
