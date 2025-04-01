@@ -2,7 +2,7 @@
 from django_unicorn.components import QuerySetType, UnicornView
 from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings, Cover, Comment
 from projects.forms import DatastreamForm, BaseDatastreamFormSet
-from projects.util import get_perms_and_settings
+from projects.util import get_perms_and_settings, updating_handler, updated_handler
 from django.contrib.auth.models import User
 from projects.middleware import redirect as force_redirect
 from guardian.shortcuts import get_perms, get_user_perms, get_users_with_perms, get_objects_for_user, get_perms_for_model
@@ -386,55 +386,70 @@ class AppView(UnicornView):
     def updating(self, name, value):
         #logger.debug('AppView > updating start')
         #print(self.app_perms)
+        
         if 'user.profile' in name:
-            if not 'change_profile' in self.app_perms:
-                raise Http404
+            updating_handler(
+                app_perms=self.app_perms,
+                req_perms=('change_profile',),
+                cache_key='new_datastream',
+                target_object=None,
+            )
         elif 'new_datastream' in name:
-            #if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
-            if not 'add_datastream' in self.app_perms:
-                raise Http404
-            c = cache.get('new_datastream')
-            if c:
-                self.new_datastream.set_field_data(c)
+            updating_handler(
+                app_perms=self.app_perms,
+                req_perms=('add_datastream',),
+                cache_key=None,
+                target_object=self.new_datastream,
+            )
         elif 'datastream.' in name:
-            #if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
-            if not 'change_datastream' in self.app_perms:
-                raise Http404
-            c = cache.get('datasource.datastream')
-            if c:
-                self.datasource.datastream.set_field_data(c)
+            updating_handler(
+                app_perms=self.app_perms,
+                req_perms=('change_datastream',),
+                cache_key='datasource.datastream',
+                target_object=self.datasource.datastream,
+            )
         elif 'datastreams.' in name:
-            #if not self.request.user.has_perm('projects.change_datastream', self.datasource.datastream):
-            #print(name)
             updated_instance_index = int(name.split('.')[1])
             updated_instance = self.formset_datastreams[updated_instance_index]
-            #print(self.datastreams)
-            #print(updated_instance_index)
-            #print(updated_instance)
-            #print(self.datastreams)
-            if not 'change_datastream_{}'.format(updated_instance.slug) in self.app_perms:
-                raise Http404
-            c = cache.get('datastream{}'.format(updated_instance.slug))
-            if c:
-                updated_instance.set_field_data(c)
+            
+            updating_handler(
+                app_perms=self.app_perms,
+                req_perms=('change_datastream_{}'.format(updated_instance.slug),),
+                cache_key='datastream{}'.format(updated_instance.slug),
+                target_object=updated_instance,
+            )
                 
         elif 'datasource.' in name:
-            if not self.request.user.has_perm('projects.change_datasource', self.datasource):
-                raise Http404
+            updating_handler(
+                app_perms=self.app_perms,
+                req_perms=('change_datastream_{}'.format(self.datasource.slug),),
+                cache_key=None,
+                target_object=None,
+            )
         #logger.debug('AppView > updating end')
+        
+
     
     def updated(self, name, value):
         #logger.debug('AppView > updated start')
         #print('Updated!')
-        if 'user.profile' in name:
-            if 'profile.properties' in name:
-                if value == 'true':
-                    value = True
-                elif value == 'false':
-                    value = False
-                n = name.split('properties.')[-1]
-                self.request.user.profile.properties[n] = value
+        if 'profile.properties' in name:
+            if value == 'true':
+                value = True
+            elif value == 'false':
+                value = False
+            n = name.split('properties.')[-1]
+            self.request.user.profile.properties[n] = value
             self.request.user.profile.save()
+            
+        elif 'user.profile' in name:
+            updated_handler(
+                cache_key=None,
+                target_object=self.request.user.profile,
+                form_or_formset=None,
+                call_on_success=None,
+            )
+            
         elif 'new_datastream' in name:
             # Validate form and leave db save for add_datastream action
             instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.new_datastream.field_data().items()}

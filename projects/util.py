@@ -64,6 +64,35 @@ def get_perms_and_settings(*args, **kwargs):
     
     return app_perms, settings
 
+def updating_handler(
+        app_perms,
+        req_perms,
+        cache_key,
+        target_object
+    ):
+        if req_perms: 
+            for p in req_perms:
+                if p not in app_perms:
+                    raise Http404
+        if cache_key and target_object:
+            c = cache.get(cache_key)
+            if c:
+                target_object.set_field_data(c)
+
+def updated_handler(
+        cache_key=None,
+        target_object=None,
+        form_or_formset=None,
+        call_on_success=None,
+    ):
+        if cache_key and target_object:
+            cache.set(cache_key, target_object.field_data())
+                
+        #convert values
+        #validation
+        #save
+        #cache update
+
 
 #import copyreg
 
