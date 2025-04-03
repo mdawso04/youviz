@@ -1,6 +1,28 @@
 from projects.models import Profile, Settings
 from guardian.shortcuts import get_perms
 
+def attach_slug_to_perm_name(perm_name, obj):
+    return '{}_{}'.format(perm_name, obj.slug)
+
+def obj_perms_with_slug(current_user, obs, app_perms=None):
+    '''Return perms_with_slug for objs, or append to app_perms'''
+    all_perms = []
+    for o in obs:
+        o_perms = get_perms(current_user, o)
+        #new_perms_with_key = ['{}{}'.format(perm, o.slug) for perm in new_perms]
+        # {% if 'change_datastream'|:form.instance.slug in app_perms %}
+        o_perms_with_slug = [attach_slug_to_perm_name(p, o) for p in o_perms]
+        #print(o)
+        if app_perms:
+            app_perms.extend(o_perms_with_slug)
+        else:
+            all_perms.extend(o_perms_with_slug)
+    if app_perms:
+        return
+    else:
+        return all_perms
+    
+
 def get_perms_and_settings(*args, **kwargs):
     
     request = kwargs['request']
@@ -27,6 +49,9 @@ def get_perms_and_settings(*args, **kwargs):
     #app_perms_and_o_perms = {'app': app_perms, 'obj': {}}
     
     if obs:
+        app_perms.extend(obj_perms_with_slug(current_user, obs))
+    
+    ''' 
         for o in obs:
             o_perms = get_perms(current_user, o)
             #new_perms_with_key = ['{}{}'.format(perm, o.slug) for perm in new_perms]
@@ -36,6 +61,7 @@ def get_perms_and_settings(*args, **kwargs):
             app_perms.extend(o_perms_with_slug)
             
     #print(app_perms)
+    '''
     
         
     edit_display_perm = settings.get(f'edit_display_perm_{mode}', None)

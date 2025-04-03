@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 from datetime import date, timedelta
 
 from projects.models import Activity, Profile, ItemView
+from projects.util import obj_perms_with_slug, attach_slug_to_perm_name
 from django.urls import reverse
 
 from operator import attrgetter
@@ -520,7 +521,7 @@ def tabpane(context, **kwargs):
                                                     'counter': None,
                                                     'onclick_url': None,
                                                     'onclick': "Handler.showTab('#tabpane-navpanel-edit-tab');",
-                                                    'onclick_perm': 'change_datasource',
+                                                    'onclick_perm': (lambda: attach_slug_to_perm_name('change_datasource', context['datasource'])),
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': 'bi-pen',
@@ -656,7 +657,7 @@ def tabpane(context, **kwargs):
                             'dismiss': None,
                             'icon': 'arrow-left',
                             'nosnippet': True, 
-                            'required_perm': 'change_datasource',
+                            'required_perm': lambda: attach_slug_to_perm_name('change_datasource', context['datasource']),
                             'template': 'projects/navpanel/edit.html',
                             'detailpane': None,
                         },
@@ -987,7 +988,14 @@ def tabpane(context, **kwargs):
     filtered_config = config[context['name']]
     #guardian_perms = [v for k, v in context.items() if k in ('datasource_perms', 'datastream_perms', 'profile_perms') and v is not None]
     #guardian_perms = [j for i in guardian_perms for j in i]
-    filtered_config['tabs'] = [t for t in filtered_config['tabs'] if t['required_perm'] is None or t['required_perm'] in context['app_perms']]
+    
+    #heaving lifting to read display_perm labmdas
+    filtered_config['tabs'] = [t for t in filtered_config['tabs'] 
+                               if any((
+                                   t['required_perm'] is None, 
+                                   isinstance(t['required_perm'], str) and t['required_perm'] in context['app_perms'],
+                                   callable(t['required_perm']) and t['required_perm']() in context['app_perms']
+                               ))]
     return context | filtered_config
 
 @register.inclusion_tag("templatetags/detailpane.html", takes_context=True)
