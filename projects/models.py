@@ -92,8 +92,10 @@ class BaseModel(models.Model):
     #@cached_property
     def field_data(self):
         return {
+            'id': self.pk,
             'name': self.name,
             'description': self.description,
+            'is_published': self.is_published,
         }
     
     @cached_property
@@ -105,6 +107,8 @@ class BaseModel(models.Model):
             self.name = data['name']
         if 'description' in data:
             self.description = data['description']
+        if 'is_published' in data:
+            self.is_published = data['is_published']
     
     @cached_property
     def perms_req_by_owners(self):
@@ -488,7 +492,6 @@ class Datastream(BaseModel):
     #@cached_property
     def field_data(self):
         return super().field_data() | {
-            'id': self.pk,
             'url': self.url,
             'json': self.json,
             'datastream_type': self.datastream_type,
@@ -603,6 +606,17 @@ class Datasource(BaseModel):
     class Meta:
         default_related_name = 'datasources'
         permissions = [('view_published_datasource', 'Can view published datasource')]
+        
+    def field_data(self):
+        return super().field_data() | {
+            'datastream': self.datastream,
+        }
+        
+    def set_field_data(self, data):
+        super().set_field_data(data)
+        #ignore id if it exists
+        if 'datastream' in data:
+            self.datastream = data['datastream']
         
     @cached_property
     def seo(self):

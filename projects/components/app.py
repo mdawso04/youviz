@@ -1,7 +1,7 @@
 # django/unicorn/project
 from django_unicorn.components import QuerySetType, UnicornView
 from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings, Cover, Comment
-from projects.forms import DatastreamForm, BaseDatastreamFormSet
+from projects.forms import DatastreamForm, BaseDatastreamFormSet, DatasourceForm, BaseDatasourceFormSet
 from projects.util import get_perms_and_settings, updating_handler, updated_handler
 from django.contrib.auth.models import User
 from projects.middleware import redirect as force_redirect
@@ -61,6 +61,7 @@ class AppView(UnicornView):
     
     #view
     datasource: Datasource = None
+    datasource_form: DatasourceForm = None
     vizs: QuerySetType[Viz] = None
     related_datasources: QuerySetType[Datasource] = None
     related_datasources_list_items_paginated: list = None
@@ -97,7 +98,7 @@ class AppView(UnicornView):
     class Meta:
         javascript_exclude = ('mode', 'page_count', 'items_per_page', 'list_items_paginated', 'page_no',
                               'datasources', 'datasources_list_items_paginated', 'datasources_list_page_no', 'datasources_displayed_item_ids', 
-                              'datasource', 'vizs', 'related_datasources', 'related_datasources_list_items_paginated', 'related_datasources_list_page_no', 'datastream_formset', 
+                              'datasource', 'datasource_form', 'vizs', 'related_datasources', 'related_datasources_list_items_paginated', 'related_datasources_list_page_no', 'datastream_formset', 
                               'datastream_form','new_datastream', 'new_datastream_form', 'selected_datastream', 'selected_datastream_form', 
                               'datastreams', 'datastreams_list_items_paginated', 'datastreams_list_page_no', 'datastreams_displayed_item_ids', 'formset_datastreams', 
                               'services', 'meta_object', 'message', 'page', 'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'add_comment_text', 'app_perms',) 
@@ -310,6 +311,14 @@ class AppView(UnicornView):
                         redirect('/')
                 
                 self.datasource = ds
+                datasource_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.field_data().items()}
+                self.datasource_form = DatasourceForm(
+                    instance=self.datasource, 
+                    form_id='datasource_form',
+                    unicorn_model='datasource',
+                    data=datasource_instance_data, 
+                    mode=True)
+                
                 instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.datastream.field_data().items()}
                 self.datastream_form = DatastreamForm(
                     instance=self.datasource.datastream, 

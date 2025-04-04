@@ -1,10 +1,14 @@
-from django.forms import ModelForm, Textarea
+from django.forms import ModelForm, Textarea, CheckboxInput
 from django.forms import fields, models
 from django.utils.translation import gettext_lazy as _
 from .models import BaseModel, Datastream
 from django.core.exceptions import ValidationError
 from entangled.forms import EntangledModelForm, EntangledModelFormMixin
 from django.forms import BaseModelFormSet
+from django import forms
+from .models import Datasource
+
+
 
 '''
 My workaround was to register a custom pickle handler for the django.forms.renderers.
@@ -36,10 +40,41 @@ class BaseForm(ModelForm):
         self.use_ok = kwargs.pop('use_ok', False)
         self.use_cancel = kwargs.pop('use_cancel', False)
         super(BaseForm, self).__init__(*args, **kwargs)
+        
+        self.fields['name'].widget.attrs.update({
+            'class': 'form-control',
+            #'unicorn:key': 'test',
+            'unicorn:model.lazy': '{}.name'.format(*self.unicorn_model),
+            #'unicorn:partial': 'form-content-{}'.format(self.instance.slug),
+            #'unicorn:partial.id': 'test',
+            #'unicorn:partial.key': 'test',
+            "rows": 4,
+        })
+        self.fields['description'].widget.attrs.update({
+            'class': 'form-control',
+            #'unicorn:key': 'test',
+            'unicorn:model.lazy': '{}.description'.format(*self.unicorn_model),
+            'unicorn:partial': self.form_id,
+            #'unicorn:partial.id': 'fileInfo',
+            #'unicorn:partial.key': 'test',
+            #'unicorn:dirty.attr': 'readonly',
+            "rows": 4, 
+        })
+        self.fields['is_published'].widget.attrs.update({
+            'class': 'form-check-input',
+            #'unicorn:key': 'test',
+            'unicorn:model.lazy': '{}.is_published'.format(*self.unicorn_model),
+            'unicorn:partial': self.form_id,
+            #'unicorn:partial.id': 'fileInfo',
+            #'unicorn:partial.key': 'test',
+            #'unicorn:dirty.attr': 'readonly', 
+            "role": "switch",
+        })
+            
     
     class Meta:
         model = BaseModel
-        fields = ("name", "description",)
+        fields = ("name", "description", "is_published")
         widgets = {
             "name": Textarea(
                 #template_name="widget.html", #input group
@@ -53,20 +88,33 @@ class BaseForm(ModelForm):
                     "rows": 4,
                 }
             ),
+            
+            "is_published": CheckboxInput(
+                #template_name="widget.html", #input group
+                attrs={
+                    "type": "checkbox",
+                    "role": "switch",
+                }
+            ),
         }
         labels = {
             "name": _("Name"),
             "description": _("Description"),
+            "is_published": _("Is published"),
         }
         help_texts = {
             "name": _("The item name."),
             "description": _("The item description."),
+            "is_published": _("THe published switch."),
         }
         error_messages = {
             "name": {
                 "max_length": _("This writer's name is too long."),
             },
             "description": {
+                "max_length": _("This writer's name is too long."),
+            },
+            "is_published": {
                 "max_length": _("This writer's name is too long."),
             },
         }
@@ -134,23 +182,6 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
         mode = kwargs.pop('mode', True)
         super(DatastreamForm, self).__init__(*args, **kwargs)
         if mode:
-            self.fields['name'].widget.attrs.update({
-                'class': 'form-control',
-                #'unicorn:key': 'test',
-                'unicorn:model.lazy': '{}.name'.format(*self.unicorn_model),
-                #'unicorn:partial': 'form-content-{}'.format(self.instance.slug),
-                #'unicorn:partial.id': 'test',
-                #'unicorn:partial.key': 'test',
-            })
-            self.fields['description'].widget.attrs.update({
-                'class': 'form-control',
-                #'unicorn:key': 'test',
-                'unicorn:model.lazy': '{}.description'.format(*self.unicorn_model),
-                'unicorn:partial': self.form_id,
-                #'unicorn:partial.id': 'fileInfo',
-                #'unicorn:partial.key': 'test',
-                #'unicorn:dirty.attr': 'readonly', 
-            })
             self.fields['datastream_type'].widget.attrs.update({
                 'class': 'form-select',
                 #'unicorn:key': 'test',
@@ -307,11 +338,80 @@ class BaseDatastreamFormSet(BaseModelFormSet):
         '''
                 
             
-from django import forms
-from .models import Datasource
-
-class DatasourceForm(forms.ModelForm):
+class DatasourceForm(EntangledModelFormMixin, BaseForm):
+    def __init__(self, *args, **kwargs):
+        mode = kwargs.pop('mode', True)
+        super(DatasourceForm, self).__init__(*args, **kwargs)
+        '''
+        if mode:
+            self.fields['datastream'].widget.attrs.update({
+                'class': 'form-select',
+                #'unicorn:key': 'test',
+                'unicorn:model.lazy': '{}.datastream'.format(*self.unicorn_model),
+                'unicorn:partial': self.form_id,
+                #'unicorn:partial.id': 'fileInfo',
+                #'unicorn:partial.key': 'test',
+            })
+        '''
+    
+    
     class Meta:
         model = Datasource
-        #fields = ('data', )
-        fields = ('datastream', )
+        fields = BaseForm.Meta.fields
+        entangled_fields = {'properties': ['source', ]}
+        #untangled_fields = BaseForm.Meta.fields + ('datastream_type', "url", "json",)
+        widgets = BaseForm.Meta.widgets
+        #labels = BaseForm.Meta.labels
+        #help_texts = BaseForm.Meta.help_texts
+        #error_messages = BaseForm.Meta.error_messages
+        
+        
+    def clean(self):
+        #print('clearning form')
+        cleaned_data = super().clean()
+        #print(cleaned_data)
+        source = cleaned_data.get("source")
+        description = cleaned_data.get("description")
+        
+        #hack to workaround phantom url validation errors
+        #self.errors['url'] = self.error_class()
+        if 'url' in self.errors:
+            del self.errors['url']
+        
+        '''
+        if source and source != description: #name and description:
+            raise ValidationError(
+                "Source and description don't match"
+            )
+        '''
+        
+class BaseDatasourceFormSet(BaseModelFormSet):
+    def get_form_kwargs(self, index):
+        kwargs = super().get_form_kwargs(index)
+        kwargs['mode'] = True
+        kwargs['unicorn_model'] = f'formset_datasources.{index}', 
+        return kwargs
+    
+    def clean(self):
+        """Checks that no two articles have the same title."""
+        #print('cleaning formset')
+        #print('found these form errors')
+        #for f in self.forms: 
+        #    print(f.errors.as_data())
+        #    print(f.non_field_errors())
+        #print('found these non form errors')
+        #print(self.non_form_errors())
+            
+        if any((self.errors, self.non_form_errors(),)):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+        '''
+        titles = set()
+        for form in self.forms:
+            if self.can_delete and self._should_delete_form(form):
+                continue
+            title = form.cleaned_data.get("title")
+            if title in titles:
+                raise ValidationError("Articles in a set must have distinct titles.")
+            titles.add(title)
+        '''
