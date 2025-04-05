@@ -342,17 +342,10 @@ class DatasourceForm(EntangledModelFormMixin, BaseForm):
     def __init__(self, *args, **kwargs):
         mode = kwargs.pop('mode', True)
         super(DatasourceForm, self).__init__(*args, **kwargs)
-        '''
-        if mode:
-            self.fields['datastream'].widget.attrs.update({
-                'class': 'form-select',
-                #'unicorn:key': 'test',
-                'unicorn:model.lazy': '{}.datastream'.format(*self.unicorn_model),
-                'unicorn:partial': self.form_id,
-                #'unicorn:partial.id': 'fileInfo',
-                #'unicorn:partial.key': 'test',
-            })
-        '''
+        
+        self.fields['is_published'].widget.attrs.update({
+            'unicorn:partial.id': 'infoLargeTitle',
+        })
     
     
     class Meta:

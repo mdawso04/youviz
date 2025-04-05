@@ -2,7 +2,7 @@
 from django_unicorn.components import QuerySetType, UnicornView
 from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings, Cover, Comment
 from projects.forms import DatastreamForm, BaseDatastreamFormSet, DatasourceForm, BaseDatasourceFormSet
-from projects.util import get_perms_and_settings, updating_handler, updated_handler
+from projects.util import attach_slug_to_perm_name, get_perms_and_settings, updating_handler, updated_handler
 from django.contrib.auth.models import User
 from projects.middleware import redirect as force_redirect
 from guardian.shortcuts import get_perms, get_user_perms, get_users_with_perms, get_objects_for_user, get_perms_for_model
@@ -301,32 +301,6 @@ class AppView(UnicornView):
                 elif self.context['slug']:
                     ds = Datasource.item(slug=self.context['slug'])
                 
-                self.app_perms, self.settings = get_perms_and_settings(request=self.request, context=self.context, obs=(ds, ds.datastream,))
-                
-                if ds.is_published:
-                    if not any({('view_published_datasource' in self.app_perms), ('view_datasource' in self.app_perms)}):
-                        redirect('/')
-                else:
-                    if not 'view_datasource' in self.app_perms:
-                        redirect('/')
-                
-                self.datasource = ds
-                datasource_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.field_data().items()}
-                self.datasource_form = DatasourceForm(
-                    instance=self.datasource, 
-                    form_id='datasource_form',
-                    unicorn_model='datasource',
-                    data=datasource_instance_data, 
-                    mode=True)
-                
-                instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.datastream.field_data().items()}
-                self.datastream_form = DatastreamForm(
-                    instance=self.datasource.datastream, 
-                    form_id='datastream_form',
-                    unicorn_model='datasource.datastream',
-                    data=instance_data, 
-                    mode=True)
-                
                 #related_datasources
                 self.initialise_list(
                     current_user = self.request.user,
@@ -339,8 +313,35 @@ class AppView(UnicornView):
                     list_order = '?',
                     list_use_cover = False,
                     ad_position = Notification.VIEW_AD,
-                    meta_object = self.datasource, 
+                    meta_object = ds, 
                 )
+                
+                get_perms_and_settings(request=self.request, context=self.context, obs=(ds, ds.datastream,), update_perms=True, app_perms=self.app_perms)
+                
+                view_perm = attach_slug_to_perm_name('view_datasource', ds)
+                if ds.is_published:
+                    if not any({('view_published_datasource' in self.app_perms), (view_perm in self.app_perms)}):
+                        redirect('/')
+                else:
+                    if not view_perm in self.app_perms:
+                        redirect('/')
+                
+                self.datasource = ds
+                datasource_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.field_data().items()}
+                self.datasource_form = DatasourceForm(
+                    instance=self.datasource, 
+                    form_id='datasource_form',
+                    unicorn_model=('datasource',),
+                    data=datasource_instance_data, 
+                    mode=True)
+                
+                instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.datastream.field_data().items()}
+                self.datastream_form = DatastreamForm(
+                    instance=self.datasource.datastream, 
+                    form_id='datastream_form',
+                    unicorn_model=('datasource.datastream',),
+                    data=instance_data, 
+                    mode=True)
                 
                 def get_client_ip(request):
                     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -431,9 +432,9 @@ class AppView(UnicornView):
         elif 'datasource.' in name:
             updating_handler(
                 app_perms=self.app_perms,
-                req_perms=('change_datastream_{}'.format(self.datasource.slug),),
+                req_perms=('change_datasource_{}'.format(self.datasource.slug),),
                 cache_key=None,
-                target_object=None,
+                target_object=self.datasource,
             )
         #logger.debug('AppView > updating end')
         

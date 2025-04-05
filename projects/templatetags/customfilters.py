@@ -535,7 +535,8 @@ def tabpane(context, **kwargs):
                                                     'badge': (lambda: {
                                                         True: ('Published', True,),
                                                         False: ('Unpublished', False,),
-                                                    }.get(getattr(context['datasource'], 'is_published', None)) if 'change_datasource' in context['app_perms'] else None),
+                                                    }.get(getattr(context['datasource'], 'is_published', None)) 
+                                                              if attach_slug_to_perm_name('change_datasource', context['datasource']) in context['app_perms'] else None),
                                                 },
                                                 {
                                                     'name': None,
@@ -989,6 +990,12 @@ def tabpane(context, **kwargs):
     #guardian_perms = [v for k, v in context.items() if k in ('datasource_perms', 'datastream_perms', 'profile_perms') and v is not None]
     #guardian_perms = [j for i in guardian_perms for j in i]
     
+    #for t in filtered_config['tabs']:
+    #    print(t['name'])
+    #    print(t['required_perm']) if not callable(t['required_perm']) else print(t['required_perm']())
+        
+    #print(context['app_perms'])
+    
     #heaving lifting to read display_perm labmdas
     filtered_config['tabs'] = [t for t in filtered_config['tabs'] 
                                if any((
@@ -996,6 +1003,10 @@ def tabpane(context, **kwargs):
                                    isinstance(t['required_perm'], str) and t['required_perm'] in context['app_perms'],
                                    callable(t['required_perm']) and t['required_perm']() in context['app_perms']
                                ))]
+    
+    #for t in filtered_config['tabs']:
+    #    print(t['name'])
+        
     return context | filtered_config
 
 @register.inclusion_tag("templatetags/detailpane.html", takes_context=True)
