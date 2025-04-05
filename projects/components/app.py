@@ -425,16 +425,18 @@ class AppView(UnicornView):
             updating_handler(
                 app_perms=self.app_perms,
                 req_perms=('change_datastream_{}'.format(updated_instance.slug),),
-                cache_key='datastream{}'.format(updated_instance.slug),
+                cache_key='datastream_{}'.format(updated_instance.slug),
                 target_object=updated_instance,
             )
                 
         elif 'datasource.' in name:
+            updated_instance = self.datasource
+            
             updating_handler(
                 app_perms=self.app_perms,
-                req_perms=('change_datasource_{}'.format(self.datasource.slug),),
-                cache_key=None,
-                target_object=self.datasource,
+                req_perms=('change_datasource_{}'.format(updated_instance.slug),),
+                cache_key='datasource_{}'.format(updated_instance.slug),
+                target_object=updated_instance,
             )
         #logger.debug('AppView > updating end')
         
@@ -528,7 +530,23 @@ class AppView(UnicornView):
                 cache.set('datastream{}'.format(updated_instance.slug), updated_instance.field_data())
                 return
         elif 'datasource.' in name:
-            self.datasource.save()
+            updated_instance = self.datasource
+            
+            datasource_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in updated_instance.field_data().items()}
+            datasource_form = DatasourceForm(
+                instance=updated_instance, 
+                form_id='datasource_form',
+                unicorn_model=('datasource',),
+                data=datasource_instance_data, 
+                mode=True)
+
+
+            updated_handler(
+                cache_key='datasource_{}'.format(updated_instance.slug),
+                target_object=updated_instance,
+                form_or_formset=datasource_form,
+                call_on_success=None,
+            )
             
         #logger.debug('AppView > updated end')
         #print('reloading')

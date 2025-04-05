@@ -1,6 +1,7 @@
 from projects.models import Profile, Settings
 from django.http import Http404
 from guardian.shortcuts import get_perms
+from django.core.cache import cache
 
 def attach_slug_to_perm_name(perm_name, obj):
     return '{}_{}'.format(perm_name, obj.slug)
@@ -109,10 +110,9 @@ def updating_handler(
             for p in req_perms:
                 if p not in app_perms:
                     raise Http404
-        if cache_key and target_object:
-            c = cache.get(cache_key)
-            if c:
-                target_object.set_field_data(c)
+        c = cache.get(cache_key, None)
+        if c:
+            target_object.set_field_data(c)
 
 def updated_handler(
         cache_key=None,
@@ -120,7 +120,13 @@ def updated_handler(
         form_or_formset=None,
         call_on_success=None,
     ):
-        if cache_key and target_object:
+        if form_or_formset.is_valid():
+            target_object.save()
+            #cache.delete(cache_key)
+            cache.set(cache_key, target_object.field_data())
+            if call_on_success:
+                call_on_success()
+        else:
             cache.set(cache_key, target_object.field_data())
                 
         #convert values
