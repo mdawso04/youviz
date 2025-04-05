@@ -54,7 +54,7 @@ class BaseForm(ModelForm):
             'class': 'form-control',
             #'unicorn:key': 'test',
             'unicorn:model.lazy': '{}.description'.format(*self.unicorn_model),
-            'unicorn:partial': self.form_id,
+            #'unicorn:partial': self.form_id,
             #'unicorn:partial.id': 'fileInfo',
             #'unicorn:partial.key': 'test',
             #'unicorn:dirty.attr': 'readonly',
@@ -64,7 +64,7 @@ class BaseForm(ModelForm):
             'class': 'form-check-input',
             #'unicorn:key': 'test',
             'unicorn:model.lazy': '{}.is_published'.format(*self.unicorn_model),
-            'unicorn:partial': self.form_id,
+            #'unicorn:partial': self.form_id,
             #'unicorn:partial.id': 'fileInfo',
             #'unicorn:partial.key': 'test',
             #'unicorn:dirty.attr': 'readonly', 
@@ -343,10 +343,21 @@ class DatasourceForm(EntangledModelFormMixin, BaseForm):
         mode = kwargs.pop('mode', True)
         super(DatasourceForm, self).__init__(*args, **kwargs)
         
-        self.fields['is_published'].widget.attrs.update({
+        self.fields['name'].widget.attrs.update({
+            'unicorn:partial': 'details-info',
             'unicorn:partial.id': 'infoLargeTitle',
+            #'unicorn:partial.key': 'test',
         })
-    
+        self.fields['description'].widget.attrs.update({
+            'unicorn:partial': 'details-info',
+            'unicorn:partial.id': 'infoLargeTitle',
+            #'unicorn:partial.key': 'test',
+        })
+        self.fields['is_published'].widget.attrs.update({
+            'unicorn:partial': 'details-info',
+            'unicorn:partial.id': 'infoLargeTitle',
+            #'unicorn:partial.key': 'test',
+        })
     
     class Meta:
         model = Datasource
