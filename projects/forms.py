@@ -178,25 +178,60 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
         label=_("source"),
     )
     
+    PARTIALS_FOR_VIEW = {
+        'name': {
+            'unicorn:partial': 'datasource-details',
+            'unicorn:partial.id': 'details-datasource',
+            #'unicorn:partial.key': 'infoLargeTitle',
+        },
+        'description': {
+            'unicorn:partial': 'datasource-details',
+            'unicorn:partial.id': 'details-datasource',
+            #'unicorn:partial.key': 'infoLargeTitle',
+        },
+        'is_published': {
+            'unicorn:partial': 'datasource-details',
+            'unicorn:partial.id': 'details-datasource',
+            #'unicorn:partial.key': 'infoLargeTitle',
+        }
+    }
+    
+    PARTIALS_FOR_NEW = {
+        'name': {
+            'unicorn:partial': 'list-card-{index}',
+            'unicorn:partial.id': 'list-card-{index}',
+            #'unicorn:partial.key': ,
+        },
+        'description': {
+            'unicorn:partial': 'list-card-{index}',
+            'unicorn:partial.id': 'list-card-{index}',
+            #'unicorn:partial.key': ,
+        },
+        'is_published': {
+            'unicorn:partial': 'list-card-{index}',
+            'unicorn:partial.id': 'list-card-{index}',
+            #'unicorn:partial.key': ,
+        },
+    }
+
     def __init__(self, *args, **kwargs):
         mode = kwargs.pop('mode', True)
+        index = kwargs.pop('index', None)
+        partials = kwargs.pop('partials', None)
+        if type(partials) == tuple:
+            partials = partials[0]
         super(DatastreamForm, self).__init__(*args, **kwargs)
         if mode:
+            #non-partials
             self.fields['datastream_type'].widget.attrs.update({
                 'class': 'form-select',
                 #'unicorn:key': 'test',
                 'unicorn:model.lazy': '{}.datastream_type'.format(*self.unicorn_model),
-                'unicorn:partial': self.form_id,
-                #'unicorn:partial.id': 'fileInfo',
-                #'unicorn:partial.key': 'test',
             })
             self.fields['url'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
                 'unicorn:model.lazy': '{}.url'.format(*self.unicorn_model),
-                'unicorn:partial': self.form_id,
-                #'unicorn:partial.id': 'test',
-                #'unicorn:partial.key': 'test',
                 'style': 'word-break: break-all;',
             })
             self.fields['url'].is_required = False
@@ -204,20 +239,20 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 'class': 'form-control',
                 #'unicorn:key': 'test',
                 'unicorn:model.lazy': '{}.json'.format(*self.unicorn_model),
-                'unicorn:partial': self.form_id,
-                #'unicorn:partial.id': 'test',
-                #'unicorn:partial.key': 'test',
                 'style': 'word-break: break-all;',
             })
             self.fields['source'].widget.attrs.update({
                 'class': 'form-control',
                 #'unicorn:key': 'test',
                 'unicorn:model.lazy': '{}.properties.source'.format(*self.unicorn_model),
-                'unicorn:partial': self.form_id,
-                #'unicorn:partial.id': 'test',
-                #'unicorn:partial.key': 'test',
             })
-    
+            
+            #partials
+            if partials:
+                indexed_partials = {k1: {k: v.replace('{index}', str(index)) for k, v in v1.items()} for k1, v1 in partials.items()}
+                self.fields['name'].widget.attrs.update(indexed_partials.get('name', None))
+                self.fields['description'].widget.attrs.update(indexed_partials.get('description', None))
+                self.fields['is_published'].widget.attrs.update(indexed_partials.get('is_published', None))
     
     class Meta:
         model = Datastream
@@ -307,10 +342,17 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
         '''
         
 class BaseDatastreamFormSet(BaseModelFormSet):
+    def __init__(self, *args, **kwargs):
+        self.partials = kwargs.pop('partials', None)
+        super(BaseDatastreamFormSet, self).__init__(*args, **kwargs)
+        
     def get_form_kwargs(self, index):
         kwargs = super().get_form_kwargs(index)
         kwargs['mode'] = True
         kwargs['unicorn_model'] = f'formset_datastreams.{index}', 
+        if self.partials:
+            kwargs['partials'] = self.partials,
+        kwargs['index'] = index
         return kwargs
     
     def clean(self):

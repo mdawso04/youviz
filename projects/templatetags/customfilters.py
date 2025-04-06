@@ -539,7 +539,7 @@ def tabpane(context, **kwargs):
                                                               if attach_slug_to_perm_name('change_datasource', context['datasource']) in context['app_perms'] else None),
                                                 },
                                                 {
-                                                    'name': None,
+                                                    'name': 'comments',
                                                     'nosnippet': True, 
                                                     'label': 'comments',
                                                     'background': 'bg-white',
@@ -583,7 +583,7 @@ def tabpane(context, **kwargs):
                                                     'badge': None,
                                                 },
                                                 {
-                                                    'name': None,
+                                                    'name': 'datasource',
                                                     'nosnippet': False, 
                                                     'label': 'datasource',
                                                     'background': 'bg-white',

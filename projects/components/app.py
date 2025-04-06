@@ -344,7 +344,9 @@ class AppView(UnicornView):
                     form_id='datastream_form',
                     unicorn_model=('datasource.datastream',),
                     data=instance_data, 
-                    mode=True)
+                    mode=True,
+                    partials=DatastreamForm.PARTIALS_FOR_VIEW,
+                )
                 
                 def get_client_ip(request):
                     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -388,7 +390,7 @@ class AppView(UnicornView):
 
                 #formset
                 DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm, formset=BaseDatastreamFormSet, extra=0)
-                self.datastream_formset = DatastreamFormSet(queryset=self.formset_datastreams or None, auto_id='id_for_%s')
+                self.datastream_formset = DatastreamFormSet(queryset=self.formset_datastreams or None, auto_id='id_for_%s', partials=DatastreamForm.PARTIALS_FOR_NEW)
                 #print(self.datastream_formset)
 
             else:
@@ -486,7 +488,8 @@ class AppView(UnicornView):
                     form_id='datastream_form',
                     unicorn_model='datasource.datastream',
                     data=updated_instance_data, 
-                    mode=True)
+                    mode=True,
+                    partials=DatastreamForm.PARTIALS_FOR_VIEW,)
             updated_handler(
                 cache_key=cache_key_from_obj(updated_instance),
                 target_object=updated_instance,
@@ -507,7 +510,7 @@ class AppView(UnicornView):
             }
             #formset
             DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm, formset=BaseDatastreamFormSet, extra=0)
-            self.datastream_formset = DatastreamFormSet(queryset=self.formset_datastreams, data=instance_data or None, auto_id='id_for_%s')
+            self.datastream_formset = DatastreamFormSet(queryset=self.formset_datastreams, data=updated_instance_data or None, auto_id='id_for_%s')
             updated_handler(
                 cache_key=cache_key_from_obj(updated_instance),
                 target_object=updated_instance,
