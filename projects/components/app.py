@@ -2,7 +2,7 @@
 from django_unicorn.components import QuerySetType, UnicornView
 from projects.models import BaseModel, Datastream, Datasource, Viz, ItemView, Notification, Activity, Profile, Settings, Cover, Comment
 from projects.forms import DatastreamForm, BaseDatastreamFormSet, DatasourceForm, BaseDatasourceFormSet
-from projects.util import attach_slug_to_perm_name, get_perms_and_settings, updating_handler, updated_handler
+from projects.util import change_perm_from_obj, cache_key_from_obj, attach_slug_to_perm_name, get_perms_and_settings, updating_handler, updated_handler
 from django.contrib.auth.models import User
 from projects.middleware import redirect as force_redirect
 from guardian.shortcuts import get_perms, get_user_perms, get_users_with_perms, get_objects_for_user, get_perms_for_model
@@ -301,7 +301,7 @@ class AppView(UnicornView):
                 elif self.context['slug']:
                     ds = Datasource.item(slug=self.context['slug'])
                 
-                #related_datasources
+                #initialise app with related_datasources
                 self.initialise_list(
                     current_user = self.request.user,
                     list_object_owner_user = None,
@@ -316,6 +316,7 @@ class AppView(UnicornView):
                     meta_object = ds, 
                 )
                 
+                #add perms for ds/ds.d
                 get_perms_and_settings(request=self.request, context=self.context, obs=(ds, ds.datastream,), update_perms=True, app_perms=self.app_perms)
                 
                 view_perm = attach_slug_to_perm_name('view_datasource', ds)
@@ -327,6 +328,8 @@ class AppView(UnicornView):
                         redirect('/')
                 
                 self.datasource = ds
+                cache.delete(cache_key_from_obj(self.datasource))
+                
                 datasource_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.field_data().items()}
                 self.datasource_form = DatasourceForm(
                     instance=self.datasource, 
@@ -396,52 +399,49 @@ class AppView(UnicornView):
     def updating(self, name, value):
         #logger.debug('AppView > updating start')
         #print(self.app_perms)
-        
         if 'user.profile' in name:
+            updated_instance = self.request.user.profile
             updating_handler(
                 app_perms=self.app_perms,
                 req_perms=('change_profile',),
-                cache_key='new_datastream',
-                target_object=None,
+                cache_key=cache_key_from_obj(updated_instance),
+                target_object=updated_instance,
             )
         elif 'new_datastream' in name:
+            updated_instance = self.new_datastream
             updating_handler(
                 app_perms=self.app_perms,
                 req_perms=('add_datastream',),
                 cache_key=None,
-                target_object=self.new_datastream,
+                target_object=updated_instance,
             )
         elif 'datastream.' in name:
+            updated_instance = self.datasource.datastream
             updating_handler(
                 app_perms=self.app_perms,
-                req_perms=('change_datastream',),
-                cache_key='datasource.datastream',
-                target_object=self.datasource.datastream,
+                req_perms=(change_perm_from_obj(updated_instance),),
+                cache_key=cache_key_from_obj(updated_instance),
+                target_object=updated_instance,
             )
         elif 'datastreams.' in name:
             updated_instance_index = int(name.split('.')[1])
             updated_instance = self.formset_datastreams[updated_instance_index]
-            
             updating_handler(
                 app_perms=self.app_perms,
-                req_perms=('change_datastream_{}'.format(updated_instance.slug),),
-                cache_key='datastream_{}'.format(updated_instance.slug),
+                req_perms=(change_perm_from_obj(updated_instance),),
+                cache_key=cache_key_from_obj(updated_instance),
                 target_object=updated_instance,
             )
-                
         elif 'datasource.' in name:
             updated_instance = self.datasource
-            
             updating_handler(
                 app_perms=self.app_perms,
-                req_perms=('change_datasource_{}'.format(updated_instance.slug),),
-                cache_key='datasource_{}'.format(updated_instance.slug),
+                req_perms=(change_perm_from_obj(updated_instance),),
+                cache_key=cache_key_from_obj(updated_instance),
                 target_object=updated_instance,
             )
         #logger.debug('AppView > updating end')
         
-
-    
     def updated(self, name, value):
         #logger.debug('AppView > updated start')
         #print('Updated!')
@@ -452,108 +452,86 @@ class AppView(UnicornView):
                 value = False
             n = name.split('properties.')[-1]
             self.request.user.profile.properties[n] = value
-            self.request.user.profile.save()
-            
+            self.request.user.profile.save()            
         elif 'user.profile' in name:
+            updated_instance = self.request.user.profile
             updated_handler(
-                cache_key=None,
-                target_object=self.request.user.profile,
+                cache_key=cache_key_from_obj(updated_instance),
+                target_object=updated_instance,
                 form_or_formset=None,
                 call_on_success=None,
-            )
-            
+            )            
         elif 'new_datastream' in name:
             # Validate form and leave db save for add_datastream action
-            instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.new_datastream.field_data().items()}
+            updated_instance = self.new_datastream
+            updated_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in updated_instance.field_data().items()}
             self.new_datastream_form = DatastreamForm(
-                    instance=self.new_datastream, 
+                    instance=updated_instance, 
                     form_id='new_datastream_form',
                     use_ok=True,
                     unicorn_model='new_datastream',
-                    data=instance_data, 
+                    data=updated_instance_data, 
                     mode=True)
-            self.new_datastream_form.is_valid()
-            cache.set('new_datastream', self.new_datastream.field_data())
-            return
+            updated_handler(
+                cache_key=cache_key_from_obj(updated_instance),
+                target_object=updated_instance,
+                form_or_formset=self.new_datastream_form,
+                call_on_success=None,
+            )
         elif 'datastream.' in name:
-            instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.datastream.field_data().items()}
+            updated_instance = self.datasource.datastream
+            updated_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in updated_instance.field_data().items()}
             self.datastream_form = DatastreamForm(
-                    instance=self.datasource.datastream, 
+                    instance=updated_instance, 
                     form_id='datastream_form',
                     unicorn_model='datasource.datastream',
-                    data=instance_data, 
+                    data=updated_instance_data, 
                     mode=True)
-            if self.datastream_form.is_valid():
-                self.datasource.datastream.save()
-                cache.delete('datasource.datastream')
-                return
-            else:
-                cache.set('datasource.datastream', self.datasource.datastream.field_data())
-                return
+            updated_handler(
+                cache_key=cache_key_from_obj(updated_instance),
+                target_object=updated_instance,
+                form_or_formset=self.datastream_form,
+                call_on_success=None,
+            )
         elif 'datastreams.' in name:                       
             #instance data
             updated_instance = self.formset_datastreams[int(name.split('.')[1])]
-            #print('name update is {}'.format(value))
-            #print('name is {}'.format(updated_instance.name))
-            #instance_data = [{k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in instance.field_data().items()} for instance in self.datastreams]
-            
             management_form_config =  {
                 'form-TOTAL_FORMS': '{}'.format(len(self.formset_datastreams)), 
                 'form-INITIAL_FORMS': '{}'.format(len(self.formset_datastreams)), 
             }
-            
-            instance_data = management_form_config | {
+            updated_instance_data = management_form_config | {
                 'form-{}-{}'.format(idx, k): v if k not in ('json', 'properties',) else json.dumps(v) 
                 for idx, instance in enumerate(self.formset_datastreams)
                 for k, v in instance.field_data().items() 
             }
-            
-            #print(updated_instance.field_data())
-            
-            #print(instance_data)
-
             #formset
             DatastreamFormSet = modelformset_factory(Datastream, form=DatastreamForm, formset=BaseDatastreamFormSet, extra=0)
             self.datastream_formset = DatastreamFormSet(queryset=self.formset_datastreams, data=instance_data or None, auto_id='id_for_%s')
-            
-            #check
-            if self.datastream_formset.is_valid():
-                #print('saving valid ds')
-                #print(updated_instance._state.__dict__)
-                updated_instance.save()
-                cache.delete('datastream{}'.format(updated_instance.slug))
-                self.load_table()
-            else:
-                #print('not valid so cant save')
-                #print(self.datastream_formset.errors)
-                #print(self.datastream_formset.non_form_errors())
-                cache.set('datastream{}'.format(updated_instance.slug), updated_instance.field_data())
-                return
+            updated_handler(
+                cache_key=cache_key_from_obj(updated_instance),
+                target_object=updated_instance,
+                form_or_formset=self.datastream_formset,
+                call_on_success=None,
+            )
         elif 'datasource.' in name:
             updated_instance = self.datasource
-            
-            datasource_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in updated_instance.field_data().items()}
-            datasource_form = DatasourceForm(
+            updated_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in updated_instance.field_data().items()}
+            self.datasource_form = DatasourceForm(
                 instance=updated_instance, 
                 form_id='datasource_form',
                 unicorn_model=('datasource',),
-                data=datasource_instance_data, 
+                data=updated_instance_data, 
                 mode=True)
-
-
             updated_handler(
-                cache_key='datasource_{}'.format(updated_instance.slug),
+                cache_key=cache_key_from_obj(updated_instance),
                 target_object=updated_instance,
-                form_or_formset=datasource_form,
+                form_or_formset=self.datasource_form,
                 call_on_success=None,
             )
-            
         #logger.debug('AppView > updated end')
         #print('reloading')
-        self.load_table()
-        
-        
-    
+        #self.load_table()
         
 #ACTIONS
 

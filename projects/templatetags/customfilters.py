@@ -5,7 +5,7 @@ from django.utils.safestring import mark_safe
 from datetime import date, timedelta
 
 from projects.models import Activity, Profile, ItemView
-from projects.util import obj_perms_with_slug, attach_slug_to_perm_name
+from projects.util import *
 from django.urls import reverse
 
 from operator import attrgetter
@@ -521,7 +521,7 @@ def tabpane(context, **kwargs):
                                                     'counter': None,
                                                     'onclick_url': None,
                                                     'onclick': "Handler.showTab('#tabpane-navpanel-edit-tab');",
-                                                    'onclick_perm': (lambda: attach_slug_to_perm_name('change_datasource', context['datasource'])),
+                                                    'onclick_perm': lambda: change_perm_from_obj(context['datasource']),
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': 'bi-pen',
@@ -658,7 +658,7 @@ def tabpane(context, **kwargs):
                             'dismiss': None,
                             'icon': 'arrow-left',
                             'nosnippet': True, 
-                            'required_perm': lambda: attach_slug_to_perm_name('change_datasource', context['datasource']),
+                            'required_perm': lambda: change_perm_from_obj(context['datasource']),
                             'template': 'projects/navpanel/edit.html',
                             'detailpane': None,
                         },
@@ -694,12 +694,12 @@ def tabpane(context, **kwargs):
                                                     'counter': None,
                                                     'onclick_url': None,
                                                     'onclick': "Handler.showTab('#tabpane-navpanel-edit-datasource-tab');",
-                                                    'onclick_perm': 'change_datastream',
+                                                    'onclick_perm': lambda: change_perm_from_obj(context['datasource'].datastream),
                                                     'display_perm': None,
                                                     'display_setting': True,
                                                     'onclick_icon': 'bi-pen',
-                                                    'title': (lambda: getattr(context['datasource'].datastream,'name', None)),
-                                                    'description': (lambda: getattr(context['datasource'].datastream,'description', None)),
+                                                    'title': lambda: getattr(context['datasource'].datastream,'name', None),
+                                                    'description': lambda: getattr(context['datasource'].datastream,'description', None),
                                                     'preview': None,
                                                     'html': None,
                                                     'include': None,

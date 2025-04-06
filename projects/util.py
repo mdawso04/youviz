@@ -3,8 +3,20 @@ from django.http import Http404
 from guardian.shortcuts import get_perms
 from django.core.cache import cache
 
+def cache_key_from_obj(obj):
+    return '{}_{}'.format(type(obj).__name__.lower(), obj.slug)
+
 def attach_slug_to_perm_name(perm_name, obj):
     return '{}_{}'.format(perm_name, obj.slug)
+
+def add_perm_from_obj(obj):
+    return attach_slug_to_perm_name('add_{}'.format(type(obj).__name__.lower()), obj) 
+
+def change_perm_from_obj(obj):
+    return attach_slug_to_perm_name('change_{}'.format(type(obj).__name__.lower()), obj) 
+
+def delete_perm_from_obj(obj):
+    return attach_slug_to_perm_name('delete_{}'.format(type(obj).__name__.lower()), obj) 
 
 def obj_perms_with_slug(current_user, obs, app_perms=None):
     '''Return perms_with_slug for objs, or append to app_perms'''
@@ -120,15 +132,22 @@ def updated_handler(
         form_or_formset=None,
         call_on_success=None,
     ):
-        if form_or_formset.is_valid():
+        if form_or_formset:
+            if form_or_formset.is_valid():
+                target_object.save()
+                #cache.delete(cache_key)
+                cache.set(cache_key, target_object.field_data())
+                if call_on_success:
+                    call_on_success()
+            else:
+                cache.set(cache_key, target_object.field_data())
+        else:
             target_object.save()
             #cache.delete(cache_key)
             cache.set(cache_key, target_object.field_data())
             if call_on_success:
                 call_on_success()
-        else:
-            cache.set(cache_key, target_object.field_data())
-                
+
         #convert values
         #validation
         #save
