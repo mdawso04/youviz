@@ -63,7 +63,7 @@ class BaseForm(ModelForm):
         self.fields['is_published'].widget.attrs.update({
             'class': 'form-check-input',
             #'unicorn:key': 'test',
-            'unicorn:model.lazy': '{}.is_published'.format(*self.unicorn_model),
+            'unicorn:model': '{}.is_published'.format(*self.unicorn_model),
             #'unicorn:partial': self.form_id,
             #'unicorn:partial.id': 'fileInfo',
             #'unicorn:partial.key': 'test',
