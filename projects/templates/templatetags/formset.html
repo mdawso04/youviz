@@ -1,3 +1,4 @@
+
 {% load unicorn %} 
 {% load pwa %}
 {% load static %}
@@ -18,12 +19,12 @@
         {% for form in formset %}
         <li class="nav-item" role="presentation">
             <button class="nav-link {% if forloop.first %}active{% endif %}" 
-                    id="form-cover-{{ form.instance.slug }}-pill" 
+                    id="form-cover-{{ forloop.counter0 }}-pill" 
                     data-bs-toggle="pill" 
-                    data-bs-target="#form-cover-{{ form.instance.slug }}" 
+                    data-bs-target="#form-cover-{{ forloop.counter0 }}" 
                     type="button" 
                     role="tab" 
-                    aria-controls="form-cover-{{ form.instance.slug }}" 
+                    aria-controls="form-cover-{{ forloop.counter0 }}" 
                     aria-selected="">
                 {{ form_id }}
             </button>
@@ -31,12 +32,12 @@
         {% if 'change_datastream'|obj:form.instance in app_perms %}
         <li class="nav-item" role="presentation">
             <button class="nav-link" 
-                    id="form-{{ form.instance.slug }}-pill" 
+                    id="form-{{ forloop.counter0 }}-pill" 
                     data-bs-toggle="pill" 
-                    data-bs-target="#form-{{ form.instance.slug }}" 
+                    data-bs-target="#form-{{ forloop.counter0 }}" 
                     type="button" 
                     role="tab" 
-                    aria-controls="form-{{ form.instance.slug }}" 
+                    aria-controls="form-{{ forloop.counter0 }}" 
                     aria-selected="">
                 {{ form_id }}
             </button>
@@ -49,8 +50,8 @@
 <!-- TAB CONTENTS -->
 <div class="col tab-content" id="formset-tabs">
     {% for form in formset %}
-         <div class="tab-pane yv fade {% if forloop.first %}show active{% endif %}" id="form-cover-{{ form.instance.slug }}" 
-             role="tabpanel" aria-labelledby="form-cover-{{ form.instance.slug }}-pill">
+         <div class="tab-pane yv fade {% if forloop.first %}show active{% endif %}" id="form-cover-{{ forloop.counter0 }}" 
+             role="tabpanel" aria-labelledby="form-cover-{{ forloop.counter0 }}-pill">
 
             <div class="d-flex offcanvas-header p-3">
                 <h5 class="offcanvas-title me-auto flex-grow-1 h4" id="offcanvasBottomLabel">Datasource Details</h5>
@@ -63,13 +64,13 @@
                 </button>
             </div>
             <div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" style="overflow-x: hidden;"
-                 onclick="Handler.showTabInsideEdit('#form-{{ form.instance.slug }}-pill'); event.preventDefault();">
+                 onclick="Handler.showTabInsideEdit('#form-{{ forloop.counter0 }}-pill'); event.preventDefault();">
                 {{ form.instance.name }}    
             </div>
         </div>
      {% if 'change_datastream'|obj:form.instance in app_perms %}
-        <div class="tab-pane yv fade" id="form-{{ form.instance.slug }}" 
-             role="tabpanel" aria-labelledby="form-{{ form.instance.slug }}-pill">
+        <div class="tab-pane yv fade" id="form-{{ forloop.counter0 }}" 
+             role="tabpanel" aria-labelledby="form-{{ forloop.counter0 }}-pill">
 
             <div class="d-flex offcanvas-header p-3">
                 <h5 class="offcanvas-title me-auto flex-grow-1 h4" id="offcanvasBottomLabel">Edit Datasource</h5>
@@ -77,7 +78,7 @@
                     <input class="form-check-input" type="checkbox" role="switch" id="maximize"
                            onclick="vizOffcanvasMaximize(this, '#offcanvasBottom-{{vid}}');" checked>
                 </div>-->
-                <button type="button" class="border-0 bg-transparent" style="padding: 0px; " onclick="Handler.showTabInsideEdit('#form-cover-{{ form.instance.slug }}-pill'); event.preventDefault();" aria-label="Close">
+                <button type="button" class="border-0 bg-transparent" style="padding: 0px; " onclick="Handler.showTabInsideEdit('#form-cover-{{ forloop.counter0 }}-pill'); event.preventDefault();" aria-label="Close">
                     <i class="bi-arrow-left" style="width: 24px; height: 24px;"></i>
                 </button>
             </div>

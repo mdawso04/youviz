@@ -27,8 +27,8 @@
                                  class="card rounded-3 p-1 position-relative {% if not i.is_published %}border border-3{% endif %}"  
                                  style="border-color: {% if i.is_published %}rgba(0, 0, 0, 0.07);{% else %}{% user_profile_color %};{% endif %} 
                                         opacity: 0; animation: fadeIn 1s ease-in both; animation-delay: {{ forloop.counter|divide:4 }}s;">
-                                {% include item_content with item=i%}
-                                {% include item_info with item=i %}
+                                {% include item_content with item=i index=forloop.counter0 %}
+                                {% include item_info with item=i index=forloop.counter0 %}
                             </div>
                         </div>
                     {% endfor %}

@@ -199,17 +199,17 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
     PARTIALS_FOR_NEW = {
         'name': {
             'unicorn:partial': 'list-card-{index}',
-            'unicorn:partial.id': 'list-card-{index}',
+            'unicorn:partial.id': 'form-cover-{index}',
             #'unicorn:partial.key': ,
         },
         'description': {
             'unicorn:partial': 'list-card-{index}',
-            'unicorn:partial.id': 'list-card-{index}',
+            'unicorn:partial.id': 'form-cover-{index}',
             #'unicorn:partial.key': ,
         },
         'is_published': {
             'unicorn:partial': 'list-card-{index}',
-            'unicorn:partial.id': 'list-card-{index}',
+            'unicorn:partial.id': 'form-cover-{index}',
             #'unicorn:partial.key': ,
         },
     }

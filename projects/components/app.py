@@ -515,7 +515,7 @@ class AppView(UnicornView):
                 cache_key=cache_key_from_obj(updated_instance),
                 target_object=updated_instance,
                 form_or_formset=self.datastream_formset,
-                call_on_success=None,
+                call_on_success=self.load_table, #force refresh of datastreams list
             )
         elif 'datasource.' in name:
             updated_instance = self.datasource
