@@ -2,6 +2,9 @@ from projects.models import Profile, Settings
 from django.http import Http404
 from guardian.shortcuts import get_perms
 from django.core.cache import cache
+import json
+from django.forms import modelformset_factory
+from django.forms import BaseModelFormSet
 
 def cache_key_from_obj(obj):
     return '{}_{}'.format(type(obj).__name__.lower(), obj.slug)
@@ -130,16 +133,23 @@ def updated_handler(
         cache_key=None,
         target_object=None,
         form_or_formset=None,
+        save_on_valid=False,
         call_on_success=None,
     ):
         if form_or_formset:
             if form_or_formset.is_valid():
-                target_object.save()
+                if save_on_valid:
+                    form_or_formset.save()
+                    print('saved form')
+                else:
+                    print('valid but no save selcted')
                 #cache.delete(cache_key)
                 cache.set(cache_key, target_object.field_data())
                 if call_on_success:
                     call_on_success()
             else:
+                print('formset not valid')
+                print(form_or_formset.errors)
                 cache.set(cache_key, target_object.field_data())
         else:
             target_object.save()
@@ -152,6 +162,45 @@ def updated_handler(
         #validation
         #save
         #cache update
+def build_form_or_formset(
+        model=None,
+        queryset=None,
+        new_object_with_data=None,
+        form=None,
+        formset=None,
+        partials=None,
+        button_config=None,
+    ):
+    
+    new_object_as_list = [new_object_with_data] if new_object_with_data else []
+    
+    initial_forms = len(queryset)
+    total_forms = initial_forms + len(new_object_as_list)
+    
+    management_form_config =  {
+        'form-TOTAL_FORMS': '{}'.format(total_forms), 
+        'form-INITIAL_FORMS': '{}'.format(initial_forms), 
+    }
+    updated_instance_data = management_form_config | {
+        'form-{}-{}'.format(idx, k): v if k not in ('json', 'properties',) else json.dumps(v) 
+        for idx, instance in enumerate(list(queryset) + new_object_as_list)
+        for k, v in instance.field_data().items() 
+    }
+    #print(queryset)
+    #print(updated_instance_data)
+    #formset
+    GeneratedFormSet = modelformset_factory(
+        model, 
+        form=form, 
+        formset=formset,
+    )
+    return GeneratedFormSet(
+        queryset=queryset, 
+        data=updated_instance_data, 
+        auto_id='id_for_%s', 
+        partials=partials, 
+        button_config=button_config
+    )
 
 
 #import copyreg

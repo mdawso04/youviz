@@ -7,6 +7,7 @@
          style="-ms-overflow-style: none; scrollbar-width: none;"
          id="cover-button-row">
         
+        {% if never %}
         {% with key1='nav_display_perm_'|add:context.mode %}
         {% with nav_display_perm=settings|keyvalue:key1 %}  
         {% if nav_display_perm in app_perms %}
@@ -16,11 +17,13 @@
         {% endif %}
         {% endwith %}
         {% endwith %}
+        {% endif %}
         
         {% with key='edit_display_perm_'|add:context.mode %}
         {% with edit_display_perm=settings|keyvalue:key %}  
         {% if edit_display_perm in app_perms %}
-        <button class="btn btn-outline-secondary btn-sm me-2 opacity-75" onclick="Handler.navigator.toggleEdit(); event.preventDefault();">
+        <button class="btn btn-outline-secondary btn-sm me-2 opacity-75" 
+                onclick="Handler.showTabInsideEdit('#form-' + document.getElementById('id_for_form-INITIAL_FORMS').value + '-pill'); event.preventDefault();">
             <i class="bi bi-list" style="font-size: 1rem;"></i>
         </button>
         

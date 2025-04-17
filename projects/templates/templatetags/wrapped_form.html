@@ -1,0 +1,37 @@
+{% load unicorn %} 
+{% load pwa %}
+{% load static %}
+{% load analytical %}
+{% load humanize %}
+{% load socialaccount %}
+{% load customfilters %}
+{% load guardian_tags %}
+
+<style>
+.noscroll {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+.noscroll::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+</style>
+
+<style>
+    [unicorn\:error\:invalid] {
+      border: 1px solid red !important;
+    }
+    [unicorn\:error\:required] {
+      border: 1px solid red !important;
+    }
+  </style>
+
+<div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" style="overflow-x: hidden;">
+    
+    {{ datastream_form }}
+    
+    {% if create_button %}
+    {% button label='Create datasource' uonclick='addDatastream' partial='fileInfo' %}
+    {% endif %}
+    
+</div>

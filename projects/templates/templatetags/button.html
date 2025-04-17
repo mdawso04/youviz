@@ -7,7 +7,7 @@
 {% load customfilters %}
 {% load guardian_tags %}
 
-{% if not never %}
+{% if not attrs %}
 <button type="button" class="btn {% if class %}{{ class }}{% else %}btn-secondary {% endif %} ms-1" {% if id %}id="{{ id }}"{% endif %}
         {% if onclick %}onclick="{{ onclick }}"
         {% elif uonclick %}unicorn:click="{{ uonclick }}"{% endif %}
@@ -16,5 +16,11 @@
     {% if label %}{{ label }} {% endif %}
 </button> 
 {% else %}
-Error generating input
+<button type="button" 
+        {% for k, v in attrs.items %}
+        {{k}}="{{v}}"
+        {% endfor %}
+        >
+    {% if label %}{{ label }} {% endif %}
+</button> 
 {% endif %}

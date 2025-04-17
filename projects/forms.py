@@ -29,17 +29,32 @@ class BaseForm(ModelForm):
     template_name = "form.html"
     form_id = None
     error_css_class = "error"
-    use_ok = False
-    use_cancel = False
+    index = None
+    partials = None
+    buttons = None
     
     #required_css_class = "required"
     
     def __init__(self, *args, **kwargs):
         self.form_id = kwargs.pop('form_id', None)
         self.unicorn_model = kwargs.pop('unicorn_model', None)
-        self.use_ok = kwargs.pop('use_ok', False)
-        self.use_cancel = kwargs.pop('use_cancel', False)
+        self.button_config = kwargs.pop('button_config', None)
+        self.index = kwargs.pop('index', None)
+        self.partials = kwargs.pop('partials', None)
+        self.formset = kwargs.pop('formset', None)
+        
         super(BaseForm, self).__init__(*args, **kwargs)
+        
+        #buttons
+        if self.button_config:
+            self.buttons = self.__class__.Meta.buttons | self.button_config
+        else:
+            self.buttons = self.__class__.Meta.buttons
+        
+        #display_trigger -> bool or callable
+        for b in self.buttons.values():
+            if callable(b['display_trigger']):
+                b['display_trigger'] = b['display_trigger'](self) 
         
         self.fields['name'].widget.attrs.update({
             'class': 'form-control',
@@ -125,6 +140,38 @@ class BaseForm(ModelForm):
         cancel = {
             "label": _("Cancel"),
             "uonclick": None,
+        }
+        
+        
+        buttons = {
+            "ok": {
+                "label": _("OK"),
+                "display_trigger": False,
+                "attrs":{
+                    'class': 'button',
+                }
+            },
+            "cancel": {
+                "label": _("Cancel"),
+                "display_trigger": False,
+                "attrs":{
+                    'class': 'button',
+                }
+            },
+            "copy": {
+                "label": _("Copy"),
+                "display_trigger": False,
+                "attrs":{
+                    'class': 'button',
+                }
+            },
+            "delete": {
+                "label": _("Delete"),
+                "display_trigger": False,
+                "attrs":{
+                    'class': 'button',
+                }
+            }
         }
         
         '''
@@ -213,14 +260,58 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             #'unicorn:partial.key': ,
         },
     }
+    
+    BUTTONS_FOR_NEW = {
+        "ok": {
+            "label": _("OK"),
+            "display_trigger": lambda f: f.index is None,
+            "attrs":{
+                'class': 'button',
+            }
+        },
+        "cancel": {
+            "label": _("Cancel"),
+            "display_trigger": False,
+            "attrs":{
+                'class': 'button',
+            }
+        },
+        "copy": {
+            "label": _("Copy"),
+            "display_trigger": False,
+            "attrs":{
+                'class': 'button',
+            }
+        },
+        "delete": {
+            "label": _("Delete"),
+            "display_trigger": False,
+            "attrs":{
+                'class': 'button',
+            }
+        }
+    }
+    
+    BUTTONS_FOR_VIEW = {
+        "ok": {
+            "display_trigger": False,
+        },
+        "cancel": {
+            "display_trigger": False,
+        },
+        "copy": {
+            "display_trigger": False,
+        },
+        "delete": {
+            "display_trigger": False,
+        }
+    }
 
     def __init__(self, *args, **kwargs):
         mode = kwargs.pop('mode', True)
-        index = kwargs.pop('index', None)
-        partials = kwargs.pop('partials', None)
-        if type(partials) == tuple:
-            partials = partials[0]
         super(DatastreamForm, self).__init__(*args, **kwargs)
+        if type(self.partials) == tuple:
+            self.partials = self.partials[0]
         if mode:
             #non-partials
             self.fields['datastream_type'].widget.attrs.update({
@@ -248,17 +339,48 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             })
             
             #partials
-            if partials:
-                indexed_partials = {k1: {k: v.replace('{index}', str(index)) for k, v in v1.items()} for k1, v1 in partials.items()}
+            if self.partials:
+                indexed_partials = {k1: {k: v.replace('{index}', str(self.index)) for k, v in v1.items()} for k1, v1 in self.partials.items()}
                 self.fields['name'].widget.attrs.update(indexed_partials.get('name', None))
                 self.fields['description'].widget.attrs.update(indexed_partials.get('description', None))
                 self.fields['is_published'].widget.attrs.update(indexed_partials.get('is_published', None))
+
     
     class Meta:
         model = Datastream
         fields = BaseForm.Meta.fields + ('datastream_type', "url", "json", 'source',)
         entangled_fields = {'properties': ['source', ]}
         #untangled_fields = BaseForm.Meta.fields + ('datastream_type', "url", "json",)
+        buttons = BaseForm.Meta.buttons | {
+            "ok": {
+                "label": _("OK"),
+                "display_trigger": False,
+                "attrs":{
+                    'class': 'button',
+                }
+            },
+            "cancel": {
+                "label": _("OK"),
+                "display_trigger": False,
+                "attrs":{
+                    'class': 'button',
+                }
+            },
+            "copy": {
+                "label": _("OK"),
+                "display_trigger": False,
+                "attrs":{
+                    'class': 'button',
+                }
+            },
+            "delete": {
+                "label": _("OK"),
+                "display_trigger": True,
+                "attrs":{
+                    'class': 'button',
+                }
+            }
+        }
         widgets = BaseForm.Meta.widgets | {
             "url": Textarea(
                 attrs={
@@ -275,6 +397,10 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             "datastream_type": _('datastream_type'),
             "url": _('url'),
             "json": _('json'),
+            #custom labels too
+            "ok_button": _('OK'),
+            "cancel_button": _('Cancel'),
+            "delete_button": _('Delete'),
         }
         help_texts = BaseForm.Meta.help_texts | {
             "datastream_type": _("Some useful help text."),
@@ -289,12 +415,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 "max_length": _("This writer's name is too long."),
             },
         }
-        ok = BaseForm.Meta.ok | {
-            "uonclick": 'add_datastream',
-        }
-        cancel = BaseForm.Meta.cancel | {
-            "uonclick": None,
-        }
+        
         
     def clean_datastream_type(self):
         data = self.cleaned_data["datastream_type"]
@@ -344,15 +465,22 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
 class BaseDatastreamFormSet(BaseModelFormSet):
     def __init__(self, *args, **kwargs):
         self.partials = kwargs.pop('partials', None)
+        self.button_config = kwargs.pop('button_config', None)
         super(BaseDatastreamFormSet, self).__init__(*args, **kwargs)
         
     def get_form_kwargs(self, index):
         kwargs = super().get_form_kwargs(index)
         kwargs['mode'] = True
-        kwargs['unicorn_model'] = f'formset_datastreams.{index}', 
+        #TODO - handke None index
+        if index is None:
+            kwargs['unicorn_model'] = ('new_datastream',)
+        else:
+            kwargs['unicorn_model'] = (f'formset_datastreams.{index}',)
         if self.partials:
-            kwargs['partials'] = self.partials,
+            kwargs['partials'] = self.partials
         kwargs['index'] = index
+        kwargs['button_config'] = self.button_config
+        kwargs['formset'] = self
         return kwargs
     
     def clean(self):
@@ -410,6 +538,7 @@ class DatasourceForm(EntangledModelFormMixin, BaseForm):
         #labels = BaseForm.Meta.labels
         #help_texts = BaseForm.Meta.help_texts
         #error_messages = BaseForm.Meta.error_messages
+        buttons = BaseForm.Meta.buttons
         
         
     def clean(self):

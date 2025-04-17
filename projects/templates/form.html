@@ -42,10 +42,10 @@
         {% endif %}
     </div> 
     {% endfor %}
-    {% if form.use_ok %}
-    {% button label=form.Meta.ok.label uonclick=form.Meta.ok.uonclick disabled=form.errors %}
-    {% endif %}
-    {% if form.use_cancel %}
-    {% button label=form.Meta.cancel.label uonclick=form.Meta.cancel.uonclick %}
-    {% endif %}
+    
+    {% for b in form.buttons.values %}
+        {% if b.display_trigger %}
+            {% button label=b.label attrs=b.attrs %}
+        {% endif %}
+    {% endfor %}
 </div>
