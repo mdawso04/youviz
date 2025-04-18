@@ -66,7 +66,7 @@
                         <i class="bi-arrow-left" style="width: 24px; height: 24px;"></i>
                     </button>
                 </div>
-                <div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" style="overflow-x: hidden;">
+                <div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" id="form-{{ forloop.counter0 }}-body" style="overflow-x: hidden;">
                     {{ form }}    
                 </div>
             </div>
@@ -86,7 +86,7 @@
                     <i class="bi-arrow-left" style="width: 24px; height: 24px;"></i>
                 </button>
             </div>
-            <div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" style="overflow-x: hidden;"
+            <div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" style="overflow-x: hidden;" id="form-cover-{{ forloop.counter0 }}-body"
                  onclick="Handler.showTabInsideEdit('#form-{{ forloop.counter0 }}-pill'); event.preventDefault();">
                 {{ form.instance.name }}    
             </div>

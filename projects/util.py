@@ -150,6 +150,7 @@ def updated_handler(
             else:
                 print('formset not valid')
                 print(form_or_formset.errors)
+                print(form_or_formset.non_form_errors())
                 cache.set(cache_key, target_object.field_data())
         else:
             target_object.save()
@@ -187,7 +188,7 @@ def build_form_or_formset(
         for k, v in instance.field_data().items() 
     }
     #print(queryset)
-    #print(updated_instance_data)
+    print(updated_instance_data)
     #formset
     GeneratedFormSet = modelformset_factory(
         model, 

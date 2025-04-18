@@ -79,6 +79,9 @@ class BaseModel(models.Model):
     def __str__(self):
         return self.name
     
+    def full_clean(self, exclude=None, validate_unique=False):
+        pass
+
     @cached_property
     def seo(self):
         return {

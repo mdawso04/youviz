@@ -43,9 +43,14 @@
     </div> 
     {% endfor %}
     
+    {{ form.has_changed }}
+    {{ form.is_valid }}
+    {{ form.buttons }}
     {% for b in form.buttons.values %}
+        {% if never %}
         {% if b.display_trigger %}
             {% button label=b.label attrs=b.attrs %}
+        {% endif %}
         {% endif %}
     {% endfor %}
 </div>
