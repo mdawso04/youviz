@@ -20,7 +20,7 @@
         {% for k, v in attrs.items %}
         {{k}}="{{v}}"
         {% endfor %}
-        >
+        {% if disabled %}disabled {% endif %}>
     {% if label %}{{ label }} {% endif %}
 </button> 
 {% endif %}

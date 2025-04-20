@@ -7,7 +7,7 @@ from entangled.forms import EntangledModelForm, EntangledModelFormMixin
 from django.forms import BaseModelFormSet
 from django import forms
 from .models import Datasource
-
+from copy import deepcopy
 
 
 '''
@@ -85,17 +85,15 @@ class BaseForm(ModelForm):
         buttons = None
         if self.button_config:
             buttons = (self.__class__.Meta.buttons | self.button_config).get(self.form_mode)
-        else:
-            buttons = self.__class__.Meta.buttons.get(self.form_mode)
-            
-        #display_trigger -> bool or callable
-        for b in buttons.values():
-            if callable(b['display_trigger']):
-                print(b['label'])
-                print(b['display_trigger'](self))
-                b['display_trigger'] = b['display_trigger'](self) 
-                
-        return buttons
+            buttons = deepcopy(buttons)
+            #display_trigger -> bool or callable
+            if buttons:
+                for b in buttons.values():
+                    if callable(b['display']):
+                        b['display'] = b['display'](self) 
+                    if callable(b['disable']):
+                        b['disable'] = b['disable'](self) 
+            return buttons
             
     
     class Meta:
@@ -158,28 +156,32 @@ class BaseForm(ModelForm):
             'initial': {
                 "ok": {
                     "label": _("OK"),
-                    "display_trigger": lambda f: f.index is None,
+                    "display": True,
+                    "disable": lambda f: f.index is None,
                     "attrs":{
                         'class': 'button',
                     }
                 },
                 "cancel": {
                     "label": _("Cancel"),
-                    "display_trigger": False,
+                    "display": False,
+                    "disable": False,
                     "attrs":{
                         'class': 'button',
                     }
                 },
                 "copy": {
                     "label": _("Copy"),
-                    "display_trigger": False,
+                    "display": False,
+                    "disable": False,
                     "attrs":{
                         'class': 'button',
                     }
                 },
                 "delete": {
                     "label": _("Delete"),
-                    "display_trigger": False,
+                    "display": False,
+                    "disable": False,
                     "attrs":{
                         'class': 'button',
                     }
@@ -188,28 +190,32 @@ class BaseForm(ModelForm):
             'empty': {
                 "ok": {
                     "label": _("Create new datatsource"),
-                    "display_trigger": lambda f: f.is_valid(),
+                    "display": False,
+                    "disable": False,
                     "attrs":{
                         'class': 'button',
                     }
                 },
                 "cancel": {
                     "label": _("Cancel"),
-                    "display_trigger": False,
+                    "display": False,
+                    "disable": False,
                     "attrs":{
                         'class': 'button',
                     }
                 },
                 "copy": {
                     "label": _("Copy"),
-                    "display_trigger": False,
+                    "display": False,
+                    "enadisableble": False,
                     "attrs":{
                         'class': 'button',
                     }
                 },
                 "delete": {
                     "label": _("Delete"),
-                    "display_trigger": False,
+                    "display": False,
+                    "disable": False,
                     "attrs":{
                         'class': 'button',
                     }
@@ -353,28 +359,32 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
         'initial': {
             "ok": {
                 "label": _("OK"),
-                "display_trigger": lambda f: f.index is None,
+                "display": lambda f: f.index is None,
+                "disable": False,
                 "attrs":{
                     'class': 'button',
                 }
             },
             "cancel": {
                 "label": _("Cancel"),
-                "display_trigger": False,
+                "display": False,
+                "disable": False,
                 "attrs":{
                     'class': 'button',
                 }
             },
             "copy": {
                 "label": _("Copy"),
-                "display_trigger": False,
+                "display": False,
+                "disable": False,
                 "attrs":{
                     'class': 'button',
                 }
             },
             "delete": {
                 "label": _("Delete"),
-                "display_trigger": False,
+                "display": False,
+                "disable": False,
                 "attrs":{
                     'class': 'button',
                 }
@@ -383,28 +393,32 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
         'empty': {
             "ok": {
                 "label": _("Create new datatsource"),
-                "display_trigger": lambda f: f.has_changed() and f.is_valid(),
+                "display": True,
+                "disable": lambda f: not f.has_changed() or not f.is_valid(),
                 "attrs":{
-                    'class': 'button',
+                    'class': 'btn btn-primary btn-sm',
                 }
             },
             "cancel": {
                 "label": _("Cancel"),
-                "display_trigger": False,
+                "display": False,
+                "disable": False,
                 "attrs":{
                     'class': 'button',
                 }
             },
             "copy": {
                 "label": _("Copy"),
-                "display_trigger": False,
+                "display": False,
+                "disable": False,
                 "attrs":{
                     'class': 'button',
                 }
             },
             "delete": {
                 "label": _("Delete"),
-                "display_trigger": False,
+                "display": False,
+                "disable": False,
                 "attrs":{
                     'class': 'button',
                 }
@@ -416,30 +430,30 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
     BUTTONS_FOR_VIEW = {
         'initial': {
             "ok": {
-                "display_trigger": False,
+                "display": False,
             },
             "cancel": {
-                "display_trigger": False,
+                "display": False,
             },
             "copy": {
-                "display_trigger": False,
+                "display": False,
             },
             "delete": {
-                "display_trigger": False,
+                "display": False,
             },
         },
         'empty': {
             "ok": {
-                "display_trigger": False,
+                "display": False,
             },
             "cancel": {
-                "display_trigger": False,
+                "display": False,
             },
             "copy": {
-                "display_trigger": False,
+                "display": False,
             },
             "delete": {
-                "display_trigger": False,
+                "display": False,
             },
         },
     }
@@ -447,6 +461,9 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
     def __init__(self, *args, **kwargs):
         mode = kwargs.pop('mode', True)
         super(DatastreamForm, self).__init__(*args, **kwargs)
+        
+        self.title = 'Edit\Add Datastream'
+        self.cover_title = 'Datastream Details'
 
         if mode:
             #non-partials
@@ -475,7 +492,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             })
             
             #partials
-            if self.partials:
+            if self.partials and self.form_mode:
                 #substitute index
                 indexed_partials = {
                     k: {k1: {k2: v2.replace('{index}', str(self.index)) for k2, v2 in v1.items()} for k1, v1 in v.items()} for k, v in self.partials.items()

@@ -594,6 +594,29 @@ class AppView(UnicornView):
         self.load_table()
         
     def add_datastream(self):
+        
+        self.datastream_formset = build_form_or_formset(
+            model=Datastream,
+            #queryset=self.formset_datastreams,
+            new_object_with_data=new_object_with_data,
+            form=DatastreamForm,
+            #formset=BaseDatastreamFormSet,
+            partials=DatastreamForm.PARTIALS_FOR_NEW,
+            button_config=DatastreamForm.BUTTONS_FOR_NEW,
+        )    
+        
+        calling_handler(
+            app_perms=self.app_perms,
+            req_perms='add_datastream',
+            cache_key='new_datastream',
+            target_object=self.new_datastream,
+            target_object_updates=(o, 'owner', self.request.user),
+            form_or_formset=self.new_datastream_form,
+            action=self.new_datastream_form.save,
+            redirect_on_success=None,
+        )
+        
+        '''
         if not 'add_datastream' in self.app_perms:
             raise Http404
         c = cache.get('self.new_datastream')
@@ -615,6 +638,7 @@ class AppView(UnicornView):
             return redirect(reverse('new') + '?o=datamenu')
         else:
             return False
+        '''
         
     def select_datastream(self, pk):
         if not 'add_viz' in self.app_perms:

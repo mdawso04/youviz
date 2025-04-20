@@ -114,7 +114,7 @@ def get_perms_and_settings(*args, **kwargs):
             settings['user_profile_color'] = '#0dcaf0'
     
         return app_perms, settings
-
+    
 def updating_handler(
         app_perms,
         req_perms,
@@ -128,6 +128,7 @@ def updating_handler(
         c = cache.get(cache_key, None)
         if c:
             target_object.set_field_data(c)
+
 
 def updated_handler(
         cache_key=None,
@@ -149,8 +150,8 @@ def updated_handler(
                     call_on_success()
             else:
                 print('formset not valid')
-                print(form_or_formset.errors)
-                print(form_or_formset.non_form_errors())
+                #print(form_or_formset.errors)
+                #print(form_or_formset.non_form_errors())
                 cache.set(cache_key, target_object.field_data())
         else:
             target_object.save()
@@ -163,6 +164,36 @@ def updated_handler(
         #validation
         #save
         #cache update
+        
+def calling_handler(
+        app_perms=None,
+        req_perms=None,
+        cache_key=None,
+        target_object=None,
+        target_object_updates=None,
+        form_or_formset=self.new_datastream_form,
+        action=None,
+        redirect_on_success=None,
+    ):
+    #step 1
+    updating_handler(
+        app_perms=app_perms,
+        req_perms=req_perms,
+        cache_key=cache_key,
+        target_object=target_object,
+    )
+    #target_object_updates 
+    
+    updated_handler(
+        cache_key=cache_key,
+        target_object=target_object,
+        form_or_formset=form_or_formset,
+        save_on_valid=False,
+        call_on_success=action,
+    )
+    #redirect
+
+        
 def build_form_or_formset(
         model=None,
         queryset=None,
@@ -188,7 +219,7 @@ def build_form_or_formset(
         for k, v in instance.field_data().items() 
     }
     #print(queryset)
-    print(updated_instance_data)
+    #print(updated_instance_data)
     #formset
     GeneratedFormSet = modelformset_factory(
         model, 
