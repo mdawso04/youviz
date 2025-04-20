@@ -171,7 +171,7 @@ def calling_handler(
         cache_key=None,
         target_object=None,
         target_object_updates=None,
-        form_or_formset=self.new_datastream_form,
+        form_or_formset=None,
         action=None,
         redirect_on_success=None,
     ):
