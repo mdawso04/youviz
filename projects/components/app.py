@@ -595,7 +595,9 @@ class AppView(UnicornView):
         
     def add_datastream(self):
         
-        self.datastream_formset = build_form_or_formset(
+        new_object_with_data = self.new_datastream
+        
+        self.new_datastream_form = build_form_or_formset(
             model=Datastream,
             #queryset=self.formset_datastreams,
             new_object_with_data=new_object_with_data,
@@ -605,16 +607,18 @@ class AppView(UnicornView):
             button_config=DatastreamForm.BUTTONS_FOR_NEW,
         )    
         
-        calling_handler(
+        result = calling_handler(
             app_perms=self.app_perms,
-            req_perms='add_datastream',
+            req_perms=('add_datastream',),
             cache_key='new_datastream',
-            target_object=self.new_datastream,
-            target_object_updates=(o, 'owner', self.request.user),
+            target_object=new_object_with_data,
+            target_object_updates=[('owner', self.request.user),],
             form_or_formset=self.new_datastream_form,
-            action=self.new_datastream_form.save,
-            redirect_on_success=None,
+            action=new_object_with_data.save,
+            reverse_redirect_on_success=('new',),
         )
+        
+        return result
         
         '''
         if not 'add_datastream' in self.app_perms:

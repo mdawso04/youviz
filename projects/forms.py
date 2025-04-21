@@ -397,6 +397,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 "disable": lambda f: not f.has_changed() or not f.is_valid(),
                 "attrs":{
                     'class': 'btn btn-primary btn-sm',
+                    'unicorn:click': 'add_datastream',
                 }
             },
             "cancel": {

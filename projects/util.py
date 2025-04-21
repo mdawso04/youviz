@@ -5,6 +5,8 @@ from django.core.cache import cache
 import json
 from django.forms import modelformset_factory
 from django.forms import BaseModelFormSet
+from django.shortcuts import redirect
+from django.urls import reverse
 
 def cache_key_from_obj(obj):
     return '{}_{}'.format(type(obj).__name__.lower(), obj.slug)
@@ -146,19 +148,17 @@ def updated_handler(
                     print('valid but no save selcted')
                 #cache.delete(cache_key)
                 cache.set(cache_key, target_object.field_data())
-                if call_on_success:
+                print('can we call...{}'.format(call_on_success and callable(call_on_success)))
+                if call_on_success and callable(call_on_success):
                     call_on_success()
+                    print('calling {}'.format(call_on_success))
             else:
                 print('formset not valid')
-                #print(form_or_formset.errors)
+                print(form_or_formset.errors)
                 #print(form_or_formset.non_form_errors())
                 cache.set(cache_key, target_object.field_data())
         else:
-            target_object.save()
-            #cache.delete(cache_key)
-            cache.set(cache_key, target_object.field_data())
-            if call_on_success:
-                call_on_success()
+            return
 
         #convert values
         #validation
@@ -173,17 +173,22 @@ def calling_handler(
         target_object_updates=None,
         form_or_formset=None,
         action=None,
-        redirect_on_success=None,
+        reverse_redirect_on_success=None,
     ):
-    #step 1
+    #step 1, perms, cache
+    print('updating handler')
     updating_handler(
         app_perms=app_perms,
         req_perms=req_perms,
         cache_key=cache_key,
         target_object=target_object,
     )
+    print('target updates')
     #target_object_updates 
+    for updates in target_object_updates:
+        setattr(target_object, *updates)
     
+    print('updated hadnler')
     updated_handler(
         cache_key=cache_key,
         target_object=target_object,
@@ -192,6 +197,10 @@ def calling_handler(
         call_on_success=action,
     )
     #redirect
+    print('reverse')
+    if reverse_redirect_on_success:
+        return redirect(reverse(*reverse_redirect_on_success))
+    return False
 
         
 def build_form_or_formset(
@@ -204,36 +213,52 @@ def build_form_or_formset(
         button_config=None,
     ):
     
-    new_object_as_list = [new_object_with_data] if new_object_with_data else []
+    #formset if queryset provided
+    if queryset:
+        new_object_as_list = [new_object_with_data] if new_object_with_data else []
     
-    initial_forms = len(queryset)
-    total_forms = initial_forms + len(new_object_as_list)
-    
-    management_form_config =  {
-        'form-TOTAL_FORMS': '{}'.format(total_forms), 
-        'form-INITIAL_FORMS': '{}'.format(initial_forms), 
-    }
-    updated_instance_data = management_form_config | {
-        'form-{}-{}'.format(idx, k): v if k not in ('json', 'properties',) else json.dumps(v) 
-        for idx, instance in enumerate(list(queryset) + new_object_as_list)
-        for k, v in instance.field_data().items() 
-    }
-    #print(queryset)
-    #print(updated_instance_data)
-    #formset
-    GeneratedFormSet = modelformset_factory(
-        model, 
-        form=form, 
-        formset=formset,
-    )
-    return GeneratedFormSet(
-        queryset=queryset, 
-        data=updated_instance_data, 
-        auto_id='id_for_%s', 
-        partials=partials, 
-        button_config=button_config
-    )
+        initial_forms = len(queryset)
+        total_forms = initial_forms + len(new_object_as_list)
 
+        management_form_config =  {
+            'form-TOTAL_FORMS': '{}'.format(total_forms), 
+            'form-INITIAL_FORMS': '{}'.format(initial_forms), 
+        }
+        updated_instance_data = management_form_config | {
+            'form-{}-{}'.format(idx, k): v if k not in ('json', 'properties',) else json.dumps(v) 
+            for idx, instance in enumerate(list(queryset) + new_object_as_list)
+            for k, v in instance.field_data().items() 
+        }
+        #print(queryset)
+        #print(updated_instance_data)
+        #formset
+        GeneratedFormSet = modelformset_factory(
+            model, 
+            form=form, 
+            formset=formset,
+        )
+        return GeneratedFormSet(
+            queryset=queryset, 
+            data=updated_instance_data, 
+            auto_id='id_for_%s', 
+            partials=partials, 
+            button_config=button_config
+        )
+    else:
+        updated_instance_data = {k: v if k not in ('json', 'properties',) else json.dumps(v) 
+            for k, v in new_object_with_data.field_data().items() 
+        }
+        print(updated_instance_data)
+        generated_form = form(
+            instance=new_object_with_data, 
+            form_id='some_form',
+            unicorn_model=('',),
+            data=updated_instance_data, 
+            mode=True,
+            partials=partials,
+            button_config=button_config,
+        )        
+        return generated_form
 
 #import copyreg
 

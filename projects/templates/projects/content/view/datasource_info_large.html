@@ -3,7 +3,7 @@
 {% load guardian_tags %}
 {% get_obj_perms request.user for datasource as "datasource_perms" %}
 
-<div class="card-body p-2 bg-white viz-info-panel">
+<div class="card-body p-2 bg-white viz-info-panel" style="animation: fadeIn 1s ease-in both;">
     <div class="notification d-flex mb-2 rounded-3 bg-light" style="">
         {% for v in datasource.vizs.all %}
             <div class="bg-light text-muted flex-fill position-relative d-flex justify-content-center align-items-center"
