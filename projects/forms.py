@@ -29,72 +29,10 @@ class BaseForm(ModelForm):
     template_name = "form.html"
     form_id = None
     error_css_class = "error"
-    index = None
-    partials = None
-    buttons = None
-    
     #required_css_class = "required"
-    
-    def __init__(self, *args, **kwargs):
-        self.form_id = kwargs.pop('form_id', None)
-        self.unicorn_model = kwargs.pop('unicorn_model', None)
-        self.button_config = kwargs.pop('button_config', None)
-        self.index = kwargs.pop('index', None)
-        self.formset = kwargs.pop('formset', None)
-        self.form_mode = kwargs.pop('form_mode', None)
-        if type(self.form_mode) == tuple:
-            self.form_mode = self.form_mode[0]
-        self.partials = kwargs.pop('partials', None)
-        if type(self.partials) == tuple:
-            self.partials = self.partials[0]
-        
-        super(BaseForm, self).__init__(*args, **kwargs)
-        
-        self.fields['name'].widget.attrs.update({
-            'class': 'form-control',
-            #'unicorn:key': 'test',
-            'unicorn:model.lazy': '{}.name'.format(*self.unicorn_model),
-            #'unicorn:partial': 'form-content-{}'.format(self.instance.slug),
-            #'unicorn:partial.id': 'test',
-            #'unicorn:partial.key': 'test',
-            "rows": 4,
-        })
-        self.fields['description'].widget.attrs.update({
-            'class': 'form-control',
-            #'unicorn:key': 'test',
-            'unicorn:model.lazy': '{}.description'.format(*self.unicorn_model),
-            #'unicorn:partial': self.form_id,
-            #'unicorn:partial.id': 'fileInfo',
-            #'unicorn:partial.key': 'test',
-            #'unicorn:dirty.attr': 'readonly',
-            "rows": 4, 
-        })
-        self.fields['is_published'].widget.attrs.update({
-            'class': 'form-check-input',
-            #'unicorn:key': 'test',
-            'unicorn:model': '{}.is_published'.format(*self.unicorn_model),
-            #'unicorn:partial': self.form_id,
-            #'unicorn:partial.id': 'fileInfo',
-            #'unicorn:partial.key': 'test',
-            #'unicorn:dirty.attr': 'readonly', 
-            "role": "switch",
-        })
-        
-    def buttons(self):
-        #buttons
-        buttons = None
-        if self.button_config:
-            buttons = (self.__class__.Meta.buttons | self.button_config).get(self.form_mode)
-            buttons = deepcopy(buttons)
-            #display_trigger -> bool or callable
-            if buttons:
-                for b in buttons.values():
-                    if callable(b['display']):
-                        b['display'] = b['display'](self) 
-                    if callable(b['disable']):
-                        b['disable'] = b['disable'](self) 
-            return buttons
-            
+    index = None
+    custom_config = None
+    buttons = None
     
     class Meta:
         model = BaseModel
@@ -142,87 +80,40 @@ class BaseForm(ModelForm):
                 "max_length": _("This writer's name is too long."),
             },
         }
-        ok = {
-            "label": _("OK"),
-            "uonclick": None,
-        }
-        cancel = {
-            "label": _("Cancel"),
-            "uonclick": None,
-        }
-        
-        
         buttons = {
-            'initial': {
-                "ok": {
-                    "label": _("OK"),
-                    "display": True,
-                    "disable": lambda f: f.index is None,
-                    "attrs":{
-                        'class': 'button',
-                    }
-                },
-                "cancel": {
-                    "label": _("Cancel"),
-                    "display": False,
-                    "disable": False,
-                    "attrs":{
-                        'class': 'button',
-                    }
-                },
-                "copy": {
-                    "label": _("Copy"),
-                    "display": False,
-                    "disable": False,
-                    "attrs":{
-                        'class': 'button',
-                    }
-                },
-                "delete": {
-                    "label": _("Delete"),
-                    "display": False,
-                    "disable": False,
-                    "attrs":{
-                        'class': 'button',
-                    }
-                },
+            "ok": {
+                "label": _("OK"),
+                "display": True,
+                "disable": lambda f: f.index is None,
+                "attrs":{
+                    'class': 'button',
+                }
             },
-            'empty': {
-                "ok": {
-                    "label": _("Create new datatsource"),
-                    "display": False,
-                    "disable": False,
-                    "attrs":{
-                        'class': 'button',
-                    }
-                },
-                "cancel": {
-                    "label": _("Cancel"),
-                    "display": False,
-                    "disable": False,
-                    "attrs":{
-                        'class': 'button',
-                    }
-                },
-                "copy": {
-                    "label": _("Copy"),
-                    "display": False,
-                    "enadisableble": False,
-                    "attrs":{
-                        'class': 'button',
-                    }
-                },
-                "delete": {
-                    "label": _("Delete"),
-                    "display": False,
-                    "disable": False,
-                    "attrs":{
-                        'class': 'button',
-                    }
-                },
+            "cancel": {
+                "label": _("Cancel"),
+                "display": False,
+                "disable": False,
+                "attrs":{
+                    'class': 'button',
+                }
             },
-        
-    }
+            "copy": {
+                "label": _("Copy"),
+                "display": False,
+                "disable": False,
+                "attrs":{
+                    'class': 'button',
+                }
+            },
+            "delete": {
+                "label": _("Delete"),
+                "display": False,
+                "disable": False,
+                "attrs":{
+                    'class': 'button',
+                }
+            },
+        }
         
         '''
         max_length
@@ -237,7 +128,80 @@ class BaseForm(ModelForm):
         invalid_image
         invalid_list
         '''
+    
+    def __init__(self, *args, **kwargs):
+        self.form_id = kwargs.pop('form_id', None)
+        self.unicorn_model = kwargs.pop('unicorn_model', None)
+        self.index = kwargs.pop('index', None)
+        self.formset = kwargs.pop('formset', None)
+        self.form_mode = kwargs.pop('form_mode', None)
+        if type(self.form_mode) == tuple:
+            self.form_mode = self.form_mode[0]
+        self.custom_config = kwargs.pop('custom_config', None)
+        if type(self.custom_config) == tuple:
+            self.custom_config = self.custom_config[0]
         
+        super(BaseForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs.update({
+            'class': 'form-control',
+            #'unicorn:key': 'test',
+            'unicorn:model.lazy': '{}.name'.format(*self.unicorn_model),
+            #'unicorn:partial': 'form-content-{}'.format(self.instance.slug),
+            #'unicorn:partial.id': 'test',
+            #'unicorn:partial.key': 'test',
+            "rows": 4,
+        })
+        self.fields['description'].widget.attrs.update({
+            'class': 'form-control',
+            #'unicorn:key': 'test',
+            'unicorn:model.lazy': '{}.description'.format(*self.unicorn_model),
+            #'unicorn:partial': self.form_id,
+            #'unicorn:partial.id': 'fileInfo',
+            #'unicorn:partial.key': 'test',
+            #'unicorn:dirty.attr': 'readonly',
+            "rows": 4, 
+        })
+        self.fields['is_published'].widget.attrs.update({
+            'class': 'form-check-input',
+            #'unicorn:key': 'test',
+            'unicorn:model': '{}.is_published'.format(*self.unicorn_model),
+            #'unicorn:partial': self.form_id,
+            #'unicorn:partial.id': 'fileInfo',
+            #'unicorn:partial.key': 'test',
+            #'unicorn:dirty.attr': 'readonly', 
+            "role": "switch",
+        })
+        
+    def apply_custom_config(self):
+        if self.custom_config and self.form_mode:
+            #substitute index
+            custom_config_for_current_form_mode = self.custom_config[self.form_mode]
+            #TODO replace index, buttons
+            def replace_handler(value):
+                if isinstance(value, str):
+                    return value.replace('{index}', str(self.index))
+                return value
+            indexed_config = {
+                k: {k1: {k2: replace_handler(v2) for k2, v2 in v1.items()} for k1, v1 in v.items()} for k, v in custom_config_for_current_form_mode.items()
+            }
+            form_config = indexed_config['form']
+            for k, v in form_config.items():
+                for k1, v1 in v.items():
+                    setattr(self, '{}_{}'.format(k, k1), v1)
+            widget_config = indexed_config['widgets']
+            for k in widget_config.keys():
+                self.fields[k].widget.attrs.update(widget_config.get(k, None))
+            button_config = indexed_config['buttons']
+            self.buttons = deepcopy(self.__class__.Meta.buttons | button_config)
+            if self.buttons:
+                for b in self.buttons.values():
+                    if 'display' in b and callable(b['display']):
+                        b['display'] = b['display'](self) 
+                    if 'disable' in b and callable(b['disable']):
+                        b['disable'] = b['disable'](self) 
+                        
+            #print(self.buttons)
+                            
     def clean_name(self):
         data = self.cleaned_data["name"]
         if data and len(data) < 4:
@@ -274,234 +238,6 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
         help_text="Some useful help text.",
         label=_("source"),
     )
-    
-    PARTIALS_FOR_VIEW = {
-        'initial': {
-            'name': {
-                'unicorn:partial': 'datasource-details',
-                'unicorn:partial.id': 'details-datasource',
-                #'unicorn:partial.key': 'infoLargeTitle',
-            },
-            'description': {
-                'unicorn:partial': 'datasource-details',
-                'unicorn:partial.id': 'details-datasource',
-                #'unicorn:partial.key': 'infoLargeTitle',
-            },
-            'is_published': {
-                'unicorn:partial': 'datasource-details',
-                'unicorn:partial.id': 'details-datasource',
-                #'unicorn:partial.key': 'infoLargeTitle',
-            }
-        },
-        'empty': {
-            'name': {
-                'unicorn:partial': 'datasource-details',
-                'unicorn:partial.id': 'details-datasource',
-                #'unicorn:partial.key': 'infoLargeTitle',
-            },
-            'description': {
-                'unicorn:partial': 'datasource-details',
-                'unicorn:partial.id': 'details-datasource',
-                #'unicorn:partial.key': 'infoLargeTitle',
-            },
-            'is_published': {
-                'unicorn:partial': 'datasource-details',
-                'unicorn:partial.id': 'details-datasource',
-                #'unicorn:partial.key': 'infoLargeTitle',
-            }
-        }
-    }
-    
-    PARTIALS_FOR_NEW = {
-        'initial': {
-            'name': {
-                'unicorn:partial': 'list-card-{index}',
-                'unicorn:partial.id': 'form-cover-{index}',
-                #'unicorn:partial.key': ,
-            },
-            'description': {
-                'unicorn:partial': 'list-card-{index}',
-                'unicorn:partial.id': 'form-cover-{index}',
-                #'unicorn:partial.key': ,
-            },
-            'is_published': {
-                'unicorn:partial': 'list-card-{index}',
-                'unicorn:partial.id': 'form-cover-{index}',
-                #'unicorn:partial.key': ,
-            },
-        },
-        'empty': {
-            'name': {
-                'unicorn:partial': 'form-{index}-body',
-            },
-            'description': {
-                'unicorn:partial': 'form-{index}-body',
-            },
-            'is_published': {
-                'unicorn:partial': 'form-{index}-body',
-            },
-            'datastream_type': {
-                'unicorn:partial': 'form-{index}-body',
-            },
-            'url': {
-                'unicorn:partial': 'form-{index}-body',
-            },
-            'json': {
-                'unicorn:partial': 'form-{index}-body',
-            },
-            'source': {
-                'unicorn:partial': 'form-{index}-body',
-            },
-        },
-    }
-    
-    BUTTONS_FOR_NEW = {
-        'initial': {
-            "ok": {
-                "label": _("OK"),
-                "display": lambda f: f.index is None,
-                "disable": False,
-                "attrs":{
-                    'class': 'button',
-                }
-            },
-            "cancel": {
-                "label": _("Cancel"),
-                "display": False,
-                "disable": False,
-                "attrs":{
-                    'class': 'button',
-                }
-            },
-            "copy": {
-                "label": _("Copy"),
-                "display": False,
-                "disable": False,
-                "attrs":{
-                    'class': 'button',
-                }
-            },
-            "delete": {
-                "label": _("Delete"),
-                "display": False,
-                "disable": False,
-                "attrs":{
-                    'class': 'button',
-                }
-            },
-        },
-        'empty': {
-            "ok": {
-                "label": _("Create new datatsource"),
-                "display": True,
-                "disable": lambda f: not f.has_changed() or not f.is_valid(),
-                "attrs":{
-                    'class': 'btn btn-primary btn-sm',
-                    'unicorn:click': 'add_datastream',
-                }
-            },
-            "cancel": {
-                "label": _("Cancel"),
-                "display": False,
-                "disable": False,
-                "attrs":{
-                    'class': 'button',
-                }
-            },
-            "copy": {
-                "label": _("Copy"),
-                "display": False,
-                "disable": False,
-                "attrs":{
-                    'class': 'button',
-                }
-            },
-            "delete": {
-                "label": _("Delete"),
-                "display": False,
-                "disable": False,
-                "attrs":{
-                    'class': 'button',
-                }
-            },
-        },
-        
-    }
-    
-    BUTTONS_FOR_VIEW = {
-        'initial': {
-            "ok": {
-                "display": False,
-            },
-            "cancel": {
-                "display": False,
-            },
-            "copy": {
-                "display": False,
-            },
-            "delete": {
-                "display": False,
-            },
-        },
-        'empty': {
-            "ok": {
-                "display": False,
-            },
-            "cancel": {
-                "display": False,
-            },
-            "copy": {
-                "display": False,
-            },
-            "delete": {
-                "display": False,
-            },
-        },
-    }
-
-    def __init__(self, *args, **kwargs):
-        mode = kwargs.pop('mode', True)
-        super(DatastreamForm, self).__init__(*args, **kwargs)
-        
-        self.title = 'Edit\Add Datastream'
-        self.cover_title = 'Datastream Details'
-
-        if mode:
-            #non-partials
-            self.fields['datastream_type'].widget.attrs.update({
-                'class': 'form-select',
-                #'unicorn:key': 'test',
-                'unicorn:model.lazy': '{}.datastream_type'.format(*self.unicorn_model),
-            })
-            self.fields['url'].widget.attrs.update({
-                'class': 'form-control',
-                #'unicorn:key': 'test',
-                'unicorn:model.lazy': '{}.url'.format(*self.unicorn_model),
-                'style': 'word-break: break-all;',
-            })
-            self.fields['url'].is_required = False
-            self.fields['json'].widget.attrs.update({
-                'class': 'form-control',
-                #'unicorn:key': 'test',
-                'unicorn:model.lazy': '{}.json'.format(*self.unicorn_model),
-                'style': 'word-break: break-all;',
-            })
-            self.fields['source'].widget.attrs.update({
-                'class': 'form-control',
-                #'unicorn:key': 'test',
-                'unicorn:model.lazy': '{}.properties.source'.format(*self.unicorn_model),
-            })
-            
-            #partials
-            if self.partials and self.form_mode:
-                #substitute index
-                indexed_partials = {
-                    k: {k1: {k2: v2.replace('{index}', str(self.index)) for k2, v2 in v1.items()} for k1, v1 in v.items()} for k, v in self.partials.items()
-                }
-                indexed_partials = indexed_partials[self.form_mode]
-                for k in indexed_partials.keys():
-                    self.fields[k].widget.attrs.update(indexed_partials.get(k, None))
-
     
     class Meta:
         model = Datastream
@@ -571,8 +307,258 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             "json": {
                 "max_length": _("This writer's name is too long."),
             },
+        }    
+    
+    CUSTOM_CONFIG_VIEW = {
+        'initial': {
+            'form': {
+                'form': {
+                    'title': _('Datasource Details View'),
+                },
+                'cover': {
+                    'title': _('Datasource Cover View'),
+                },
+            },
+            'widgets': {
+                'name': {
+                    'unicorn:partial': 'datasource-details',
+                    'unicorn:partial.id': 'details-datasource',
+                    #'unicorn:partial.key': 'infoLargeTitle',
+                },
+                'description': {
+                    'unicorn:partial': 'datasource-details',
+                    'unicorn:partial.id': 'details-datasource',
+                    #'unicorn:partial.key': 'infoLargeTitle',
+                },
+                'is_published': {
+                    'unicorn:partial': 'datasource-details',
+                    'unicorn:partial.id': 'details-datasource',
+                    #'unicorn:partial.key': 'infoLargeTitle',
+                },
+            },
+            'buttons': {
+                "ok": {
+                    "display": False,
+                },
+                "cancel": {
+                    "display": False,
+                },
+                "copy": {
+                    "display": False,
+                },
+                "delete": {
+                    "label": _("Delete"),
+                    "display": True,
+                    "disable": True,
+                    "attrs":{
+                        'class': 'btn btn-danger btn-sm',
+                        'unicorn:click': 'delete_datasource',
+                    }
+                },
+            },
+        },
+        'empty': {
+            'form': {
+                'form': {
+                    'title': _('Datasource Details View'),
+                },
+                'cover': {
+                    'title': _('Datasource Cover View'),
+                },
+            },
+            'widgets': {
+                'name': {
+                    'unicorn:partial': 'datasource-details',
+                    'unicorn:partial.id': 'details-datasource',
+                    #'unicorn:partial.key': 'infoLargeTitle',
+                },
+                'description': {
+                    'unicorn:partial': 'datasource-details',
+                    'unicorn:partial.id': 'details-datasource',
+                    #'unicorn:partial.key': 'infoLargeTitle',
+                },
+                'is_published': {
+                    'unicorn:partial': 'datasource-details',
+                    'unicorn:partial.id': 'details-datasource',
+                    #'unicorn:partial.key': 'infoLargeTitle',
+                },
+            },
+            'buttons': {
+                "ok": {
+                    "display": False,
+                },
+                "cancel": {
+                    "display": False,
+                },
+                "copy": {
+                    "display": False,
+                },
+                "delete": {
+                    "display": False,
+                },
+            },
         }
-        
+    }
+    
+    CUSTOM_CONFIG_NEW = {
+        'initial': {
+            'form': {
+                'form': {
+                    'title': _('Datasource Details View'),
+                },
+                'cover': {
+                    'title': _('Datasource Cover View'),
+                },
+            },
+            'widgets': {
+                'name': {
+                    'unicorn:partial': 'list-card-{index}',
+                    'unicorn:partial.id': 'form-cover-{index}',
+                    #'unicorn:partial.key': ,
+                },
+                'description': {
+                    'unicorn:partial': 'list-card-{index}',
+                    'unicorn:partial.id': 'form-cover-{index}',
+                    #'unicorn:partial.key': ,
+                },
+                'is_published': {
+                    'unicorn:partial': 'list-card-{index}',
+                    'unicorn:partial.id': 'form-cover-{index}',
+                    #'unicorn:partial.key': ,
+                },
+            },
+            'buttons': {
+                "ok": {
+                    "label": _("OK"),
+                    "display": lambda f: f.index is None,
+                    "disable": False,
+                    "attrs":{
+                        'class': 'button',
+                    }
+                },
+                "cancel": {
+                    "label": _("Cancel"),
+                    "display": False,
+                    "disable": False,
+                    "attrs":{
+                        'class': 'button',
+                    }
+                },
+                "copy": {
+                    "label": _("Copy"),
+                    "display": False,
+                    "disable": False,
+                    "attrs":{
+                        'class': 'button',
+                    }
+                },
+                "delete": {
+                    "label": _("Delete"),
+                    "display": False,
+                    "disable": False,
+                    "attrs":{
+                        'class': 'button',
+                    }
+                },
+            },
+        },
+        'empty': {
+            'form': {
+                'form': {
+                    'title': _('Datasource Details View'),
+                },
+                'cover': {
+                    'title': _('Datasource Cover View'),
+                },
+            },
+            'widgets': {
+                'name': {
+                    'unicorn:partial': 'form-{index}-body',
+                },
+                'description': {
+                    'unicorn:partial': 'form-{index}-body',
+                },
+                'is_published': {
+                    'unicorn:partial': 'form-{index}-body',
+                },
+                'datastream_type': {
+                    'unicorn:partial': 'form-{index}-body',
+                },
+                'url': {
+                    'unicorn:partial': 'form-{index}-body',
+                },
+                'json': {
+                    'unicorn:partial': 'form-{index}-body',
+                },
+                'source': {
+                    'unicorn:partial': 'form-{index}-body',
+                },
+            },
+            'buttons': {
+                "ok": {
+                    "label": _("Create new datatsource"),
+                    "display": True,
+                    "disable": lambda f: not f.has_changed() or not f.is_valid(),
+                    "attrs":{
+                        'class': 'btn btn-primary btn-sm',
+                        'unicorn:click': 'add_datastream',
+                    }
+                },
+                "cancel": {
+                    "label": _("Cancel"),
+                    "display": False,
+                    "disable": False,
+                    "attrs":{
+                        'class': 'button',
+                    }
+                },
+                "copy": {
+                    "label": _("Copy"),
+                    "display": False,
+                    "disable": False,
+                    "attrs":{
+                        'class': 'button',
+                    }
+                },
+                "delete": {
+                    "label": _("Delete"),
+                    "display": False,
+                    "disable": False,
+                    "attrs":{
+                        'class': 'button',
+                    }
+                },
+            },
+        },
+    }
+
+    def __init__(self, *args, **kwargs):
+        super(DatastreamForm, self).__init__(*args, **kwargs)
+        #non-partials
+        self.fields['datastream_type'].widget.attrs.update({
+            'class': 'form-select',
+            #'unicorn:key': 'test',
+            'unicorn:model.lazy': '{}.datastream_type'.format(*self.unicorn_model),
+        })
+        self.fields['url'].widget.attrs.update({
+            'class': 'form-control',
+            #'unicorn:key': 'test',
+            'unicorn:model.lazy': '{}.url'.format(*self.unicorn_model),
+            'style': 'word-break: break-all;',
+        })
+        self.fields['url'].is_required = False
+        self.fields['json'].widget.attrs.update({
+            'class': 'form-control',
+            #'unicorn:key': 'test',
+            'unicorn:model.lazy': '{}.json'.format(*self.unicorn_model),
+            'style': 'word-break: break-all;',
+        })
+        self.fields['source'].widget.attrs.update({
+            'class': 'form-control',
+            #'unicorn:key': 'test',
+            'unicorn:model.lazy': '{}.properties.source'.format(*self.unicorn_model),
+        })
+        self.apply_custom_config()
         
     def clean_datastream_type(self):
         data = self.cleaned_data["datastream_type"]
@@ -621,24 +607,20 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
         
 class BaseDatastreamFormSet(BaseModelFormSet):
     def __init__(self, *args, **kwargs):
-        self.partials = kwargs.pop('partials', None)
-        self.button_config = kwargs.pop('button_config', None)
+        self.custom_config = kwargs.pop('custom_config', None)
         super(BaseDatastreamFormSet, self).__init__(*args, **kwargs)
         
     def get_form_kwargs(self, index):
         kwargs = super().get_form_kwargs(index)
-        kwargs['mode'] = True
-        #TODO - handke None index
         if index == self.initial_form_count():
             kwargs['unicorn_model'] = ('new_datastream',)
             kwargs['form_mode'] = ('empty',)
         else:
             kwargs['unicorn_model'] = (f'formset_datastreams.{index}',)
             kwargs['form_mode'] = ('initial',)
-        if self.partials:
-            kwargs['partials'] = self.partials
+        if self.custom_config:
+            kwargs['custom_config'] = self.custom_config
         kwargs['index'] = index
-        kwargs['button_config'] = self.button_config
         kwargs['formset'] = self
         return kwargs
     
@@ -668,10 +650,20 @@ class BaseDatastreamFormSet(BaseModelFormSet):
                 
             
 class DatasourceForm(EntangledModelFormMixin, BaseForm):
-    def __init__(self, *args, **kwargs):
-        mode = kwargs.pop('mode', True)
-        super(DatasourceForm, self).__init__(*args, **kwargs)
+    class Meta:
+        model = Datasource
+        fields = BaseForm.Meta.fields
+        entangled_fields = {'properties': ['source', ]}
+        #untangled_fields = BaseForm.Meta.fields + ('datastream_type', "url", "json",)
+        widgets = BaseForm.Meta.widgets
+        #labels = BaseForm.Meta.labels
+        #help_texts = BaseForm.Meta.help_texts
+        #error_messages = BaseForm.Meta.error_messages
+        buttons = BaseForm.Meta.buttons
         
+    def __init__(self, *args, **kwargs):
+        super(DatasourceForm, self).__init__(*args, **kwargs)
+        '''
         self.fields['name'].widget.attrs.update({
             'unicorn:partial': 'details-info',
             'unicorn:partial.id': 'infoLargeTitle',
@@ -687,19 +679,60 @@ class DatasourceForm(EntangledModelFormMixin, BaseForm):
             'unicorn:partial.id': 'infoLargeTitle',
             #'unicorn:partial.key': 'test',
         })
+        '''
+        self.apply_custom_config()
     
-    class Meta:
-        model = Datasource
-        fields = BaseForm.Meta.fields
-        entangled_fields = {'properties': ['source', ]}
-        #untangled_fields = BaseForm.Meta.fields + ('datastream_type', "url", "json",)
-        widgets = BaseForm.Meta.widgets
-        #labels = BaseForm.Meta.labels
-        #help_texts = BaseForm.Meta.help_texts
-        #error_messages = BaseForm.Meta.error_messages
-        buttons = BaseForm.Meta.buttons
-        
-        
+    #only initial
+    CUSTOM_CONFIG_VIEW = {
+        'initial': {
+            'form': {
+                'form': {
+                    'title': _('Viz Details View'),
+                },
+                'cover': {
+                    'title': _('Viz Cover View'),
+                },
+            },
+            'widgets': {
+                'name': {
+                    'unicorn:partial': 'details-info',
+                    'unicorn:partial.id': 'infoLargeTitle',
+                    #'unicorn:partial.key': 'infoLargeTitle',
+                },
+                'description': {
+                    'unicorn:partial': 'details-infos',
+                    'unicorn:partial.id': 'infoLargeTitle',
+                    #'unicorn:partial.key': 'infoLargeTitle',
+                },
+                'is_published': {
+                    'unicorn:partial': 'details-info',
+                    'unicorn:partial.id': 'infoLargeTitle',
+                    #'unicorn:partial.key': 'infoLargeTitle',
+                },
+            },
+            'buttons': {
+                "ok": {
+                    "display": False,
+                },
+                "cancel": {
+                    "display": False,
+                },
+                "copy": {
+                    "display": False,
+                },
+                "delete": {
+                    "label": _("Delete Viz"),
+                    "display": True,
+                    "disable": True,
+                    "attrs":{
+                        'class': 'btn btn-danger btn-sm',
+                        'unicorn:click': 'delete_datasource',
+                    }
+                },
+            },
+        },
+    }
+    
     def clean(self):
         #print('clearning form')
         cleaned_data = super().clean()
@@ -722,7 +755,6 @@ class DatasourceForm(EntangledModelFormMixin, BaseForm):
 class BaseDatasourceFormSet(BaseModelFormSet):
     def get_form_kwargs(self, index):
         kwargs = super().get_form_kwargs(index)
-        kwargs['mode'] = True
         kwargs['unicorn_model'] = f'formset_datasources.{index}', 
         return kwargs
     

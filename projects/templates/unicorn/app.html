@@ -32,7 +32,7 @@
         {% include 'projects/top_navbar/content_header_area_list.html' %}
     {% elif context.mode == "user" %} 
         {% include 'projects/top_navbar/content_header_area_user.html' %}
-    {% elif context.mode == "new" and page == 'new.datamenu' %} 
+    {% elif context.mode == "new" %} 
         {% include 'projects/top_navbar/content_header_area_list.html' %}
     {% endif %}
 {% endblock %}

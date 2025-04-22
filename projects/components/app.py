@@ -38,7 +38,9 @@ import json
 import traceback
 from io import BufferedIOBase
 from datetime import datetime
+from enum import Enum
 
+    
 
 
 #non-standard libraries
@@ -51,35 +53,6 @@ class AppView(UnicornView):
     items_per_page: int = 12
     list_items_paginated: list = None
     page_no: int = 1
-    
-    #datasources: list = None
-    #list / user
-    datasources: QuerySetType[Datasource] = None
-    datasources_list_items_paginated: list = None
-    datasources_list_page_no: int = 1
-    datasources_displayed_item_ids: list = None
-    
-    #view
-    datasource: Datasource = None
-    datasource_form: DatasourceForm = None
-    vizs: QuerySetType[Viz] = None
-    related_datasources: QuerySetType[Datasource] = None
-    related_datasources_list_items_paginated: list = None
-    related_datasources_list_page_no: int = 1
-    datastream_form: DatastreamForm = None
-    new_datastream_form: DatastreamForm = None
-    selected_datastream: Datastream = None
-    selected_datastream_form: DatastreamForm = None
-    datastream_formset: BaseDatastreamFormSet = None
-    
-    
-    #new
-    datastreams: QuerySetType[Datastream] = None
-    datastreams_list_items_paginated: list = None
-    datastreams_list_page_no: int = 1
-    datastreams_displayed_item_ids: list = None
-    formset_datastreams: QuerySetType[Datastream] = None
-    new_datastream: Datastream = None
     
     services: list = None
     meta_object: BaseModel = None
@@ -95,11 +68,38 @@ class AppView(UnicornView):
     add_comment_text: str = None
     app_perms: list = None
     
+    #list / user
+    datasources: QuerySetType[Datasource] = None
+    datasources_list_items_paginated: list = None
+    datasources_list_page_no: int = 1
+    datasources_displayed_item_ids: list = None
+    
+    #view
+    datasource: Datasource = None
+    datasource_form: DatasourceForm = None
+    vizs: QuerySetType[Viz] = None
+    related_datasources: QuerySetType[Datasource] = None
+    related_datasources_list_items_paginated: list = None
+    related_datasources_list_page_no: int = 1
+    datastream_form: DatastreamForm = None
+    #selected_datastream: Datastream = None
+    #selected_datastream_form: DatastreamForm = None
+    
+    #new
+    datastreams: QuerySetType[Datastream] = None
+    datastreams_list_items_paginated: list = None
+    datastreams_list_page_no: int = 1
+    datastreams_displayed_item_ids: list = None
+    formset_datastreams: QuerySetType[Datastream] = None
+    new_datastream: Datastream = None
+    datastream_formset: BaseDatastreamFormSet = None
+    new_datastream_form: DatastreamForm = None
+    
     class Meta:
         javascript_exclude = ('mode', 'page_count', 'items_per_page', 'list_items_paginated', 'page_no',
                               'datasources', 'datasources_list_items_paginated', 'datasources_list_page_no', 'datasources_displayed_item_ids', 
                               'datasource', 'datasource_form', 'vizs', 'related_datasources', 'related_datasources_list_items_paginated', 'related_datasources_list_page_no', 'datastream_formset', 
-                              'datastream_form','new_datastream', 'new_datastream_form', 'selected_datastream', 'selected_datastream_form', 
+                              'datastream_form','new_datastream', 'new_datastream_form',  
                               'datastreams', 'datastreams_list_items_paginated', 'datastreams_list_page_no', 'datastreams_displayed_item_ids', 'formset_datastreams', 
                               'services', 'meta_object', 'message', 'page', 'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'add_comment_text', 'app_perms',) 
     
@@ -294,12 +294,15 @@ class AppView(UnicornView):
                 return #do nothing
             
             elif mode == 'view': # use obj perms
+                '''
                 if is_get:
                     self.related_datasources = None
+                '''
+                viewed_datasource = None
                 if self.context['pk']:
-                    ds = Datasource.item(pk=self.context['pk'])
+                    viewed_datasource = Datasource.item(pk=self.context['pk'])
                 elif self.context['slug']:
-                    ds = Datasource.item(slug=self.context['slug'])
+                    viewed_datasource = Datasource.item(slug=self.context['slug'])
                 
                 #initialise app with related_datasources
                 self.initialise_list(
@@ -313,21 +316,21 @@ class AppView(UnicornView):
                     list_order = '?',
                     list_use_cover = False,
                     ad_position = Notification.VIEW_AD,
-                    meta_object = ds, 
+                    meta_object = viewed_datasource, 
                 )
                 
                 #add perms for ds/ds.d
-                get_perms_and_settings(request=self.request, context=self.context, obs=(ds, ds.datastream,), update_perms=True, app_perms=self.app_perms)
+                get_perms_and_settings(request=self.request, context=self.context, obs=(viewed_datasource, viewed_datasource.datastream,), update_perms=True, app_perms=self.app_perms)
                 
-                view_perm = attach_slug_to_perm_name('view_datasource', ds)
-                if ds.is_published:
+                view_perm = attach_slug_to_perm_name('view_datasource', viewed_datasource)
+                if viewed_datasource.is_published:
                     if not any({('view_published_datasource' in self.app_perms), (view_perm in self.app_perms)}):
                         redirect('/')
                 else:
                     if not view_perm in self.app_perms:
                         redirect('/')
                 
-                self.datasource = ds
+                self.datasource = viewed_datasource
                 cache.delete(cache_key_from_obj(self.datasource))
                 
                 datasource_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.field_data().items()}
@@ -335,8 +338,10 @@ class AppView(UnicornView):
                     instance=self.datasource, 
                     form_id='datasource_form',
                     unicorn_model=('datasource',),
-                    data=datasource_instance_data, 
-                    mode=True)
+                    data=datasource_instance_data,
+                    custom_config=DatasourceForm.CUSTOM_CONFIG_VIEW,
+                    form_mode='initial'
+                )
                 
                 instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.datastream.field_data().items()}
                 self.datastream_form = DatastreamForm(
@@ -344,9 +349,8 @@ class AppView(UnicornView):
                     form_id='datastream_form',
                     unicorn_model=('datasource.datastream',),
                     data=instance_data, 
-                    mode=True,
-                    partials=DatastreamForm.PARTIALS_FOR_VIEW,
-                    button_config=DatastreamForm.BUTTONS_FOR_VIEW
+                    custom_config=DatastreamForm.CUSTOM_CONFIG_VIEW,
+                    form_mode='initial'
                 )
                 
                 def get_client_ip(request):
@@ -359,11 +363,14 @@ class AppView(UnicornView):
                 ItemView.objects.get_or_create(IPAddress=get_client_ip(self.request), datasource=self.datasource, session=self.request.session._session_key)
             
             elif mode == 'new':  # use app perms
+                '''
                 self.page = 'new.datamenu'
                 self.message = {
                     'class': 'alert-info',
                     'content': 'Select below to add a new item'
                 }
+                '''
+                #datastream list
                 self.initialise_list(
                     current_user = self.request.user,
                     list_object_owner_user = None,
@@ -384,8 +391,7 @@ class AppView(UnicornView):
                     new_object_with_data=self.new_datastream,
                     form=DatastreamForm,
                     formset=BaseDatastreamFormSet,
-                    partials=DatastreamForm.PARTIALS_FOR_NEW,
-                    button_config=DatastreamForm.BUTTONS_FOR_NEW,
+                    custom_config=DatastreamForm.CUSTOM_CONFIG_NEW,
                 )   
 
             else:
@@ -459,40 +465,34 @@ class AppView(UnicornView):
                 cache_key=cache_key_from_obj(updated_instance),
                 target_object=updated_instance,
                 form_or_formset=None,
-                save_on_valid=True,
+                save_form_or_formset_on_valid=True,
                 call_on_success=None,
             )            
         #new
         elif 'datastreams.' in name or 'new_datastream' in name:                       
             #instance data
             new_object_with_data = None
-            
             if 'datastreams.' in name:
                 updated_instance = self.formset_datastreams[int(name.split('.')[1])]
                 cache_key = cache_key_from_obj(updated_instance)
             else:
                 updated_instance = new_object_with_data = self.new_datastream
                 cache_key = 'new_datastream'
-                
-            #print(new_object_with_data)
-            
             self.datastream_formset = build_form_or_formset(
                 model=Datastream,
                 queryset=self.formset_datastreams,
                 new_object_with_data=new_object_with_data,
                 form=DatastreamForm,
                 formset=BaseDatastreamFormSet,
-                partials=DatastreamForm.PARTIALS_FOR_NEW,
-                button_config=DatastreamForm.BUTTONS_FOR_NEW,
+                custom_config=DatastreamForm.CUSTOM_CONFIG_NEW,
             )            
             updated_handler(
                 cache_key=cache_key,
                 target_object=updated_instance,
                 form_or_formset=self.datastream_formset,
-                save_on_valid='datastreams.' in name,
-                call_on_success=self.load_table if 'datastreams.' in name else None #force refresh of datastreams list
+                save_form_or_formset_on_valid='datastreams.' in name,
+                call_on_success=[(self.load_table, (), {}),] if 'datastreams.' in name else None #force refresh of datastreams list
             )
-            
             if 'new_datastream' in name:
                 print(new_object_with_data.__dict__)
             
@@ -504,13 +504,12 @@ class AppView(UnicornView):
                     form_id='datastream_form',
                     unicorn_model='datasource.datastream',
                     data=updated_instance_data, 
-                    mode=True,
-                    partials=DatastreamForm.PARTIALS_FOR_VIEW,)
+                    custom_config=DatastreamForm.CUSTOM_CONFIG_NEW,)
             updated_handler(
                 cache_key=cache_key_from_obj(updated_instance),
                 target_object=updated_instance,
                 form_or_formset=self.datastream_form,
-                save_on_valid=True,
+                save_form_or_formset_on_valid=True,
                 call_on_success=None,
             )
         elif 'datasource.' in name:
@@ -520,13 +519,12 @@ class AppView(UnicornView):
                 instance=updated_instance, 
                 form_id='datasource_form',
                 unicorn_model=('datasource',),
-                data=updated_instance_data, 
-                mode=True)
+                data=updated_instance_data, )
             updated_handler(
                 cache_key=cache_key_from_obj(updated_instance),
                 target_object=updated_instance,
                 form_or_formset=self.datasource_form,
-                save_on_valid=True,
+                save_form_or_formset_on_valid=True,
                 call_on_success=None,
             )
         #logger.debug('AppView > updated end')
@@ -534,14 +532,55 @@ class AppView(UnicornView):
         #self.load_table()
         
 #ACTIONS
-
+    
     def calling(self, name, args):
         #logger.debug('AppView > calling start')
         pass
         #logger.debug('AppView > calling end')
+        
+    #datastream
+    def add_datastream(self):
+        new_object_with_data = self.new_datastream
+        self.new_datastream_form = build_form_or_formset(
+            model=Datastream,
+            new_object_with_data=new_object_with_data,
+            form=DatastreamForm,
+            custom_config=DatastreamForm.CUSTOM_CONFIG_NEW,
+        )    
+        result = action_handler(
+            app_perms=self.app_perms,
+            req_perms=('add_datastream',),
+            cache_key='new_datastream',
+            target_object=new_object_with_data,
+            target_object_updates=[('owner', self.request.user),],
+            form_or_formset=self.new_datastream_form,
+            actions=[(new_object_with_data.save,),],
+            reverse_redirect_on_success=('new',),
+        )
+        return result
     
-
-    def addDatasource(self, datastream_slug):
+    #datasource
+    def add_datasource(self, datastream_slug):
+        def add_datasource_action(datastream_slug):
+            new_ds = Datasource.add(datastream=Datastream.item(slug=datastream_slug), owner=self.request.user)
+            new_viz = Viz.add(datasource=new_ds, owner=self.request.user)
+            return redirect(reverse('view', kwargs={'slug':new_ds.slug}))
+            
+        result = action_handler(
+            app_perms=self.app_perms,
+            req_perms=('add_datasource',),
+            #cache_key=None,
+            #target_object=None,
+            #target_object_updates=None,
+            #form_or_formset=None,
+            actions=[
+                (add_datasource_action, (datastream_slug,), {}),
+            ],
+            #reverse_redirect_on_success=None,
+        )
+        return result
+        '''
+        
         self.datasource = self.add(
             cls=Datasource,
             datastream=Datastream.item(slug=datastream_slug)
@@ -556,22 +595,66 @@ class AppView(UnicornView):
         self.context['pk'] = self.datasource.pk
         #self.call("alert", "hello")
         return redirect(reverse('view', kwargs={'slug': self.datasource.slug}))
+        '''
     
     def copy_datasource(self, pk):
+        def copy_datasource_action(pk):
+            new_ds = Datasource.copy(pk=pk, owner=self.request.user)['copy']
+            return redirect(reverse('view', kwargs={'slug':new_ds.slug}))
+            
+        result = action_handler(
+            app_perms=self.app_perms,
+            req_perms=('add_datasource',),
+            #cache_key=None,
+            #target_object=None,
+            #target_object_updates=None,
+            #form_or_formset=None,
+            actions=[
+                (copy_datasource_action, (pk,), {}),
+            ],
+            #reverse_redirect_on_success=None,
+        )
+        return result
+        
+        
+        '''
         if not self.request.user.has_perm('projects.add_datasource'):
             return redirect('/')
         
         #print('copy '+ str(pk))
         new_datasource = Datasource.copy(pk=pk)['copy']
         return redirect(reverse('view', kwargs={'slug': new_datasource.slug}))
+        '''
     
     def delete_datasource(self, pk):
+        ds_to_delete = Datasource.item(pk=pk)
+        
+        def delete_datasource_action(ds_to_delete):
+            ds_to_delete.delete()
+            return redirect(reverse('list'))
+            
+        result = action_handler(
+            app_perms=self.app_perms,
+            req_perms=(delete_perm_from_obj(ds_to_delete),),
+            #cache_key=None,
+            #target_object=None,
+            #target_object_updates=None,
+            #form_or_formset=None,
+            actions=[
+                (delete_datasource_action, (ds_to_delete,), {}),
+            ],
+            #reverse_redirect_on_success=None
+        )
+        return result
+        
+        '''
         d = Datasource.item(pk=pk)
         if not self.request.user.has_perm('projects.delete_datasource', d):
             return redirect('/')
         
         d.delete()
         return redirect(reverse('list'))
+        '''
     
     def refreshDatasource(self, pk):
         #logger.debug('AppView > addViz start')
@@ -580,6 +663,8 @@ class AppView(UnicornView):
         return redirect(reverse('view', args=[pk]))
         #logger.debug('AppView > addViz end')
         
+    #viz
+    '''
     def copyViz(self, pk):
         Viz.copy(pk)
         self.load_table()
@@ -589,61 +674,11 @@ class AppView(UnicornView):
         v = Viz.item(pk=pk)
         if not self.request.user.has_perm('projects.change_datasource', v.datasource):
             return redirect('/')
-        
         v.delete()
         self.load_table()
-        
-    def add_datastream(self):
-        
-        new_object_with_data = self.new_datastream
-        
-        self.new_datastream_form = build_form_or_formset(
-            model=Datastream,
-            #queryset=self.formset_datastreams,
-            new_object_with_data=new_object_with_data,
-            form=DatastreamForm,
-            #formset=BaseDatastreamFormSet,
-            partials=DatastreamForm.PARTIALS_FOR_NEW,
-            button_config=DatastreamForm.BUTTONS_FOR_NEW,
-        )    
-        
-        result = calling_handler(
-            app_perms=self.app_perms,
-            req_perms=('add_datastream',),
-            cache_key='new_datastream',
-            target_object=new_object_with_data,
-            target_object_updates=[('owner', self.request.user),],
-            form_or_formset=self.new_datastream_form,
-            action=new_object_with_data.save,
-            reverse_redirect_on_success=('new',),
-        )
-        
-        return result
-        
-        '''
-        if not 'add_datastream' in self.app_perms:
-            raise Http404
-        c = cache.get('self.new_datastream')
-        if c:
-            self.new_datastream.set_field_data(c)
-        
-        instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.new_datastream.field_data().items()}
-        self.new_datastream_form = DatastreamForm(
-                instance=self.new_datastream, 
-                form_id='new_datastream_form',
-                unicorn_model='new_datastream',
-                data=instance_data, 
-                mode=True)
-        if self.new_datastream_form.is_valid():
-            o = self.new_datastream_form.save(commit=False)
-            o.owner = self.request.user
-            o.save()
-            cache.delete('self.new_datastream')
-            return redirect(reverse('new') + '?o=datamenu')
-        else:
-            return False
-        '''
-        
+    '''
+    
+    '''
     def select_datastream(self, pk):
         if not 'add_viz' in self.app_perms:
             raise Http404
@@ -658,8 +693,8 @@ class AppView(UnicornView):
                 data=instance_data, 
                 mode=True)
         self.selected_datastream_form.is_valid()
-        
-        
+    '''
+    #comment
     def add_comment(self):
         if not self.request.user.has_perm('projects.add_comment'):
             return redirect('/')
@@ -680,7 +715,8 @@ class AppView(UnicornView):
         c.delete()
         #self.add_comment_text =''
         self.load_table()
-        
+    
+    #cover
     def toggleCover(self, pk, mode):
         if self.cover and self.cover.pk == pk:
             self.cover = None
@@ -692,6 +728,7 @@ class AppView(UnicornView):
         self.context['mode'] = mode
         self.load_table()
     
+    #activity
     def toggle_activity(self, ds):
         '''
         if not self.request.user.has_perm('projects.change_activity'):

@@ -16,7 +16,7 @@
         </p>
     </div>
     {% block stretched_link %}
-    <a href="#" unicorn:click="addDatasource('{{item.slug}}')" class="stretched-link"/>
+    <a href="#" unicorn:click="add_datasource('{{item.slug}}')" class="stretched-link"/>
     {% endblock %}
     {% block favourite %}
     {% include 'projects/common/activity_toggle_top_right.html' with item=item%}

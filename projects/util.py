@@ -136,43 +136,53 @@ def updated_handler(
         cache_key=None,
         target_object=None,
         form_or_formset=None,
-        save_on_valid=False,
+        save_form_or_formset_on_valid=False,
         call_on_success=None,
     ):
+        if cache_key is not None and target_object is not None:
+            cache.set(cache_key, target_object.field_data())
+            
+        def call_on_success_handler(call_on_success):
+            result = None
+            if call_on_success:
+                for action in call_on_success:
+                    method_name = action[0]
+                    args = action[1]
+                    kwargs = action[2]
+                    result = method_name(*args, **kwargs)
+                    print('calling {}'.format(method_name))
+            return result
+        
         if form_or_formset:
-            if form_or_formset.is_valid():
-                if save_on_valid:
+            formset_is_valid = form_or_formset.is_valid()
+            if formset_is_valid:
+                if save_form_or_formset_on_valid:
                     form_or_formset.save()
                     print('saved form')
                 else:
                     print('valid but no save selcted')
-                #cache.delete(cache_key)
-                cache.set(cache_key, target_object.field_data())
-                print('can we call...{}'.format(call_on_success and callable(call_on_success)))
-                if call_on_success and callable(call_on_success):
-                    call_on_success()
-                    print('calling {}'.format(call_on_success))
+                return formset_is_valid, call_on_success_handler(call_on_success)
             else:
                 print('formset not valid')
                 print(form_or_formset.errors)
+                return formset_is_valid, None
                 #print(form_or_formset.non_form_errors())
-                cache.set(cache_key, target_object.field_data())
         else:
-            return
+            return call_on_success_handler(call_on_success)
 
         #convert values
         #validation
         #save
         #cache update
         
-def calling_handler(
+def action_handler(
         app_perms=None,
         req_perms=None,
         cache_key=None,
         target_object=None,
         target_object_updates=None,
         form_or_formset=None,
-        action=None,
+        actions=None,
         reverse_redirect_on_success=None,
     ):
     #step 1, perms, cache
@@ -185,22 +195,24 @@ def calling_handler(
     )
     print('target updates')
     #target_object_updates 
-    for updates in target_object_updates:
-        setattr(target_object, *updates)
+    if target_object_updates:
+        for updates in target_object_updates:
+            setattr(target_object, *updates)
     
     print('updated hadnler')
-    updated_handler(
+    call_on_success_result = updated_handler(
         cache_key=cache_key,
         target_object=target_object,
         form_or_formset=form_or_formset,
-        save_on_valid=False,
-        call_on_success=action,
+        save_form_or_formset_on_valid=False,
+        call_on_success=actions,
     )
     #redirect
     print('reverse')
+    print(call_on_success_result)
     if reverse_redirect_on_success:
-        return redirect(reverse(*reverse_redirect_on_success))
-    return False
+        return redirect(reverse(reverse_redirect_on_success[0], kwargs=reverse_redirect_on_success[1]))
+    return call_on_success_result
 
         
 def build_form_or_formset(
@@ -209,8 +221,7 @@ def build_form_or_formset(
         new_object_with_data=None,
         form=None,
         formset=None,
-        partials=None,
-        button_config=None,
+        custom_config=None,
     ):
     
     #formset if queryset provided
@@ -241,8 +252,7 @@ def build_form_or_formset(
             queryset=queryset, 
             data=updated_instance_data, 
             auto_id='id_for_%s', 
-            partials=partials, 
-            button_config=button_config
+            custom_config=custom_config
         )
     else:
         updated_instance_data = {k: v if k not in ('json', 'properties',) else json.dumps(v) 
@@ -254,9 +264,7 @@ def build_form_or_formset(
             form_id='some_form',
             unicorn_model=('',),
             data=updated_instance_data, 
-            mode=True,
-            partials=partials,
-            button_config=button_config,
+            custom_config=custom_config,
         )        
         return generated_form
 
