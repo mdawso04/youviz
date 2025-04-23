@@ -336,6 +336,7 @@ class AppView(UnicornView):
                 self.datasource_buffer = copy.deepcopy(self.datasource)
                 cache.delete(cache_key_from_obj(self.datasource_buffer, '_buffer'))
                 
+                '''
                 datasource_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource_buffer.field_data().items()}
                 self.datasource_form = DatasourceForm(
                     instance=self.datasource_buffer, 
@@ -344,10 +345,22 @@ class AppView(UnicornView):
                     custom_config=DatasourceForm.CUSTOM_CONFIG_VIEW,
                     form_mode='initial'
                 )
+                '''
+                self.datasource_form = build_form_or_formset(
+                    model=None,
+                    queryset=None,
+                    new_object_with_data=self.datasource_buffer,
+                    form=DatasourceForm,
+                    unicorn_model='datasource_buffer',
+                    formset=None,
+                    custom_config=DatasourceForm.CUSTOM_CONFIG_VIEW,
+                    form_mode='initial',
+                )
                 
                 cache.delete(cache_key_from_obj(self.datasource.datastream, '_master'))
                 cache.delete(cache_key_from_obj(self.datasource_buffer.datastream, '_buffer'))
                 
+                '''
                 instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource_buffer.datastream.field_data().items()}
                 self.datastream_form = DatastreamForm(
                     instance=self.datasource_buffer.datastream, 
@@ -356,6 +369,17 @@ class AppView(UnicornView):
                     data=instance_data, 
                     custom_config=DatastreamForm.CUSTOM_CONFIG_VIEW,
                     form_mode='initial'
+                )
+                '''
+                self.datastream_form = build_form_or_formset(
+                    model=None,
+                    queryset=None,
+                    new_object_with_data=self.datasource_buffer,
+                    form=DatastreamForm,
+                    unicorn_model='datasource_buffer.datastream',
+                    formset=None,
+                    custom_config=DatastreamForm.CUSTOM_CONFIG_NEW,
+                    form_mode='initial',
                 )
                 
                 def get_client_ip(request):
@@ -428,11 +452,12 @@ class AppView(UnicornView):
             )
         elif 'new_datastream' in name:
             updated_instance = self.new_datastream
+            master_instance = None
             updating_handler(
                 app_perms=self.app_perms,
                 req_perms=('add_datastream',),
-                cache_keys=('new_datastream',),
                 target_object=updated_instance,
+                master_object=master_instance,
             )
         
         elif 'datasource_buffer.datastream.' in name:
@@ -480,18 +505,23 @@ class AppView(UnicornView):
         elif 'formset_datastreams.' in name or 'new_datastream' in name:                       
             #instance data
             new_object_with_data = None
+            handling_master_and_target = None
             if 'formset_datastreams.' in name:
                 updated_instance = self.formset_datastreams[int(name.split('.')[1])]
                 master_instance = self.datastreams[int(name.split('.')[1])]
+                handling_master_and_target = True
                 #cache_key = cache_key_from_obj(updated_instance)
             else:
                 updated_instance = new_object_with_data = self.new_datastream
-                cache_key = 'new_datastream'
+                master_instance = None
+                handling_master_and_target = False
+            
             self.datastream_formset = build_form_or_formset(
                 model=Datastream,
                 queryset=self.formset_datastreams,
                 new_object_with_data=new_object_with_data,
                 form=DatastreamForm,
+                unicorn_model=None,
                 formset=BaseDatastreamFormSet,
                 custom_config=DatastreamForm.CUSTOM_CONFIG_NEW,
             )            
@@ -499,8 +529,8 @@ class AppView(UnicornView):
                 target_object=updated_instance,
                 master_object=master_instance,
                 form_or_formset=self.datastream_formset,
-                save_form_or_formset_on_valid='formset_datastreams.' in name,
-                call_on_success=[(self.load_table, (), {}),] if 'formset_datastreams.' in name else None #force refresh of datastreams list
+                save_form_or_formset_on_valid=handling_master_and_target,
+                call_on_success=[(self.load_table, (), {}),] if handling_master_and_target else None
             )
             if 'new_datastream' in name:
                 print(new_object_with_data.__dict__)
@@ -508,6 +538,7 @@ class AppView(UnicornView):
         elif 'datasource_buffer.datastream.' in name:
             master_instance = self.datasource.datastream
             updated_instance = self.datasource_buffer.datastream
+            '''
             updated_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in updated_instance.field_data().items()}
             self.datastream_form = DatastreamForm(
                 instance=updated_instance, 
@@ -515,6 +546,17 @@ class AppView(UnicornView):
                 data=updated_instance_data, 
                 custom_config=DatastreamForm.CUSTOM_CONFIG_VIEW,
                 form_mode='initial',)
+            '''
+            self.datastream_form = build_form_or_formset(
+                model=None,
+                queryset=None,
+                new_object_with_data=updated_instance,
+                form=DatastreamForm,
+                unicorn_model='datasource_buffer.datastream',
+                formset=None,
+                custom_config=DatastreamForm.CUSTOM_CONFIG_VIEW,
+                form_mode='initial',
+            )
             updated_handler(
                 target_object=updated_instance,
                 master_object=master_instance,
@@ -525,11 +567,23 @@ class AppView(UnicornView):
         elif 'datasource_buffer.' in name:
             master_instance = self.datasource
             updated_instance = self.datasource_buffer
+            '''
             updated_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in updated_instance.field_data().items()}
             self.datasource_form = DatasourceForm(
                 instance=updated_instance, 
                 unicorn_model=('datasource_buffer',),
                 data=updated_instance_data, 
+                custom_config=DatasourceForm.CUSTOM_CONFIG_VIEW,
+                form_mode='initial',
+            )
+            '''
+            self.datasource_form = build_form_or_formset(
+                model=None,
+                queryset=None,
+                new_object_with_data=updated_instance,
+                form=DatasourceForm,
+                unicorn_model='datasource_buffer',
+                formset=None,
                 custom_config=DatasourceForm.CUSTOM_CONFIG_VIEW,
                 form_mode='initial',
             )
@@ -556,21 +610,39 @@ class AppView(UnicornView):
     #datastream
     def add_datastream(self):
         new_object_with_data = self.new_datastream
+        master_object = None
+        
+        '''
+        self.datastream_form = build_form_or_formset(
+                model=None,
+                queryset=None,
+                new_object_with_data=updated_instance,
+                form=DatastreamForm,
+                unicorn_model='datasource.datastream',
+                formset=None,
+                custom_config=DatastreamForm.CUSTOM_CONFIG_NEW,
+                form_mode='initial',
+            )
+        '''       
         self.new_datastream_form = build_form_or_formset(
-            model=Datastream,
+            model=None,
+            queryset=None,
             new_object_with_data=new_object_with_data,
             form=DatastreamForm,
+            unicorn_model='new_datastream',
+            formset=None,
             custom_config=DatastreamForm.CUSTOM_CONFIG_NEW,
+            form_mode='initial',
         )    
         result = action_handler(
             app_perms=self.app_perms,
             req_perms=('add_datastream',),
-            cache_key='new_datastream',
             target_object=new_object_with_data,
             target_object_updates=[('owner', self.request.user),],
+            master_object=master_object,
             form_or_formset=self.new_datastream_form,
-            actions=[(new_object_with_data.save,),],
-            reverse_redirect_on_success=('new',),
+            actions=[(new_object_with_data.save, (), {}),],
+            reverse_redirect_on_success=('new', {}),
         )
         return result
     

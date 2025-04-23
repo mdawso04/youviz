@@ -128,20 +128,16 @@ def updating_handler(
             for p in req_perms:
                 if p not in app_perms:
                     raise Http404
-        #for c in cache_keys:
-        #    c = cache.get(cache_key, None)
-        #    if c:
-        #        target_object.set_field_data(c)
-        ckey = cache_key_from_obj(target_object, '_buffer')
-        c = cache.get(ckey)
-        if c:
-            target_object.set_field_data(c)
-        c2key = cache_key_from_obj(master_object, '_master')
-        c1 = cache.get(c2key)
-        if c1:
-            master_object.set_field_data(c1)
-
-
+        if target_object is not None:
+            ckey = cache_key_from_obj(target_object, '_buffer')
+            c = cache.get(ckey)
+            if c:
+                target_object.set_field_data(c)
+        if master_object is not None:
+            c2key = cache_key_from_obj(master_object, '_master')
+            c1 = cache.get(c2key)
+            if c1:
+                master_object.set_field_data(c1)
 
 
 def updated_handler(
@@ -168,16 +164,21 @@ def updated_handler(
         
         form_or_formset_is_valid = None
         action_result = None
+        handling_master_and_target = master_object is not None
         
         if form_or_formset:
             form_or_formset_is_valid = form_or_formset.is_valid()
             if form_or_formset_is_valid:
-                #always update master model
-                master_object.set_field_data(target_object.field_data())
+                #update master model
+                if handling_master_and_target:
+                    master_object.set_field_data(target_object.field_data())
                 #optionally write to db
                 if save_form_or_formset_on_valid:
                     #form_or_formset.save()
-                    master_object.save()
+                    if handling_master_and_target:
+                        master_object.save()
+                    else:
+                        target_object.save()
                     print('saved form')
                 else:
                     print('valid but no save selcted')
@@ -191,7 +192,8 @@ def updated_handler(
             action_result = call_on_success_handler(call_on_success)
         
         cache.set(cache_key_from_obj(target_object, '_buffer'), target_object.field_data())
-        cache.set(cache_key_from_obj(master_object, '_master'), master_object.field_data())
+        if handling_master_and_target:
+            cache.set(cache_key_from_obj(master_object, '_master'), master_object.field_data())
         print('updated cache')
             
         return form_or_formset_is_valid, action_result
@@ -207,6 +209,7 @@ def action_handler(
         cache_keys=None,
         target_object=None,
         target_object_updates=None,
+        master_object=None,
         form_or_formset=None,
         actions=None,
         reverse_redirect_on_success=None,
@@ -216,8 +219,8 @@ def action_handler(
     updating_handler(
         app_perms=app_perms,
         req_perms=req_perms,
-        cache_keys=cache_keys,
         target_object=target_object,
+        master_object=master_object,
     )
     print('target updates')
     #target_object_updates 
@@ -227,8 +230,8 @@ def action_handler(
     
     print('updated hadnler')
     call_on_success_result = updated_handler(
-        cache_keys=cache_keys,
         target_object=target_object,
+        master_object=master_object,
         form_or_formset=form_or_formset,
         save_form_or_formset_on_valid=False,
         call_on_success=actions,
@@ -246,8 +249,10 @@ def build_form_or_formset(
         queryset=None,
         new_object_with_data=None,
         form=None,
+        unicorn_model=None,
         formset=None,
         custom_config=None,
+        form_mode=None,
     ):
     
     #formset if queryset provided
@@ -287,10 +292,10 @@ def build_form_or_formset(
         print(updated_instance_data)
         generated_form = form(
             instance=new_object_with_data, 
-            form_id='some_form',
-            unicorn_model=('',),
+            unicorn_model=unicorn_model,
             data=updated_instance_data, 
             custom_config=custom_config,
+            form_mode=form_mode,
         )        
         return generated_form
     

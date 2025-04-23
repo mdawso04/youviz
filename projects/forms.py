@@ -404,8 +404,8 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             'form': {
                 'form': {
                     'title': _('Datasource Details View'),
-                    'id': _('datastream_form'),
-                    'key': _('datastream_form'),
+                    'id': 'datastream_form',
+                    'key': 'datastream_form',
                 },
                 'cover': {
                     'title': _('Datasource Cover View'),
@@ -554,18 +554,28 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                     'unicorn:partial.key': 'datastream_form_{index}',
                 },
                 'datastream_type': {
+                    'class': 'form-select',
+                    'unicorn:model.lazy': '{unicorn_model}.datastream_type',
                     'unicorn:partial': 'form-{index}-body',
                     'unicorn:partial.key': 'datastream_form_{index}',
                 },
                 'url': {
+                    'rows': 6,
+                    'class': 'form-control',
+                    'unicorn:model.lazy': '{unicorn_model}.url',
                     'unicorn:partial': 'form-{index}-body',
                     'unicorn:partial.key': 'datastream_form_{index}',
                 },
                 'json': {
+                    'rows': 6,
+                    'class': 'form-control',
+                    'unicorn:model.lazy': '{unicorn_model}.json',
                     'unicorn:partial': 'form-{index}-body',
                     'unicorn:partial.key': 'datastream_form_{index}',
                 },
                 'source': {
+                    'class': 'form-control',
+                    'unicorn:model.lazy': '{unicorn_model}.source',
                     'unicorn:partial': 'form-{index}-body',
                     'unicorn:partial.key': 'datastream_form_{index}',
                 },
