@@ -4,10 +4,11 @@ from django.utils.translation import gettext_lazy as _
 from .models import BaseModel, Datastream
 from django.core.exceptions import ValidationError
 from entangled.forms import EntangledModelForm, EntangledModelFormMixin
-from django.forms import BaseModelFormSet
+from django.forms import BaseModelFormSet, ChoiceField
 from django import forms
-from .models import Datasource
+from .models import Datasource, Viz
 from copy import deepcopy
+from .util import *
 
 
 '''
@@ -33,31 +34,18 @@ class BaseForm(ModelForm):
     index = None
     custom_config = None
     buttons = None
+    CUSTOM_CONFIG_TAGS = {
+        '{index}': 'index',
+        '{unicorn_model}': 'unicorn_model',
+    }
     
     class Meta:
         model = BaseModel
         fields = ("name", "description", "is_published")
         widgets = {
-            "name": Textarea(
-                #template_name="widget.html", #input group
-                attrs={
-                    "rows": 4,
-                }
-            ),
-            "description": Textarea(
-                #template_name="widget.html", #input group
-                attrs={
-                    "rows": 4,
-                }
-            ),
-            
-            "is_published": CheckboxInput(
-                #template_name="widget.html", #input group
-                attrs={
-                    "type": "checkbox",
-                    "role": "switch",
-                }
-            ),
+            "name": Textarea(),
+            "description": Textarea(),
+            "is_published": CheckboxInput(),
         }
         labels = {
             "name": _("Name"),
@@ -128,10 +116,118 @@ class BaseForm(ModelForm):
         invalid_image
         invalid_list
         '''
+        
+    CUSTOM_CONFIG_BASE = {
+        'initial': {
+            'form': {
+                'form': {
+                    'title': _(''),
+                },
+                'cover': {
+                    'title': _(''),
+                },
+            },
+            'widgets': {
+                'name': {
+                    'class': 'form-control',
+                    'rows': 4,
+                    'unicorn:model.lazy': '{unicorn_model}.name',
+                    'unicorn:partial': '',
+                    'unicorn:partial.id': '',
+                    #'unicorn:partial.key': '',
+                },
+                'description': {
+                    'class': 'form-control',
+                    'rows': 4,
+                    'unicorn:model.lazy': '{unicorn_model}.description',
+                    'unicorn:partial': '',
+                    'unicorn:partial.id': '',
+                    #'unicorn:partial.key': '',
+                },
+                'is_published': {
+                    'class': 'form-check-input',
+                    "type": "checkbox",
+                    "role": "switch",
+                    'unicorn:model.lazy': '{unicorn_model}.is_published',
+                    'unicorn:partial': '',
+                    'unicorn:partial.id': 'e',
+                    #'unicorn:partial.key': '',
+                },
+            },
+            'buttons': {
+                "ok": {
+                    "display": False,
+                },
+                "cancel": {
+                    "display": False,
+                },
+                "copy": {
+                    "display": False,
+                },
+                "delete": {
+                    "display": False,
+                },
+            },
+        },
+        'empty': {
+            'form': {
+                'form': {
+                    'title': _(''),
+                },
+                'cover': {
+                    'title': _(''),
+                },
+            },
+            'widgets': {
+                'name': {
+                    'class': 'form-control',
+                    'rows': 4,
+                    'unicorn:model.lazy': '{unicorn_model}.name',
+                    'unicorn:partial': '',
+                    'unicorn:partial.id': '',
+                    #'unicorn:partial.key': '',
+                },
+                'description': {
+                    'class': 'form-control',
+                    'rows': 4,
+                    'unicorn:model.lazy': '{unicorn_model}.description',
+                    'unicorn:partial': '',
+                    'unicorn:partial.id': '',
+                    #'unicorn:partial.key': '',
+                },
+                'is_published': {
+                    'class': 'form-check-input',
+                    "type": "checkbox",
+                    "role": "switch",
+                    'unicorn:model.lazy': '{unicorn_model}.is_published',
+                    'unicorn:partial': '',
+                    'unicorn:partial.id': 'e',
+                    #'unicorn:partial.key': '',
+                },
+            },
+            'buttons': {
+                "ok": {
+                    "display": False,
+                },
+                "cancel": {
+                    "display": False,
+                },
+                "copy": {
+                    "display": False,
+                },
+                "delete": {
+                    "display": False,
+                },
+            },
+        }
+    }
     
     def __init__(self, *args, **kwargs):
+        #custom form attrs
         self.form_id = kwargs.pop('form_id', None)
         self.unicorn_model = kwargs.pop('unicorn_model', None)
+        if type(self.unicorn_model) == tuple:
+            self.unicorn_model = self.unicorn_model[0]
         self.index = kwargs.pop('index', None)
         self.formset = kwargs.pop('formset', None)
         self.form_mode = kwargs.pop('form_mode', None)
@@ -141,45 +237,22 @@ class BaseForm(ModelForm):
         if type(self.custom_config) == tuple:
             self.custom_config = self.custom_config[0]
         
+        #build baseform
         super(BaseForm, self).__init__(*args, **kwargs)
-        self.fields['name'].widget.attrs.update({
-            'class': 'form-control',
-            #'unicorn:key': 'test',
-            'unicorn:model.lazy': '{}.name'.format(*self.unicorn_model),
-            #'unicorn:partial': 'form-content-{}'.format(self.instance.slug),
-            #'unicorn:partial.id': 'test',
-            #'unicorn:partial.key': 'test',
-            "rows": 4,
-        })
-        self.fields['description'].widget.attrs.update({
-            'class': 'form-control',
-            #'unicorn:key': 'test',
-            'unicorn:model.lazy': '{}.description'.format(*self.unicorn_model),
-            #'unicorn:partial': self.form_id,
-            #'unicorn:partial.id': 'fileInfo',
-            #'unicorn:partial.key': 'test',
-            #'unicorn:dirty.attr': 'readonly',
-            "rows": 4, 
-        })
-        self.fields['is_published'].widget.attrs.update({
-            'class': 'form-check-input',
-            #'unicorn:key': 'test',
-            'unicorn:model': '{}.is_published'.format(*self.unicorn_model),
-            #'unicorn:partial': self.form_id,
-            #'unicorn:partial.id': 'fileInfo',
-            #'unicorn:partial.key': 'test',
-            #'unicorn:dirty.attr': 'readonly', 
-            "role": "switch",
-        })
+        
+        #apply custom config
         
     def apply_custom_config(self):
         if self.custom_config and self.form_mode:
             #substitute index
             custom_config_for_current_form_mode = self.custom_config[self.form_mode]
             #TODO replace index, buttons
+            replacements = {k: getattr(self, v, '') for k, v in self.CUSTOM_CONFIG_TAGS.items() if getattr(self, v, '') is not None}
+            print(replacements.items())
             def replace_handler(value):
                 if isinstance(value, str):
-                    return value.replace('{index}', str(self.index))
+                    for o_word, n_word in replacements.items():
+                        value = value.replace(str(o_word), str(n_word))
                 return value
             indexed_config = {
                 k: {k1: {k2: replace_handler(v2) for k2, v2 in v1.items()} for k1, v1 in v.items()} for k, v in custom_config_for_current_form_mode.items()
@@ -190,9 +263,13 @@ class BaseForm(ModelForm):
                     setattr(self, '{}_{}'.format(k, k1), v1)
             widget_config = indexed_config['widgets']
             for k in widget_config.keys():
-                self.fields[k].widget.attrs.update(widget_config.get(k, None))
+                if k in self.fields:
+                    self.fields[k].widget.attrs.update(widget_config.get(k, None))
             button_config = indexed_config['buttons']
-            self.buttons = deepcopy(self.__class__.Meta.buttons | button_config)
+            if hasattr(self.__class__.Meta, 'buttons'):
+                self.buttons = deepcopy(self.__class__.Meta.buttons | button_config)
+            else:
+                self.buttons = deepcopy(button_config)
             if self.buttons:
                 for b in self.buttons.values():
                     if 'display' in b and callable(b['display']):
@@ -201,34 +278,27 @@ class BaseForm(ModelForm):
                         b['disable'] = b['disable'](self) 
                         
             #print(self.buttons)
-                            
+    '''      
     def clean_name(self):
         data = self.cleaned_data["name"]
-        if data and len(data) < 4:
-            raise ValidationError("Enter more than 4 characters")
+        if len(data) < 4:
+            raise ValidationError("You have forgotten about Fred!")
+
+        # Always return a value to use as the new cleaned data, even if
+        # this method didn't change it.
         return data
     
-    def clean_description(self):
-        data = self.cleaned_data["description"]
-        if data and len(data) < 4:
-            raise ValidationError("Enter more than 4 characters")
-        return data
-    
+    '''
     def clean(self):
         cleaned_data = super().clean()
-        name = self.cleaned_data.get("name")
-        description = self.cleaned_data.get("description")
+        name = self.cleaned_data.get('name')
+        if name and len(name) < 4:
+            self.add_error('name', "Name needs to be more than 4 characters.")
         
-        '''        
-        if name and description and name != description:
-            raise ValidationError(
-                "Name and description don't match"
-            )
-        if cc_myself and subject and "help" not in subject:
-            msg = "Must put 'help' in subject when cc'ing yourself."
-            self.add_error("cc_myself", msg)
-            self.add_error("subject", msg)
-        '''
+        #if name and description and name != description:
+        #raise ValidationError(
+        #    "Test exception"
+        #)
         return cleaned_data
         
 class DatastreamForm(EntangledModelFormMixin, BaseForm):
@@ -244,49 +314,11 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
         fields = BaseForm.Meta.fields + ('datastream_type', "url", "json", 'source',)
         entangled_fields = {'properties': ['source', ]}
         #untangled_fields = BaseForm.Meta.fields + ('datastream_type', "url", "json",)
-        buttons = BaseForm.Meta.buttons | {
-            "ok": {
-                "label": _("OK"),
-                "display_trigger": False,
-                "attrs":{
-                    'class': 'button',
-                }
-            },
-            "cancel": {
-                "label": _("OK"),
-                "display_trigger": False,
-                "attrs":{
-                    'class': 'button',
-                }
-            },
-            "copy": {
-                "label": _("OK"),
-                "display_trigger": False,
-                "attrs":{
-                    'class': 'button',
-                }
-            },
-            "delete": {
-                "label": _("OK"),
-                "display_trigger": True,
-                "attrs":{
-                    'class': 'button',
-                }
-            }
-        }
-        widgets = BaseForm.Meta.widgets | {
-            "url": Textarea(
-                attrs={
-                    "rows": 6,
-                }
-            ),
-            "json": Textarea(
-                attrs={
-                    "rows": 6
-                }
-            ),
-        }
-        labels = BaseForm.Meta.labels | {
+        widgets = dict_deep_merge(BaseForm.Meta.widgets, {
+            "url": Textarea(),
+            "json": Textarea(),
+        })
+        labels = dict_deep_merge(BaseForm.Meta.labels, {
             "datastream_type": _('datastream_type'),
             "url": _('url'),
             "json": _('json'),
@@ -294,22 +326,23 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             "ok_button": _('OK'),
             "cancel_button": _('Cancel'),
             "delete_button": _('Delete'),
-        }
-        help_texts = BaseForm.Meta.help_texts | {
+        })
+        help_texts = dict_deep_merge(BaseForm.Meta.help_texts, {
             "datastream_type": _("Some useful help text."),
             "url": _("Some useful help text."),
             "json": _("Some useful help text."),
-        }
-        error_messages = BaseForm.Meta.error_messages | {
+        })
+        error_messages = dict_deep_merge(BaseForm.Meta.error_messages, {
             "url": {
                 "max_length": _("This writer's name is too long."),
             },
             "json": {
                 "max_length": _("This writer's name is too long."),
             },
-        }    
+        })   
+        #buttons - none
     
-    CUSTOM_CONFIG_VIEW = {
+    CUSTOM_CONFIG_VIEW = dict_deep_merge(BaseForm.CUSTOM_CONFIG_BASE, {
         'initial': {
             'form': {
                 'form': {
@@ -334,6 +367,22 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                     'unicorn:partial': 'datasource-details',
                     'unicorn:partial.id': 'details-datasource',
                     #'unicorn:partial.key': 'infoLargeTitle',
+                },'datastream_type': {
+                    'class': 'form-select',
+                    'unicorn:model.lazy': '{unicorn_model}.datastream_type',
+                },'url': {
+                    'rows': 6,
+                    'class': 'form-control',
+                    'unicorn:model.lazy': '{unicorn_model}.url',
+                    'style': 'word-break: break-all;',
+                },'json': {
+                    'rows': 6,
+                    'class': 'form-control',
+                    'unicorn:model.lazy': '{unicorn_model}.json',
+                    'style': 'word-break: break-all;',
+                },'source': {
+                    'class': 'form-control',
+                    'unicorn:model.lazy': '{unicorn_model}.properties.source',
                 },
             },
             'buttons': {
@@ -398,9 +447,9 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 },
             },
         }
-    }
+    })
     
-    CUSTOM_CONFIG_NEW = {
+    CUSTOM_CONFIG_NEW = dict_deep_merge(BaseForm.CUSTOM_CONFIG_BASE, {
         'initial': {
             'form': {
                 'form': {
@@ -530,80 +579,25 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 },
             },
         },
-    }
+    })
 
     def __init__(self, *args, **kwargs):
         super(DatastreamForm, self).__init__(*args, **kwargs)
-        #non-partials
-        self.fields['datastream_type'].widget.attrs.update({
-            'class': 'form-select',
-            #'unicorn:key': 'test',
-            'unicorn:model.lazy': '{}.datastream_type'.format(*self.unicorn_model),
-        })
-        self.fields['url'].widget.attrs.update({
-            'class': 'form-control',
-            #'unicorn:key': 'test',
-            'unicorn:model.lazy': '{}.url'.format(*self.unicorn_model),
-            'style': 'word-break: break-all;',
-        })
-        self.fields['url'].is_required = False
-        self.fields['json'].widget.attrs.update({
-            'class': 'form-control',
-            #'unicorn:key': 'test',
-            'unicorn:model.lazy': '{}.json'.format(*self.unicorn_model),
-            'style': 'word-break: break-all;',
-        })
-        self.fields['source'].widget.attrs.update({
-            'class': 'form-control',
-            #'unicorn:key': 'test',
-            'unicorn:model.lazy': '{}.properties.source'.format(*self.unicorn_model),
-        })
         self.apply_custom_config()
         
-    def clean_datastream_type(self):
-        data = self.cleaned_data["datastream_type"]
-        if False:
-            raise ValidationError("datastream_type", "Please enter a valid type!")
-        return data
-    
-    def clean_url(self):
-        #print('cleaning url')
-        data = self.cleaned_data["url"]
-        #print(data)
-        if data and len(data) < 4:
-            raise ValidationError("url", "Please enter a longer url!")
-        return data
-    
-    def clean_json(self):
-        data = self.cleaned_data["json"]
-        if False:
-            raise ValidationError("json", "Please enter avalid json!")
-        return data
-    
-    def clean_source(self):
-        data = self.cleaned_data["source"]
-        if False:
-            raise ValidationError("source", "Please enter a valid source!")
-        return data
-    
     def clean(self):
-        #print('clearning form')
         cleaned_data = super().clean()
-        #print(cleaned_data)
-        source = cleaned_data.get("source")
-        description = cleaned_data.get("description")
+        name = self.cleaned_data.get('name')
+        if name and len(name) < 8:
+            self.add_error('name', "Name needs to be more than 8 characters.")
         
-        #hack to workaround phantom url validation errors
-        #self.errors['url'] = self.error_class()
-        #if 'url' in self.errors:
-        #    del self.errors['url']
-        
-        '''
-        if source and source != description: #name and description:
+        '''        
+        if name and description and name != description:
             raise ValidationError(
-                "Source and description don't match"
+                "Name and description don't match"
             )
         '''
+        return cleaned_data
         
 class BaseDatastreamFormSet(BaseModelFormSet):
     def __init__(self, *args, **kwargs):
@@ -663,31 +657,16 @@ class DatasourceForm(EntangledModelFormMixin, BaseForm):
         
     def __init__(self, *args, **kwargs):
         super(DatasourceForm, self).__init__(*args, **kwargs)
-        '''
-        self.fields['name'].widget.attrs.update({
-            'unicorn:partial': 'details-info',
-            'unicorn:partial.id': 'infoLargeTitle',
-            #'unicorn:partial.key': 'test',
-        })
-        self.fields['description'].widget.attrs.update({
-            'unicorn:partial': 'details-info',
-            'unicorn:partial.id': 'infoLargeTitle',
-            #'unicorn:partial.key': 'test',
-        })
-        self.fields['is_published'].widget.attrs.update({
-            'unicorn:partial': 'details-info',
-            'unicorn:partial.id': 'infoLargeTitle',
-            #'unicorn:partial.key': 'test',
-        })
-        '''
         self.apply_custom_config()
     
     #only initial
-    CUSTOM_CONFIG_VIEW = {
+    CUSTOM_CONFIG_VIEW = dict_deep_merge(BaseForm.CUSTOM_CONFIG_BASE, {
         'initial': {
             'form': {
                 'form': {
                     'title': _('Viz Details View'),
+                    'id': _('datasource_form'),
+                    'key': _('datasource_form'),
                 },
                 'cover': {
                     'title': _('Viz Cover View'),
@@ -697,7 +676,7 @@ class DatasourceForm(EntangledModelFormMixin, BaseForm):
                 'name': {
                     'unicorn:partial': 'details-info',
                     'unicorn:partial.id': 'infoLargeTitle',
-                    #'unicorn:partial.key': 'infoLargeTitle',
+                    'unicorn:partial.key': 'datasource_form',
                 },
                 'description': {
                     'unicorn:partial': 'details-infos',
@@ -731,26 +710,20 @@ class DatasourceForm(EntangledModelFormMixin, BaseForm):
                 },
             },
         },
-    }
+    })
     
     def clean(self):
-        #print('clearning form')
         cleaned_data = super().clean()
-        #print(cleaned_data)
-        source = cleaned_data.get("source")
-        description = cleaned_data.get("description")
-        
-        #hack to workaround phantom url validation errors
-        #self.errors['url'] = self.error_class()
-        if 'url' in self.errors:
-            del self.errors['url']
-        
-        '''
-        if source and source != description: #name and description:
+        #name = self.cleaned_data.get('name')
+        #if name and len(name) < 4:
+        #    self.add_error('name', "Name needs to be more than 4 characters.")
+        '''        
+        if name and description and name != description:
             raise ValidationError(
-                "Source and description don't match"
+                "Name and description don't match"
             )
         '''
+        return cleaned_data
         
 class BaseDatasourceFormSet(BaseModelFormSet):
     def get_form_kwargs(self, index):
@@ -781,3 +754,85 @@ class BaseDatasourceFormSet(BaseModelFormSet):
                 raise ValidationError("Articles in a set must have distinct titles.")
             titles.add(title)
         '''
+
+class VizForm(EntangledModelFormMixin, BaseForm):
+    class Meta:
+        model = Viz
+        fields = ('description',)
+        entangled_fields = {'properties': ['source', ]}
+        #untangled_fields = BaseForm.Meta.fields + ('datastream_type', "url", "json",)
+        widgets = BaseForm.Meta.widgets
+        #labels = BaseForm.Meta.labels
+        #help_texts = BaseForm.Meta.help_texts
+        #error_messages = BaseForm.Meta.error_messages
+        buttons = BaseForm.Meta.buttons
+        
+    def __init__(self, *args, **kwargs):
+        super(VizForm, self).__init__(*args, **kwargs)
+        
+        #viz type
+        choices = [(c, c,) for c in self.instance.viz_cache['viz']['service']['available']['viz']]
+        self.fields['type'] = forms.ChoiceField(label='Type', choices=choices)
+        self.fields['type'].widget.attrs.update({'class': 'form-select'})
+
+        #viz options
+        for k, v in self.instance.viz_cache['viz']['options']['available'].items():
+            choices = [(value, value,) for value in v]
+            self.fields['{}'.format(k)] = forms.ChoiceField(label=k, choices=choices)
+            self.fields['{}'.format(k)].widget.attrs.update({'class': 'form-select'})
+            #TODO - auto, custom options
+            if False:
+                self.fields['{}_custom'.format(k)] = CharField(label=k)
+        
+        #viz options
+        for k, v in self.instance.viz_cache['viz']['layout']['available'].items():
+            choices = [(value, value,) for value in v]
+            self.fields['{}'.format(k)] = forms.ChoiceField(label=k, choices=choices)
+            self.fields['{}'.format(k)].widget.attrs.update({'class': 'form-select'})
+            #TODO - auto, custom options
+            if False:
+                self.fields['{}_custom'.format(k)] = CharField(label=k)
+        
+        self.apply_custom_config()
+    
+    #only initial
+    CUSTOM_CONFIG_VIEW = dict_deep_merge(BaseForm.CUSTOM_CONFIG_BASE, {
+        'initial': {
+            'form': {
+                'form': {
+                    'title': _('Viz Data View'),
+                },
+                'cover': {
+                    'title': _('Viz Data View'),
+                },
+            },
+            'buttons': {
+                "ok": {
+                    "display": False,
+                },
+                "cancel": {
+                    "display": False,
+                },
+                "copy": {
+                    "display": False,
+                },
+                "delete": {
+                    "display": False,
+                },
+            },
+        },
+    })
+    
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        #name = self.cleaned_data.get('name')
+        #if name and len(name) < 4:
+        #    self.add_error('name', "Name needs to be more than 4 characters.")
+        '''        
+        if name and description and name != description:
+            raise ValidationError(
+                "Name and description don't match"
+            )
+        '''
+        return cleaned_data

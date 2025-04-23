@@ -73,7 +73,7 @@
             <!-- NAVPANEL -->
             {# if we have perms to display nav #}
             {% if 'display_nav_panel' in app_perms %}
-            <div class="bg-light border-none test-nav {% if settings.nav_open %}open{% endif %}" id="navbar" aria-labelledby="TBD">
+            <div class="bg-light border-none test-nav {% if settings.nav_open %}open{% endif %}" id="navbar" aria-labelledby="TBD" style="animation: fadeIn 1s ease-in both;">
                 <div class="position-relative">
                 {% block navpanel %}
                 {% endblock %}
@@ -115,7 +115,7 @@
             {# only for in-app items #}
             {% if 'display_edit_panel' in app_perms %}
             {% if context.mode == "list" or context.mode == "user" or context.mode == "new" %}
-            <div class="bg-light border-none test-edit {% if settings.edit_open %}open{% endif %}" id="editpanel" aria-labelledby="TBD" data-nosnippet>
+            <div class="bg-light border-none test-edit {% if settings.edit_open %}open{% endif %}" id="editpanel" aria-labelledby="TBD" data-nosnippet style="animation: fadeIn 1s ease-in both;">
                 <div class="position-relative">
                 {% block editpanel %}
                 {% endblock %}

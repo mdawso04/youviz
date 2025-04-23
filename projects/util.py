@@ -8,8 +8,8 @@ from django.forms import BaseModelFormSet
 from django.shortcuts import redirect
 from django.urls import reverse
 
-def cache_key_from_obj(obj):
-    return '{}_{}'.format(type(obj).__name__.lower(), obj.slug)
+def cache_key_from_obj(obj, suffix=''):
+    return '{}_{}{}'.format(type(obj).__name__.lower(), obj.slug, suffix)
 
 def attach_slug_to_perm_name(perm_name, obj):
     return '{}_{}'.format(perm_name, obj.slug)
@@ -118,28 +118,41 @@ def get_perms_and_settings(*args, **kwargs):
         return app_perms, settings
     
 def updating_handler(
-        app_perms,
-        req_perms,
-        cache_key,
-        target_object
+        app_perms=None,
+        req_perms=None,
+        cache_keys=None,
+        target_object=None,
+        master_object=None
     ):
         if req_perms: 
             for p in req_perms:
                 if p not in app_perms:
                     raise Http404
-        c = cache.get(cache_key, None)
+        #for c in cache_keys:
+        #    c = cache.get(cache_key, None)
+        #    if c:
+        #        target_object.set_field_data(c)
+        ckey = cache_key_from_obj(target_object, '_buffer')
+        c = cache.get(ckey)
         if c:
             target_object.set_field_data(c)
+        c2key = cache_key_from_obj(master_object, '_master')
+        c1 = cache.get(c2key)
+        if c1:
+            master_object.set_field_data(c1)
+
+
 
 
 def updated_handler(
-        cache_key=None,
+        cache_keys=None,
         target_object=None,
+        master_object=None,
         form_or_formset=None,
         save_form_or_formset_on_valid=False,
         call_on_success=None,
     ):
-        if cache_key is not None and target_object is not None:
+        if cache_keys is not None and target_object is not None:
             cache.set(cache_key, target_object.field_data())
             
         def call_on_success_handler(call_on_success):
@@ -153,22 +166,35 @@ def updated_handler(
                     print('calling {}'.format(method_name))
             return result
         
+        form_or_formset_is_valid = None
+        action_result = None
+        
         if form_or_formset:
-            formset_is_valid = form_or_formset.is_valid()
-            if formset_is_valid:
+            form_or_formset_is_valid = form_or_formset.is_valid()
+            if form_or_formset_is_valid:
+                #always update master model
+                master_object.set_field_data(target_object.field_data())
+                #optionally write to db
                 if save_form_or_formset_on_valid:
-                    form_or_formset.save()
+                    #form_or_formset.save()
+                    master_object.save()
                     print('saved form')
                 else:
                     print('valid but no save selcted')
-                return formset_is_valid, call_on_success_handler(call_on_success)
+                #call actions
+                action_result = call_on_success_handler(call_on_success)
             else:
                 print('formset not valid')
                 print(form_or_formset.errors)
-                return formset_is_valid, None
                 #print(form_or_formset.non_form_errors())
         else:
-            return call_on_success_handler(call_on_success)
+            action_result = call_on_success_handler(call_on_success)
+        
+        cache.set(cache_key_from_obj(target_object, '_buffer'), target_object.field_data())
+        cache.set(cache_key_from_obj(master_object, '_master'), master_object.field_data())
+        print('updated cache')
+            
+        return form_or_formset_is_valid, action_result
 
         #convert values
         #validation
@@ -178,7 +204,7 @@ def updated_handler(
 def action_handler(
         app_perms=None,
         req_perms=None,
-        cache_key=None,
+        cache_keys=None,
         target_object=None,
         target_object_updates=None,
         form_or_formset=None,
@@ -190,7 +216,7 @@ def action_handler(
     updating_handler(
         app_perms=app_perms,
         req_perms=req_perms,
-        cache_key=cache_key,
+        cache_keys=cache_keys,
         target_object=target_object,
     )
     print('target updates')
@@ -201,7 +227,7 @@ def action_handler(
     
     print('updated hadnler')
     call_on_success_result = updated_handler(
-        cache_key=cache_key,
+        cache_keys=cache_keys,
         target_object=target_object,
         form_or_formset=form_or_formset,
         save_form_or_formset_on_valid=False,
@@ -267,6 +293,18 @@ def build_form_or_formset(
             custom_config=custom_config,
         )        
         return generated_form
+    
+def dict_deep_merge(d1, d2, level=4):
+    if level == 0 or not isinstance(d1, dict) or not isinstance(d2, dict):
+        return d2
+    merged = d1.copy()
+    for key, value in d2.items():
+        if key in merged:
+            merged[key] = dict_deep_merge(merged[key], value, level - 1)
+        else:
+            merged[key] = value
+    return merged
+
 
 #import copyreg
 

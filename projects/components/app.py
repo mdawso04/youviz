@@ -77,6 +77,7 @@ class AppView(UnicornView):
     #view
     datasource: Datasource = None
     datasource_form: DatasourceForm = None
+    datasource_buffer: Datasource = None
     vizs: QuerySetType[Viz] = None
     related_datasources: QuerySetType[Datasource] = None
     related_datasources_list_items_paginated: list = None
@@ -98,7 +99,7 @@ class AppView(UnicornView):
     class Meta:
         javascript_exclude = ('mode', 'page_count', 'items_per_page', 'list_items_paginated', 'page_no',
                               'datasources', 'datasources_list_items_paginated', 'datasources_list_page_no', 'datasources_displayed_item_ids', 
-                              'datasource', 'datasource_form', 'vizs', 'related_datasources', 'related_datasources_list_items_paginated', 'related_datasources_list_page_no', 'datastream_formset', 
+                              'datasource', 'datasource_form', 'datasource_buffer', 'vizs', 'related_datasources', 'related_datasources_list_items_paginated', 'related_datasources_list_page_no', 'datastream_formset', 
                               'datastream_form','new_datastream', 'new_datastream_form',  
                               'datastreams', 'datastreams_list_items_paginated', 'datastreams_list_page_no', 'datastreams_displayed_item_ids', 'formset_datastreams', 
                               'services', 'meta_object', 'message', 'page', 'siteuser', 'notification', 'ads', 'settings', 'context', 'covers', 'cover', 'add_comment_text', 'app_perms',) 
@@ -331,13 +332,15 @@ class AppView(UnicornView):
                         redirect('/')
                 
                 self.datasource = viewed_datasource
-                cache.delete(cache_key_from_obj(self.datasource))
+                cache.delete(cache_key_from_obj(self.datasource, '_master'))
                 
-                datasource_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource.field_data().items()}
+                self.datasource_buffer = copy.deepcopy(self.datasource)
+                cache.delete(cache_key_from_obj(self.datasource_buffer, '_buffer'))
+                
+                datasource_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource_buffer.field_data().items()}
                 self.datasource_form = DatasourceForm(
-                    instance=self.datasource, 
-                    form_id='datasource_form',
-                    unicorn_model=('datasource',),
+                    instance=self.datasource_buffer, 
+                    unicorn_model=('datasource_buffer',),
                     data=datasource_instance_data,
                     custom_config=DatasourceForm.CUSTOM_CONFIG_VIEW,
                     form_mode='initial'
@@ -407,7 +410,7 @@ class AppView(UnicornView):
             updating_handler(
                 app_perms=self.app_perms,
                 req_perms=('change_profile',),
-                cache_key=cache_key_from_obj(updated_instance),
+                cache_keys=(cache_key_from_obj(updated_instance),),
                 target_object=updated_instance,
             )
         # new
@@ -417,7 +420,7 @@ class AppView(UnicornView):
             updating_handler(
                 app_perms=self.app_perms,
                 req_perms=(change_perm_from_obj(updated_instance),),
-                cache_key=cache_key_from_obj(updated_instance),
+                cache_keys=(cache_key_from_obj(updated_instance),),
                 target_object=updated_instance,
             )
         elif 'new_datastream' in name:
@@ -425,7 +428,7 @@ class AppView(UnicornView):
             updating_handler(
                 app_perms=self.app_perms,
                 req_perms=('add_datastream',),
-                cache_key='new_datastream',
+                cache_keys=('new_datastream',),
                 target_object=updated_instance,
             )
         
@@ -434,16 +437,18 @@ class AppView(UnicornView):
             updating_handler(
                 app_perms=self.app_perms,
                 req_perms=(change_perm_from_obj(updated_instance),),
-                cache_key=cache_key_from_obj(updated_instance),
+                cache_keys=(cache_key_from_obj(updated_instance),),
                 target_object=updated_instance,
             )
-        elif 'datasource.' in name:
-            updated_instance = self.datasource
+        elif 'datasource_buffer.' in name:
+            updated_instance = self.datasource_buffer
+            master_instance = self.datasource
             updating_handler(
                 app_perms=self.app_perms,
                 req_perms=(change_perm_from_obj(updated_instance),),
-                cache_key=cache_key_from_obj(updated_instance),
+                #cache_keys=(cache_key_from_obj(updated_instance),),
                 target_object=updated_instance,
+                master_object=master_instance,
             )
         #logger.debug('AppView > updating end')
         
@@ -512,21 +517,27 @@ class AppView(UnicornView):
                 save_form_or_formset_on_valid=True,
                 call_on_success=None,
             )
-        elif 'datasource.' in name:
-            updated_instance = self.datasource
+        elif 'datasource_buffer.' in name:
+            master_instance = self.datasource
+            updated_instance = self.datasource_buffer
             updated_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in updated_instance.field_data().items()}
             self.datasource_form = DatasourceForm(
                 instance=updated_instance, 
-                form_id='datasource_form',
-                unicorn_model=('datasource',),
-                data=updated_instance_data, )
+                unicorn_model=('datasource_buffer',),
+                data=updated_instance_data, 
+                custom_config=DatasourceForm.CUSTOM_CONFIG_VIEW,
+                form_mode='initial',
+            )
             updated_handler(
-                cache_key=cache_key_from_obj(updated_instance),
+                #cache_key=cache_key_from_obj(updated_instance),
                 target_object=updated_instance,
+                master_object=master_instance,
                 form_or_formset=self.datasource_form,
                 save_form_or_formset_on_valid=True,
                 call_on_success=None,
             )
+            #if not update_is_valid:
+            #    raise Exception('Invalid update')
         #logger.debug('AppView > updated end')
         #print('reloading')
         #self.load_table()

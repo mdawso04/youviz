@@ -28,6 +28,8 @@ import pandas as pd
 #import plotly.express as px
 import plotly.io as pio
 import shortuuid
+from projects.util import *
+from projects.forms import VizForm
 
 class VizView(UnicornView):
     
@@ -36,9 +38,10 @@ class VizView(UnicornView):
     context: dict = None
     settings: dict = None 
     app_perms: list = None
+    viz_form: VizForm = None
     
     class Meta:
-        javascript_exclude = ('cache', 'context', 'settings', 'app_perms',) 
+        javascript_exclude = ('cache', 'context', 'settings', 'app_perms', 'viz_form',) 
         
 #LOAD/UPDATE
 
@@ -100,6 +103,15 @@ class VizView(UnicornView):
         #print(self.cache['viz']['options']['saved'])
         #print(self.cache['viz']['layout']['saved'])
         
+        instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.viz.field_data().items()}
+        self.viz_form = VizForm(
+            instance=self.viz, 
+            form_id='viz_form',
+            unicorn_model=('viz',),
+            data=instance_data,
+            custom_config=VizForm.CUSTOM_CONFIG_VIEW,
+            form_mode='initial'
+        )
         
         #logger.debug('VizView > load_viz end')
         
