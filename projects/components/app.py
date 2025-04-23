@@ -374,7 +374,7 @@ class AppView(UnicornView):
                 self.datastream_form = build_form_or_formset(
                     model=None,
                     queryset=None,
-                    new_object_with_data=self.datasource_buffer,
+                    new_object_with_data=self.datasource_buffer.datastream,
                     form=DatastreamForm,
                     unicorn_model='datasource_buffer.datastream',
                     formset=None,
