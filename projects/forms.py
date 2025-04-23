@@ -53,9 +53,9 @@ class BaseForm(ModelForm):
             "is_published": _("Is published"),
         }
         help_texts = {
-            "name": _("The item name."),
-            "description": _("The item description."),
-            "is_published": _("THe published switch."),
+            #"name": _("The item name."),
+            #"description": _("The item description."),
+            #"is_published": _("THe published switch."),
         }
         error_messages = {
             "name": {
@@ -132,25 +132,25 @@ class BaseForm(ModelForm):
                     'class': 'form-control',
                     'rows': 4,
                     'unicorn:model.lazy': '{unicorn_model}.name',
-                    'unicorn:partial': '',
-                    'unicorn:partial.id': '',
+                    #'unicorn:partial': '',
+                    #'unicorn:partial.id': '',
                     #'unicorn:partial.key': '',
                 },
                 'description': {
                     'class': 'form-control',
                     'rows': 4,
                     'unicorn:model.lazy': '{unicorn_model}.description',
-                    'unicorn:partial': '',
-                    'unicorn:partial.id': '',
+                    #'unicorn:partial': '',
+                    #'unicorn:partial.id': '',
                     #'unicorn:partial.key': '',
                 },
                 'is_published': {
                     'class': 'form-check-input',
                     "type": "checkbox",
                     "role": "switch",
-                    'unicorn:model.lazy': '{unicorn_model}.is_published',
-                    'unicorn:partial': '',
-                    'unicorn:partial.id': 'e',
+                    #'unicorn:model.lazy': '{unicorn_model}.is_published',
+                    #'unicorn:partial': '',
+                    #'unicorn:partial.id': 'e',
                     #'unicorn:partial.key': '',
                 },
             },
@@ -183,25 +183,25 @@ class BaseForm(ModelForm):
                     'class': 'form-control',
                     'rows': 4,
                     'unicorn:model.lazy': '{unicorn_model}.name',
-                    'unicorn:partial': '',
-                    'unicorn:partial.id': '',
+                    #'unicorn:partial': '',
+                    #'unicorn:partial.id': '',
                     #'unicorn:partial.key': '',
                 },
                 'description': {
                     'class': 'form-control',
                     'rows': 4,
                     'unicorn:model.lazy': '{unicorn_model}.description',
-                    'unicorn:partial': '',
-                    'unicorn:partial.id': '',
+                    #'unicorn:partial': '',
+                    #'unicorn:partial.id': '',
                     #'unicorn:partial.key': '',
                 },
                 'is_published': {
                     'class': 'form-check-input',
                     "type": "checkbox",
                     "role": "switch",
-                    'unicorn:model.lazy': '{unicorn_model}.is_published',
-                    'unicorn:partial': '',
-                    'unicorn:partial.id': 'e',
+                    #'unicorn:model.lazy': '{unicorn_model}.is_published',
+                    #'unicorn:partial': '',
+                    #'unicorn:partial.id': 'e',
                     #'unicorn:partial.key': '',
                 },
             },
@@ -245,10 +245,10 @@ class BaseForm(ModelForm):
     def apply_custom_config(self):
         if self.custom_config and self.form_mode:
             #substitute index
-            custom_config_for_current_form_mode = self.custom_config[self.form_mode]
+            custom_config_for_current_form_mode = deepcopy(self.custom_config[self.form_mode])
             #TODO replace index, buttons
             replacements = {k: getattr(self, v, '') for k, v in self.CUSTOM_CONFIG_TAGS.items() if getattr(self, v, '') is not None}
-            print(replacements.items())
+            #print(replacements.items())
             def replace_handler(value):
                 if isinstance(value, str):
                     for o_word, n_word in replacements.items():
@@ -277,18 +277,6 @@ class BaseForm(ModelForm):
                     if 'disable' in b and callable(b['disable']):
                         b['disable'] = b['disable'](self) 
                         
-            #print(self.buttons)
-    '''      
-    def clean_name(self):
-        data = self.cleaned_data["name"]
-        if len(data) < 4:
-            raise ValidationError("You have forgotten about Fred!")
-
-        # Always return a value to use as the new cleaned data, even if
-        # this method didn't change it.
-        return data
-    
-    '''
     def clean(self):
         cleaned_data = super().clean()
         name = self.cleaned_data.get('name')
@@ -347,6 +335,8 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             'form': {
                 'form': {
                     'title': _('Datasource Details View'),
+                    'id': _('datastream_form'),
+                    'key': _('datastream_form'),
                 },
                 'cover': {
                     'title': _('Datasource Cover View'),
@@ -356,33 +346,37 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 'name': {
                     'unicorn:partial': 'datasource-details',
                     'unicorn:partial.id': 'details-datasource',
-                    #'unicorn:partial.key': 'infoLargeTitle',
+                    'unicorn:partial.key': 'datastream_form',
                 },
                 'description': {
                     'unicorn:partial': 'datasource-details',
                     'unicorn:partial.id': 'details-datasource',
-                    #'unicorn:partial.key': 'infoLargeTitle',
+                    'unicorn:partial.key': 'datastream_form',
                 },
                 'is_published': {
                     'unicorn:partial': 'datasource-details',
                     'unicorn:partial.id': 'details-datasource',
-                    #'unicorn:partial.key': 'infoLargeTitle',
+                    'unicorn:partial.key': 'datastream_form',
                 },'datastream_type': {
                     'class': 'form-select',
                     'unicorn:model.lazy': '{unicorn_model}.datastream_type',
+                    'unicorn:partial.key': 'datastream_form',
                 },'url': {
                     'rows': 6,
                     'class': 'form-control',
                     'unicorn:model.lazy': '{unicorn_model}.url',
                     'style': 'word-break: break-all;',
+                    'unicorn:partial.key': 'datastream_form',
                 },'json': {
                     'rows': 6,
                     'class': 'form-control',
                     'unicorn:model.lazy': '{unicorn_model}.json',
                     'style': 'word-break: break-all;',
+                    'unicorn:partial.key': 'datastream_form',
                 },'source': {
                     'class': 'form-control',
                     'unicorn:model.lazy': '{unicorn_model}.properties.source',
+                    'unicorn:partial.key': 'datastream_form',
                 },
             },
             'buttons': {
@@ -410,6 +404,8 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             'form': {
                 'form': {
                     'title': _('Datasource Details View'),
+                    'id': _('datastream_form'),
+                    'key': _('datastream_form'),
                 },
                 'cover': {
                     'title': _('Datasource Cover View'),
@@ -454,6 +450,8 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             'form': {
                 'form': {
                     'title': _('Datasource Details View'),
+                    'id': 'datastream_form_{index}',
+                    'key': 'datastream_form_{index}',
                 },
                 'cover': {
                     'title': _('Datasource Cover View'),
@@ -463,17 +461,37 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 'name': {
                     'unicorn:partial': 'list-card-{index}',
                     'unicorn:partial.id': 'form-cover-{index}',
-                    #'unicorn:partial.key': ,
+                    'unicorn:partial.key': 'datastream_form_{index}',
                 },
                 'description': {
                     'unicorn:partial': 'list-card-{index}',
                     'unicorn:partial.id': 'form-cover-{index}',
-                    #'unicorn:partial.key': ,
+                    'unicorn:partial.key': 'datastream_form_{index}',
                 },
                 'is_published': {
                     'unicorn:partial': 'list-card-{index}',
                     'unicorn:partial.id': 'form-cover-{index}',
-                    #'unicorn:partial.key': ,
+                    'unicorn:partial.key': 'datastream_form_{index}',
+                },'datastream_type': {
+                    'class': 'form-select',
+                    'unicorn:model.lazy': '{unicorn_model}.datastream_type',
+                    'unicorn:partial.key': 'datastream_form_{index}',
+                },'url': {
+                    'rows': 6,
+                    'class': 'form-control',
+                    'unicorn:model.lazy': '{unicorn_model}.url',
+                    'style': 'word-break: break-all;',
+                    'unicorn:partial.key': 'datastream_form_{index}',
+                },'json': {
+                    'rows': 6,
+                    'class': 'form-control',
+                    'unicorn:model.lazy': '{unicorn_model}.json',
+                    'style': 'word-break: break-all;',
+                    'unicorn:partial.key': 'datastream_form_{index}',
+                },'source': {
+                    'class': 'form-control',
+                    'unicorn:model.lazy': '{unicorn_model}.properties.source',
+                    'unicorn:partial.key': 'datastream_form_{index}',
                 },
             },
             'buttons': {
@@ -515,6 +533,8 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             'form': {
                 'form': {
                     'title': _('Datasource Details View'),
+                    'id': 'datastream_form_{index}',
+                    'key': 'datastream_form_{index}',
                 },
                 'cover': {
                     'title': _('Datasource Cover View'),
@@ -523,24 +543,31 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             'widgets': {
                 'name': {
                     'unicorn:partial': 'form-{index}-body',
+                    'unicorn:partial.key': 'datastream_form_{index}',
                 },
                 'description': {
                     'unicorn:partial': 'form-{index}-body',
+                    'unicorn:partial.key': 'datastream_form_{index}',
                 },
                 'is_published': {
                     'unicorn:partial': 'form-{index}-body',
+                    'unicorn:partial.key': 'datastream_form_{index}',
                 },
                 'datastream_type': {
                     'unicorn:partial': 'form-{index}-body',
+                    'unicorn:partial.key': 'datastream_form_{index}',
                 },
                 'url': {
                     'unicorn:partial': 'form-{index}-body',
+                    'unicorn:partial.key': 'datastream_form_{index}',
                 },
                 'json': {
                     'unicorn:partial': 'form-{index}-body',
+                    'unicorn:partial.key': 'datastream_form_{index}',
                 },
                 'source': {
                     'unicorn:partial': 'form-{index}-body',
+                    'unicorn:partial.key': 'datastream_form_{index}',
                 },
             },
             'buttons': {
@@ -588,8 +615,8 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
     def clean(self):
         cleaned_data = super().clean()
         name = self.cleaned_data.get('name')
-        if name and len(name) < 8:
-            self.add_error('name', "Name needs to be more than 8 characters.")
+        if name and len(name) < 4:
+            self.add_error('name', "Name needs to be more than 3 characters.")
         
         '''        
         if name and description and name != description:
@@ -620,14 +647,6 @@ class BaseDatastreamFormSet(BaseModelFormSet):
     
     def clean(self):
         """Checks that no two articles have the same title."""
-        #print('cleaning formset')
-        #print('found these form errors')
-        #for f in self.forms: 
-        #    print(f.errors.as_data())
-        #    print(f.non_field_errors())
-        #print('found these non form errors')
-        #print(self.non_form_errors())
-            
         if any((self.errors, self.non_form_errors(),)):
             # Don't bother validating the formset unless each form is valid on its own
             return
@@ -732,15 +751,6 @@ class BaseDatasourceFormSet(BaseModelFormSet):
         return kwargs
     
     def clean(self):
-        """Checks that no two articles have the same title."""
-        #print('cleaning formset')
-        #print('found these form errors')
-        #for f in self.forms: 
-        #    print(f.errors.as_data())
-        #    print(f.non_field_errors())
-        #print('found these non form errors')
-        #print(self.non_form_errors())
-            
         if any((self.errors, self.non_form_errors(),)):
             # Don't bother validating the formset unless each form is valid on its own
             return
@@ -822,7 +832,6 @@ class VizForm(EntangledModelFormMixin, BaseForm):
             },
         },
     })
-    
     
     def clean(self):
         cleaned_data = super().clean()
