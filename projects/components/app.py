@@ -370,7 +370,7 @@ class AppView(UnicornView):
                     custom_config=DatastreamForm.CUSTOM_CONFIG_VIEW,
                     form_mode='initial'
                 )
-                '''
+                ''' 
                 self.datastream_form = build_form_or_formset(
                     model=None,
                     queryset=None,
