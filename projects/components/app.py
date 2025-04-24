@@ -378,7 +378,7 @@ class AppView(UnicornView):
                     form=DatastreamForm,
                     unicorn_model='datasource_buffer.datastream',
                     formset=None,
-                    custom_config=DatastreamForm.CUSTOM_CONFIG_NEW,
+                    custom_config=DatastreamForm.CUSTOM_CONFIG_VIEW,
                     form_mode='initial',
                 )
                 

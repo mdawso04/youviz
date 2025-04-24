@@ -962,11 +962,66 @@ class Viz(BaseModel):
     #attrs
     json = models.JSONField(blank=True, null=True)
     
+    def field_choices(self):
+        choices = {
+            k1: v1 
+            for k, v in self.viz_cache['viz'].items() if k in ('service', 'options', 'layout') 
+            for k1, v1 in v['available'].items() if 'available' in v
+        }
+        return choices
+    
+    def field_stems(self):
+        viz_index_number = len(self.json) - 1
+        service_stem = {'service': 'json.{}.service'.format(str(viz_index_number))}
+        
+        options_and_layout_stems = {
+            k1: 'json.{}.{}.{}'.format(str(viz_index_number), k, k1) 
+            for k, v in self.viz_cache['viz'].items() if k in ('options', 'layout') 
+            for k1, v1 in v['available'].items() if 'available' in v
+        }
+        return service_stem | options_and_layout_stems
+    
+    def field_data(self):
+        
+        #data
+        #viz - service
+        #viz - options
+        #viz - layout
+        #print(self.viz_cache['viz']['options'])
+        service = self.viz_cache['viz']['service']['saved']
+        saved_options_and_layout = {
+            k1: v1 
+            for k, v in self.viz_cache['viz'].items() if k in ('options', 'layout') 
+            for k1, v1 in v['saved'].items() if 'saved' in v
+        }
+        empty_options_and_layout = {
+            k1: '' 
+            for k, v in self.viz_cache['viz'].items() if k in ('options', 'layout') 
+            for k1, v1 in v['available'].items() if 'available' in v
+        }
+        
+        #saved options only
+        
+        return super().field_data() | {
+            'datasource': self.datasource,
+            'service': service,
+        } | saved_options_and_layout | empty_options_and_layout
+        
+    def set_field_data(self, data):
+        super().set_field_data(data)
+        #ignore id if it exists
+        if 'datasource' in data:
+            self.datasource = data['datasource']
+    
     layout_options: dict = {
         #'showlegend': [
         #    True,
         #    False,
         #],
+        'showLegend': [
+            True,
+            False,
+        ],
         'xaxis_categoryorder': [
             'trace',
             'category ascending',

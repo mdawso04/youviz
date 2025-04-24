@@ -34,14 +34,14 @@ from projects.forms import VizForm
 class VizView(UnicornView):
     
     viz: Viz = None
-    cache: dict = {}
+    #cache: dict = {}
     context: dict = None
     settings: dict = None 
     app_perms: list = None
     viz_form: VizForm = None
     
     class Meta:
-        javascript_exclude = ('cache', 'context', 'settings', 'app_perms', 'viz_form',) 
+        javascript_exclude = ('context', 'settings', 'app_perms', 'viz_form',) 
         
 #LOAD/UPDATE
 
@@ -99,10 +99,11 @@ class VizView(UnicornView):
         #if not self.request.user.has_perm('projects.view_viz', self.viz):
         #    raise Http404
         
-        self.cache = self.viz.viz_cache
+        #self.cache = self.viz.viz_cache
         #print(self.cache['viz']['options']['saved'])
         #print(self.cache['viz']['layout']['saved'])
         
+        '''
         instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.viz.field_data().items()}
         self.viz_form = VizForm(
             instance=self.viz, 
@@ -111,6 +112,18 @@ class VizView(UnicornView):
             data=instance_data,
             custom_config=VizForm.CUSTOM_CONFIG_VIEW,
             form_mode='initial'
+        )
+        '''
+        
+        self.viz_form = build_form_or_formset(
+            model=None,
+            queryset=None,
+            new_object_with_data=self.viz,
+            form=VizForm,
+            unicorn_model='viz',
+            formset=None,
+            custom_config=VizForm.CUSTOM_CONFIG_VIEW,
+            form_mode='initial',
         )
         
         #logger.debug('VizView > load_viz end')
@@ -121,12 +134,37 @@ class VizView(UnicornView):
         #logger.debug('VizView > hydrate end')
     
     def updating(self, name, value):
+        
+        print('NAME {} VALUE {}'.format(name, value))
+        print(self.viz.json)
+        
+        #catch calls to not-yet-set properties
+        if 'viz.json.' in name:
+            tokens = name.split('.')
+            index = int(tokens[2])
+            required_path_tokens = tokens[3:]
+            last_position_in_path = self.viz.json[index]
+            for i, t in enumerate(required_path_tokens):
+                if t not in last_position_in_path:
+                    last_position_in_path[t] = {}
+                last_position_in_path = last_position_in_path[t]
+        
+        if value == 'None':
+            value = None
+        elif value == 'True':
+            value = True
+        elif value == 'False':
+            value = False
+
         if not self.request.user.has_perm('change_datasource', self.viz.datasource):
             raise Http404
+            
+        return name, value
         
     def updated(self, name, value):
         #logger.debug('VizView > updated start')
         
+        '''
         a = pp.App(self.viz.json)
         if name == 'viz.name':
             self.viz.name = value
@@ -150,9 +188,7 @@ class VizView(UnicornView):
             property_item = n[4] if len(n) > 4 else None
                 
             def update_nested(dic, tok, val):
-                '''
-                Iterate to bottom of dict, update property
-                '''
+                #Iterate to bottom of dict, update property
                 t = tok.split('-', 1)
                 if len(t) == 1:
                     dic[t[0]] = val
@@ -179,6 +215,7 @@ class VizView(UnicornView):
                 else:
                     a.todos[-1][property_group] = value
             
+            
         elif name.startswith('cache.data'):
             if value == 'None':
                 value = None
@@ -188,7 +225,7 @@ class VizView(UnicornView):
                 value = False
                 
             def update_nested(dic, tok, val):
-                '''Iterate to bottom of dict, update property'''
+                #Iterate to bottom of dict, update property
                 t = tok.split('-', 1)
                 if len(t) == 1:
                     dic[t[0]] = val
@@ -206,8 +243,7 @@ class VizView(UnicornView):
             else:
                 a.todos[cache_todo_index + 1][property_group] = value
                 
-        
-        '''
+    
         elif name.startswith('drawings'):
             if value == 'None':
                 value = None
@@ -220,7 +256,7 @@ class VizView(UnicornView):
             #self.viz.json = a.todos
             #self.viz.save()
         '''
-        self.viz.json = a.todos
+        #self.viz.json = a.todos
         self.viz.save()
         self.load_viz()
         #logger.debug('VizView > updated end')
@@ -371,8 +407,8 @@ class VizView(UnicornView):
         #logger.debug('VizView > parent_rendered start')
         if self.viz:
             del self.viz
-        if self.cache:
-            del self.cache
+        #if self.cache:
+        #    del self.cache
         #logger.debug('VizView > parent_rendered end')
     
     @classonlymethod

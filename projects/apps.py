@@ -359,14 +359,15 @@ def new_set_property_value(
                 component_or_field = getattr(component_or_field, property_name_part)
                 data_or_dict = data_or_dict.get(property_name_part, {})
         elif isinstance(component_or_field, dict):
-            #print('two')
+            print('is this a dict?? {}'.format(component_or_field))
+            print(data_or_dict)
             
             if idx == len(property_name_parts) - 1:
                 component_or_field[property_name_part] = property_value
-                data_or_dict[property_name_part] = property_value
+                #data_or_dict[property_name_part] = property_value
             else:
                 component_or_field = component_or_field[property_name_part]
-                data_or_dict = data_or_dict.get(property_name_part, {})
+                #data_or_dict = data_or_dict.get(property_name_part, {})
         elif isinstance(component_or_field, (QuerySet, list)):
             #print('three')
             # TODO: Check for iterable instead of list? `from collections.abc import Iterable`

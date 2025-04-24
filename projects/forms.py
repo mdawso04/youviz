@@ -400,49 +400,6 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 },
             },
         },
-        'empty': {
-            'form': {
-                'form': {
-                    'title': _('Datasource Details View'),
-                    'id': 'datastream_form',
-                    'key': 'datastream_form',
-                },
-                'cover': {
-                    'title': _('Datasource Cover View'),
-                },
-            },
-            'widgets': {
-                'name': {
-                    'unicorn:partial': 'datasource-details',
-                    'unicorn:partial.id': 'details-datasource',
-                    #'unicorn:partial.key': 'infoLargeTitle',
-                },
-                'description': {
-                    'unicorn:partial': 'datasource-details',
-                    'unicorn:partial.id': 'details-datasource',
-                    #'unicorn:partial.key': 'infoLargeTitle',
-                },
-                'is_published': {
-                    'unicorn:partial': 'datasource-details',
-                    'unicorn:partial.id': 'details-datasource',
-                    #'unicorn:partial.key': 'infoLargeTitle',
-                },
-            },
-            'buttons': {
-                "ok": {
-                    "display": False,
-                },
-                "cancel": {
-                    "display": False,
-                },
-                "copy": {
-                    "display": False,
-                },
-                "delete": {
-                    "display": False,
-                },
-            },
-        }
     })
     
     CUSTOM_CONFIG_NEW = dict_deep_merge(BaseForm.CUSTOM_CONFIG_BASE, {
@@ -497,7 +454,7 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
             'buttons': {
                 "ok": {
                     "label": _("OK"),
-                    "display": lambda f: f.index is None,
+                    "display": False,
                     "disable": False,
                     "attrs":{
                         'class': 'button',
@@ -521,10 +478,11 @@ class DatastreamForm(EntangledModelFormMixin, BaseForm):
                 },
                 "delete": {
                     "label": _("Delete"),
-                    "display": False,
-                    "disable": False,
+                    "display": True,
+                    "disable": True,
                     "attrs":{
-                        'class': 'button',
+                        'class': 'btn btn-danger btn-sm',
+                        'unicorn:click': 'delete_datasource',
                     }
                 },
             },
@@ -790,28 +748,69 @@ class VizForm(EntangledModelFormMixin, BaseForm):
     def __init__(self, *args, **kwargs):
         super(VizForm, self).__init__(*args, **kwargs)
         
+        #build field list
+        #build form fields
+        
+        #print(self.instance.field_data().items())
+        fields = self.instance.field_data().keys()
+        choices = self.instance.field_choices()
+        stems = self.instance.field_stems()
+        default_choice = ('', 'Auto',)
+        view_attribute_prefix = 'viz'
+        for f in fields:
+            if f not in BaseForm.Meta.fields and f not in ('id', 'datasource', 'name', 'type', 'showlegend'): 
+                if f in choices:
+                    f_choices = [(choice, choice,) if choice != ' ' else (choice, 'Custom',) for choice in choices[f]]
+                    f_choices.insert(0, default_choice)
+                    self.fields[f] = forms.ChoiceField(label=f, choices=f_choices)
+                    self.fields[f].widget.attrs.update(
+                        {'class': 'form-select',
+                         'unicorn:model': '{}.{}'.format(view_attribute_prefix, stems[f]),
+                         'unicorn_partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
+                        }
+                    )
+                    self.fields[f].required = False
+                else:
+                    self.fields[f] = forms.CharField(label=f)
+                    self.fields[f].widget.attrs.update(
+                        {'class': 'form-control',
+                         'unicorn:model': '{}.{}'.format(view_attribute_prefix, stems[f]),
+                         'unicorn_partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
+                        }
+                    )
+                    self.fields[f].required = False
+        #print(self.instance.json)
+
+        '''
         #viz type
         choices = [(c, c,) for c in self.instance.viz_cache['viz']['service']['available']['viz']]
         self.fields['type'] = forms.ChoiceField(label='Type', choices=choices)
         self.fields['type'].widget.attrs.update({'class': 'form-select'})
+        '''
 
+        '''
         #viz options
         for k, v in self.instance.viz_cache['viz']['options']['available'].items():
-            choices = [(value, value,) for value in v]
+            default_choice = ('Auto', 'Auto',)
+            choices = [(value, 'Custom',) if value == ' ' else (value, value,) for value in v]
+            choices.insert(0, default_choice)
             self.fields['{}'.format(k)] = forms.ChoiceField(label=k, choices=choices)
             self.fields['{}'.format(k)].widget.attrs.update({'class': 'form-select'})
             #TODO - auto, custom options
             if False:
                 self.fields['{}_custom'.format(k)] = CharField(label=k)
         
-        #viz options
+        #layout options
         for k, v in self.instance.viz_cache['viz']['layout']['available'].items():
-            choices = [(value, value,) for value in v]
+            default_choice = ('Auto', 'Auto',)
+            choices = [(value, 'Custom',) if value == ' ' else (value, value,) for value in v]
+            choices.insert(0, default_choice)
             self.fields['{}'.format(k)] = forms.ChoiceField(label=k, choices=choices)
             self.fields['{}'.format(k)].widget.attrs.update({'class': 'form-select'})
             #TODO - auto, custom options
             if False:
                 self.fields['{}_custom'.format(k)] = CharField(label=k)
+        '''
         
         self.apply_custom_config()
     

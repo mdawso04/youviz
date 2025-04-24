@@ -20,7 +20,6 @@
 {% endif %}
 
 <div class="offcanvas-body test-edit-inner p-3 pt-0" style="overflow-x: hidden;" id="switch">
-    {{ cache }}
     {{ viz_form }}
     <div class="row row-cols-1 g-2 pb-2" unicorn:key="filter-row-01-{{vid}}" id="filter-row-01-{{vid}}">
         {% for d in cache.data %}
