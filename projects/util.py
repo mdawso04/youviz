@@ -7,6 +7,8 @@ from django.forms import modelformset_factory
 from django.forms import BaseModelFormSet
 from django.shortcuts import redirect
 from django.urls import reverse
+from types import SimpleNamespace
+import copy
 
 def cache_key_from_obj(obj, suffix=''):
     return '{}_{}{}'.format(type(obj).__name__.lower(), obj.slug, suffix)
@@ -124,7 +126,12 @@ def updating_handler(
         target_object=None,
         master_object=None
     ):
+        if target_object is not None:
+            target_object = getattr(*target_object)
+        if master_object is not None:
+            master_object = getattr(*master_object)
         if req_perms: 
+            #print('CHECKING {} in {}'.format(req_perms, app_perms))
             for p in req_perms:
                 if p not in app_perms:
                     raise Http404
@@ -148,8 +155,9 @@ def updated_handler(
         save_form_or_formset_on_valid=False,
         call_on_success=None,
     ):
+            
         if cache_keys is not None and target_object is not None:
-            cache.set(cache_key, target_object.field_data())
+            cache.set(cache_key, getattr(*target_object).field_data())
             
         def call_on_success_handler(call_on_success):
             result = None
@@ -159,41 +167,53 @@ def updated_handler(
                     args = action[1]
                     kwargs = action[2]
                     result = method_name(*args, **kwargs)
-                    print('calling {}'.format(method_name))
+                    #print('calling {}'.format(method_name))
             return result
         
         form_or_formset_is_valid = None
         action_result = None
+        cleaned_target_instance = None
         handling_master_and_target = master_object is not None
         
         if form_or_formset:
             form_or_formset_is_valid = form_or_formset.is_valid()
             if form_or_formset_is_valid:
+                #print('WORKING WITH PASSED TARGET {}'.format(target_object.__dict__))
+                #save 'cleaned' data to target model
+                cleaned_target_instance = form_or_formset.save(commit=False)
+                if hasattr(form_or_formset, 'forms'): #formset
+                    cleaned_target_instance = cleaned_target_instance[0]
+                #print('BUILT CLEANED TARGET {}'.format(cleaned_target_object.__dict__))
                 #update master model
                 if handling_master_and_target:
-                    master_object.set_field_data(target_object.field_data())
-                #optionally write to db
+                    #print('PREPPING DATA TO COPY {}'.format(cleaned_target_object.field_data()))
+                    #master_object.set_field_data(cleaned_target_object.field_data())
+                    setattr(*master_object, copy.deepcopy(cleaned_target_instance))
+                    #print('COPIED TO MASTER TARGET {}'.format(master_object.__dict__))
+                #optionally write to db manually due to our buffer/master setup
                 if save_form_or_formset_on_valid:
                     #form_or_formset.save()
                     if handling_master_and_target:
-                        master_object.save()
+                        getattr(*master_object).save()
+                        #print('SAVED MASTER TARGET {}'.format(master_object.__dict__))
                     else:
-                        target_object.save()
-                    print('saved form')
+                        cleaned_target_instance.save()
+                        #print('SAVED CLEANED TARGET {}'.format(cleaned_target_object.__dict__))
                 else:
                     print('valid but no save selcted')
                 #call actions
                 action_result = call_on_success_handler(call_on_success)
             else:
                 print('formset not valid')
-                print(form_or_formset.errors)
+                #print(form_or_formset.errors)
                 #print(form_or_formset.non_form_errors())
         else:
             action_result = call_on_success_handler(call_on_success)
         
-        cache.set(cache_key_from_obj(target_object, '_buffer'), target_object.field_data())
+        if cleaned_target_instance is not None:
+            cache.set(cache_key_from_obj(cleaned_target_instance, '_buffer'), cleaned_target_instance.field_data())
         if handling_master_and_target:
-            cache.set(cache_key_from_obj(master_object, '_master'), master_object.field_data())
+            cache.set(cache_key_from_obj(getattr(*master_object), '_master'), getattr(*master_object).field_data())
         print('updated cache')
             
         return form_or_formset_is_valid, action_result
@@ -257,7 +277,7 @@ def build_form_or_formset(
     
     #formset if queryset provided
     if queryset:
-        new_object_as_list = [new_object_with_data] if new_object_with_data else []
+        new_object_as_list = [getattr(*new_object_with_data)] if new_object_with_data else []
     
         initial_forms = len(queryset)
         total_forms = initial_forms + len(new_object_as_list)
@@ -287,11 +307,11 @@ def build_form_or_formset(
         )
     else:
         updated_instance_data = {k: v if k not in ('json', 'properties',) else json.dumps(v) 
-            for k, v in new_object_with_data.field_data().items() 
+            for k, v in getattr(*new_object_with_data).field_data().items() 
         }
         print(updated_instance_data)
         generated_form = form(
-            instance=new_object_with_data, 
+            instance=getattr(*new_object_with_data), 
             unicorn_model=unicorn_model,
             data=updated_instance_data, 
             custom_config=custom_config,
@@ -310,6 +330,137 @@ def dict_deep_merge(d1, d2, level=4):
             merged[key] = value
     return merged
 
+def updated_handler_preclean(target, name, value):
+    #clean values not handled by Unicorn and write to target model in prep for update_handler
+    if value == '':
+        #print('NAME OF OBJ TO DLETE'.format(name))
+        #print('TARGET TO DLETE'.format(target.__dict__))
+        delete_nested_attr(target, name)
+        
+    else:
+        value = coerce_value(value)
+        set_nested_attr(target, name, value)
+    
+def coerce_value(value, from_str=True):
+    if from_str:
+        if value == None:
+            value = 'None'
+        elif value == True:
+            value = 'True'
+        elif value == False:
+            value = 'False'
+    else:
+        if value == 'None':
+            value = None
+        elif value == 'True':
+            value = True
+        elif value == 'False':
+            value = False
+    return value
+    
+def parse_path_inline(path):
+    """Parses a dot notation path like 'foo.bar.0.baz' into a list of keys/indexes."""
+    parts = []
+    for part in path.split('.'):
+        if part.isdigit():
+            parts.append(int(part))  # treat as list index
+        else:
+            parts.append(part)       # treat as attribute or dictionary key
+    return parts
+
+def delete_nested_attr(obj, attr_path):
+    """Access or create nested attributes/lists/dictionaries using inline dot notation with indices."""
+    parts = parse_path_inline(attr_path)
+    for i, part in enumerate(parts[:-1]):
+        next_part = parts[i + 1] if i + 1 < len(parts) else None
+
+        if isinstance(part, int):  # list index
+            while len(obj) <= part:
+                obj.append(dict() if isinstance(next_part, str) else [])
+            obj = obj[part]
+        elif isinstance(obj, dict):  # dictionary key
+            if part not in obj:
+                obj[part] = dict() if isinstance(next_part, str) else []
+            obj = obj[part]
+        else:  # attribute
+            if not hasattr(obj, part) or getattr(obj, part) is None:
+                setattr(obj, part, [] if isinstance(next_part, int) else dict())
+            obj = getattr(obj, part)
+    
+    final = parts[-1]
+    if isinstance(final, int):  # list index
+        while len(obj) <= final:
+            obj.append(None)
+        #return obj[final]
+        del obj[final]
+    elif isinstance(obj, dict):  # dictionary key
+        #return obj.get(final, None)
+        if final in obj:
+            del obj[final]
+    else:  # attribute
+        if hasattr(obj, final):
+            delattr(obj, final)
+
+def get_or_create_nested_attr(obj, attr_path):
+    """Access or create nested attributes/lists/dictionaries using inline dot notation with indices."""
+    parts = parse_path_inline(attr_path)
+    for i, part in enumerate(parts[:-1]):
+        next_part = parts[i + 1] if i + 1 < len(parts) else None
+
+        if isinstance(part, int):  # list index
+            while len(obj) <= part:
+                obj.append(dict() if isinstance(next_part, str) else [])
+            obj = obj[part]
+        elif isinstance(obj, dict):  # dictionary key
+            if part not in obj:
+                obj[part] = dict() if isinstance(next_part, str) else []
+            obj = obj[part]
+        else:  # attribute
+            if not hasattr(obj, part) or getattr(obj, part) is None:
+                setattr(obj, part, [] if isinstance(next_part, int) else dict())
+            obj = getattr(obj, part)
+    
+    final = parts[-1]
+    if isinstance(final, int):  # list index
+        while len(obj) <= final:
+            obj.append(None)
+        return obj[final]
+    elif isinstance(obj, dict):  # dictionary key
+        return obj.get(final, None)
+    else:  # attribute
+        return getattr(obj, final, None)
+
+def set_nested_attr(obj, attr_path, value):
+    """Set a nested attribute, creating intermediate attributes/lists/dictionaries as needed."""
+    top = obj
+    print('START NESTED UPDATE FOR {} {}'.format(attr_path, top.__dict__))
+    parts = parse_path_inline(attr_path)
+    for i, part in enumerate(parts[:-1]):
+        next_part = parts[i + 1] if i + 1 < len(parts) else None
+
+        if isinstance(part, int):  # list index
+            while len(obj) <= part:
+                obj.append(dict() if isinstance(next_part, str) else [])
+            obj = obj[part]
+        elif isinstance(obj, dict):  # dictionary key
+            if part not in obj:
+                obj[part] = dict() if isinstance(next_part, str) else []
+            obj = obj[part]
+        else:
+            if not hasattr(obj, part) or getattr(obj, part) is None:
+                setattr(obj, part, [] if isinstance(next_part, int) else dict())
+            obj = getattr(obj, part)
+
+    final = parts[-1]
+    if isinstance(final, int):  # list index
+        while len(obj) <= final:
+            obj.append(None)
+        obj[final] = value
+    elif isinstance(obj, dict):  # dictionary key
+        obj[final] = value
+    else:  # attribute
+        setattr(obj, final, value)
+    print('END NESTED UPDATE FOR {} {}'.format(attr_path, top.__dict__))
 
 #import copyreg
 

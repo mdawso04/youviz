@@ -19,7 +19,7 @@ from pp.log import logger
 #python standard libraries
 import os
 import pprint
-from copy import *
+from copy import deepcopy
 import json
 from types import SimpleNamespace
 
@@ -34,6 +34,7 @@ from projects.forms import VizForm
 class VizView(UnicornView):
     
     viz: Viz = None
+    viz_buffer: Viz = None
     #cache: dict = {}
     context: dict = None
     settings: dict = None 
@@ -93,6 +94,7 @@ class VizView(UnicornView):
                 raise Http404
         
         self.viz = v
+        self.viz_buffer = deepcopy(self.viz)
         
         
         #self.viz.can_view_or_404(self.request.user)
@@ -115,12 +117,14 @@ class VizView(UnicornView):
         )
         '''
         
+        target_object = (self, 'viz_buffer')
+        
         self.viz_form = build_form_or_formset(
             model=None,
             queryset=None,
-            new_object_with_data=self.viz,
+            new_object_with_data=target_object,
             form=VizForm,
-            unicorn_model='viz',
+            unicorn_model='viz_buffer',
             formset=None,
             custom_config=VizForm.CUSTOM_CONFIG_VIEW,
             form_mode='initial',
@@ -135,8 +139,30 @@ class VizView(UnicornView):
     
     def updating(self, name, value):
         
-        print('NAME {} VALUE {}'.format(name, value))
-        print(self.viz.json)
+        #prep dict 
+        #print('NAME {} VALUE {} TYPE {}'.format(name, value, type(value)))
+        #print('BEFORE SET NESTED {}'.format(self.viz_buffer.json))
+        set_nested_attr(self, name, '')
+        #print('AFTER SET NESTED {}'.format(self.viz_buffer.json))
+        
+        if 'viz_buffer.' in name:
+            #updated_instance = self.viz_buffer
+            #master_instance = self.viz
+            updated_instance = (self, 'viz_buffer')
+            master_instance = (self, 'viz')
+            updating_handler(
+                app_perms=self.app_perms,
+                req_perms=(change_perm_from_obj(getattr(*master_instance).datasource),),
+                target_object=updated_instance,
+                master_object=master_instance,
+            )
+        
+            
+        
+        '''
+        print('NAME {} VALUE {} TYPE {}'.format(name, value, type(value)))
+        #print(self.viz.json)
+        print('YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY')
         
         #catch calls to not-yet-set properties
         if 'viz.json.' in name:
@@ -144,25 +170,52 @@ class VizView(UnicornView):
             index = int(tokens[2])
             required_path_tokens = tokens[3:]
             last_position_in_path = self.viz.json[index]
+            one_before = None
             for i, t in enumerate(required_path_tokens):
                 if t not in last_position_in_path:
                     last_position_in_path[t] = {}
+                one_before = last_position_in_path
                 last_position_in_path = last_position_in_path[t]
+        '''
         
-        if value == 'None':
-            value = None
-        elif value == 'True':
-            value = True
-        elif value == 'False':
-            value = False
-
+        #print('NAME {} VALUE {} TYPE {}'.format(name, value, type(value)))
+        #self.viz.json[index]['layout']['yaxis_showticklabels'] = False
+        '''
         if not self.request.user.has_perm('change_datasource', self.viz.datasource):
             raise Http404
             
         return name, value
+        '''
         
     def updated(self, name, value):
         #logger.debug('VizView > updated start')
+        
+        print('NAME {} VALUE {}'.format(name, value))
+        print('BEFORE PRECLEAN {}'.format(self.viz_buffer.json))
+        updated_handler_preclean(self, name, value)
+        print('AFTER PRECLEAN {}'.format(self.viz_buffer.json))
+        
+        #master_instance = self.viz
+        #updated_instance = self.viz_buffer
+        updated_instance = (self, 'viz_buffer')
+        master_instance = (self, 'viz')
+        self.viz_form = build_form_or_formset(
+            model=None,
+            queryset=None,
+            new_object_with_data=updated_instance,
+            form=VizForm,
+            unicorn_model='viz_buffer',
+            formset=None,
+            custom_config=VizForm.CUSTOM_CONFIG_VIEW,
+            form_mode='initial',
+        )
+        updated_handler(
+            target_object=updated_instance,
+            master_object=master_instance,
+            form_or_formset=self.viz_form,
+            save_form_or_formset_on_valid=True,
+            call_on_success=None,
+        )
         
         '''
         a = pp.App(self.viz.json)
@@ -256,10 +309,12 @@ class VizView(UnicornView):
             #self.viz.json = a.todos
             #self.viz.save()
         '''
+        '''
         #self.viz.json = a.todos
         self.viz.save()
         self.load_viz()
         #logger.debug('VizView > updated end')
+        '''
 
 #ACTIONS
 

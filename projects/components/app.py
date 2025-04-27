@@ -336,20 +336,12 @@ class AppView(UnicornView):
                 self.datasource_buffer = copy.deepcopy(self.datasource)
                 cache.delete(cache_key_from_obj(self.datasource_buffer, '_buffer'))
                 
-                '''
-                datasource_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource_buffer.field_data().items()}
-                self.datasource_form = DatasourceForm(
-                    instance=self.datasource_buffer, 
-                    unicorn_model=('datasource_buffer',),
-                    data=datasource_instance_data,
-                    custom_config=DatasourceForm.CUSTOM_CONFIG_VIEW,
-                    form_mode='initial'
-                )
-                '''
+                target_object_datasource = (self, 'datasource_buffer')
+                
                 self.datasource_form = build_form_or_formset(
                     model=None,
                     queryset=None,
-                    new_object_with_data=self.datasource_buffer,
+                    new_object_with_data=target_object_datasource,
                     form=DatasourceForm,
                     unicorn_model='datasource_buffer',
                     formset=None,
@@ -360,21 +352,12 @@ class AppView(UnicornView):
                 cache.delete(cache_key_from_obj(self.datasource.datastream, '_master'))
                 cache.delete(cache_key_from_obj(self.datasource_buffer.datastream, '_buffer'))
                 
-                '''
-                instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in self.datasource_buffer.datastream.field_data().items()}
-                self.datastream_form = DatastreamForm(
-                    instance=self.datasource_buffer.datastream, 
-                    form_id='datastream_form',
-                    unicorn_model=('datasource_buffer.datastream',),
-                    data=instance_data, 
-                    custom_config=DatastreamForm.CUSTOM_CONFIG_VIEW,
-                    form_mode='initial'
-                )
-                ''' 
+                target_object_datastream = (self.datasource_buffer, 'datastream')
+                
                 self.datastream_form = build_form_or_formset(
                     model=None,
                     queryset=None,
-                    new_object_with_data=self.datasource_buffer.datastream,
+                    new_object_with_data=target_object_datastream,
                     form=DatastreamForm,
                     unicorn_model='datasource_buffer.datastream',
                     formset=None,
@@ -432,12 +415,14 @@ class AppView(UnicornView):
         #logger.debug('AppView > updating start')
         #print(self.app_perms)
         if 'user.profile' in name:
-            updated_instance = self.request.user.profile
+            #updated_instance = self.request.user.profile
+            updated_instance = (self.request.user, 'profile')
+        
             updating_handler(
                 app_perms=self.app_perms,
                 req_perms=('change_profile',),
-                cache_keys=(cache_key_from_obj(updated_instance),),
-                target_object=updated_instance,
+                cache_keys=(cache_key_from_obj(getattr(*updated_instance)),),
+                target_object=getattr(*updated_instance),
             )
         # new
         elif 'formset_datastreams.' in name:
@@ -451,30 +436,38 @@ class AppView(UnicornView):
                 master_object=master_instance,
             )
         elif 'new_datastream' in name:
-            updated_instance = self.new_datastream
-            master_instance = None
+            #updated_instance = self.new_datastream
+            #master_instance = None
+            updated_instance = (self, 'new_datastream')
+            
             updating_handler(
                 app_perms=self.app_perms,
                 req_perms=('add_datastream',),
                 target_object=updated_instance,
-                master_object=master_instance,
+                master_object=None,
             )
         
         elif 'datasource_buffer.datastream.' in name:
-            updated_instance = self.datasource_buffer.datastream
-            master_instance = self.datasource.datastream
+            #updated_instance = self.datasource_buffer.datastream
+            #master_instance = self.datasource.datastream
+            updated_instance = (self.datasource_buffer, 'datastream')
+            master_instance = (self.datasource, 'datastream')
+            
             updating_handler(
                 app_perms=self.app_perms,
-                req_perms=(change_perm_from_obj(updated_instance),),
+                req_perms=(change_perm_from_obj(getattr(*updated_instance)),),
                 target_object=updated_instance,
                 master_object=master_instance,
             )
         elif 'datasource_buffer.' in name:
-            updated_instance = self.datasource_buffer
-            master_instance = self.datasource
+            #updated_instance = self.datasource_buffer
+            #master_instance = self.datasource
+            updated_instance = (self, 'datasource_buffer')
+            master_instance = (self, 'datasource')
+            
             updating_handler(
                 app_perms=self.app_perms,
-                req_perms=(change_perm_from_obj(updated_instance),),
+                req_perms=(change_perm_from_obj(getattr(*updated_instance)),),
                 target_object=updated_instance,
                 master_object=master_instance,
             )
@@ -493,9 +486,11 @@ class AppView(UnicornView):
             self.request.user.profile.properties[n] = value
             self.request.user.profile.save()            
         elif 'user.profile' in name:
-            updated_instance = self.request.user.profile
+            #updated_instance = self.request.user.profile
+            updated_instance = (self.request.user, 'profile')
+            
             updated_handler(
-                cache_key=cache_key_from_obj(updated_instance),
+                cache_key=cache_key_from_obj(getattr(*updated_instance)),
                 target_object=updated_instance,
                 form_or_formset=None,
                 save_form_or_formset_on_valid=True,
@@ -536,8 +531,11 @@ class AppView(UnicornView):
                 print(new_object_with_data.__dict__)
             
         elif 'datasource_buffer.datastream.' in name:
-            master_instance = self.datasource.datastream
-            updated_instance = self.datasource_buffer.datastream
+            #master_instance = self.datasource.datastream
+            #updated_instance = self.datasource_buffer.datastream
+            updated_instance = (self.datasource_buffer, 'datastream')
+            master_instance = (self.datasource, 'datastream')
+            
             '''
             updated_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in updated_instance.field_data().items()}
             self.datastream_form = DatastreamForm(
@@ -565,8 +563,11 @@ class AppView(UnicornView):
                 call_on_success=None,
             )
         elif 'datasource_buffer.' in name:
-            master_instance = self.datasource
-            updated_instance = self.datasource_buffer
+            #master_instance = self.datasource
+            #updated_instance = self.datasource_buffer
+            updated_instance = (self, 'datasource_buffer')
+            master_instance = (self, 'datasource')
+            
             '''
             updated_instance_data = {k:v if k not in ('json', 'properties',) else json.dumps(v) for k, v in updated_instance.field_data().items()}
             self.datasource_form = DatasourceForm(
@@ -653,7 +654,7 @@ class AppView(UnicornView):
             new_viz = Viz.add(datasource=new_ds, owner=self.request.user)
             return redirect(reverse('view', kwargs={'slug':new_ds.slug}))
             
-        result = action_handler(
+        form_is_valid, action_result = action_handler(
             app_perms=self.app_perms,
             req_perms=('add_datasource',),
             #cache_key=None,
@@ -665,7 +666,7 @@ class AppView(UnicornView):
             ],
             #reverse_redirect_on_success=None,
         )
-        return result
+        return action_result
         '''
         
         self.datasource = self.add(

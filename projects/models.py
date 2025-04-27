@@ -19,6 +19,7 @@ from django.http import Http404
 
 from project import settings
 
+
 import urllib.request
 import numpy as np
 import requests
@@ -970,6 +971,7 @@ class Viz(BaseModel):
         }
         return choices
     
+    '''
     def field_stems(self):
         viz_index_number = len(self.json) - 1
         service_stem = {'service': 'json.{}.service'.format(str(viz_index_number))}
@@ -980,9 +982,21 @@ class Viz(BaseModel):
             for k1, v1 in v['available'].items() if 'available' in v
         }
         return service_stem | options_and_layout_stems
+    '''
+    '''
+    def _all_viz_field_stems(self):
+        viz_index_number = len(self.json) - 1
+        
+        viz_field_stems = {
+            k1: 'json.{}.{}.{}'.format(str(viz_index_number), k, k1) 
+            for k, v in self.viz_cache['viz'].items()
+            for k1, v1 in v['available'].items() if 'available' in v
+        }
+    '''
     
     def field_data(self):
         
+        '''
         #data
         #viz - service
         #viz - options
@@ -1006,12 +1020,53 @@ class Viz(BaseModel):
             'datasource': self.datasource,
             'service': service,
         } | saved_options_and_layout | empty_options_and_layout
+    
+        
+        #TEST
+        '''
+        #print(self.json)
+        
+        starting_object = self.json
+        
+        two_level_field_data = {
+            'json.{}.{}'.format(str(idx), k): v 
+            for idx, step in enumerate(starting_object) 
+            for k, v in step.items() if k not in ('options', 'layout') 
+        }
+        three_level_field_data = {
+            'json.{}.{}.{}'.format(str(idx), k, k1): v1 
+            for idx, step in enumerate(starting_object) 
+            for k, v in step.items() if k in ('options', 'layout') 
+            for k1, v1 in v.items()
+        }
+        '''
+        for idx, step in enumerate(self.json): 
+            if isinstance(step, dict):
+                for k, v in step.items():
+                    print(v)
+                    if isinstance(v, dict):
+                        for k1, v1 in v.items():
+                            print('json.{}.{}.{}: {}'.format(str(idx), k, k1, v1)) 
+        '''
+            
+        result = super().field_data() | {'datasource': self.datasource} | two_level_field_data | three_level_field_data
+        #print('FIELD DATA OUT {}'.format(result))
+        #self.set_field_data(result)
+        return result
         
     def set_field_data(self, data):
-        super().set_field_data(data)
+        #super().set_field_data(data)
+        
         #ignore id if it exists
-        if 'datasource' in data:
-            self.datasource = data['datasource']
+        #other fields are mapped to json using field stems where possible
+        from projects.util import set_nested_attr
+        
+        for path, value in data.items():
+            if path is not None:
+                print(path)
+                set_nested_attr(self, path, value)
+        print('DATA COPIED OVER {}'.format(self.__dict__))
+        
     
     layout_options: dict = {
         #'showlegend': [
@@ -1195,9 +1250,11 @@ class Viz(BaseModel):
             saved = {'saved': flatten({})}
         cache['viz']['layout'] = {**saved, **avail}
         
+        
         #stringify None, bool types in viz
         if not 'saved' in cache['viz']['options']:
             cache['viz']['options'] = {'saved': {}}
+        '''
         else:
             for k, v in cache['viz']['options']['saved'].items():
                 if v is None:
@@ -1206,7 +1263,8 @@ class Viz(BaseModel):
                     cache['viz']['options']['saved'][k] = 'False'
                 elif v == True:
                     cache['viz']['options']['saved'][k] = 'True'
-                    
+        '''
+        '''
         for k, v in cache['viz']['layout']['saved'].items():
             if v is None:
                 cache['viz']['layout']['saved'][k] = 'None'
@@ -1227,6 +1285,7 @@ class Viz(BaseModel):
                         k[v] = 'False'
                     elif v == True:
                         k[v] = 'True'
+        '''
         
         io.close()
         del a

@@ -752,33 +752,35 @@ class VizForm(EntangledModelFormMixin, BaseForm):
         #build form fields
         
         #print(self.instance.field_data().items())
-        fields = self.instance.field_data().keys()
+        full_field_names = list(self.instance.field_data().keys())
+        short_field_names = [n.split('.')[-1] for n in full_field_names]
         choices = self.instance.field_choices()
-        stems = self.instance.field_stems()
         default_choice = ('', 'Auto',)
-        view_attribute_prefix = 'viz'
-        for f in fields:
-            if f not in BaseForm.Meta.fields and f not in ('id', 'datasource', 'name', 'type', 'showlegend'): 
-                if f in choices:
-                    f_choices = [(choice, choice,) if choice != ' ' else (choice, 'Custom',) for choice in choices[f]]
-                    f_choices.insert(0, default_choice)
-                    self.fields[f] = forms.ChoiceField(label=f, choices=f_choices)
-                    self.fields[f].widget.attrs.update(
+        view_attribute_prefix = 'viz_buffer'
+        for idx, current_short_field_name in enumerate(short_field_names):
+            current_full_field_name = full_field_names[idx]
+            if current_short_field_name not in BaseForm.Meta.fields and current_short_field_name not in ('id', 'datasource', 'name', 'type', 'showlegend'): 
+                if current_short_field_name in choices:
+                    field_choices = [(choice, choice,) if choice != ' ' else (choice, 'Custom',) for choice in choices[current_short_field_name]]
+                    field_choices.insert(0, default_choice)
+                    self.fields[current_full_field_name] = forms.TypedChoiceField(label=current_short_field_name, choices=field_choices, coerce=coerce_value, empty_value='')
+                    self.fields[current_full_field_name].widget.attrs.update(
                         {'class': 'form-select',
-                         'unicorn:model': '{}.{}'.format(view_attribute_prefix, stems[f]),
-                         'unicorn_partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
+                         'unicorn:model': '{}.{}'.format(view_attribute_prefix, current_full_field_name),
+                         'unicorn:partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
                         }
                     )
-                    self.fields[f].required = False
+                    self.fields[current_full_field_name].required = False
+                    #TODO - custom text box
                 else:
-                    self.fields[f] = forms.CharField(label=f)
-                    self.fields[f].widget.attrs.update(
+                    self.fields[current_full_field_name] = forms.CharField(label=current_short_field_name)
+                    self.fields[current_full_field_name].widget.attrs.update(
                         {'class': 'form-control',
-                         'unicorn:model': '{}.{}'.format(view_attribute_prefix, stems[f]),
-                         'unicorn_partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
+                         'unicorn:model': '{}.{}'.format(view_attribute_prefix, current_full_field_name),
+                         'unicorn:partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
                         }
                     )
-                    self.fields[f].required = False
+                    self.fields[current_full_field_name].required = False
         #print(self.instance.json)
 
         '''
@@ -813,6 +815,14 @@ class VizForm(EntangledModelFormMixin, BaseForm):
         '''
         
         self.apply_custom_config()
+    
+    def save(self, commit=False):
+        instance = super(VizForm, self).save(commit=False)
+        instance.set_field_data(self.cleaned_data)
+        if commit:
+            instance.save()
+            #self.save_m2m()
+        return instance
     
     #only initial
     CUSTOM_CONFIG_VIEW = dict_deep_merge(BaseForm.CUSTOM_CONFIG_BASE, {
