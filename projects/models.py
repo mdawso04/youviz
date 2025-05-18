@@ -963,13 +963,44 @@ class Viz(BaseModel):
     #attrs
     json = models.JSONField(blank=True, null=True)
     
-    def field_choices(self):
-        choices = {
-            k1: v1 
-            for k, v in self.viz_cache['viz'].items() if k in ('service', 'options', 'layout') 
-            for k1, v1 in v['available'].items() if 'available' in v
+    def field_choices(self, filter=None):
+        
+        #viz layout, saved and available 
+        def flatten(d: MutableMapping, sep: str= '-') -> MutableMapping:
+            if not isinstance(d, dict) or len(d.keys()) == 0:
+                return {}
+            [flat_dict] = pd.json_normalize(d, sep=sep).to_dict(orient='records')
+            return flat_dict
+        
+        #optionally filter choices
+        starting_data = self.field_data_generator
+        layout_choices = service_choices = option_choices = {}
+        
+        if filter == 'viz':
+            starting_data = starting_data[-1:]
+            layout_choices = flatten(self.layout_options)
+            print('layout choices: {}'.format(layout_choices))
+        
+        elif filter == 'data':
+            starting_data = starting_data[:-1]
+        
+        service_choices = {
+            'json.{}.{}'.format(str(idx+1), k): v1 
+            for idx, step in enumerate(starting_data) 
+            for k, v in step.items() if k in ('service',) 
+            for k1, v1 in v['available'].items() if k1 == step['type'] #in ('viz',) 
         }
-        return choices
+        print('service choices: {}'.format(service_choices))
+        
+        option_choices = {
+            'json.{}.{}.{}'.format(str(idx+1), k, k1): v1 
+            for idx, step in enumerate(starting_data) 
+            for k, v in step.items() if k in ('options', 'layout') 
+            for k1, v1 in v['available'].items() if v1 is not None
+        }
+        print('option choices: {}'.format(option_choices))
+        
+        return service_choices | option_choices | layout_choices
     
     '''
     def field_stems(self):
@@ -993,6 +1024,28 @@ class Viz(BaseModel):
             for k1, v1 in v['available'].items() if 'available' in v
         }
     '''
+    
+    @cached_property
+    def field_data_generator(self):
+        copied_json = deepcopy(self.json)
+        a = pp.App(copied_json)
+        io = StringIO(self.datasource.datastream.current_version()) 
+        a.todos[0]['options']['src'] = io
+        
+        print('TODOs: {}'.format(a.todos))
+        
+        data = []
+        
+        for idx, todo in enumerate(a.todos):
+            if idx > 0:
+                todo_data = a.data(todo=idx)
+                todo_data['type'] = todo['type']
+                data.append(todo_data)
+        print('field data generator: {}'.format(data))
+        
+        io.close()
+        del a
+        return data
     
     def field_data(self):
         
@@ -1030,27 +1083,18 @@ class Viz(BaseModel):
         
         two_level_field_data = {
             'json.{}.{}'.format(str(idx), k): v 
-            for idx, step in enumerate(starting_object) 
+            for idx, step in enumerate(starting_object) if idx > 0
             for k, v in step.items() if k not in ('options', 'layout') 
         }
         three_level_field_data = {
             'json.{}.{}.{}'.format(str(idx), k, k1): v1 
-            for idx, step in enumerate(starting_object) 
+            for idx, step in enumerate(starting_object) if idx > 0
             for k, v in step.items() if k in ('options', 'layout') 
             for k1, v1 in v.items()
         }
-        '''
-        for idx, step in enumerate(self.json): 
-            if isinstance(step, dict):
-                for k, v in step.items():
-                    print(v)
-                    if isinstance(v, dict):
-                        for k1, v1 in v.items():
-                            print('json.{}.{}.{}: {}'.format(str(idx), k, k1, v1)) 
-        '''
             
         result = super().field_data() | {'datasource': self.datasource} | two_level_field_data | three_level_field_data
-        #print('FIELD DATA OUT {}'.format(result))
+        print('FIELD DATA OUT {}'.format(result))
         #self.set_field_data(result)
         return result
         

@@ -734,6 +734,12 @@ class BaseDatasourceFormSet(BaseModelFormSet):
         '''
 
 class VizForm(EntangledModelFormMixin, BaseForm):
+    
+    DATA_MODE = 'data'
+    VIZ_MODE = 'viz'
+    DEFAULT_MODE = VIZ_MODE
+    display_mode = None
+    
     class Meta:
         model = Viz
         fields = ('description',)
@@ -746,22 +752,22 @@ class VizForm(EntangledModelFormMixin, BaseForm):
         buttons = BaseForm.Meta.buttons
         
     def __init__(self, *args, **kwargs):
+        self.display_mode = kwargs.pop('display_mode', VizForm.DEFAULT_MODE)
         super(VizForm, self).__init__(*args, **kwargs)
-        
-        #build field list
-        #build form fields
-        
-        #print(self.instance.field_data().items())
-        full_field_names = list(self.instance.field_data().keys())
+        #load data, filter by mode
+        choices = self.instance.field_choices(filter=self.display_mode)
+        full_field_names = list(choices.keys())
+        full_field_names.sort()
         short_field_names = [n.split('.')[-1] for n in full_field_names]
-        choices = self.instance.field_choices()
+            
+        #build form
         default_choice = ('', 'Auto',)
         view_attribute_prefix = 'viz_buffer'
-        for idx, current_short_field_name in enumerate(short_field_names):
-            current_full_field_name = full_field_names[idx]
+        for idx, current_full_field_name in enumerate(full_field_names):
+            current_short_field_name = short_field_names[idx]
             if current_short_field_name not in BaseForm.Meta.fields and current_short_field_name not in ('id', 'datasource', 'name', 'type', 'showlegend'): 
-                if current_short_field_name in choices:
-                    field_choices = [(choice, choice,) if choice != ' ' else (choice, 'Custom',) for choice in choices[current_short_field_name]]
+                if current_full_field_name in choices:
+                    field_choices = [(choice, choice,) if choice != ' ' else (choice, 'Custom',) for choice in choices[current_full_field_name]]
                     field_choices.insert(0, default_choice)
                     self.fields[current_full_field_name] = forms.TypedChoiceField(label=current_short_field_name, choices=field_choices, coerce=coerce_value, empty_value='')
                     self.fields[current_full_field_name].widget.attrs.update(

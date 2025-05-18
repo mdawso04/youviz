@@ -40,9 +40,10 @@ class VizView(UnicornView):
     settings: dict = None 
     app_perms: list = None
     viz_form: VizForm = None
+    data_form: VizForm = None
     
     class Meta:
-        javascript_exclude = ('context', 'settings', 'app_perms', 'viz_form',) 
+        javascript_exclude = ('context', 'settings', 'app_perms', 'viz_form', 'data_form',) 
         
 #LOAD/UPDATE
 
@@ -128,6 +129,19 @@ class VizView(UnicornView):
             formset=None,
             custom_config=VizForm.CUSTOM_CONFIG_VIEW,
             form_mode='initial',
+            form_kwargs={'display_mode': VizForm.VIZ_MODE}
+        )
+        
+        self.data_form = build_form_or_formset(
+            model=None,
+            queryset=None,
+            new_object_with_data=target_object,
+            form=VizForm,
+            unicorn_model='viz_buffer',
+            formset=None,
+            custom_config=VizForm.CUSTOM_CONFIG_VIEW,
+            form_mode='initial',
+            form_kwargs={'display_mode': VizForm.DATA_MODE}
         )
         
         #logger.debug('VizView > load_viz end')

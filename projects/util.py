@@ -273,6 +273,7 @@ def build_form_or_formset(
         formset=None,
         custom_config=None,
         form_mode=None,
+        form_kwargs={}
     ):
     
     #formset if queryset provided
@@ -316,6 +317,7 @@ def build_form_or_formset(
             data=updated_instance_data, 
             custom_config=custom_config,
             form_mode=form_mode,
+            **form_kwargs
         )        
         return generated_form
     

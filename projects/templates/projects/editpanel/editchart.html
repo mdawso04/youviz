@@ -20,7 +20,8 @@
 {% endif %}
 
 <div class="offcanvas-body test-edit-inner p-3 pt-0 noscroll" style="overflow-x: hidden;" id="switch" unicorn:key="setting-row-top-{{vid}}">
-    
+    {{ viz_form }}
+    {% if never %}
     <div class="row row-cols-1 g-2 pb-3" unicorn:key="setting-row-01-{{vid}}">
         {% if never %}
         <div class="col">
@@ -135,5 +136,6 @@
     {% input_text_custom model='cache.viz.layout.saved.'|add:key modelvalue=cache.viz.layout.saved.key display=custom_selected id='customLayoutInput'|add:vid|add:key partial='layoutInput'|add:vid|add:key partialid='outerPlotBox-'|add:vid partialkey='customLayoutInput'|add:vid|add:key %}
     {% endif %}
     {% endfor %}
+    {% endif %}
     
 </div>
