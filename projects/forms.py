@@ -756,6 +756,7 @@ class VizForm(EntangledModelFormMixin, BaseForm):
         super(VizForm, self).__init__(*args, **kwargs)
         #load data, filter by mode
         choices = self.instance.field_choices(filter=self.display_mode)
+        print('CHOICES {}'.format(choices))
         full_field_names = list(choices.keys())
         full_field_names.sort()
         short_field_names = [n.split('.')[-1] for n in full_field_names]
@@ -765,11 +766,11 @@ class VizForm(EntangledModelFormMixin, BaseForm):
         view_attribute_prefix = 'viz_buffer'
         for idx, current_full_field_name in enumerate(full_field_names):
             current_short_field_name = short_field_names[idx]
-            if current_short_field_name not in BaseForm.Meta.fields and current_short_field_name not in ('id', 'datasource', 'name', 'type', 'showlegend'): 
-                if current_full_field_name in choices:
+            if current_short_field_name not in BaseForm.Meta.fields and current_short_field_name not in ('id', 'datasource', 'showlegend'): 
+                if choices[current_full_field_name] is not None and type(choices[current_full_field_name]) is not str:
                     field_choices = [(choice, choice,) if choice != ' ' else (choice, 'Custom',) for choice in choices[current_full_field_name]]
                     field_choices.insert(0, default_choice)
-                    self.fields[current_full_field_name] = forms.TypedChoiceField(label=current_short_field_name, choices=field_choices, coerce=coerce_value, empty_value='')
+                    self.fields[current_full_field_name] = forms.TypedChoiceField(label=current_full_field_name, choices=field_choices, coerce=coerce_value, empty_value='')
                     self.fields[current_full_field_name].widget.attrs.update(
                         {'class': 'form-select',
                          'unicorn:model': '{}.{}'.format(view_attribute_prefix, current_full_field_name),
@@ -779,7 +780,7 @@ class VizForm(EntangledModelFormMixin, BaseForm):
                     self.fields[current_full_field_name].required = False
                     #TODO - custom text box
                 else:
-                    self.fields[current_full_field_name] = forms.CharField(label=current_short_field_name)
+                    self.fields[current_full_field_name] = forms.CharField(label=current_full_field_name)
                     self.fields[current_full_field_name].widget.attrs.update(
                         {'class': 'form-control',
                          'unicorn:model': '{}.{}'.format(view_attribute_prefix, current_full_field_name),

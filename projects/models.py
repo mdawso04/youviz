@@ -976,13 +976,13 @@ class Viz(BaseModel):
         starting_data = self.field_data_generator
         layout_choices = service_choices = option_choices = {}
         
-        if filter == 'viz':
-            starting_data = starting_data[-1:]
-            layout_choices = flatten(self.layout_options)
-            print('layout choices: {}'.format(layout_choices))
+        name_and_type = {
+            'json.{}.{}'.format(str(idx+1), k): v 
+            for idx, step in enumerate(starting_data) 
+            for k, v in step.items() if k in ('name', 'type',) 
+        }
         
-        elif filter == 'data':
-            starting_data = starting_data[:-1]
+        #print('name_and_type: {}'.format(name_and_type))
         
         service_choices = {
             'json.{}.{}'.format(str(idx+1), k): v1 
@@ -990,17 +990,27 @@ class Viz(BaseModel):
             for k, v in step.items() if k in ('service',) 
             for k1, v1 in v['available'].items() if k1 == step['type'] #in ('viz',) 
         }
-        print('service choices: {}'.format(service_choices))
+        #print('service choices: {}'.format(service_choices))
         
         option_choices = {
             'json.{}.{}.{}'.format(str(idx+1), k, k1): v1 
             for idx, step in enumerate(starting_data) 
-            for k, v in step.items() if k in ('options', 'layout') 
-            for k1, v1 in v['available'].items() if v1 is not None
+            for k, v in step.items() if k in ('options', 'layout',) 
+            for k1, v1 in v['available'].items()
         }
-        print('option choices: {}'.format(option_choices))
+        #print('option choices: {}'.format(option_choices))
         
-        return service_choices | option_choices | layout_choices
+        viz_key = 'json.{}'.format(len(starting_data))
+        result = None
+        if filter == 'viz':
+            layout_choices = {'{}.layout.{}'.format(viz_key, k): v for k, v in flatten(self.layout_options).items()}
+            result = {k: v for k, v in (name_and_type | service_choices | option_choices | layout_choices).items() if k.startswith(viz_key)}
+            print('layout choices: {}'.format(layout_choices))
+        
+        elif filter == 'data':
+            result = {k: v for k, v in (name_and_type | service_choices | option_choices | layout_choices).items() if not k.startswith(viz_key)}
+        print('RESULT for {}: {}'.format(filter, result))
+        return result
     
     '''
     def field_stems(self):
