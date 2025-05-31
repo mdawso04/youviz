@@ -739,6 +739,7 @@ class VizForm(EntangledModelFormMixin, BaseForm):
     VIZ_MODE = 'viz'
     DEFAULT_MODE = VIZ_MODE
     display_mode = None
+    field_groups = None
     
     class Meta:
         model = Viz
@@ -755,39 +756,51 @@ class VizForm(EntangledModelFormMixin, BaseForm):
         self.display_mode = kwargs.pop('display_mode', VizForm.DEFAULT_MODE)
         super(VizForm, self).__init__(*args, **kwargs)
         #load data, filter by mode
-        choices = self.instance.field_choices(filter=self.display_mode)
+        choices = self.instance.field_choices(filter=self.display_mode, group_by='name')
+        print('DISPLAY MODE {}'.format(self.display_mode))
         print('CHOICES {}'.format(choices))
-        full_field_names = list(choices.keys())
-        full_field_names.sort()
-        short_field_names = [n.split('.')[-1] for n in full_field_names]
-            
-        #build form
+        
         default_choice = ('', 'Auto',)
         view_attribute_prefix = 'viz_buffer'
-        for idx, current_full_field_name in enumerate(full_field_names):
-            current_short_field_name = short_field_names[idx]
-            if current_short_field_name not in BaseForm.Meta.fields and current_short_field_name not in ('id', 'datasource', 'showlegend'): 
-                if choices[current_full_field_name] is not None and type(choices[current_full_field_name]) is not str:
-                    field_choices = [(choice, choice,) if choice != ' ' else (choice, 'Custom',) for choice in choices[current_full_field_name]]
-                    field_choices.insert(0, default_choice)
-                    self.fields[current_full_field_name] = forms.TypedChoiceField(label=current_full_field_name, choices=field_choices, coerce=coerce_value, empty_value='')
-                    self.fields[current_full_field_name].widget.attrs.update(
-                        {'class': 'form-select',
-                         'unicorn:model': '{}.{}'.format(view_attribute_prefix, current_full_field_name),
-                         'unicorn:partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
-                        }
-                    )
-                    self.fields[current_full_field_name].required = False
-                    #TODO - custom text box
-                else:
-                    self.fields[current_full_field_name] = forms.CharField(label=current_full_field_name)
-                    self.fields[current_full_field_name].widget.attrs.update(
-                        {'class': 'form-control',
-                         'unicorn:model': '{}.{}'.format(view_attribute_prefix, current_full_field_name),
-                         'unicorn:partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
-                        }
-                    )
-                    self.fields[current_full_field_name].required = False
+        self.field_groups = {}
+        
+        for group_name, grouped_choices in choices.items():
+            full_field_names = list(grouped_choices.keys())
+            #full_field_names.sort()
+            short_field_names = [n.split('.')[-1] for n in full_field_names]
+            self.field_groups[group_name] = []
+            #TODO
+            #Group fields under step name
+            #Order fields
+            #Human-readable names\translation
+
+            #build form
+            for idx, current_full_field_name in enumerate(full_field_names):
+                current_short_field_name = short_field_names[idx]
+                if current_short_field_name not in BaseForm.Meta.fields and current_short_field_name not in ('id', 'datasource', 'showlegend'): 
+                    if grouped_choices[current_full_field_name] is not None and type(grouped_choices[current_full_field_name]) is not str:
+                        field_choices = [(choice, choice,) if choice != ' ' else (choice, 'Custom',) for choice in grouped_choices[current_full_field_name]]
+                        field_choices.insert(0, default_choice)
+                        self.fields[current_full_field_name] = forms.TypedChoiceField(label=current_full_field_name, choices=field_choices, coerce=coerce_value, empty_value='')
+                        self.fields[current_full_field_name].widget.attrs.update(
+                            {'class': 'form-select',
+                             'unicorn:model': '{}.{}'.format(view_attribute_prefix, current_full_field_name),
+                             'unicorn:partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
+                            }
+                        )
+                        self.fields[current_full_field_name].required = False
+                        #TODO - custom text box
+                    else:
+                        self.fields[current_full_field_name] = forms.CharField(label=current_full_field_name)
+                        self.fields[current_full_field_name].widget.attrs.update(
+                            {'class': 'form-control',
+                             'unicorn:model': '{}.{}'.format(view_attribute_prefix, current_full_field_name),
+                             'unicorn:partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
+                            }
+                        )
+                        self.fields[current_full_field_name].required = False
+                    #copy sefl[key] to group
+                    self.field_groups[group_name].append(self[current_full_field_name])
         #print(self.instance.json)
 
         '''

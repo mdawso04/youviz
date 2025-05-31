@@ -960,10 +960,12 @@ class Viz(BaseModel):
     managers = models.ManyToManyField(User, blank=True, related_name='viz_managers')
     collaborators = models.ManyToManyField(User, blank=True, related_name='viz_collaborators')
     
-    #attrs
+    #TODO
+    
+    #data = models.JSONField(blank=True, null=True)
     json = models.JSONField(blank=True, null=True)
     
-    def field_choices(self, filter=None):
+    def field_choices(self, filter=None, group_by=None):
         
         #viz layout, saved and available 
         def flatten(d: MutableMapping, sep: str= '-') -> MutableMapping:
@@ -1001,15 +1003,30 @@ class Viz(BaseModel):
         #print('option choices: {}'.format(option_choices))
         
         viz_key = 'json.{}'.format(len(starting_data))
+        
         result = None
         if filter == 'viz':
             layout_choices = {'{}.layout.{}'.format(viz_key, k): v for k, v in flatten(self.layout_options).items()}
             result = {k: v for k, v in (name_and_type | service_choices | option_choices | layout_choices).items() if k.startswith(viz_key)}
-            print('layout choices: {}'.format(layout_choices))
+            #print('layout choices: {}'.format(layout_choices))
         
         elif filter == 'data':
             result = {k: v for k, v in (name_and_type | service_choices | option_choices | layout_choices).items() if not k.startswith(viz_key)}
-        print('RESULT for {}: {}'.format(filter, result))
+            
+        if group_by == 'name':
+            grouped_result, regrouped_result = {}, {}
+            
+            for k, v in result.items():
+                grouped_key = k.split('.')[1]
+                grouped_result.setdefault(grouped_key, {}).update({k: v})
+                
+            for k, v in grouped_result.items():
+                for k1, v1 in v.items():
+                    if 'name' in k1:
+                        regrouped_result[v1] = v
+            result = regrouped_result
+
+        #print('RESULT for {}: {}'.format(filter, result))
         return result
     
     '''
@@ -1051,7 +1068,7 @@ class Viz(BaseModel):
                 todo_data = a.data(todo=idx)
                 todo_data['type'] = todo['type']
                 data.append(todo_data)
-        print('field data generator: {}'.format(data))
+        #print('field data generator: {}'.format(data))
         
         io.close()
         del a
