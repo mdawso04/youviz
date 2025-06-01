@@ -24,7 +24,7 @@
         {% for field in value %}
         {% if forloop.first %}
         <div class="input-group input-group-sm">
-            <span class="input-group-text" id="counter{{forloop.counter0}}">{{forloop.counter}}</span>
+            <span class="input-group-text" id="counter{{forloop.parentloop.counter0}}">{{forloop.parentloop.counter}}</span>
             {{ field }}
             {% comment onhold %}
             <button type="button" class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>

@@ -786,7 +786,7 @@ class VizForm(EntangledModelFormMixin, BaseForm):
             #build form
             for idx, current_full_field_name in enumerate(full_field_names):
                 current_short_field_name = short_field_names[idx]
-                if current_short_field_name not in BaseForm.Meta.fields and current_short_field_name not in ('id', 'datasource', 'showlegend'): 
+                if current_short_field_name not in ('id', 'datasource', 'showlegend'): 
                     if grouped_choices[current_full_field_name] is not None and type(grouped_choices[current_full_field_name]) is not str:
                         field_choices = [(choice, choice,) if choice != ' ' else (choice, 'Custom',) for choice in grouped_choices[current_full_field_name]]
                         field_choices.insert(0, default_choice)
@@ -811,37 +811,6 @@ class VizForm(EntangledModelFormMixin, BaseForm):
                     #copy sefl[key] to group
                     self.field_groups[group_name].append(self[current_full_field_name])
         #print(self.instance.json)
-
-        '''
-        #viz type
-        choices = [(c, c,) for c in self.instance.viz_cache['viz']['service']['available']['viz']]
-        self.fields['type'] = forms.ChoiceField(label='Type', choices=choices)
-        self.fields['type'].widget.attrs.update({'class': 'form-select'})
-        '''
-
-        '''
-        #viz options
-        for k, v in self.instance.viz_cache['viz']['options']['available'].items():
-            default_choice = ('Auto', 'Auto',)
-            choices = [(value, 'Custom',) if value == ' ' else (value, value,) for value in v]
-            choices.insert(0, default_choice)
-            self.fields['{}'.format(k)] = forms.ChoiceField(label=k, choices=choices)
-            self.fields['{}'.format(k)].widget.attrs.update({'class': 'form-select'})
-            #TODO - auto, custom options
-            if False:
-                self.fields['{}_custom'.format(k)] = CharField(label=k)
-        
-        #layout options
-        for k, v in self.instance.viz_cache['viz']['layout']['available'].items():
-            default_choice = ('Auto', 'Auto',)
-            choices = [(value, 'Custom',) if value == ' ' else (value, value,) for value in v]
-            choices.insert(0, default_choice)
-            self.fields['{}'.format(k)] = forms.ChoiceField(label=k, choices=choices)
-            self.fields['{}'.format(k)].widget.attrs.update({'class': 'form-select'})
-            #TODO - auto, custom options
-            if False:
-                self.fields['{}_custom'.format(k)] = CharField(label=k)
-        '''
         
         self.apply_custom_config()
     
