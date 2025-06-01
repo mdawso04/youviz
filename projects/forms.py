@@ -769,6 +769,15 @@ class VizForm(EntangledModelFormMixin, BaseForm):
             #full_field_names.sort()
             short_field_names = [n.split('.')[-1] for n in full_field_names]
             self.field_groups[group_name] = []
+            
+            self.fields[group_name] = forms.CharField(label=group_name)
+            self.fields[group_name].widget.attrs.update(
+                {'class': 'form-control',
+                }
+            )
+            self.fields[group_name].required = True
+            self.fields[group_name].disabled = True
+            self.field_groups[group_name].append(self[group_name])
             #TODO
             #Group fields under step name
             #Order fields
