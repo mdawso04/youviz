@@ -14,6 +14,7 @@ from guardian.utils import get_anonymous_user
 from django.db.models.signals import post_save, pre_save
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
+from django.template.defaultfilters import slugify
 
 from django.http import Http404
 
@@ -965,7 +966,35 @@ class Viz(BaseModel):
     #data = models.JSONField(blank=True, null=True)
     json = models.JSONField(blank=True, null=True)
     
-    def field_choices(self, filter=None, group_by=None):
+    #vizjson->vizcache->field_data->field_choices
+    
+    def __init__(self, *args, **kwargs):
+        super(Viz, self).__init__(*args, **kwargs)
+        
+        #temp fix
+        self.properties['vizjson'] = self.json
+        vizjson = self.properties['vizjson']
+        
+        self._build_vizcache_from_json()
+        
+    def _build_vizcache_from_json(self, reverse=False):
+        '''Never change first step in json'''
+        if reverse:
+            steps = [s for s in self.properties['vizcache'].values()]
+            self.properties['vizjson'] =steps
+        else:
+            steps = self.properties['vizjson']
+            stepnames_to_use_in_keys = [slugify(i['name']) for i in steps]
+            vizcache = {
+                k: v for k, v in zip(stepnames_to_use_in_keys, steps) 
+            }        
+            self.properties['vizcache'] = vizcache
+            
+    def save(self, *args, **kwargs):
+        self._build_vizcache_from_json(reverse=True)        
+        super(Viz, self).save(*args, **kwargs)
+        
+    def field_choices(self, filter=None):
         
         #viz layout, saved and available 
         def flatten(d: MutableMapping, sep: str= '-') -> MutableMapping:
@@ -979,30 +1008,30 @@ class Viz(BaseModel):
         layout_choices = service_choices = option_choices = {}
         
         name_and_type = {
-            'json.{}.{}'.format(str(idx+1), k): v 
-            for idx, step in enumerate(starting_data) 
+            'properties.vizcache.{}.{}'.format(step_name, k): v 
+            for step_name, step in starting_data.items() 
             for k, v in step.items() if k in ('name', 'type',) 
         }
         
         #print('name_and_type: {}'.format(name_and_type))
         
         service_choices = {
-            'json.{}.{}'.format(str(idx+1), k): v1 
-            for idx, step in enumerate(starting_data) 
-            for k, v in step.items() if k in ('service',) 
-            for k1, v1 in v['available'].items() if k1 == step['type'] #in ('viz',) 
+            'properties.vizcache.{}.{}'.format(step_name, k): v1 
+            for step_name, step in starting_data.items() 
+            for k, v in step.items() if k in ('service',)
+            for k1, v1 in v['available'].items() if k1 == step['type']
         }
         #print('service choices: {}'.format(service_choices))
         
         option_choices = {
-            'json.{}.{}.{}'.format(str(idx+1), k, k1): v1 
-            for idx, step in enumerate(starting_data) 
-            for k, v in step.items() if k in ('options', 'layout',) 
+            'properties.vizcache.{}.{}.{}'.format(step_name, k, k1): v1 
+            for step_name, step in starting_data.items() 
+            for k, v in step.items() if k in ('options', 'layout',)
             for k1, v1 in v['available'].items()
         }
         #print('option choices: {}'.format(option_choices))
         
-        viz_key = 'json.{}'.format(len(starting_data))
+        viz_key = 'properties.vizcache.{}'.format(list(starting_data.keys())[-1])
         
         result = None
         if filter == 'viz':
@@ -1013,20 +1042,21 @@ class Viz(BaseModel):
         elif filter == 'data':
             result = {k: v for k, v in (name_and_type | service_choices | option_choices | layout_choices).items() if not k.startswith(viz_key)}
             
-        if group_by == 'name':
-            grouped_result, regrouped_result = {}, {}
-            
-            for k, v in result.items():
-                grouped_key = k.split('.')[1]
-                grouped_result.setdefault(grouped_key, {}).update({k: v})
-                
-            for k, v in grouped_result.items():
-                for k1, v1 in v.items():
-                    if 'name' in k1:
-                        regrouped_result[v1] = v
-            result = regrouped_result
+        grouped_result, regrouped_result = {}, {}
 
-        #print('RESULT for {}: {}'.format(filter, result))
+        for k, v in result.items():
+            grouped_key = k.split('.')[2]
+            grouped_result.setdefault(grouped_key, {}).update({k: v})
+
+        '''
+        for k, v in grouped_result.items():
+            for k1, v1 in v.items():
+                if 'name' in k1:
+                    regrouped_result[v1] = v
+        '''
+        result = grouped_result
+
+        print('RESULT for {}: {}'.format(filter, result))
         return result
     
     '''
@@ -1054,25 +1084,31 @@ class Viz(BaseModel):
     
     @cached_property
     def field_data_generator(self):
-        copied_json = deepcopy(self.json)
+        step_names = list(self.properties['vizcache'].keys())
+        steps = list(self.properties['vizcache'].values())
+        
+        #activate steps
+        copied_json = deepcopy(steps)
         a = pp.App(copied_json)
         io = StringIO(self.datasource.datastream.current_version()) 
         a.todos[0]['options']['src'] = io
+        #print('TODOs: {}'.format(a.todos))
         
-        print('TODOs: {}'.format(a.todos))
-        
-        data = []
-        
-        for idx, todo in enumerate(a.todos):
+        activated_steps = a.todos
+        result = []
+        for idx, step in enumerate(activated_steps):
+            #filter out unchangeable source step
             if idx > 0:
                 todo_data = a.data(todo=idx)
-                todo_data['type'] = todo['type']
-                data.append(todo_data)
-        #print('field data generator: {}'.format(data))
-        
+                todo_data['type'] = step['type']
+                result.append(todo_data)
+        combined_result = {}
+        for idx, step_name in enumerate(step_names[1:]):
+            combined_result[step_name] = result[idx]
+
         io.close()
         del a
-        return data
+        return combined_result
     
     def field_data(self):
         
@@ -1106,22 +1142,25 @@ class Viz(BaseModel):
         '''
         #print(self.json)
         
-        starting_object = self.json
+        #starting_object = self.json
+        #starting_data = self.field_data_generator
+        #stepnames_to_use_in_keys = [slugify(i['name']) for i in starting_data]
+        vizcache = self.properties['vizcache']
         
         two_level_field_data = {
-            'json.{}.{}'.format(str(idx), k): v 
-            for idx, step in enumerate(starting_object) if idx > 0
-            for k, v in step.items() if k not in ('options', 'layout') 
+            'properties.vizcache.{}.{}'.format(k, k1): v1 
+            for k, v in vizcache.items()
+            for k1, v1 in v.items() if k1 not in ('options', 'layout') 
         }
         three_level_field_data = {
-            'json.{}.{}.{}'.format(str(idx), k, k1): v1 
-            for idx, step in enumerate(starting_object) if idx > 0
-            for k, v in step.items() if k in ('options', 'layout') 
-            for k1, v1 in v.items()
+            'properties.vizcache.{}.{}.{}'.format(k, k1, k2): v2 
+            for k, v in vizcache.items()
+            for k1, v1 in v.items() if k1 in ('options', 'layout')
+            for k2, v2 in v1.items()
         }
             
         result = super().field_data() | {'datasource': self.datasource} | two_level_field_data | three_level_field_data
-        print('FIELD DATA OUT {}'.format(result))
+        #print('FIELD DATA OUT {}'.format(result))
         #self.set_field_data(result)
         return result
         

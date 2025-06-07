@@ -756,9 +756,9 @@ class VizForm(EntangledModelFormMixin, BaseForm):
         self.display_mode = kwargs.pop('display_mode', VizForm.DEFAULT_MODE)
         super(VizForm, self).__init__(*args, **kwargs)
         #load data, filter by mode
-        choices = self.instance.field_choices(filter=self.display_mode, group_by='name')
-        print('DISPLAY MODE {}'.format(self.display_mode))
-        print('CHOICES {}'.format(choices))
+        choices = self.instance.field_choices(filter=self.display_mode)
+        #print('DISPLAY MODE {}'.format(self.display_mode))
+        #print('CHOICES {}'.format(choices))
         
         default_choice = ('', 'Auto',)
         view_attribute_prefix = 'viz_buffer'
@@ -773,6 +773,7 @@ class VizForm(EntangledModelFormMixin, BaseForm):
             self.fields[group_name] = forms.CharField(label=group_name)
             self.fields[group_name].widget.attrs.update(
                 {'class': 'form-control',
+                 'value': group_name,
                 }
             )
             self.fields[group_name].required = True
