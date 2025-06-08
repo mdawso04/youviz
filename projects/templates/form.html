@@ -20,57 +20,96 @@
     <div class="col">
         {{ form.non_field_errors }}
     </div>
-    {% for key, value in form.field_groups.items %}
-        {% for field in value %}
-        {% if forloop.first %}
-        <div class="input-group input-group-sm">
-            <span class="input-group-text" id="counter{{forloop.parentloop.counter0}}">{{forloop.parentloop.counter}}</span>
-            {{ field }}
-            {% comment onhold %}
-            <button type="button" class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
-            <button type="button" class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
-            {% endcomment %}
-            <button class="btn btn-secondary bg-white text-dark border-secondary-subtle" 
-                    data-bs-toggle="collapse"
-                    data-bs-target="#collapse{{forloop.parentloop.counter0}}"
-                    data-bs-title="Edit" 
-                    data-bs-placement="top" 
-                    role="button"
-                    data-bs-content-id="popover-content{{forloop.counter0}}">
-                <i class="bi-chevron-down"></i>
-            </button>
-            <button type="button" id="drawingButton{{forloop.counter0}}-{{vid}}" class="btn btn-danger" 
-                    unicorn:click="deleteFilter({{forloop.counter0}})"
-                    unicorn:partial.key="filter-row-01-{{vid}}"
-                    {#unicorn:partial.key="filter-col-{{forloop.counter0}}"#}
-                    unicorn:partial.id="outerPlotBox-{{vid}}"
-                    unicorn:partial="setting-row-01-{{vid}}">
-                ×
-            </button>
-        </div>
-        <!-- DATA EDIT COLLAPSE -->
-        <div class="collapse pt-2" id="collapse{{forloop.parentloop.counter0}}" >
-            <div class="card card-body" unicorn:key="collapse-body{{forloop.parentloop.counter0}}">
-                
-                <script data-yv-listener="viz" 
-                        data-yv-target="filter-service-preview-{{forloop.parentloop.counter0}}" 
-                        data-yv-value="">
-                </script>
+    {% if form.field_groups %}
+        {% for key, value in form.field_groups.items %}
+            {% for field in value %}
+            {% if forloop.first %}
+            <div class="input-group input-group-sm">
+                <span class="input-group-text" id="counter{{forloop.parentloop.counter0}}">{{forloop.parentloop.counter}}</span>
+                {{ field }}
+                {% comment onhold %}
+                <button type="button" class="btn btn-secondary"><i class="bi bi-caret-up-fill"></i></button>
+                <button type="button" class="btn btn-secondary"><i class="bi bi-caret-down-fill"></i></button>
+                {% endcomment %}
+                <button class="btn btn-secondary bg-white text-dark border-secondary-subtle" 
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapse{{forloop.parentloop.counter0}}"
+                        data-bs-title="Edit" 
+                        data-bs-placement="top" 
+                        role="button"
+                        data-bs-content-id="popover-content{{forloop.counter0}}">
+                    <i class="bi-chevron-down"></i>
+                </button>
+                <button type="button" id="drawingButton{{forloop.counter0}}-{{vid}}" class="btn btn-danger" 
+                        unicorn:click="deleteFilter({{forloop.counter0}})"
+                        unicorn:partial.key="filter-row-01-{{vid}}"
+                        {#unicorn:partial.key="filter-col-{{forloop.counter0}}"#}
+                        unicorn:partial.id="outerPlotBox-{{vid}}"
+                        unicorn:partial="setting-row-01-{{vid}}">
+                    ×
+                </button>
+            </div>
+            <!-- DATA EDIT COLLAPSE -->
+            <div class="collapse pt-2" id="collapse{{forloop.parentloop.counter0}}" >
+                <div class="card card-body" unicorn:key="collapse-body{{forloop.parentloop.counter0}}">
 
-        {% else %}
-        <div class="col {{ field.css_classes }}">
+                    <script data-yv-listener="viz" 
+                            data-yv-target="filter-service-preview-{{forloop.parentloop.counter0}}" 
+                            data-yv-value="">
+                    </script>
+
+            {% else %}
+            <div class="col {{ field.css_classes }}">
+                {% if field.widget_type == 'textarea' or field.widget_type == 'text' %}
+                <div class="input-group input-group-sm pb-2">
+                    {% if not field.is_hidden %}<span class="input-group-text" id="{{ field.auto_id }}_label">{{ field.label }}</span>{% endif %}
+                    {{ field }}
+                </div>
+                {% elif field.widget_type == 'checkbox' %}
+                <div class="form-check form-switch pb-2">
+                    {{ field }}
+                    {% if not field.is_hidden %}<label class="form-check-label" for="{{ field.auto_id }}_label">{{ field.label }}</label>{% endif %}
+                </div>
+                {% elif field.widget_type == 'select' %}
+                <div class="input-group input-group-sm pb-2">
+                    {% if not field.is_hidden %}<label class="input-group-text" for="{{ field.auto_id }}_label">{{ field.label }}</label>{% endif %}
+                    {{ field }}
+                </div>
+                {% endif %}
+                {% if field.help_text %}
+                <label for="basic-url" class="form-label help small" id="{{ field.auto_id }}_helptext">{{ field.help_text|safe }}</label>
+                {% endif %}
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+            </div> 
+            {% endif %}
+            {% if forloop.last %}
+                    <button type="button" class="btn btn-sm btn-secondary" 
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse{{forloop.parentloop.counter0}}">
+                        Done
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        {% endfor %}
+    {% else %}
+        {% for field in form %}
+         <div class="col {{ field.css_classes }}">
             {% if field.widget_type == 'textarea' or field.widget_type == 'text' %}
-            <div class="input-group input-group-sm pb-2">
+            <div class="input-group input-group-sm pb-1">
                 {% if not field.is_hidden %}<span class="input-group-text" id="{{ field.auto_id }}_label">{{ field.label }}</span>{% endif %}
                 {{ field }}
             </div>
             {% elif field.widget_type == 'checkbox' %}
-            <div class="form-check form-switch pb-2">
+            <div class="form-check form-switch pb-1">
                 {{ field }}
                 {% if not field.is_hidden %}<label class="form-check-label" for="{{ field.auto_id }}_label">{{ field.label }}</label>{% endif %}
             </div>
             {% elif field.widget_type == 'select' %}
-            <div class="input-group input-group-sm pb-2">
+            <div class="input-group input-group-sm pb-1">
                 {% if not field.is_hidden %}<label class="input-group-text" for="{{ field.auto_id }}_label">{{ field.label }}</label>{% endif %}
                 {{ field }}
             </div>
@@ -82,21 +121,8 @@
                 {{ field.errors }}
             {% endif %}
         </div> 
-        {% endif %}
-        {% if forloop.last %}
-                <button type="button" class="btn btn-sm btn-secondary" 
-                        data-bs-toggle="collapse"
-                        data-bs-target="#collapse{{forloop.parentloop.counter0}}">
-                    Done
-                </button>
-            </div>
-        </div>
-    
-    
-    
-        {% endif %}
         {% endfor %}
-    {% endfor %}
+    {% endif %}
     
     {% for b in form.buttons.values %}
         {% if b.display %}

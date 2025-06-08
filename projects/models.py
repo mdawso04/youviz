@@ -994,7 +994,7 @@ class Viz(BaseModel):
         self._build_vizcache_from_json(reverse=True)        
         super(Viz, self).save(*args, **kwargs)
         
-    def field_choices(self, filter=None):
+    def field_choices(self, filter=None, group=True):
         
         #viz layout, saved and available 
         def flatten(d: MutableMapping, sep: str= '-') -> MutableMapping:
@@ -1042,19 +1042,20 @@ class Viz(BaseModel):
         elif filter == 'data':
             result = {k: v for k, v in (name_and_type | service_choices | option_choices | layout_choices).items() if not k.startswith(viz_key)}
             
-        grouped_result, regrouped_result = {}, {}
+        if group:
+            grouped_result, regrouped_result = {}, {}
 
-        for k, v in result.items():
-            grouped_key = k.split('.')[2]
-            grouped_result.setdefault(grouped_key, {}).update({k: v})
+            for k, v in result.items():
+                grouped_key = k.split('.')[2]
+                grouped_result.setdefault(grouped_key, {}).update({k: v})
 
-        '''
-        for k, v in grouped_result.items():
-            for k1, v1 in v.items():
-                if 'name' in k1:
-                    regrouped_result[v1] = v
-        '''
-        result = grouped_result
+            '''
+            for k, v in grouped_result.items():
+                for k1, v1 in v.items():
+                    if 'name' in k1:
+                        regrouped_result[v1] = v
+            '''
+            result = grouped_result
 
         print('RESULT for {}: {}'.format(filter, result))
         return result
@@ -1160,7 +1161,7 @@ class Viz(BaseModel):
         }
             
         result = super().field_data() | {'datasource': self.datasource} | two_level_field_data | three_level_field_data
-        #print('FIELD DATA OUT {}'.format(result))
+        print('FIELD DATA OUT {}'.format(result))
         #self.set_field_data(result)
         return result
         
