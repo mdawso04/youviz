@@ -38,6 +38,10 @@ class BaseForm(ModelForm):
         '{index}': 'index',
         '{unicorn_model}': 'unicorn_model',
     }
+    field_groups = None
+    
+    DEFAULT_LIST_OPTION = ('', 'Auto',)
+    
     
     class Meta:
         model = BaseModel
@@ -102,6 +106,10 @@ class BaseForm(ModelForm):
                 }
             },
         }
+        exclude_short_field_names = ()
+        exclude_full_field_names = ()
+        
+        
         
         '''
         max_length
@@ -236,6 +244,8 @@ class BaseForm(ModelForm):
         self.custom_config = kwargs.pop('custom_config', None)
         if type(self.custom_config) == tuple:
             self.custom_config = self.custom_config[0]
+            
+        self.field_groups = {}
         
         #build baseform
         super(BaseForm, self).__init__(*args, **kwargs)
@@ -288,6 +298,46 @@ class BaseForm(ModelForm):
         #    "Test exception"
         #)
         return cleaned_data
+    
+    def _build_form_group(self, choices):
+        for group_name, grouped_choices in choices.items():
+            self.fields[group_name] = forms.CharField(label=group_name)
+            self.fields[group_name].widget.attrs.update(
+                {'class': 'form-control',
+                 'value': group_name,
+                }
+            )
+            self.fields[group_name].required = True
+            self.fields[group_name].disabled = True
+            self.field_groups.setdefault(group_name, []).append(self[group_name])
+            
+            self._build_form(group_name, grouped_choices)
+        
+    def _build_form(self, field_group_name, choices):
+        full_field_names = list(choices.keys())
+        short_field_names = [n.split('.')[-1] for n in full_field_names]
+        
+        #build form
+        for idx, current_full_field_name in enumerate(full_field_names):
+            current_short_field_name = short_field_names[idx]
+            if current_short_field_name not in self.Meta.exclude_short_field_names: 
+                if choices[current_full_field_name] is not None and type(choices[current_full_field_name]) is not str:
+                    field_choices = [(choice, choice,) if choice != ' ' else (choice, 'Custom',) for choice in choices[current_full_field_name]]
+                    field_choices.insert(0, self.DEFAULT_LIST_OPTION)
+                    self.fields[current_full_field_name] = forms.TypedChoiceField(label=current_short_field_name, choices=field_choices, coerce=coerce_value, empty_value='')
+                    self.fields[current_full_field_name].widget.attrs.update(self._get_widget_attr(current_full_field_name, kwargs={'class': 'form-select'}))
+                    self.fields[current_full_field_name].required = False
+                    #TODO - custom text box
+                else:
+                    self.fields[current_full_field_name] = forms.CharField(label=current_short_field_name)
+                    self.fields[current_full_field_name].widget.attrs.update(self._get_widget_attr(current_full_field_name))
+                    self.fields[current_full_field_name].required = False
+                #copy sefl[key] to group
+                if field_group_name:
+                    self.field_groups[field_group_name].append(self[current_full_field_name])
+    
+    def _get_widget_attr(self, full_field_name, kwargs={}):
+        return kwargs
         
 class DatastreamForm(EntangledModelFormMixin, BaseForm):
     source = fields.CharField(
@@ -734,14 +784,12 @@ class BaseDatasourceFormSet(BaseModelFormSet):
         '''
 
 class VizForm(EntangledModelFormMixin, BaseForm):
-    
+    #handle data and viz modes
     DATA_MODE = 'data'
     VIZ_MODE = 'viz'
     DEFAULT_MODE = VIZ_MODE
     display_mode = None
-    field_groups = None
     VIEW_ATTRIBUTE_PREFIX = 'viz_buffer'
-    DEFAULT_LIST_OPTION = ('', 'Auto',)
     
     class Meta:
         model = Viz
@@ -753,6 +801,8 @@ class VizForm(EntangledModelFormMixin, BaseForm):
         #help_texts = BaseForm.Meta.help_texts
         #error_messages = BaseForm.Meta.error_messages
         buttons = BaseForm.Meta.buttons
+        exclude_short_field_names = BaseForm.Meta.exclude_short_field_names + ('id', 'datasource', 'showlegend')
+        exclude_full_field_names = BaseForm.Meta.exclude_full_field_names
         
     def __init__(self, *args, **kwargs):
         self.display_mode = kwargs.pop('display_mode', VizForm.DEFAULT_MODE)
@@ -760,61 +810,18 @@ class VizForm(EntangledModelFormMixin, BaseForm):
         
         if self.display_mode == self.DATA_MODE:
             choices = self.instance.field_choices(filter=self.display_mode, group=True)
-            self.field_groups = {}
             self._build_form_group(choices)
         else:
             choices = self.instance.field_choices(filter=self.display_mode, group=False)
             self._build_form(field_group_name=None, choices=choices)
         
         self.apply_custom_config()
-        
-    def _build_form_group(self, choices):
-        for group_name, grouped_choices in choices.items():
-            self.fields[group_name] = forms.CharField(label=group_name)
-            self.fields[group_name].widget.attrs.update(
-                {'class': 'form-control',
-                 'value': group_name,
-                }
-            )
-            self.fields[group_name].required = True
-            self.fields[group_name].disabled = True
-            self.field_groups.setdefault(group_name, []).append(self[group_name])
-            
-            self._build_form(group_name, grouped_choices)
-        
-    def _build_form(self, field_group_name, choices):
-        full_field_names = list(choices.keys())
-        #full_field_names.sort()
-        short_field_names = [n.split('.')[-1] for n in full_field_names]
-        
-        #build form
-        for idx, current_full_field_name in enumerate(full_field_names):
-            current_short_field_name = short_field_names[idx]
-            if current_short_field_name not in ('id', 'datasource', 'showlegend'): 
-                if choices[current_full_field_name] is not None and type(choices[current_full_field_name]) is not str:
-                    field_choices = [(choice, choice,) if choice != ' ' else (choice, 'Custom',) for choice in choices[current_full_field_name]]
-                    field_choices.insert(0, self.DEFAULT_LIST_OPTION)
-                    self.fields[current_full_field_name] = forms.TypedChoiceField(label=current_short_field_name, choices=field_choices, coerce=coerce_value, empty_value='')
-                    self.fields[current_full_field_name].widget.attrs.update(
-                        {'class': 'form-select',
-                         'unicorn:model': '{}.{}'.format(self.VIEW_ATTRIBUTE_PREFIX, current_full_field_name),
-                         'unicorn:partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
-                        }
-                    )
-                    self.fields[current_full_field_name].required = False
-                    #TODO - custom text box
-                else:
-                    self.fields[current_full_field_name] = forms.CharField(label=current_short_field_name)
-                    self.fields[current_full_field_name].widget.attrs.update(
-                        {'class': 'form-control',
-                         'unicorn:model': '{}.{}'.format(self.VIEW_ATTRIBUTE_PREFIX, current_full_field_name),
-                         'unicorn:partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
-                        }
-                    )
-                    self.fields[current_full_field_name].required = False
-                #copy sefl[key] to group
-                if field_group_name:
-                    self.field_groups[field_group_name].append(self[current_full_field_name])
+                    
+    def _get_widget_attr(self, full_field_name, kwargs={}):
+        return {'class': 'form-control',
+                 'unicorn:model': '{}.{}'.format(self.VIEW_ATTRIBUTE_PREFIX, full_field_name),
+                 'unicorn:partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
+                } | kwargs
     
     def save(self, commit=False):
         instance = super(VizForm, self).save(commit=False)
