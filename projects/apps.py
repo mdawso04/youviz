@@ -359,8 +359,8 @@ def new_set_property_value(
                 component_or_field = getattr(component_or_field, property_name_part)
                 data_or_dict = data_or_dict.get(property_name_part, {})
         elif isinstance(component_or_field, dict):
-            print('is this a dict?? {}'.format(component_or_field))
-            print(data_or_dict)
+            #print('is this a dict?? {}'.format(component_or_field))
+            #print(data_or_dict)
             
             if idx == len(property_name_parts) - 1:
                 component_or_field[property_name_part] = property_value
@@ -417,10 +417,10 @@ def new_handle(component_request: ComponentRequest, component: UnicornView, payl
         if last_action.payload.get("name") == property_name and last_action.payload.get("value") == property_value:
             call_resolved_method = True
 
-    print(component)
-    print(property_name)
-    print(property_value)
-    print( component_request.data)
+    #print(component)
+    #print(property_name)
+    #print(property_value)
+    #print( component_request.data)
 
     set_property_value(
         component, property_name, property_value, component_request.data, call_resolved_method=call_resolved_method

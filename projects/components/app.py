@@ -528,7 +528,8 @@ class AppView(UnicornView):
                 call_on_success=[(self.load_table, (), {}),] if handling_master_and_target else None
             )
             if 'new_datastream' in name:
-                print(new_object_with_data.__dict__)
+                #print(new_object_with_data.__dict__)
+                pass
             
         elif 'datasource_buffer.datastream.' in name:
             #master_instance = self.datasource.datastream

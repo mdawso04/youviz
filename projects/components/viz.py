@@ -95,7 +95,9 @@ class VizView(UnicornView):
                 raise Http404
         
         self.viz = v
+        print('SAVED VIZ IN VIZVIEW {}'.format(self.viz.properties['vizcache']))
         self.viz_buffer = deepcopy(self.viz)
+        print('DEEPCOPIED TO VIZ_BUFFER IN VIZVIEW {}'.format(self.viz_buffer.properties['vizcache']))
         
         
         #self.viz.can_view_or_404(self.request.user)
@@ -132,6 +134,8 @@ class VizView(UnicornView):
             form_kwargs={'display_mode': VizForm.VIZ_MODE}
         )
         
+        print('AFTER BUILD VIZ FORM {}'.format(self.viz_buffer.properties['vizcache']))
+        
         self.data_form = build_form_or_formset(
             model=None,
             queryset=None,
@@ -148,7 +152,9 @@ class VizView(UnicornView):
         
     def hydrate(self):
         #logger.debug('VizView > hydrate start')
-        pass
+        import traceback
+        print('HYDRATING VIZ_BUFFER.VIZCACHE FOR {} {}'.format(self.viz_buffer.pk, self.viz_buffer.properties['vizcache']))
+        traceback.print_stack()
         #logger.debug('VizView > hydrate end')
     
     def updating(self, name, value):
@@ -156,8 +162,10 @@ class VizView(UnicornView):
         #prep dict 
         #print('NAME {} VALUE {} TYPE {}'.format(name, value, type(value)))
         #print('BEFORE SET NESTED {}'.format(self.viz_buffer.json))
+        #print('BEFORE SET NSETED {}'.format(self.viz_buffer.properties['vizcache']))
         set_nested_attr(self, name, '')
         #print('AFTER SET NESTED {}'.format(self.viz_buffer.json))
+        #print('AFTER SET NSETED {}'.format(self.viz_buffer.properties['vizcache']))
         
         if 'viz_buffer.' in name:
             #updated_instance = self.viz_buffer
@@ -170,7 +178,7 @@ class VizView(UnicornView):
                 target_object=updated_instance,
                 master_object=master_instance,
             )
-        
+        #print('AFTER UPDATINGH {}'.format(self.viz_buffer.properties['vizcache']))
             
         
         '''
@@ -204,10 +212,10 @@ class VizView(UnicornView):
     def updated(self, name, value):
         #logger.debug('VizView > updated start')
         
-        print('NAME {} VALUE {}'.format(name, value))
-        print('BEFORE PRECLEAN {}'.format(self.viz_buffer.json))
+        print('UPDATED FOR VIZ {} NAME {} VALUE {}'.format(self.viz_buffer.name, name, value))
+        #print('BEFORE PRECLEAN {}'.format(self.viz_buffer.properties['vizcache']))
         updated_handler_preclean(self, name, value)
-        print('AFTER PRECLEAN {}'.format(self.viz_buffer.json))
+        #print('AFTER PRECLEAN {}'.format(self.viz_buffer.properties['vizcache']))
         
         #master_instance = self.viz
         #updated_instance = self.viz_buffer
@@ -223,6 +231,7 @@ class VizView(UnicornView):
             custom_config=VizForm.CUSTOM_CONFIG_VIEW,
             form_mode='initial',
         )
+        #print('AFTER BUILDFORM {}'.format(self.viz_buffer.properties['vizcache']))
         updated_handler(
             target_object=updated_instance,
             master_object=master_instance,
@@ -230,6 +239,8 @@ class VizView(UnicornView):
             save_form_or_formset_on_valid=True,
             call_on_success=None,
         )
+        #print('AFTER UPDATEDHANDLER {}'.format(self.viz_buffer.properties['vizcache']))
+        
         
         '''
         a = pp.App(self.viz.json)

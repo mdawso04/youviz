@@ -972,23 +972,32 @@ class Viz(BaseModel):
         super(Viz, self).__init__(*args, **kwargs)
         
         #temp fix
-        self.properties['vizjson'] = self.json
-        vizjson = self.properties['vizjson']
+        #print('SELFJSON {}'.format(self.json))
+        
+        #print('DCOPYJSON {}'.format(self.properties['vizjson']))
         
         self._build_vizcache_from_json()
         
     def _build_vizcache_from_json(self, reverse=False):
         '''Never change first step in json'''
         if reverse:
+            if 'vizcache' not in self.properties:
+                self.properties['vizcache'] = {}
             steps = [s for s in self.properties['vizcache'].values()]
-            self.properties['vizjson'] =steps
+            self.properties['vizjson'] = steps
         else:
+            if 'vizjson' not in self.properties or len(self.properties['vizjson']) == 0:
+                self.properties['vizjson'] = deepcopy(self.json)
             steps = self.properties['vizjson']
-            stepnames_to_use_in_keys = [slugify(i['name']) for i in steps]
+            #print('JSONSTEPS {}'.format(steps))
+            stepnames_to_use_in_keys = [slugify('{}_{}'.format(idx, s['name'])) for idx, s in enumerate(steps)]
+            #print('STEPNAMES {}'.format(stepnames_to_use_in_keys))
             vizcache = {
                 k: v for k, v in zip(stepnames_to_use_in_keys, steps) 
             }        
             self.properties['vizcache'] = vizcache
+            print('BUILT VIZCACHE FOR {} {} {}'.format(self.pk, self.name, self.properties['vizcache']))
+            
             
     def save(self, *args, **kwargs):
         self._build_vizcache_from_json(reverse=True)        
@@ -1057,7 +1066,7 @@ class Viz(BaseModel):
             '''
             result = grouped_result
 
-        print('RESULT for {}: {}'.format(filter, result))
+        #print('RESULT for {}: {}'.format(filter, result))
         return result
     
     '''
@@ -1085,9 +1094,10 @@ class Viz(BaseModel):
     
     @cached_property
     def field_data_generator(self):
-        step_names = list(self.properties['vizcache'].keys())
-        steps = list(self.properties['vizcache'].values())
+        step_names = [k for k in self.properties['vizcache'].keys()]
+        steps = [v for v in self.properties['vizcache'].values()]
         
+        #print('STEPS {}'.format(steps))
         #activate steps
         copied_json = deepcopy(steps)
         a = pp.App(copied_json)
@@ -1099,6 +1109,7 @@ class Viz(BaseModel):
         result = []
         for idx, step in enumerate(activated_steps):
             #filter out unchangeable source step
+            print('GENERATING FIELD DATA FROM VIZCACHE FOR {} {} {}'.format(self.pk, self.name, step))
             if idx > 0:
                 todo_data = a.data(todo=idx)
                 todo_data['type'] = step['type']
@@ -1161,7 +1172,7 @@ class Viz(BaseModel):
         }
             
         result = super().field_data() | {'datasource': self.datasource} | two_level_field_data | three_level_field_data
-        print('FIELD DATA OUT {}'.format(result))
+        #print('FIELD DATA OUT {}'.format(result))
         #self.set_field_data(result)
         return result
         
@@ -1176,7 +1187,7 @@ class Viz(BaseModel):
             if path is not None:
                 print(path)
                 set_nested_attr(self, path, value)
-        print('DATA COPIED OVER {}'.format(self.__dict__))
+        #print('DATA COPIED OVER {}'.format(self.__dict__))
         
     
     layout_options: dict = {
@@ -1285,7 +1296,12 @@ class Viz(BaseModel):
     
     @cached_property
     def viz_html(self):
-        copied_json = deepcopy(self.json)
+        vizcache = self.properties['vizcache']
+        print('BUILDING VIZHTML FROM VIZCACHE {} {} {}'.format(self.pk, self.name, vizcache))
+        #copied_json = deepcopy(self.json)
+        copied_json = deepcopy(list(vizcache.values()))
+        #print('HTML COPIEDJSON {}'.format(copied_json))
+        
         a = pp.App(copied_json)
         io = StringIO(self.datasource.datastream.current_version()) 
         a.todos[0]['options']['src'] = io
@@ -1331,7 +1347,9 @@ class Viz(BaseModel):
     
     @cached_property
     def viz_cache(self):
-        copied_json = deepcopy(self.json)
+        vizcache = self.properties['vizcache']
+        #copied_json = deepcopy(self.json)
+        copied_json = deepcopy(list(vizcache.values()))
         a = pp.App(copied_json)
         io = StringIO(self.datasource.datastream.current_version()) 
         a.todos[0]['options']['src'] = io
@@ -1428,7 +1446,10 @@ class Viz(BaseModel):
     '''
     @cached_property
     def datatable(self):
-        copied_json = deepcopy(self.json)
+        vizcache = self.properties['vizcache']
+        #copied_json = deepcopy(self.json)
+        copied_json = deepcopy(list(vizcache.values()))
+        
         a = pp.App(copied_json)
         io = StringIO(self.datasource.datastream.current_version())
         a.todos[0]['options']['src'] = io
@@ -1445,7 +1466,10 @@ class Viz(BaseModel):
     
     @cached_property
     def datatable_preview(self):
-        copied_json = deepcopy(self.json)
+        vizcache = self.properties['vizcache']
+        #copied_json = deepcopy(self.json)
+        copied_json = deepcopy(list(vizcache.values()))
+        
         a = pp.App(copied_json)
         io = StringIO(self.datasource.datastream.current_version())
         a.todos[0]['options']['src'] = io

@@ -258,7 +258,7 @@ def action_handler(
     )
     #redirect
     print('reverse')
-    print(call_on_success_result)
+    #print(call_on_success_result)
     if reverse_redirect_on_success:
         return redirect(reverse(reverse_redirect_on_success[0], kwargs=reverse_redirect_on_success[1]))
     return call_on_success_result
@@ -310,7 +310,7 @@ def build_form_or_formset(
         updated_instance_data = {k: v if k not in ('json', 'properties',) else json.dumps(v) 
             for k, v in getattr(*new_object_with_data).field_data().items() 
         }
-        print(updated_instance_data)
+        print('BUILDING FORM WITH UPDATED INSTANCE DATA {}'.format(updated_instance_data))
         generated_form = form(
             instance=getattr(*new_object_with_data), 
             unicorn_model=unicorn_model,
@@ -435,7 +435,7 @@ def get_or_create_nested_attr(obj, attr_path):
 def set_nested_attr(obj, attr_path, value):
     """Set a nested attribute, creating intermediate attributes/lists/dictionaries as needed."""
     top = obj
-    print('START NESTED UPDATE FOR {} {}'.format(attr_path, top.__dict__))
+    #print('START NESTED UPDATE FOR {} {}'.format(attr_path, top.__dict__))
     parts = parse_path_inline(attr_path)
     for i, part in enumerate(parts[:-1]):
         next_part = parts[i + 1] if i + 1 < len(parts) else None
@@ -462,7 +462,7 @@ def set_nested_attr(obj, attr_path, value):
         obj[final] = value
     else:  # attribute
         setattr(obj, final, value)
-    print('END NESTED UPDATE FOR {} {}'.format(attr_path, top.__dict__))
+    #print('END NESTED UPDATE FOR {} {}'.format(attr_path, top.__dict__))
 
 #import copyreg
 
