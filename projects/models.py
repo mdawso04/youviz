@@ -984,6 +984,25 @@ class Viz(BaseModel):
             if 'vizcache' not in self.properties:
                 self.properties['vizcache'] = {}
             steps = [s for s in self.properties['vizcache'].values()]
+            
+            #swap '_custom' values to main field for options\layout before saving!]
+            def handle_custom_values(dict_to_handle):
+                keys_to_delete = []
+                for k in dict_to_handle.keys():
+                    if '_custom' in k:
+                        main_key = k.replace('_custom', '')
+                        if main_key in dict_to_handle and dict_to_handle[main_key] == 'custom':
+                            dict_to_handle[main_key] = dict_to_handle[k]
+                        keys_to_delete.append(k)
+                for k in keys_to_delete:
+                    del dict_to_handle[k]
+                
+            for s in steps:
+                if 'options' in s:
+                    handle_custom_values(s['options'])
+                if 'layout' in s:
+                    handle_custom_values(s['layout'])
+            
             self.properties['vizjson'] = steps
         else:
             if 'vizjson' not in self.properties or len(self.properties['vizjson']) == 0:
@@ -996,7 +1015,7 @@ class Viz(BaseModel):
                 k: v for k, v in zip(stepnames_to_use_in_keys, steps) 
             }        
             self.properties['vizcache'] = vizcache
-            print('BUILT VIZCACHE FOR {} {} {}'.format(self.pk, self.name, self.properties['vizcache']))
+            #print('BUILT VIZCACHE FOR {} {} {}'.format(self.pk, self.name, self.properties['vizcache']))
             
             
     def save(self, *args, **kwargs):
@@ -1109,7 +1128,7 @@ class Viz(BaseModel):
         result = []
         for idx, step in enumerate(activated_steps):
             #filter out unchangeable source step
-            print('GENERATING FIELD DATA FROM VIZCACHE FOR {} {} {}'.format(self.pk, self.name, step))
+            #print('GENERATING FIELD DATA FROM VIZCACHE FOR {} {} {}'.format(self.pk, self.name, step))
             if idx > 0:
                 todo_data = a.data(todo=idx)
                 todo_data['type'] = step['type']
@@ -1208,7 +1227,7 @@ class Viz(BaseModel):
         ],
         'xaxis_title_text': [
             None,
-            ' ',
+            'custom',
         ],
         'xaxis_showticklabels': [
             True,
@@ -1241,7 +1260,7 @@ class Viz(BaseModel):
         ],
         'yaxis_title_text': [
             None,
-            ' ',
+            'custom',
         ],
         'yaxis_showticklabels': [
             True,
@@ -1296,10 +1315,12 @@ class Viz(BaseModel):
     
     @cached_property
     def viz_html(self):
-        vizcache = self.properties['vizcache']
-        print('BUILDING VIZHTML FROM VIZCACHE {} {} {}'.format(self.pk, self.name, vizcache))
+        #vizcache = self.properties['vizcache']
+        vizjson = self.properties['vizjson']
+        #print('BUILDING VIZHTML FROM VIZCACHE {} {} {}'.format(self.pk, self.name, vizcache))
         #copied_json = deepcopy(self.json)
-        copied_json = deepcopy(list(vizcache.values()))
+        #copied_json = deepcopy(list(vizcache.values()))
+        copied_json = deepcopy(vizjson)
         #print('HTML COPIEDJSON {}'.format(copied_json))
         
         a = pp.App(copied_json)

@@ -97,20 +97,20 @@
         {% endfor %}
     {% else %}
         {% for field in form %}
-         <div class="col {{ field.css_classes }}">
+         <div class="col {{ field.css_classes }}" id="{{ field.auto_id }}_col">
             {% if field.widget_type == 'textarea' or field.widget_type == 'text' %}
             <div class="input-group input-group-sm pb-1">
-                {% if not field.is_hidden %}<span class="input-group-text" id="{{ field.auto_id }}_label">{{ field.label }}</span>{% endif %}
+                <span class="input-group-text" id="{{ field.auto_id }}_label">{{ field.label }}</span>
                 {{ field }}
             </div>
             {% elif field.widget_type == 'checkbox' %}
             <div class="form-check form-switch pb-1">
                 {{ field }}
-                {% if not field.is_hidden %}<label class="form-check-label" for="{{ field.auto_id }}_label">{{ field.label }}</label>{% endif %}
+                <label class="form-check-label" for="{{ field.auto_id }}_label">{{ field.label }}</label>
             </div>
             {% elif field.widget_type == 'select' %}
             <div class="input-group input-group-sm pb-1">
-                {% if not field.is_hidden %}<label class="input-group-text" for="{{ field.auto_id }}_label">{{ field.label }}</label>{% endif %}
+                <label class="input-group-text" for="{{ field.auto_id }}_label">{{ field.label }}</label>
                 {{ field }}
             </div>
             {% endif %}

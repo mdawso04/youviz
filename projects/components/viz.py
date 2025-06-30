@@ -95,9 +95,9 @@ class VizView(UnicornView):
                 raise Http404
         
         self.viz = v
-        print('SAVED VIZ IN VIZVIEW {}'.format(self.viz.properties['vizcache']))
+        #print('SAVED VIZ IN VIZVIEW {}'.format(self.viz.properties['vizcache']))
         self.viz_buffer = deepcopy(self.viz)
-        print('DEEPCOPIED TO VIZ_BUFFER IN VIZVIEW {}'.format(self.viz_buffer.properties['vizcache']))
+        #print('DEEPCOPIED TO VIZ_BUFFER IN VIZVIEW {}'.format(self.viz_buffer.properties['vizcache']))
         
         
         #self.viz.can_view_or_404(self.request.user)
@@ -121,6 +121,7 @@ class VizView(UnicornView):
         '''
         
         target_object = (self, 'viz_buffer')
+        print(self.__dict__)
         
         self.viz_form = build_form_or_formset(
             model=None,
@@ -131,10 +132,10 @@ class VizView(UnicornView):
             formset=None,
             custom_config=VizForm.CUSTOM_CONFIG_VIEW,
             form_mode='initial',
-            form_kwargs={'display_mode': VizForm.VIZ_MODE}
+            form_kwargs={'display_mode': VizForm.VIZ_MODE, 'unicorn_view_key': self.component_key}
         )
         
-        print('AFTER BUILD VIZ FORM {}'.format(self.viz_buffer.properties['vizcache']))
+        #print('AFTER BUILD VIZ FORM {}'.format(self.viz_buffer.properties['vizcache']))
         
         self.data_form = build_form_or_formset(
             model=None,
@@ -145,16 +146,17 @@ class VizView(UnicornView):
             formset=None,
             custom_config=VizForm.CUSTOM_CONFIG_VIEW,
             form_mode='initial',
-            form_kwargs={'display_mode': VizForm.DATA_MODE}
+            form_kwargs={'display_mode': VizForm.DATA_MODE, 'unicorn_view_key': self.component_key}
         )
         
         #logger.debug('VizView > load_viz end')
         
     def hydrate(self):
         #logger.debug('VizView > hydrate start')
-        import traceback
-        print('HYDRATING VIZ_BUFFER.VIZCACHE FOR {} {}'.format(self.viz_buffer.pk, self.viz_buffer.properties['vizcache']))
-        traceback.print_stack()
+        #print('HYDRATING VIZ_BUFFER.VIZCACHE FOR {} {}'.format(self.viz_buffer.pk, self.viz_buffer.properties['vizcache']))
+        #import traceback
+        #traceback.print_stack()
+        pass
         #logger.debug('VizView > hydrate end')
     
     def updating(self, name, value):
@@ -212,7 +214,7 @@ class VizView(UnicornView):
     def updated(self, name, value):
         #logger.debug('VizView > updated start')
         
-        print('UPDATED FOR VIZ {} NAME {} VALUE {}'.format(self.viz_buffer.name, name, value))
+        #print('UPDATED FOR VIZ {} NAME {} VALUE {}'.format(self.viz_buffer.name, name, value))
         #print('BEFORE PRECLEAN {}'.format(self.viz_buffer.properties['vizcache']))
         updated_handler_preclean(self, name, value)
         #print('AFTER PRECLEAN {}'.format(self.viz_buffer.properties['vizcache']))
@@ -230,6 +232,7 @@ class VizView(UnicornView):
             formset=None,
             custom_config=VizForm.CUSTOM_CONFIG_VIEW,
             form_mode='initial',
+            form_kwargs={'display_mode': VizForm.VIZ_MODE, 'unicorn_view_key': self.component_key}
         )
         #print('AFTER BUILDFORM {}'.format(self.viz_buffer.properties['vizcache']))
         updated_handler(
@@ -237,9 +240,11 @@ class VizView(UnicornView):
             master_object=master_instance,
             form_or_formset=self.viz_form,
             save_form_or_formset_on_valid=True,
-            call_on_success=None,
+            call_on_success=[(self.load_viz, (), {}),],
         )
-        #print('AFTER UPDATEDHANDLER {}'.format(self.viz_buffer.properties['vizcache']))
+        #print('AFTER UPDATEDHANDLER VIZBUFFER.VIZCACHE {}'.format(self.viz_buffer.properties['vizcache']))
+        #print('AFTER UPDATEDHANDLER VIZ.VIZCACHE {}'.format(self.viz.properties['vizcache']))
+        #print('AFTER UPDATEDHANDLER VIZ.VIZJSON{}'.format(self.viz.properties['vizjson']))
         
         
         '''
@@ -393,6 +398,12 @@ class VizView(UnicornView):
         print('refreshing table')
         self.load_viz()
         
+    def m_update(self, name, value):
+        self.updating(name, value)
+        self.updated(name, value)
+        print('MANUAL UPDATE {} {} {}'.format(name, value, type(value)))
+        
+        
     '''
     def applyUpdate(self):
         if name.startswith('cache.data.0.options.saved.criteria'):
@@ -502,6 +513,10 @@ class VizView(UnicornView):
             component_name = component_name.replace("_", "-")
                 
             initkwargs["component_name"] = component_name
+            
+            #patch to automatically generate component_key if not provided
+            if 'component_key' not in initkwargs:
+                initkwargs["component_key"] = '{}-{}'.format(component_name, initkwargs["component_id"])
             
             self = cls(**initkwargs)
             #logger.debug(self)

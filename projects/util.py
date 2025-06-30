@@ -163,10 +163,10 @@ def updated_handler(
             result = None
             if call_on_success:
                 for action in call_on_success:
-                    method_name = action[0]
+                    callable_object = action[0]
                     args = action[1]
                     kwargs = action[2]
-                    result = method_name(*args, **kwargs)
+                    result = callable_object(*args, **kwargs)
                     #print('calling {}'.format(method_name))
             return result
         
@@ -195,7 +195,7 @@ def updated_handler(
                     #form_or_formset.save()
                     if handling_master_and_target:
                         getattr(*master_object).save()
-                        #print('SAVED MASTER TARGET {}'.format(master_object.__dict__))
+                        #print('SAVED MASTER TARGET {}'.format(getattr(*master_object).__dict__))
                     else:
                         cleaned_target_instance.save()
                         #print('SAVED CLEANED TARGET {}'.format(cleaned_target_object.__dict__))
@@ -214,7 +214,7 @@ def updated_handler(
             cache.set(cache_key_from_obj(cleaned_target_instance, '_buffer'), cleaned_target_instance.field_data())
         if handling_master_and_target:
             cache.set(cache_key_from_obj(getattr(*master_object), '_master'), getattr(*master_object).field_data())
-        print('updated cache')
+        #print('updated cache')
             
         return form_or_formset_is_valid, action_result
 
@@ -235,20 +235,20 @@ def action_handler(
         reverse_redirect_on_success=None,
     ):
     #step 1, perms, cache
-    print('updating handler')
+    #print('updating handler')
     updating_handler(
         app_perms=app_perms,
         req_perms=req_perms,
         target_object=target_object,
         master_object=master_object,
     )
-    print('target updates')
+    #print('target updates')
     #target_object_updates 
     if target_object_updates:
         for updates in target_object_updates:
             setattr(target_object, *updates)
     
-    print('updated hadnler')
+    #print('updated hadnler')
     call_on_success_result = updated_handler(
         target_object=target_object,
         master_object=master_object,
@@ -257,7 +257,7 @@ def action_handler(
         call_on_success=actions,
     )
     #redirect
-    print('reverse')
+    #print('reverse')
     #print(call_on_success_result)
     if reverse_redirect_on_success:
         return redirect(reverse(reverse_redirect_on_success[0], kwargs=reverse_redirect_on_success[1]))
@@ -310,7 +310,7 @@ def build_form_or_formset(
         updated_instance_data = {k: v if k not in ('json', 'properties',) else json.dumps(v) 
             for k, v in getattr(*new_object_with_data).field_data().items() 
         }
-        print('BUILDING FORM WITH UPDATED INSTANCE DATA {}'.format(updated_instance_data))
+        #print('BUILDING FORM WITH UPDATED INSTANCE DATA {}'.format(updated_instance_data))
         generated_form = form(
             instance=getattr(*new_object_with_data), 
             unicorn_model=unicorn_model,
@@ -334,14 +334,17 @@ def dict_deep_merge(d1, d2, level=4):
 
 def updated_handler_preclean(target, name, value):
     #clean values not handled by Unicorn and write to target model in prep for update_handler
+    #print('PRECLEAN VALUE {} {}'.format(value, type(value)))
     if value == '':
-        #print('NAME OF OBJ TO DLETE'.format(name))
-        #print('TARGET TO DLETE'.format(target.__dict__))
+        print('NAME OF OBJ TO DLETE {}'.format(name))
+        print('TARGET TO DLETE {}'.format(target.__dict__))
         delete_nested_attr(target, name)
+        print('TARGET TO DLETED {}'.format(target.__dict__))
         
     else:
         value = coerce_value(value)
         set_nested_attr(target, name, value)
+        
     
 def coerce_value(value, from_str=True):
     if from_str:

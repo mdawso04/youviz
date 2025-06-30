@@ -7,8 +7,9 @@ from entangled.forms import EntangledModelForm, EntangledModelFormMixin
 from django.forms import BaseModelFormSet, ChoiceField
 from django import forms
 from .models import Datasource, Viz
-from copy import deepcopy
+from copy import *
 from .util import *
+import os
 
 
 '''
@@ -39,6 +40,7 @@ class BaseForm(ModelForm):
         '{unicorn_model}': 'unicorn_model',
     }
     field_groups = None
+    unicorn_view_key = None
     
     DEFAULT_LIST_OPTION = ('', 'Auto',)
     
@@ -232,7 +234,7 @@ class BaseForm(ModelForm):
     
     def __init__(self, *args, **kwargs):
         #custom form attrs
-        self.form_id = kwargs.pop('form_id', None)
+        self.form_id = kwargs.pop('form_id', os.urandom(6).hex())
         self.unicorn_model = kwargs.pop('unicorn_model', None)
         if type(self.unicorn_model) == tuple:
             self.unicorn_model = self.unicorn_model[0]
@@ -244,6 +246,7 @@ class BaseForm(ModelForm):
         self.custom_config = kwargs.pop('custom_config', None)
         if type(self.custom_config) == tuple:
             self.custom_config = self.custom_config[0]
+        self.unicorn_view_key = kwargs.pop('unicorn_view_key', 'WARNING: NO KEY DEFINED')
             
         self.field_groups = {}
         
@@ -322,12 +325,45 @@ class BaseForm(ModelForm):
             current_short_field_name = short_field_names[idx]
             if current_short_field_name not in self.Meta.exclude_short_field_names: 
                 if choices[current_full_field_name] is not None and type(choices[current_full_field_name]) is not str:
-                    field_choices = [(choice, choice,) if choice != ' ' else (choice, 'Custom',) for choice in choices[current_full_field_name]]
+                    #if current value is not in current choices
+                    current_field_value = self.data.get(current_full_field_name, None)
+                    enable_custom_value_charfield = 'custom' in choices[current_full_field_name]
+                    field_choices = [(choice, choice,) for choice in choices[current_full_field_name]]
                     field_choices.insert(0, self.DEFAULT_LIST_OPTION)
-                    self.fields[current_full_field_name] = forms.TypedChoiceField(label=current_short_field_name, choices=field_choices, coerce=coerce_value, empty_value='')
-                    self.fields[current_full_field_name].widget.attrs.update(self._get_widget_attr(current_full_field_name, kwargs={'class': 'form-select'}))
-                    self.fields[current_full_field_name].required = False
-                    #TODO - custom text box
+                    if enable_custom_value_charfield:
+                        custom_option_is_selected = current_field_value is not None and (current_field_value == 'custom' or current_field_value not in choices[current_full_field_name])
+                        #print('self.data BEFORE: {}'.format(self.data))
+                        
+                        #select field (unicorn ignore patch, no unicorn model)
+                        #onchange_patch = "Unicorn.call('{}', 'm_update', '{}', this.value);".format(self.unicorn_view_key, self.unicorn_model + '.' + current_full_field_name)
+                        self.fields[current_full_field_name] = forms.TypedChoiceField(label=current_short_field_name, choices=field_choices, coerce=coerce_value, empty_value='')
+                        #self.fields[current_full_field_name].widget.attrs.update(self._get_widget_attr(current_full_field_name, kwargs={'class': 'form-select', 'unicorn:ignore':'', 'onchange': onchange_patch}))
+                        self.fields[current_full_field_name].widget.attrs.update(self._get_widget_attr(current_full_field_name, kwargs={'class': 'form-select'}))
+                        self.fields[current_full_field_name].required = False
+                        
+                        #extra charfield intercept
+                        custom_for_current_full_field_name = current_full_field_name + '_custom'
+                        #custom_for_current_full_field_name = current_full_field_name
+                        self.fields[custom_for_current_full_field_name] = forms.CharField(label='')
+                        self.fields[custom_for_current_full_field_name].widget.attrs.update(self._get_widget_attr(custom_for_current_full_field_name))
+                        self.fields[custom_for_current_full_field_name].required = False
+                        if custom_option_is_selected:
+                            self.data[custom_for_current_full_field_name] = deepcopy(current_field_value)
+                            self.data[current_full_field_name] = 'custom'
+                            self.fields[custom_for_current_full_field_name].disabled = False
+                            self.fields[custom_for_current_full_field_name].help_text = 'enter a custom value'
+                        else:
+                            self.fields[custom_for_current_full_field_name].disabled = True
+                            self.fields[custom_for_current_full_field_name].help_text = 'custom not selected'
+                        #switch data to sync select and custom field
+                        #print('custom option selected for {}: {}'.format(current_full_field_name, custom_option_is_selected))
+                        #print('self.data AFTER: {}'.format(self.data))
+                        
+                    else: 
+                        #select field only
+                        self.fields[current_full_field_name] = forms.TypedChoiceField(label=current_short_field_name, choices=field_choices, coerce=coerce_value, empty_value='')
+                        self.fields[current_full_field_name].widget.attrs.update(self._get_widget_attr(current_full_field_name, kwargs={'class': 'form-select'}))
+                        self.fields[current_full_field_name].required = False                        
                 else:
                     self.fields[current_full_field_name] = forms.CharField(label=current_short_field_name)
                     self.fields[current_full_field_name].widget.attrs.update(self._get_widget_attr(current_full_field_name))
@@ -818,10 +854,20 @@ class VizForm(EntangledModelFormMixin, BaseForm):
         self.apply_custom_config()
                     
     def _get_widget_attr(self, full_field_name, kwargs={}):
-        return {'class': 'form-control',
-                 'unicorn:model': '{}.{}'.format(self.VIEW_ATTRIBUTE_PREFIX, full_field_name),
-                 'unicorn:partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
-                } | kwargs
+        if '_custom' in full_field_name:
+            return {'class': 'form-control',
+             'unicorn:model': '{}.{}'.format(self.unicorn_model, full_field_name),
+             'unicorn:partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
+             'unicorn:partial.id': self.form_id, 
+             #'unicorn:partial.id': '{}_col'.format(self.fields[full_field_name].auto_id),
+            } | kwargs
+        else:
+            return {'class': 'form-control',
+             'unicorn:model': '{}.{}'.format(self.unicorn_model, full_field_name),
+             'unicorn:partial': 'outerPlotBox-viz-{}'.format(self.instance.pk),
+             'unicorn:partial.id': self.form_id, 
+             #'unicorn:partial.id': '{}_col'.format(self[full_field_name].auto_id),'unicorn:partial.id': 'switch', 
+            } | kwargs
     
     def save(self, commit=False):
         instance = super(VizForm, self).save(commit=False)
